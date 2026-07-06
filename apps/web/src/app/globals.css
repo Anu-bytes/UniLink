@@ -1,0 +1,99 @@
+@import "tailwindcss";
+
+/* ------------------------------------------------------------------ */
+/* UniLink design tokens (from the UI kit) — Tailwind v4 @theme        */
+/* ------------------------------------------------------------------ */
+@theme {
+  /* Brand blue */
+  --color-brand-50: #f2f5ff;
+  --color-brand-100: #e1e8ff;
+  --color-brand-200: #b7c8ff;
+  --color-brand-400: #3d6eff;
+  --color-brand-500: #003ee0;
+  --color-brand: #0047ff;
+  --color-brand-600: #0035c7;
+
+  /* Accent red */
+  --color-accent: #f82c1f;
+  --color-accent-700: #c71b11;
+
+  /* Neutrals / surfaces */
+  --color-bg: #f8fafd;
+  --color-surface: #ffffff;
+  --color-line: #dce0ec;
+  --color-ink: #0b1220;
+  --color-muted: #5b6478;
+
+  /* Semantic */
+  --color-success: #12805c;
+  --color-warning: #b7791f;
+
+  /* Radii */
+  --radius-field: 10px;
+  --radius-card: 16px;
+
+  /* Fonts (values injected by next/font in the root layout) */
+  --font-en-head: var(--font-jakarta), system-ui, sans-serif;
+  --font-en-body: var(--font-inter), system-ui, sans-serif;
+  --font-ar-head: var(--font-cairo), system-ui, sans-serif;
+  --font-ar-body: var(--font-plex-ar), system-ui, sans-serif;
+}
+
+/* Per-language font switching */
+:root {
+  --font-head: var(--font-en-head);
+  --font-body: var(--font-en-body);
+}
+html[lang="ar"] {
+  --font-head: var(--font-ar-head);
+  --font-body: var(--font-ar-body);
+}
+
+html {
+  height: 100%;
+}
+body {
+  min-height: 100%;
+  background: var(--color-bg);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+h1, h2, h3, h4, h5, .font-head {
+  font-family: var(--font-head);
+  letter-spacing: -0.01em;
+}
+
+/* Accessible focus ring */
+:where(a, button, input, select, textarea, [tabindex]):focus-visible {
+  outline: 2px solid var(--color-brand);
+  outline-offset: 2px;
+  border-radius: 6px;
+}
+
+/* Center content column */
+@utility container-page {
+  margin-inline: auto;
+  width: 100%;
+  max-width: 1200px;
+  padding-inline: 1rem;
+}
+
+/* Hide scrollbars on horizontal chip rows */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* MapLibre popup theming */
+.maplibregl-popup-content {
+  border-radius: 14px !important;
+  padding: 0 !important;
+  box-shadow: 0 12px 32px -8px rgba(11, 18, 32, 0.24) !important;
+  overflow: hidden;
+}
+.maplibregl-popup-close-button {
+  font-size: 18px;
+  padding: 4px 8px;
+  color: var(--color-muted);
+}

@@ -1,0 +1,16 @@
+{
+  "name": "unilink",
+  "version": "0.1.0",
+  "private": true,
+  "description": "UniLink — bilingual university & program discovery platform for Egypt (Phase 1 monorepo)",
+  "packageManager": "pnpm@9.15.0",
+  "scripts": {
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "start": "turbo run start",
+    "lint": "turbo run lint"
+  },
+  "devDependencies": {
+    "turbo": "^2.3.3"
+  }
+}
