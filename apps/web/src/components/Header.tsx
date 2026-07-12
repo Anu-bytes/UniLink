@@ -2,8 +2,9 @@
 
 import { useState } from "react";
 import { usePathname } from "next/navigation";
-import { GraduationCap, MapPin, Menu, X } from "lucide-react";
+import { GraduationCap, MapPin, Menu, X, LogOut } from "lucide-react";
 import { useIntl } from "@/i18n/provider";
+import { useSession } from "./auth/session";
 import { LocaleLink } from "./LocaleLink";
 import { LanguageToggle } from "./LanguageToggle";
 import { buttonClasses } from "./ui/Button";
@@ -11,6 +12,7 @@ import { cn } from "@/lib/cn";
 
 export function Header() {
   const { m } = useIntl();
+  const { user, logout } = useSession();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -21,6 +23,8 @@ export function Header() {
   ];
 
   const isActive = (href: string) => pathname.replace(/^\/(en|ar)/, "").startsWith(href) && href !== "/#about";
+  const firstName = user?.fullName.trim().split(/\s+/)[0] ?? "";
+  const initial = firstName.charAt(0).toUpperCase();
 
   return (
     <header className="sticky top-0 z-40 border-b border-line bg-surface/90 backdrop-blur">
@@ -53,7 +57,28 @@ export function Header() {
             {m.nav.findNearMe}
           </LocaleLink>
           <LanguageToggle />
-          <button className={buttonClasses("primary", "md")}>{m.nav.signIn}</button>
+          {user ? (
+            <div className="flex items-center gap-2">
+              <span className="flex items-center gap-2 rounded-full border border-line py-1 pe-3 ps-1">
+                <span className="flex size-7 items-center justify-center rounded-full bg-brand text-xs font-bold text-white">
+                  {initial}
+                </span>
+                <span className="text-sm font-medium text-ink">{firstName}</span>
+              </span>
+              <button
+                onClick={() => logout()}
+                aria-label={m.auth.logout}
+                title={m.auth.logout}
+                className="inline-flex size-10 items-center justify-center rounded-[10px] border border-line text-muted hover:bg-brand-50 hover:text-ink"
+              >
+                <LogOut className="size-4 rtl:rotate-180" />
+              </button>
+            </div>
+          ) : (
+            <LocaleLink href="/login" className={buttonClasses("primary", "md")}>
+              {m.nav.signIn}
+            </LocaleLink>
+          )}
         </div>
 
         <button
@@ -88,7 +113,25 @@ export function Header() {
             </LocaleLink>
             <div className="mt-2 flex items-center gap-2">
               <LanguageToggle className="flex-1" />
-              <button className={buttonClasses("primary", "md", "flex-1")}>{m.nav.signIn}</button>
+              {user ? (
+                <button
+                  onClick={() => {
+                    logout();
+                    setOpen(false);
+                  }}
+                  className={buttonClasses("secondary", "md", "flex-1")}
+                >
+                  <LogOut className="size-4 rtl:rotate-180" /> {m.auth.logout}
+                </button>
+              ) : (
+                <LocaleLink
+                  href="/login"
+                  onClick={() => setOpen(false)}
+                  className={buttonClasses("primary", "md", "flex-1")}
+                >
+                  {m.nav.signIn}
+                </LocaleLink>
+              )}
             </div>
           </div>
         </div>

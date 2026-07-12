@@ -30,6 +30,11 @@ export function formatNumber(value: number, locale: Locale): string {
   return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US").format(value);
 }
 
+/** Localized digits without a thousands separator (for years, ages, etc.). */
+export function formatYear(value: number, locale: Locale): string {
+  return new Intl.NumberFormat(locale === "ar" ? "ar-EG" : "en-US", { useGrouping: false }).format(value);
+}
+
 export function formatDistance(km: number, locale: Locale): string {
   const rounded = km < 10 ? Math.round(km * 10) / 10 : Math.round(km);
   return `${formatNumber(rounded, locale)} ${locale === "ar" ? "كم" : "km"}`;
