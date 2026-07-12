@@ -4,6 +4,7 @@ import { Inter, Plus_Jakarta_Sans, Cairo, IBM_Plex_Sans_Arabic } from "next/font
 import "../globals.css";
 import { isLocale, dir } from "@/i18n/config";
 import { IntlProvider } from "@/i18n/provider";
+import { SessionProvider } from "@/components/auth/session";
 import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 
@@ -43,9 +44,11 @@ export default async function LocaleLayout({
     >
       <body className="flex min-h-dvh flex-col bg-bg text-ink">
         <IntlProvider locale={locale}>
-          <Header />
-          <main className="flex-1">{children}</main>
-          <Footer />
+          <SessionProvider>
+            <Header />
+            <main className="flex-1">{children}</main>
+            <Footer />
+          </SessionProvider>
         </IntlProvider>
       </body>
     </html>
