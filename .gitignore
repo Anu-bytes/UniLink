@@ -24,3 +24,4 @@ coverage
 
 # not part of the app
 UniLink-chat-extract.txt
+.env*
