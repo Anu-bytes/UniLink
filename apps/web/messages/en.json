@@ -1,0 +1,611 @@
+{
+  "Nav": {
+    "students": "Students",
+    "studyDestinations": "Study Destinations",
+    "partners": "Partners",
+    "about": "About us",
+    "login": "Log in",
+    "registerAsStudent": "Register as a Student"
+  },
+  "Footer": {
+    "tagline": "Your link to studying abroad.",
+    "platform": "Platform",
+    "programs": "Programs",
+    "universities": "Universities",
+    "destinations": "Destinations",
+    "company": "Company",
+    "about": "About us",
+    "contact": "Contact",
+    "careers": "Careers",
+    "legal": "Legal",
+    "privacy": "Privacy policy",
+    "terms": "Terms of service",
+    "rights": "All rights reserved."
+  },
+  "Home": {
+    "hero": {
+      "title": "Find your path to studying abroad",
+      "subtitle": "Search thousands of programs at top universities worldwide and apply with confidence.",
+      "cta": "Get started for free",
+      "searchPlaceholder": "Search programs, universities, or destinations",
+      "levelLabel": "Study level",
+      "levelPlaceholder": "Any level",
+      "destinationLabel": "Destination",
+      "destinationPlaceholder": "Any destination",
+      "searchButton": "Search programs",
+      "levelOptions": [
+        "Bachelor's",
+        "Master's",
+        "PhD",
+        "Foundation year"
+      ],
+      "destinationOptions": [
+        "United States",
+        "United Kingdom",
+        "Canada",
+        "Australia",
+        "Germany",
+        "France"
+      ]
+    },
+    "stats": {
+      "items": [
+        {
+          "value": "1.2M+",
+          "label": "Students guided"
+        },
+        {
+          "value": "120,000+",
+          "label": "Programs listed"
+        },
+        {
+          "value": "1,200+",
+          "label": "Partner institutions"
+        },
+        {
+          "value": "150+",
+          "label": "Nationalities served"
+        },
+        {
+          "value": "8+",
+          "label": "Years of experience"
+        }
+      ]
+    },
+    "highlight": {
+      "title": "Find your perfect study program",
+      "body": "We've spent years perfecting a faster, easier, quality-first application process. Your next program is just a few clicks away.",
+      "features": [
+        "Apply to multiple programs at once with one profile",
+        "Compare thousands of programs across our partner destinations",
+        "Get a higher chance of success with advisor-reviewed applications"
+      ],
+      "cta": "Create your free account"
+    },
+    "services": {
+      "eyebrow": "360 Solutions",
+      "title": "Every solution, from application to arrival",
+      "subtitle": "Access support that covers everything from your first application to settling in on campus.",
+      "cta": "Explore all services",
+      "items": [
+        {
+          "title": "Applications",
+          "description": "Submit to multiple programs through a single unified application."
+        },
+        {
+          "title": "Accommodation",
+          "description": "Book verified student housing near your campus before you arrive."
+        },
+        {
+          "title": "Test-prep vouchers",
+          "description": "Get discounted vouchers for English proficiency and admissions tests."
+        },
+        {
+          "title": "Student loans",
+          "description": "Explore financing options with partner lenders to help cover tuition."
+        }
+      ]
+    },
+    "map": {
+      "eyebrow": "Explore",
+      "title": "Discover universities on the map",
+      "subtitle": "Visualize campuses across our partner destinations and find the right fit."
+    },
+    "testimonials": {
+      "eyebrow": "Success stories",
+      "title": "What our students have to say",
+      "subtitle": "Hear from real international students about their experience.",
+      "items": [
+        {
+          "headline": "Like finally getting a clear answer",
+          "quote": "UniLink turned a confusing process into a clear checklist. I had three offers within a month.",
+          "name": "Amara O.",
+          "meta": "Master's in Data Science, Canada"
+        },
+        {
+          "headline": "A problem caught just in time",
+          "quote": "My advisor caught a document issue before it became a problem. That alone was worth it.",
+          "name": "Diego R.",
+          "meta": "Bachelor's in Business, United Kingdom"
+        },
+        {
+          "headline": "Weeks of research, saved",
+          "quote": "Comparing programs side by side saved me weeks of research across university websites.",
+          "name": "Priya S.",
+          "meta": "Master's in Public Health, Australia"
+        }
+      ]
+    },
+    "partners": {
+      "eyebrow": "Trusted partners",
+      "title": "Trusted by 1,200+ universities, colleges, and schools worldwide",
+      "subtitle": "Accredited institutions across our top study destinations.",
+      "exploreLabel": "Explore more {country} institutions",
+      "countries": [
+        {
+          "name": "Canada",
+          "universities": [
+            {
+              "name": "University of Toronto",
+              "location": "Toronto, ON",
+              "description": "A leading research university with globally ranked graduate programs."
+            },
+            {
+              "name": "McGill University",
+              "location": "Montreal, QC",
+              "description": "One of Canada's most storied universities, known for research excellence."
+            },
+            {
+              "name": "University of British Columbia",
+              "location": "Vancouver, BC",
+              "description": "A top-ranked public university on Canada's west coast."
+            }
+          ]
+        },
+        {
+          "name": "United States",
+          "universities": [
+            {
+              "name": "Boston University",
+              "location": "Boston, MA",
+              "description": "A large private research university in the heart of Boston."
+            },
+            {
+              "name": "Northeastern University",
+              "location": "Boston, MA",
+              "description": "Known for its co-op program blending study with real-world experience."
+            },
+            {
+              "name": "Arizona State University",
+              "location": "Tempe, AZ",
+              "description": "One of the largest public universities, with flexible program options."
+            }
+          ]
+        },
+        {
+          "name": "United Kingdom",
+          "universities": [
+            {
+              "name": "University of Edinburgh",
+              "location": "Edinburgh, Scotland",
+              "description": "A historic Russell Group university with a strong global reputation."
+            },
+            {
+              "name": "University of Manchester",
+              "location": "Manchester, England",
+              "description": "A leading research university with a large international community."
+            },
+            {
+              "name": "King's College London",
+              "location": "London, England",
+              "description": "A central London university known for health sciences and law."
+            }
+          ]
+        },
+        {
+          "name": "Australia",
+          "universities": [
+            {
+              "name": "University of Melbourne",
+              "location": "Melbourne, VIC",
+              "description": "Australia's top-ranked university across multiple disciplines."
+            },
+            {
+              "name": "Monash University",
+              "location": "Melbourne, VIC",
+              "description": "A large, research-intensive university with global campuses."
+            },
+            {
+              "name": "University of Sydney",
+              "location": "Sydney, NSW",
+              "description": "One of Australia's oldest and most prestigious universities."
+            }
+          ]
+        }
+      ]
+    },
+    "landing": {
+      "hero": {
+        "titleLead": "Your Future Goes",
+        "titleHighlight": "Beyond Borders",
+        "subtitle": "Explore 1,500+ global universities and colleges. Submit your best possible application with UniLink.",
+        "cta": "Register as a Student"
+      },
+      "fastest": {
+        "title": "The Fastest and Easiest Way to Successfully Study Abroad",
+        "body": "We've spent a decade perfecting a faster, easier, quality-first international study application process. Now, the world is yours to explore in just a few clicks.",
+        "cta": "Create a Student Account"
+      },
+      "testimonials": {
+        "title": "What Our Students Have to Say",
+        "subtitle": "Hear from real international students about their experience.",
+        "items": [
+          {
+            "quote": "“I tried applying to institutions and it took months, and months, and months for me to get an answer from a school. But then I stumbled upon UniLink, and it was like an answer from heaven.”",
+            "name": "Arabelle A."
+          },
+          {
+            "quote": "“I wanted to make my parents proud, and they are proud. And it was all thanks to UniLink.”",
+            "name": "Krupali P."
+          }
+        ]
+      },
+      "partners": {
+        "eyebrow": "Trusted Partners",
+        "title": "Trusted by 1,500+ Universities, Colleges, and Schools Worldwide",
+        "countries": [
+          "Australia",
+          "Canada",
+          "Germany",
+          "Ireland",
+          "United States",
+          "United Kingdom"
+        ],
+        "institutions": [
+          {
+            "name": "Western University",
+            "location": "London, Ontario, CA"
+          },
+          {
+            "name": "Laurentian University",
+            "location": "Sudbury, Ontario, CA"
+          },
+          {
+            "name": "Lakehead University",
+            "location": "Thunder Bay, Ontario, CA"
+          }
+        ],
+        "exploreMore": "Explore More Canadian Institutions"
+      },
+      "programsBand": {
+        "title": "Choose from 150,000+ Study Programs",
+        "cta": "Start Your Student Journey"
+      },
+      "faq": {
+        "eyebrow": "FAQ's",
+        "title": "Got Questions? We Have Answers",
+        "items": [
+          {
+            "q": "How can I find my dream program?",
+            "a": "It couldn't be easier! Register for a free UniLink account, then take a few short minutes to tell us about yourself and what you're looking for. We'll help you explore programs that match your goals."
+          },
+          {
+            "q": "How do I apply once I've found the right program?"
+          },
+          {
+            "q": "Why should I use UniLink?"
+          },
+          {
+            "q": "Which countries can I apply to study in?"
+          },
+          {
+            "q": "I've applied, so what's next?"
+          }
+        ]
+      },
+      "getStarted": {
+        "title": "Get Started with UniLink",
+        "cards": [
+          {
+            "title": "Student",
+            "cta": "Sign Up for Free"
+          },
+          {
+            "title": "Recruitment Partner",
+            "cta": "Become a Recruitment Partner"
+          },
+          {
+            "title": "Partner School",
+            "cta": "Become a Partner Institution"
+          }
+        ]
+      }
+    },
+    "counters": {
+      "items": [
+        "Students Helped",
+        "Global Programs",
+        "Institutions Globally",
+        "Nationalities",
+        "Years of Expertise"
+      ]
+    }
+  },
+  "Auth": {
+    "login": {
+      "title": "Welcome back",
+      "badge": "Welcome back",
+      "headline": "Continue your study abroad journey",
+      "formTitle": "Log in to your account",
+      "subtitle": "Log in to continue your application journey.",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Enter your password",
+      "forgotPassword": "Forgot password?",
+      "submit": "Log in",
+      "orContinueWith": "Or continue with",
+      "google": "Continue with Google",
+      "facebook": "Continue with Facebook",
+      "noAccount": "Don't have an account?",
+      "signUp": "Sign up"
+    },
+    "signup": {
+      "title": "Create your account",
+      "subtitle": "Start your study abroad journey in minutes.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "requirements": {
+        "minLength": "At least 10 characters",
+        "lowercase": "A lowercase letter",
+        "uppercase": "An uppercase letter",
+        "number": "A number"
+      },
+      "terms": "I have read and agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "submit": "Create account",
+      "orContinueWith": "Or continue with",
+      "google": "Continue with Google",
+      "facebook": "Continue with Facebook",
+      "haveAccount": "Already have an account?",
+      "logIn": "Log in"
+    },
+    "forgotPassword": {
+      "title": "Reset your password",
+      "subtitle": "Password recovery is coming soon — check back shortly."
+    }
+  },
+  "Onboarding": {
+    "back": "Go back",
+    "continue": "Continue",
+    "soon": "Soon",
+    "goToStep": "Go to step {step}",
+    "common": {
+      "select": "Select…",
+      "clear": "Clear selection"
+    },
+    "destination": {
+      "name": "Destination Country",
+      "heading": "Which countries are you interested in?",
+      "help": "Did you know? Students who explore at least 3 countries are far more likely to find a hidden scholarship gem.",
+      "label": "Destination countries",
+      "placeholder": "Search countries…"
+    },
+    "studyLevel": {
+      "name": "Study Level",
+      "heading": "What level do you want to study?",
+      "help": "This helps us show programs that fit your academic stage."
+    },
+    "academics": {
+      "name": "Academics",
+      "heading": "How did you score academically?",
+      "help": "Your grades help us check which programs you're eligible for.",
+      "schemeLabel": "Grading scheme",
+      "gradeLabel": "Your grade",
+      "gradePlaceholder": "e.g. 85"
+    },
+    "field": {
+      "name": "Field of Study",
+      "heading": "What would you like to study?",
+      "help": "We'll use this to find programs with the best career outcomes in your field. Choose up to 3.",
+      "placeholder": "Search field of study…",
+      "empty": "No matching fields",
+      "counter": "{selected} of {max} selected"
+    },
+    "english": {
+      "name": "English Proficiency",
+      "heading": "What's your level of English?",
+      "help": "We'll match English score requirements so you only see programs you qualify for.",
+      "testLabel": "English test",
+      "scoreLabel": "Your score",
+      "scorePlaceholder": "e.g. 7.5"
+    },
+    "nationality": {
+      "name": "Nationality",
+      "heading": "What is your nationality?",
+      "help": "This is key for unlocking country-specific scholarships and visa guides for you.",
+      "label": "Country of nationality",
+      "placeholder": "Search your nationality…"
+    },
+    "intake": {
+      "name": "Planning",
+      "heading": "When would you like to start your studies?",
+      "help": "We'll check intake availability so your options are open when you are.",
+      "dateTitle": "Select your preferred start date",
+      "dateSubtitle": "Choose the intake / season and year you'd like to begin.",
+      "seasonLabel": "Intake",
+      "seasonPlaceholder": "Select intake",
+      "yearLabel": "Year",
+      "yearPlaceholder": "Select year"
+    },
+    "financials": {
+      "name": "Financials",
+      "heading": "Select your tuition budget (EGP)?",
+      "help": "We'll use this to prioritize programs and scholarships that fit your financial goals.",
+      "label": "Tuition budget (EGP)",
+      "placeholder": "Select your budget…"
+    },
+    "options": {
+      "studyLevel": {
+        "CERTIFICATE": "Certificate",
+        "DIPLOMA": "Diploma",
+        "BACHELOR": "Bachelor's degree",
+        "MASTER": "Master's degree",
+        "DOCTORATE": "Doctorate / PhD"
+      },
+      "gradingScheme": {
+        "percentage": "Percentage (out of 100)",
+        "gpa4": "GPA (out of 4.0)",
+        "gpa10": "GPA (out of 10)",
+        "letter": "Letter grade"
+      },
+      "englishTest": {
+        "IELTS": "IELTS",
+        "TOEFL": "TOEFL",
+        "PTE": "PTE",
+        "DUOLINGO": "Duolingo English Test",
+        "NONE": "No test yet"
+      },
+      "intakeSeason": {
+        "WINTER": "Winter",
+        "SPRING": "Spring",
+        "SUMMER": "Summer",
+        "FALL": "Fall"
+      },
+      "budgetBand": {
+        "UNDER_100K": "Under 100,000 EGP",
+        "B100_200K": "100,000 – 200,000 EGP",
+        "B200_300K": "200,000 – 300,000 EGP",
+        "B300_500K": "300,000 – 500,000 EGP",
+        "OVER_500K": "Over 500,000 EGP"
+      }
+    },
+    "account": {
+      "name": "Registration",
+      "heading": "Create your account",
+      "help": "Create an account to save your answers and see your matches.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "passwordLabel": "Password",
+      "passwordPlaceholder": "Create a password",
+      "orContinueWith": "Or continue with",
+      "google": "Continue with Google",
+      "facebook": "Continue with Facebook",
+      "requirements": {
+        "minLength": "At least 10 characters",
+        "lowercase": "A lowercase letter",
+        "uppercase": "An uppercase letter",
+        "number": "A number"
+      },
+      "terms": "I have read and agree to the <terms>Terms of Service</terms> and <privacy>Privacy Policy</privacy>.",
+      "submit": "Create account & see matches",
+      "genericError": "Something went wrong. Please try again.",
+      "signInFallback": "Account created. Please log in."
+    },
+    "matches": {
+      "title": "Finding your matches",
+      "subtitle": "We're checking your eligibility against 4,200+ programs across top destinations.",
+      "cta": "View my matched programs",
+      "preparing": "Preparing your matches…",
+      "checks": {
+        "filtering": "Filtering by destination and field",
+        "grades": "Checking grade requirements",
+        "english": "Matching English score requirements",
+        "intake": "Checking intake availability",
+        "ranking": "Ranking by your fit score"
+      }
+    }
+  },
+  "Students": {
+    "title": "For students",
+    "subtitle": "Everything you need to find, apply to, and start your study abroad program — full student resources are coming soon.",
+    "landing": {
+      "hero": {
+        "titleLead": "Study Abroad with",
+        "titleHighlight": "UniLink",
+        "subtitle": "Your journey to studying abroad in just three simple steps. Sign up, find your program, and submit your best application.",
+        "cta": "Register as a Student"
+      },
+      "stepsTitle": "3 Steps to Study Success",
+      "stepLabel": "Step",
+      "steps": [
+        {
+          "tab": "Sign Up",
+          "heading": "Sign Up for Free",
+          "description": "Create your free UniLink student account in minutes. Tell us about yourself and your study goals so we can tailor everything to you.",
+          "bullets": [
+            "No fees to create an account and get started",
+            "Save your progress and pick up right where you left off",
+            "Get matched with programs that fit your profile"
+          ],
+          "cta": "Sign Up for Free"
+        },
+        {
+          "tab": "Search",
+          "heading": "Select a Program",
+          "description": "Explore 150,000+ programs across 1,500+ universities and colleges worldwide, and shortlist the ones that match your goals and budget.",
+          "bullets": [
+            "Filter by country, tuition, intake, and field of study",
+            "Compare programs side by side to find your best fit",
+            "Discover schools you might never have found on your own"
+          ],
+          "cta": "Search Programs"
+        },
+        {
+          "tab": "Apply",
+          "heading": "Submit Your Best Application",
+          "description": "Build and submit a strong application with guidance every step of the way, then track its status all the way to your offer letter.",
+          "bullets": [
+            "Upload documents once and reuse them across applications",
+            "Reduce mistakes with guided application checks",
+            "Track your application status in real time"
+          ],
+          "cta": "Start Your Application"
+        }
+      ],
+      "band": {
+        "title": "Ready to Start Your Study Abroad Journey?",
+        "cta": "Create a Student Account"
+      }
+    }
+  },
+  "Partners": {
+    "title": "Partners",
+    "subtitle": "Information for partner institutions and recruitment partners is coming soon."
+  },
+  "Programs": {
+    "title": "Programs",
+    "subtitle": "Search and filter programs across our partner universities — this page is being built out next."
+  },
+  "Universities": {
+    "title": "Universities",
+    "subtitle": "Browse accredited partner universities by destination — full profiles are coming soon."
+  },
+  "Destinations": {
+    "title": "Destinations",
+    "subtitle": "Explore study destinations and what makes each one unique — detailed guides are on the way."
+  },
+  "About": {
+    "title": "About UniLink",
+    "subtitle": "UniLink helps students discover programs, compare universities, and apply to study abroad with confidence."
+  },
+  "Contact": {
+    "title": "Contact us",
+    "subtitle": "Have a question? Reach us at hello@unilink.example and our team will get back to you."
+  },
+  "Careers": {
+    "title": "Careers",
+    "subtitle": "We're not hiring publicly yet, but check back soon for open roles."
+  },
+  "Privacy": {
+    "title": "Privacy policy",
+    "subtitle": "Our full privacy policy is being finalized and will be published here."
+  },
+  "Terms": {
+    "title": "Terms of service",
+    "subtitle": "Our full terms of service are being finalized and will be published here."
+  }
+}
