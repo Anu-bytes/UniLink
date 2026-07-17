@@ -87,8 +87,3 @@ Open http://localhost:3000
 | `npm run db:migrate` | Create & apply a dev migration |
 | `npm run db:studio` | Open Prisma Studio |
 
-## Contributing
-
-1. Create a feature branch off `main`.
-2. Make your changes and run `npm run lint` before pushing.
-3. Open a pull request for review.
