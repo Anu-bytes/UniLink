@@ -4,6 +4,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { StickyHeaderShell } from "@/components/sticky-header-shell";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
@@ -15,7 +16,7 @@ export async function SiteHeader() {
   ] as const;
 
   return (
-      <header className="sticky top-0 z-50 border-b border-border bg-background font-[family-name:var(--font-open-sans)]">
+      <StickyHeaderShell className="font-[family-name:var(--font-open-sans)]">
         <div className="mx-auto flex h-20 max-w-7xl items-center justify-between gap-4 px-4 sm:px-6 lg:px-8">
           <Logo />
 
@@ -24,11 +25,11 @@ export async function SiteHeader() {
                 <Link
                     key={link.href}
                     href={link.href}
-                    className="inline-flex items-center gap-1 text-[18px] font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB]"
+                    className="group inline-flex items-center gap-1 text-[18px] font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB]"
                 >
                   {link.label}
                   {link.caret ? (
-                      <ChevronDown className="size-[18px] text-[#292E3E]" aria-hidden />
+                      <ChevronDown className="size-[18px] text-[#292E3E] transition-transform duration-200 group-hover:translate-y-0.5" aria-hidden />
                   ) : null}
                 </Link>
             ))}
@@ -52,6 +53,6 @@ export async function SiteHeader() {
             </Link>
           </div>
         </div>
-      </header>
+      </StickyHeaderShell>
   );
 }

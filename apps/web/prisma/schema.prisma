@@ -84,7 +84,7 @@ model StudentProfile {
 
   destinations  String[]     // ISO 3166-1 alpha-2 country codes (target countries)
   studyLevel    StudyLevel
-  gradingScheme String       // "percentage" | "gpa4" | "gpa10" | "letter"
+  gradingScheme String       // "percentage" | "gpa4" | "gpa10"
   gradeValue    Float
   fieldsOfStudy String[]
   englishTest   EnglishTest  @default(NONE)

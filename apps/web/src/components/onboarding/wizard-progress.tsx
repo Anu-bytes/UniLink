@@ -56,14 +56,17 @@ export function WizardProgress({
         aria-valuemax={total}
       >
         {Array.from({ length: total }, (_, i) => {
-          const filled = i < step;
+          const done = i < step - 1; // completed steps behind you
+          const current = i === step - 1; // the step you're on now
           // Only completed steps before the current one are navigable back to.
-          const clickable = onStepSelect != null && i < step - 1;
+          const clickable = onStepSelect != null && done;
           const bar = (
             <span
               className={cn(
                 "block h-1.5 rounded-full transition-all duration-500 ease-out motion-reduce:transition-none",
-                filled ? "bg-brand-blue" : "bg-muted",
+                done && "bg-brand-blue",
+                current && "bg-brand-red ring-2 ring-brand-red/25",
+                !done && !current && "bg-muted",
                 clickable && "group-hover:bg-brand-blue-dark",
               )}
             />

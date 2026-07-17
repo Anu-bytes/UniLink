@@ -22,12 +22,7 @@ export const ENGLISH_TESTS = [
   "NONE",
 ] as const;
 
-export const GRADING_SCHEMES = [
-  "percentage",
-  "gpa4",
-  "gpa10",
-  "letter",
-] as const;
+export const GRADING_SCHEMES = ["percentage", "gpa4", "gpa10"] as const;
 
 export const INTAKE_SEASONS = ["WINTER", "SPRING", "SUMMER", "FALL"] as const;
 
@@ -74,13 +69,11 @@ export const academicsSchema = z
   .superRefine((data, ctx) => {
     // Sanity-bound the grade to the chosen scheme.
     const max =
-      data.gradingScheme === "percentage"
-        ? 100
-        : data.gradingScheme === "gpa4"
-          ? 4
-          : data.gradingScheme === "gpa10"
-            ? 10
-            : 100; // letter grades are mapped to a 0–100 range upstream
+      data.gradingScheme === "gpa4"
+        ? 4
+        : data.gradingScheme === "gpa10"
+          ? 10
+          : 100; // percentage
     if (data.gradeValue > max) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,

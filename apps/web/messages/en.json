@@ -1,4 +1,11 @@
 {
+  "NotFound": {
+    "code": "Error 404",
+    "title": "This page went abroad",
+    "body": "We looked everywhere, but the page you’re after isn’t on the map. It may have moved, graduated, or never existed.",
+    "home": "Back to home",
+    "explore": "Explore programs"
+  },
   "Nav": {
     "students": "Students",
     "studyDestinations": "Study Destinations",
@@ -459,8 +466,7 @@
       "gradingScheme": {
         "percentage": "Percentage (out of 100)",
         "gpa4": "GPA (out of 4.0)",
-        "gpa10": "GPA (out of 10)",
-        "letter": "Letter grade"
+        "gpa10": "GPA (out of 10)"
       },
       "englishTest": {
         "IELTS": "IELTS",
