@@ -19,9 +19,9 @@ export function ImagePlaceholder({
 }) {
   return (
     <div
-      style={{ width: w, aspectRatio: `${w} / ${h}`, maxWidth: "100%" }}
+      style={{ maxWidth: w, aspectRatio: `${w} / ${h}` }}
       className={cn(
-        "flex shrink-0 self-center items-center justify-center bg-slate-200 text-xs font-medium text-slate-400",
+        "flex w-full min-w-0 shrink self-center items-center justify-center bg-slate-200 text-xs font-medium text-slate-400",
         rounded,
         className,
       )}
