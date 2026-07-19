@@ -134,7 +134,7 @@ export default async function HomePage() {
                   <blockquote className="text-base leading-7 text-[#292E3E] md:text-[18px] md:leading-8">
                     {tst.quote}
                   </blockquote>
-                  <figcaption className="mt-6 flex items-center gap-3">
+                  <figcaption className="mt-auto flex items-center gap-3 pt-6">
                     <ImagePlaceholder
                       w={48}
                       h={48}
@@ -280,7 +280,9 @@ export default async function HomePage() {
                   <h3 className="mt-6 text-[22px] font-bold text-[#363B51]">
                     {card.title}
                   </h3>
-                  <div className="mt-6">
+                  {/* mt-auto pins the CTA to the card bottom so buttons stay
+                      aligned across cards even when a title wraps. */}
+                  <div className="mt-auto pt-6">
                     <PrimaryButton
                       href={getStartedHrefs[i] ?? "/onboarding"}
                       className="px-6"

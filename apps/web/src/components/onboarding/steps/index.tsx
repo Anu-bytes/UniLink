@@ -1,6 +1,5 @@
 "use client";
 
-import { StepDestination } from "./step-destination";
 import { StepStudyLevel } from "./step-study-level";
 import { StepAcademics } from "./step-academics";
 import { StepField } from "./step-field";
@@ -13,9 +12,8 @@ import { AccountStep } from "./step-account";
 export { AccountStep };
 
 // Order must match WIZARD_STEPS in lib/onboarding-schema.ts. The account slot
-// (index 8) is rendered by the wizard via <AccountStep/>, so it's a no-op here.
+// (index 7) is rendered by the wizard via <AccountStep/>, so it's a no-op here.
 export const STEP_COMPONENTS = [
-  StepDestination,
   StepStudyLevel,
   StepAcademics,
   StepField,

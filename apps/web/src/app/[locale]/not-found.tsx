@@ -1,4 +1,4 @@
-import { ArrowRight, Globe, GraduationCap, MapPin, Plane } from "lucide-react";
+import { ArrowRight, Compass, GraduationCap, MapPin, Search } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -6,9 +6,9 @@ import { Logo } from "@/components/logo";
 
 /**
  * Localized 404. Rendered inside the [locale] layout (fonts, direction, intl
- * context) for unknown pages — the `[...rest]` catch-all funnels here. Leans on
- * the study-abroad theme: the missing page "went abroad". Idle motion is
- * transform-only and disabled under prefers-reduced-motion (see globals.css).
+ * context) for unknown pages — the `[...rest]` catch-all funnels here. Themed
+ * around searching our university directory. Idle motion is transform-only and
+ * disabled under prefers-reduced-motion (see globals.css).
  */
 export default async function NotFound() {
   const t = await getTranslations("NotFound");
@@ -30,7 +30,7 @@ export default async function NotFound() {
       </header>
 
       <div className="relative mx-auto flex w-full max-w-3xl flex-1 flex-col items-center justify-center px-6 pb-24 text-center">
-        {/* 404 — the middle "0" is a floating globe with an orbiting plane. */}
+        {/* 404 — the middle "0" is a floating compass with a search badge. */}
         <div className="relative flex select-none items-center justify-center gap-3 sm:gap-6">
           <span className="text-[110px] font-black leading-none text-[#363B51] sm:text-[180px]">
             4
@@ -42,13 +42,13 @@ export default async function NotFound() {
               className="ul-spin-slow absolute -inset-4 rounded-full border-2 border-dashed border-[#1E6DEB]/30"
             />
             <span className="ul-float flex size-[104px] items-center justify-center rounded-full bg-gradient-to-br from-[#1E6DEB] to-[#0063e7] text-white shadow-[0_24px_60px_-18px_rgba(30,109,235,0.75)] sm:size-[168px]">
-              <Globe className="size-14 sm:size-24" strokeWidth={1.5} />
+              <Compass className="size-14 sm:size-24" strokeWidth={1.5} />
             </span>
             <span
               aria-hidden
               className="absolute -end-1 -top-1 flex size-11 items-center justify-center rounded-full bg-[#F82C1F] text-white shadow-[0_10px_24px_-8px_rgba(248,44,31,0.8)] sm:size-14"
             >
-              <Plane className="size-5 -rotate-45 sm:size-7 rtl:-scale-x-100" />
+              <Search className="size-5 sm:size-7" />
             </span>
           </div>
 
@@ -77,7 +77,7 @@ export default async function NotFound() {
             {t("home")}
           </Link>
           <Link
-            href="/programs"
+            href="/universities"
             className="group inline-flex h-14 items-center justify-center gap-2 rounded-[8px] border border-[#0064E1] bg-white px-7 text-[18px] font-semibold text-[#1E6DEB] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1E6DEB]/5 active:translate-y-0 motion-reduce:transform-none"
           >
             <GraduationCap className="size-5" />

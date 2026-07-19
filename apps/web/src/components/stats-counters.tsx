@@ -3,10 +3,10 @@
 import { useEffect, useRef, useState } from "react";
 import { useTranslations } from "next-intl";
 import {
-  Flag,
-  Globe,
-  GraduationCap,
+  Award,
+  BookOpen,
   Landmark,
+  MapPin,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -22,12 +22,13 @@ type Stat = {
 };
 
 // Numeric config only; labels come from translations (Home.counters.items).
+// Figures are Egypt-scoped placeholders — replace with verified numbers.
 const statConfig: Omit<Stat, "label">[] = [
-  { icon: GraduationCap, color: "#1E6DEB", target: 1.5, decimals: 1, suffix: "M+" },
-  { icon: Globe, color: "#F5245F", target: 150000, decimals: 0, comma: true, suffix: "+" },
-  { icon: Landmark, color: "#17A398", target: 1500, decimals: 0, comma: true, suffix: "+" },
-  { icon: Flag, color: "#F0852E", target: 180, decimals: 0, suffix: "+" },
-  { icon: Users, color: "#A945D6", target: 10, decimals: 0, suffix: "+" },
+  { icon: Landmark, color: "#1E6DEB", target: 100, decimals: 0, suffix: "+" },
+  { icon: BookOpen, color: "#F5245F", target: 2000, decimals: 0, comma: true, suffix: "+" },
+  { icon: Users, color: "#17A398", target: 50000, decimals: 0, comma: true, suffix: "+" },
+  { icon: MapPin, color: "#F0852E", target: 27, decimals: 0 },
+  { icon: Award, color: "#A945D6", target: 500, decimals: 0, comma: true, suffix: "+" },
 ];
 
 function useCountUp(target: number, started: boolean, duration = 1600) {

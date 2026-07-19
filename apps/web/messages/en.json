@@ -1,25 +1,23 @@
 {
   "NotFound": {
     "code": "Error 404",
-    "title": "This page went abroad",
-    "body": "We looked everywhere, but the page you’re after isn’t on the map. It may have moved, graduated, or never existed.",
+    "title": "We couldn't find that page",
+    "body": "The page you're looking for isn't in our directory. It may have moved, been renamed, or never existed.",
     "home": "Back to home",
-    "explore": "Explore programs"
+    "explore": "Browse universities"
   },
   "Nav": {
     "students": "Students",
-    "studyDestinations": "Study Destinations",
     "partners": "Partners",
     "about": "About us",
     "login": "Log in",
     "registerAsStudent": "Register as a Student"
   },
   "Footer": {
-    "tagline": "Your link to studying abroad.",
+    "tagline": "Your guide to universities in Egypt.",
     "platform": "Platform",
     "programs": "Programs",
     "universities": "Universities",
-    "destinations": "Destinations",
     "company": "Company",
     "about": "About us",
     "contact": "Contact",
@@ -30,283 +28,86 @@
     "rights": "All rights reserved."
   },
   "Home": {
-    "hero": {
-      "title": "Find your path to studying abroad",
-      "subtitle": "Search thousands of programs at top universities worldwide and apply with confidence.",
-      "cta": "Get started for free",
-      "searchPlaceholder": "Search programs, universities, or destinations",
-      "levelLabel": "Study level",
-      "levelPlaceholder": "Any level",
-      "destinationLabel": "Destination",
-      "destinationPlaceholder": "Any destination",
-      "searchButton": "Search programs",
-      "levelOptions": [
-        "Bachelor's",
-        "Master's",
-        "PhD",
-        "Foundation year"
-      ],
-      "destinationOptions": [
-        "United States",
-        "United Kingdom",
-        "Canada",
-        "Australia",
-        "Germany",
-        "France"
-      ]
-    },
-    "stats": {
-      "items": [
-        {
-          "value": "1.2M+",
-          "label": "Students guided"
-        },
-        {
-          "value": "120,000+",
-          "label": "Programs listed"
-        },
-        {
-          "value": "1,200+",
-          "label": "Partner institutions"
-        },
-        {
-          "value": "150+",
-          "label": "Nationalities served"
-        },
-        {
-          "value": "8+",
-          "label": "Years of experience"
-        }
-      ]
-    },
-    "highlight": {
-      "title": "Find your perfect study program",
-      "body": "We've spent years perfecting a faster, easier, quality-first application process. Your next program is just a few clicks away.",
-      "features": [
-        "Apply to multiple programs at once with one profile",
-        "Compare thousands of programs across our partner destinations",
-        "Get a higher chance of success with advisor-reviewed applications"
-      ],
-      "cta": "Create your free account"
-    },
-    "services": {
-      "eyebrow": "360 Solutions",
-      "title": "Every solution, from application to arrival",
-      "subtitle": "Access support that covers everything from your first application to settling in on campus.",
-      "cta": "Explore all services",
-      "items": [
-        {
-          "title": "Applications",
-          "description": "Submit to multiple programs through a single unified application."
-        },
-        {
-          "title": "Accommodation",
-          "description": "Book verified student housing near your campus before you arrive."
-        },
-        {
-          "title": "Test-prep vouchers",
-          "description": "Get discounted vouchers for English proficiency and admissions tests."
-        },
-        {
-          "title": "Student loans",
-          "description": "Explore financing options with partner lenders to help cover tuition."
-        }
-      ]
-    },
-    "map": {
-      "eyebrow": "Explore",
-      "title": "Discover universities on the map",
-      "subtitle": "Visualize campuses across our partner destinations and find the right fit."
-    },
-    "testimonials": {
-      "eyebrow": "Success stories",
-      "title": "What our students have to say",
-      "subtitle": "Hear from real international students about their experience.",
-      "items": [
-        {
-          "headline": "Like finally getting a clear answer",
-          "quote": "UniLink turned a confusing process into a clear checklist. I had three offers within a month.",
-          "name": "Amara O.",
-          "meta": "Master's in Data Science, Canada"
-        },
-        {
-          "headline": "A problem caught just in time",
-          "quote": "My advisor caught a document issue before it became a problem. That alone was worth it.",
-          "name": "Diego R.",
-          "meta": "Bachelor's in Business, United Kingdom"
-        },
-        {
-          "headline": "Weeks of research, saved",
-          "quote": "Comparing programs side by side saved me weeks of research across university websites.",
-          "name": "Priya S.",
-          "meta": "Master's in Public Health, Australia"
-        }
-      ]
-    },
-    "partners": {
-      "eyebrow": "Trusted partners",
-      "title": "Trusted by 1,200+ universities, colleges, and schools worldwide",
-      "subtitle": "Accredited institutions across our top study destinations.",
-      "exploreLabel": "Explore more {country} institutions",
-      "countries": [
-        {
-          "name": "Canada",
-          "universities": [
-            {
-              "name": "University of Toronto",
-              "location": "Toronto, ON",
-              "description": "A leading research university with globally ranked graduate programs."
-            },
-            {
-              "name": "McGill University",
-              "location": "Montreal, QC",
-              "description": "One of Canada's most storied universities, known for research excellence."
-            },
-            {
-              "name": "University of British Columbia",
-              "location": "Vancouver, BC",
-              "description": "A top-ranked public university on Canada's west coast."
-            }
-          ]
-        },
-        {
-          "name": "United States",
-          "universities": [
-            {
-              "name": "Boston University",
-              "location": "Boston, MA",
-              "description": "A large private research university in the heart of Boston."
-            },
-            {
-              "name": "Northeastern University",
-              "location": "Boston, MA",
-              "description": "Known for its co-op program blending study with real-world experience."
-            },
-            {
-              "name": "Arizona State University",
-              "location": "Tempe, AZ",
-              "description": "One of the largest public universities, with flexible program options."
-            }
-          ]
-        },
-        {
-          "name": "United Kingdom",
-          "universities": [
-            {
-              "name": "University of Edinburgh",
-              "location": "Edinburgh, Scotland",
-              "description": "A historic Russell Group university with a strong global reputation."
-            },
-            {
-              "name": "University of Manchester",
-              "location": "Manchester, England",
-              "description": "A leading research university with a large international community."
-            },
-            {
-              "name": "King's College London",
-              "location": "London, England",
-              "description": "A central London university known for health sciences and law."
-            }
-          ]
-        },
-        {
-          "name": "Australia",
-          "universities": [
-            {
-              "name": "University of Melbourne",
-              "location": "Melbourne, VIC",
-              "description": "Australia's top-ranked university across multiple disciplines."
-            },
-            {
-              "name": "Monash University",
-              "location": "Melbourne, VIC",
-              "description": "A large, research-intensive university with global campuses."
-            },
-            {
-              "name": "University of Sydney",
-              "location": "Sydney, NSW",
-              "description": "One of Australia's oldest and most prestigious universities."
-            }
-          ]
-        }
-      ]
-    },
     "landing": {
       "hero": {
-        "titleLead": "Your Future Goes",
-        "titleHighlight": "Beyond Borders",
-        "subtitle": "Explore 1,500+ global universities and colleges. Submit your best possible application with UniLink.",
+        "titleLead": "Your Future Starts",
+        "titleHighlight": "Right Here in Egypt",
+        "subtitle": "Explore private, public, and specialized universities across Egypt. Compare programs, fees, and admission requirements — all in one place.",
         "cta": "Register as a Student"
       },
       "fastest": {
-        "title": "The Fastest and Easiest Way to Successfully Study Abroad",
-        "body": "We've spent a decade perfecting a faster, easier, quality-first international study application process. Now, the world is yours to explore in just a few clicks.",
+        "title": "The Fastest and Easiest Way to Choose Your University in Egypt",
+        "body": "We gather accurate, up-to-date information on Egyptian universities — available programs, admission requirements, tuition fees, and scholarships — so you can decide on your academic future with confidence.",
         "cta": "Create a Student Account"
       },
       "testimonials": {
         "title": "What Our Students Have to Say",
-        "subtitle": "Hear from real international students about their experience.",
+        "subtitle": "Hear from students who found their university through UniLink.",
         "items": [
           {
-            "quote": "“I tried applying to institutions and it took months, and months, and months for me to get an answer from a school. But then I stumbled upon UniLink, and it was like an answer from heaven.”",
-            "name": "Arabelle A."
+            "quote": "UniLink saved me weeks. I compared fees and admission requirements for six universities in a single afternoon.",
+            "name": "Mariam H., Cairo"
           },
           {
-            "quote": "“I wanted to make my parents proud, and they are proud. And it was all thanks to UniLink.”",
-            "name": "Krupali P."
+            "quote": "I finally understood which programs I actually qualified for — and exactly what they would cost.",
+            "name": "Youssef A., Alexandria"
           }
         ]
       },
       "partners": {
-        "eyebrow": "Trusted Partners",
-        "title": "Trusted by 1,500+ Universities, Colleges, and Schools Worldwide",
+        "eyebrow": "Our Coverage",
+        "title": "Private, Public, and Specialized Universities Across Egypt",
         "countries": [
-          "Australia",
-          "Canada",
-          "Germany",
-          "Ireland",
-          "United States",
-          "United Kingdom"
+          "Cairo",
+          "Giza",
+          "Alexandria",
+          "New Capital",
+          "Mansoura",
+          "Assiut"
         ],
         "institutions": [
           {
-            "name": "Western University",
-            "location": "London, Ontario, CA"
+            "name": "Cairo University",
+            "location": "Giza, Egypt"
           },
           {
-            "name": "Laurentian University",
-            "location": "Sudbury, Ontario, CA"
+            "name": "Ain Shams University",
+            "location": "Cairo, Egypt"
           },
           {
-            "name": "Lakehead University",
-            "location": "Thunder Bay, Ontario, CA"
+            "name": "Alexandria University",
+            "location": "Alexandria, Egypt"
           }
         ],
-        "exploreMore": "Explore More Canadian Institutions"
+        "exploreMore": "Explore More Universities"
       },
       "programsBand": {
-        "title": "Choose from 150,000+ Study Programs",
+        "title": "Browse Programs from Universities Across Egypt",
         "cta": "Start Your Student Journey"
       },
       "faq": {
-        "eyebrow": "FAQ's",
+        "eyebrow": "FAQ",
         "title": "Got Questions? We Have Answers",
         "items": [
           {
-            "q": "How can I find my dream program?",
-            "a": "It couldn't be easier! Register for a free UniLink account, then take a few short minutes to tell us about yourself and what you're looking for. We'll help you explore programs that match your goals."
+            "q": "Is UniLink free to use?",
+            "a": "Yes. Browsing universities, programs, fees, and scholarships is completely free."
           },
           {
-            "q": "How do I apply once I've found the right program?"
+            "q": "Which universities do you cover?",
+            "a": "Private, public, and specialized universities across Egypt."
           },
           {
-            "q": "Why should I use UniLink?"
+            "q": "Does UniLink help with studying abroad?",
+            "a": "No — we focus exclusively on universities inside Egypt, so everything here is local and relevant to you."
           },
           {
-            "q": "Which countries can I apply to study in?"
+            "q": "How current are the tuition fees?",
+            "a": "We review and refresh fees regularly from official university sources."
           },
           {
-            "q": "I've applied, so what's next?"
+            "q": "Can UniLink help me choose a university?",
+            "a": "Yes. Answer a few quick questions and we'll match you with programs that fit your grades, budget, and interests."
           }
         ]
       },
@@ -314,27 +115,27 @@
         "title": "Get Started with UniLink",
         "cards": [
           {
-            "title": "Student",
-            "cta": "Sign Up for Free"
+            "title": "I'm a student looking for a university",
+            "cta": "Find my match"
           },
           {
-            "title": "Recruitment Partner",
-            "cta": "Become a Recruitment Partner"
+            "title": "I represent a university",
+            "cta": "Partner with us"
           },
           {
-            "title": "Partner School",
-            "cta": "Become a Partner Institution"
+            "title": "I want to list my programs",
+            "cta": "Get in touch"
           }
         ]
       }
     },
     "counters": {
       "items": [
-        "Students Helped",
-        "Global Programs",
-        "Institutions Globally",
-        "Nationalities",
-        "Years of Expertise"
+        "Universities in Egypt",
+        "Programs listed",
+        "Students guided",
+        "Governorates covered",
+        "Scholarships listed"
       ]
     }
   },
@@ -393,13 +194,6 @@
     "common": {
       "select": "Select…",
       "clear": "Clear selection"
-    },
-    "destination": {
-      "name": "Destination Country",
-      "heading": "Which countries are you interested in?",
-      "help": "Did you know? Students who explore at least 3 countries are far more likely to find a hidden scholarship gem.",
-      "label": "Destination countries",
-      "placeholder": "Search countries…"
     },
     "studyLevel": {
       "name": "Study Level",
@@ -590,13 +384,81 @@
     "title": "Universities",
     "subtitle": "Browse accredited partner universities by destination — full profiles are coming soon."
   },
-  "Destinations": {
-    "title": "Destinations",
-    "subtitle": "Explore study destinations and what makes each one unique — detailed guides are on the way."
-  },
   "About": {
-    "title": "About UniLink",
-    "subtitle": "UniLink helps students discover programs, compare universities, and apply to study abroad with confidence."
+    "eyebrow": "About UniLink",
+    "title": "Your guide to universities in Egypt",
+    "lead": "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt. We bring together accurate, up-to-date information on universities, programs, admission requirements, tuition fees, and scholarships — all in one place.",
+    "badge": "Egypt only",
+    "mission": {
+      "title": "Why we built UniLink",
+      "body": "Choosing a university shouldn't mean digging through scattered pages and outdated files. We gather everything in one place so you can make the right decision about your academic future with confidence."
+    },
+    "photos": {
+      "campus": "Campus photo",
+      "students": "Students photo"
+    },
+    "services": {
+      "title": "What you'll find here",
+      "subtitle": "Everything you need to compare Egyptian universities, in one place.",
+      "items": [
+        {
+          "title": "Universities",
+          "body": "Private, public, and specialized universities across Egypt."
+        },
+        {
+          "title": "Programs & majors",
+          "body": "Browse what each university offers and where it leads."
+        },
+        {
+          "title": "Admission requirements",
+          "body": "Know exactly what a program asks for before you apply."
+        },
+        {
+          "title": "Tuition fees",
+          "body": "Clear, current fees so there are no surprises."
+        },
+        {
+          "title": "Scholarships",
+          "body": "Find the grants and discounts you may qualify for."
+        },
+        {
+          "title": "Always current",
+          "body": "We refresh our data from official university sources."
+        }
+      ]
+    },
+    "faq": {
+      "eyebrow": "Q&A",
+      "title": "Questions, answered",
+      "items": [
+        {
+          "q": "Is UniLink free to use?",
+          "a": "Yes. Browsing universities, programs, fees, and scholarships is completely free."
+        },
+        {
+          "q": "Which universities do you cover?",
+          "a": "Private, public, and specialized universities across Egypt."
+        },
+        {
+          "q": "Does UniLink help with studying abroad?",
+          "a": "No — we focus exclusively on universities inside Egypt, so everything you find here is local and relevant to you."
+        },
+        {
+          "q": "How current is the information?",
+          "a": "We review and refresh our data regularly from official university sources."
+        },
+        {
+          "q": "Can UniLink help me choose?",
+          "a": "Yes. Answer a few quick questions and we'll match you with programs that fit your grades, budget, and interests."
+        }
+      ]
+    },
+    "cta": {
+      "title": "Ready to find your university?",
+      "body": "Tell us a little about yourself and we'll handle the matching.",
+      "primary": "Get started",
+      "secondary": "Browse universities"
+    }
   },
   "Contact": {
     "title": "Contact us",
