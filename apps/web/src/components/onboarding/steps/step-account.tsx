@@ -26,7 +26,7 @@ export function AccountStep({
   const form = useStepForm(accountSchema, {
     email: data.email,
     password: data.password,
-    acceptTerms: data.acceptTerms,
+    acceptTerms: data.acceptTerms === true ? true : undefined,
   });
 
   const email = (form.values.email as string) ?? "";
