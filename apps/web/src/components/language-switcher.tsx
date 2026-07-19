@@ -61,7 +61,7 @@ export function LanguageSwitcher() {
             aria-label={opt.label}
             title={opt.label}
             className={cn(
-              "relative z-10 rounded-full px-4 py-1.5 transition-colors duration-200",
+              "relative z-10 min-h-11 min-w-11 rounded-full px-3 py-1.5 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] sm:px-4",
               active
                 ? "text-brand-blue"
                 : "cursor-pointer text-muted-foreground hover:text-foreground",

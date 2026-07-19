@@ -34,7 +34,7 @@ export function PartnerCountryTabs({ countries }: { countries: string[] }) {
     <div
       role="group"
       aria-label="Filter partners by country"
-      className="flex flex-wrap justify-center gap-x-8 gap-y-3"
+      className="flex flex-wrap justify-center gap-x-3 gap-y-2 md:gap-x-8 md:gap-y-3"
     >
       {countries.map((c, i) => {
         const selected = i === active;
@@ -50,7 +50,7 @@ export function PartnerCountryTabs({ countries }: { countries: string[] }) {
             onClick={() => setActive(i)}
             onKeyDown={(e) => onKeyDown(e, i)}
             className={cn(
-              "relative pb-1 text-[18px] font-semibold outline-none transition-colors",
+              "relative inline-flex min-h-11 items-center px-2 pb-1 text-base font-semibold outline-none transition-colors md:px-1 md:text-[18px]",
               "after:absolute after:inset-x-0 after:-bottom-px after:h-0.5 after:origin-center after:rounded-full after:bg-[#1E6DEB] after:transition-transform after:duration-300 after:content-['']",
               "focus-visible:text-[#1E6DEB]",
               selected
