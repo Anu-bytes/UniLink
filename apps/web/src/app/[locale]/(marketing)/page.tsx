@@ -19,7 +19,7 @@ function PrimaryButton({
   return (
     <Link
       href={href}
-      className={`inline-flex h-14 items-center justify-center rounded-[8px] bg-[#1E6DEB] px-7 text-[18px] font-semibold text-white shadow-[0_10px_24px_-12px_rgba(30,109,235,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4] hover:shadow-[0_16px_30px_-14px_rgba(30,109,235,0.95)] active:translate-y-0 motion-reduce:transform-none ${className}`}
+      className={`inline-flex min-h-12 items-center justify-center rounded-[8px] bg-[#1E6DEB] px-5 py-3 text-center text-base font-semibold text-white shadow-[0_10px_24px_-12px_rgba(30,109,235,0.9)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4] hover:shadow-[0_16px_30px_-14px_rgba(30,109,235,0.95)] active:translate-y-0 sm:min-h-14 sm:px-7 sm:text-[18px] motion-reduce:transform-none ${className}`}
     >
       {children}
     </Link>
@@ -49,16 +49,16 @@ export default async function HomePage() {
     <div className="font-[family-name:var(--font-open-sans)] text-[#292E3E]">
       {/* HERO */}
       <section className="bg-white">
-        <div className="mx-auto max-w-6xl px-6 pt-6 pb-10">
-          <div className="grid items-center gap-10 rounded-[40px] bg-[#EEF3FF] px-8 py-12 sm:px-12 lg:grid-cols-2 lg:px-16 lg:py-10">
-            <Reveal className="text-center lg:text-start">
-              <h1 className="text-[36px] font-bold leading-tight text-[#363B51] sm:text-[50px]">
+        <div className="mx-auto max-w-6xl px-4 pb-8 pt-4 sm:px-6 sm:pb-10 sm:pt-6">
+          <div className="grid min-w-0 items-center gap-8 overflow-hidden rounded-[24px] bg-[#EEF3FF] px-5 py-8 sm:gap-10 sm:rounded-[40px] sm:px-12 sm:py-12 lg:grid-cols-2 lg:px-16 lg:py-10">
+            <Reveal className="min-w-0 text-center lg:text-start">
+              <h1 className="text-[32px] font-bold leading-tight text-[#363B51] sm:text-[50px]">
                 {t("hero.titleLead")}{" "}
                 <span className="text-[#1E6DEB]">
                   {t("hero.titleHighlight")}
                 </span>
               </h1>
-              <p className="mx-auto mt-6 max-w-xl text-[20px] leading-8 text-[#292E3E] lg:mx-0">
+              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#292E3E] sm:mt-6 sm:text-[20px] sm:leading-8 lg:mx-0">
                 {t("hero.subtitle")}
               </p>
               <div className="mt-8 flex justify-center lg:justify-start">
@@ -69,7 +69,7 @@ export default async function HomePage() {
             </Reveal>
             <Reveal
               delay={120}
-              className="flex items-center justify-center lg:justify-end"
+              className="flex min-w-0 items-center justify-center lg:justify-end"
             >
               <ImagePlaceholder
                 w={482}
@@ -85,10 +85,10 @@ export default async function HomePage() {
 
       {/* FASTEST & EASIEST + STATS */}
       <section className="bg-white">
-        <div className="mx-auto max-w-7xl px-6 py-20">
+        <div className="mx-auto max-w-7xl px-4 py-14 sm:px-6 sm:py-20">
           <Reveal
             as="h2"
-            className="mx-auto max-w-3xl text-balance text-center text-[32px] font-bold leading-tight text-[#363B51] sm:text-[40px]"
+            className="mx-auto max-w-3xl text-balance text-center text-[28px] font-bold leading-tight text-[#363B51] sm:text-[40px]"
           >
             {t("fastest.title")}
           </Reveal>
