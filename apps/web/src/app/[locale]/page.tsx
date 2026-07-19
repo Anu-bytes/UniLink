@@ -7,7 +7,9 @@ import { SearchBar } from "@/components/SearchBar";
 import { FieldChips } from "@/components/FieldChips";
 import { UniversityCard } from "@/components/UniversityCard";
 import { LocaleLink } from "@/components/LocaleLink";
-import { buttonClasses } from "@/components/ui/Button";
+import { ServicesSection } from "@/components/services-section";
+import { TestimonialsSection } from "@/components/testimonials-section";
+import { buttonClasses } from "@/components/ui/legacy-button";
 
 export default async function LandingPage({ params }: { params: Promise<{ locale: Locale }> }) {
   const { locale } = await params;
@@ -111,6 +113,10 @@ export default async function LandingPage({ params }: { params: Promise<{ locale
           </div>
         </div>
       </section>
+
+      {/* Production onboarding and advisory content from preproduction. */}
+      <ServicesSection />
+      <TestimonialsSection />
     </>
   );
 }

@@ -7,7 +7,7 @@ import { useIntl } from "@/i18n/provider";
 import { useSession } from "./auth/session";
 import { LocaleLink } from "./LocaleLink";
 import { LanguageToggle } from "./LanguageToggle";
-import { buttonClasses } from "./ui/Button";
+import { buttonClasses } from "./ui/legacy-button";
 import { cn } from "@/lib/cn";
 
 export function Header() {

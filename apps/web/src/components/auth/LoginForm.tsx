@@ -2,11 +2,12 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { Loader2, LogIn } from "lucide-react";
 import { useIntl } from "@/i18n/provider";
 import { useSession } from "./session";
 import { LocaleLink } from "@/components/LocaleLink";
-import { Button } from "@/components/ui/Button";
+import { Button } from "@/components/ui/legacy-button";
 import { TextField, PasswordField } from "./fields";
 
 export function LoginForm() {
@@ -24,12 +25,12 @@ export function LoginForm() {
     setError("");
     setLoading(true);
     try {
-      const res = await fetch("/api/auth/login", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email: email.trim(), password }),
+      const result = await signIn("credentials", {
+        email: email.trim(),
+        password,
+        redirect: false,
       });
-      if (res.ok) {
+      if (result && !result.error) {
         await refresh();
         router.push(`/${locale}`);
         return;

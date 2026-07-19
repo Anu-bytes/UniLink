@@ -1,27 +1,39 @@
-# deps
-node_modules
-.pnpm-store
+# dependencies
+node_modules/
+.pnpm-store/
+.pnp
+.pnp.*
 
-# build
-.next
-dist
-out
-.turbo
+# builds and generated output
+.next/
+out/
+dist/
+build/
+.turbo/
+coverage/
+*.tsbuildinfo
+next-env.d.ts
 
-# env
+# environment and secrets
 .env
-.env.local
-.env.*.local
+.env.*
+!.env.example
 
-# deploy
-.vercel
+# deployment
+.vercel/
 
-# misc
-.DS_Store
+# logs
 *.log
 npm-debug.log*
-coverage
+yarn-debug.log*
+yarn-error.log*
 
-# not part of the app
+# editors and operating systems
+.idea/
+.vscode/
+.DS_Store
+Thumbs.db
+.claude/settings.local.json
+
+# local artifacts
 UniLink-chat-extract.txt
-.env*

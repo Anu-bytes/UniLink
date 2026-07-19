@@ -85,7 +85,10 @@ export function MapView({
   const glRef = useRef<typeof import("maplibre-gl") | null>(null);
   const readyRef = useRef(false);
   const boundsCb = useRef(onBoundsChange);
-  boundsCb.current = onBoundsChange;
+
+  useEffect(() => {
+    boundsCb.current = onBoundsChange;
+  }, [onBoundsChange]);
 
   // Init once.
   useEffect(() => {

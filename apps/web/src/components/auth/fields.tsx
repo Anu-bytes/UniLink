@@ -327,7 +327,10 @@ export function MultiSelect<T extends string>({
     document.addEventListener("mousedown", onDown);
     return () => document.removeEventListener("mousedown", onDown);
   }, [open]);
-  useEffect(() => setActive(0), [query, open]);
+  useEffect(() => {
+    const timer = window.setTimeout(() => setActive(0), 0);
+    return () => window.clearTimeout(timer);
+  }, [query, open]);
 
   function add(id: T) {
     if (value.includes(id) || value.length >= max) return;

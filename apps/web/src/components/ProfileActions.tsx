@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Heart } from "lucide-react";
 import { useIntl } from "@/i18n/provider";
-import { Button } from "./ui/Button";
+import { Button } from "./ui/legacy-button";
 import { cn } from "@/lib/cn";
 
 export function ProfileActions() {

@@ -1,0 +1,162 @@
+// Prisma schema for UniLink.
+// Docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ---------------------------------------------------------------------------
+// Auth.js (NextAuth v5) models
+// https://authjs.dev/getting-started/adapters/prisma
+// ---------------------------------------------------------------------------
+
+model User {
+  id            String    @id @default(cuid())
+  name          String?
+  email         String    @unique
+  emailVerified DateTime?
+  image         String?
+  // Set only for email/password (credentials) accounts. OAuth users have none.
+  passwordHash  String?
+  role          UserRole  @default(STUDENT)
+  accounts      Account[]
+  sessions      Session[]
+  studentProfile StudentProfile?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+}
+
+enum UserRole {
+  STUDENT
+  PARTNER
+  ADMIN
+}
+
+model Account {
+  id                String  @id @default(cuid())
+  userId            String
+  type              String
+  provider          String
+  providerAccountId String
+  refresh_token     String?
+  access_token      String?
+  expires_at        Int?
+  token_type        String?
+  scope             String?
+  id_token          String?
+  session_state     String?
+  user              User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([provider, providerAccountId])
+}
+
+model Session {
+  id           String   @id @default(cuid())
+  sessionToken String   @unique
+  userId       String
+  expires      DateTime
+  user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model VerificationToken {
+  identifier String
+  token      String
+  expires    DateTime
+
+  @@unique([identifier, token])
+}
+
+// ---------------------------------------------------------------------------
+// Domain models
+// ---------------------------------------------------------------------------
+
+// Program-matching profile collected via the onboarding wizard. Created in the
+// same transaction as the User at the final (account) step of the wizard.
+model StudentProfile {
+  id            String       @id @default(cuid())
+  userId        String       @unique
+  user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  destinations  String[]     // ISO 3166-1 alpha-2 country codes (target countries)
+  studyLevel    StudyLevel
+  gradingScheme String       // "percentage" | "gpa4" | "gpa10"
+  gradeValue    Float
+  fieldsOfStudy String[]
+  englishTest   EnglishTest  @default(NONE)
+  englishScore  Float?       // null when englishTest = NONE
+  nationality   String       // ISO 3166-1 alpha-2 country code
+  intakeSeason  IntakeSeason
+  intakeYear    Int
+  budgetBand    BudgetBand   // bucketed tuition budget in USD
+
+  // Fields collected by the Egypt-focused discovery registration flow.
+  // They are optional because the global onboarding flow uses the normalized
+  // matching fields above.
+  phone            String?
+  highSchoolType   String?
+  graduationYear   Int?
+  certification    String?
+  age              Int?
+  schoolName       String?
+  nationalityLabel String?
+  address          String?
+
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  @@index([nationality])
+}
+
+enum StudyLevel {
+  CERTIFICATE
+  DIPLOMA
+  BACHELOR
+  MASTER
+  DOCTORATE
+}
+
+enum EnglishTest {
+  IELTS
+  TOEFL
+  PTE
+  DUOLINGO
+  NONE
+}
+
+enum IntakeSeason {
+  WINTER
+  SPRING
+  SUMMER
+  FALL
+}
+
+enum BudgetBand {
+  UNDER_100K
+  B100_200K
+  B200_300K
+  B300_500K
+  OVER_500K
+}
+
+model University {
+  id          String   @id @default(cuid())
+  name        String
+  slug        String   @unique
+  country     String
+  city        String
+  description String?
+  websiteUrl  String?
+  // Location as plain coordinates (simplified from the old PostGIS point).
+  latitude    Float?
+  longitude   Float?
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@index([country])
+  @@index([city])
+}

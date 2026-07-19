@@ -5,7 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation";
 import { MapPin, LocateFixed, TriangleAlert } from "lucide-react";
 import { useIntl } from "@/i18n/provider";
 import { SearchResults } from "./SearchResults";
-import { Button } from "./ui/Button";
+import { Button } from "./ui/legacy-button";
 import { cn } from "@/lib/cn";
 import type { UniversitySummary } from "@/lib/types";
 
@@ -68,7 +68,12 @@ export function NearMeResults() {
       firstRun.current = false;
       return;
     }
-    if (status === "ready" && coords) fetchNearby(coords, radius);
+    if (status === "ready" && coords) {
+      const timer = window.setTimeout(() => {
+        void fetchNearby(coords, radius);
+      }, 0);
+      return () => window.clearTimeout(timer);
+    }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [paramsKey]);
 

@@ -35,8 +35,11 @@ export function SearchBar({
   useEffect(() => {
     const term = q.trim();
     if (term.length < 2) {
-      setHits([]);
-      return;
+      const timer = window.setTimeout(() => {
+        setHits([]);
+        setOpen(false);
+      }, 0);
+      return () => window.clearTimeout(timer);
     }
     const ctrl = new AbortController();
     const t = setTimeout(async () => {

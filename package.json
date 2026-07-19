@@ -1,14 +1,18 @@
 {
   "name": "unilink",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "private": true,
-  "description": "UniLink — bilingual university & program discovery platform for Egypt (Phase 1 monorepo)",
+  "description": "UniLink — bilingual university discovery and student onboarding platform",
   "packageManager": "pnpm@9.15.0",
   "scripts": {
     "dev": "turbo run dev",
     "build": "turbo run build",
     "start": "turbo run start",
-    "lint": "turbo run lint"
+    "lint": "turbo run lint",
+    "db:generate": "pnpm --filter @unilink/web db:generate",
+    "db:migrate": "pnpm --filter @unilink/web db:migrate",
+    "db:deploy": "pnpm --filter @unilink/web db:deploy",
+    "db:studio": "pnpm --filter @unilink/web db:studio"
   },
   "devDependencies": {
     "turbo": "^2.3.3"

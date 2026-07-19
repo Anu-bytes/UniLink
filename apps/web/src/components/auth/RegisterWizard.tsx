@@ -1,19 +1,18 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useRouter } from "next/navigation";
+import { signIn } from "next-auth/react";
 import { ArrowLeft, ArrowRight, Check, PartyPopper, Loader2 } from "lucide-react";
 import { useIntl } from "@/i18n/provider";
 import { useSession } from "./session";
 import { LocaleLink } from "@/components/LocaleLink";
-import { Button, buttonClasses } from "@/components/ui/Button";
+import { Button, buttonClasses } from "@/components/ui/legacy-button";
 import { Field, TextField, PasswordField, ChoiceGroup, Select, MultiSelect } from "./fields";
 import { HIGH_SCHOOL_TYPES, CERTIFICATIONS, type HighSchoolTypeId, type CertificationId } from "@/data/student";
 import { FIELDS, getField } from "@/data/fields";
 import { FEE_BUCKETS, getFeeBucket } from "@/data/fee-buckets";
 import { GRAD_YEAR_MIN, GRAD_YEAR_MAX, EG_PHONE, PASSWORD_MIN } from "@/lib/auth/validation";
 import { pick, formatYear } from "@/lib/format";
-import { cn } from "@/lib/cn";
 import type { FieldOfStudyId, FeeBucketId } from "@/lib/types";
 
 interface FormData {
@@ -55,7 +54,6 @@ type Errors = Partial<Record<keyof FormData, string>>;
 
 export function RegisterWizard() {
   const { m, locale } = useIntl();
-  const router = useRouter();
   const { refresh } = useSession();
   const [step, setStep] = useState(0);
   const [data, setData] = useState<FormData>(EMPTY);
@@ -158,6 +156,15 @@ export function RegisterWizard() {
       const json = await res.json();
 
       if (res.status === 201) {
+        const result = await signIn("credentials", {
+          email: data.email.trim(),
+          password: data.password,
+          redirect: false,
+        });
+        if (!result || result.error) {
+          setServerError(m.auth.errors.loginFailed);
+          return;
+        }
         await refresh();
         setDoneName(json.user?.fullName ?? data.fullName.trim());
         return;
