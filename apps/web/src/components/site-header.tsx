@@ -35,16 +35,19 @@ export async function SiteHeader() {
         <div className="hidden items-center gap-2 lg:flex xl:gap-3">
           <LanguageSwitcher />
 
+          {/* Both CTAs stay visible for the whole lg+ range. Below lg they
+              live in the mobile menu, so neither can fall into a gap where
+              it is hidden here but the hamburger is already gone. */}
           <Link
             href="/onboarding"
-            className="hidden h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-semibold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 xl:inline-flex xl:h-14 xl:px-5 xl:text-[18px]"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-3 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 xl:h-14 xl:px-5 xl:text-[18px]"
           >
             {t("registerAsStudent")}
           </Link>
 
           <Link
             href="/login"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-semibold text-white transition-colors hover:bg-[#1859c4] xl:h-14 xl:px-6 xl:text-[18px]"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#1859c4] xl:h-14 xl:px-6 xl:text-[18px]"
           >
             {t("login")}
           </Link>
