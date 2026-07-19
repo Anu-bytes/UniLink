@@ -82,7 +82,6 @@ model StudentProfile {
   userId        String       @unique
   user          User         @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  destinations  String[]     // ISO 3166-1 alpha-2 country codes (target countries)
   studyLevel    StudyLevel
   gradingScheme String       // "percentage" | "gpa4" | "gpa10"
   gradeValue    Float
@@ -92,7 +91,7 @@ model StudentProfile {
   nationality   String       // ISO 3166-1 alpha-2 country code
   intakeSeason  IntakeSeason
   intakeYear    Int
-  budgetBand    BudgetBand   // bucketed tuition budget in USD
+  budgetBand    BudgetBand   // bucketed tuition budget in EGP
 
   createdAt     DateTime     @default(now())
   updatedAt     DateTime     @updatedAt

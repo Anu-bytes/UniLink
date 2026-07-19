@@ -37,9 +37,9 @@ export function generateStaticParams() {
 }
 
 export const metadata: Metadata = {
-  title: "UniLink | Your link to studying abroad",
+  title: "UniLink | Your guide to universities in Egypt",
   description:
-    "UniLink helps students discover programs, compare universities, and apply to study abroad with confidence.",
+    "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt — programs, admission requirements, tuition fees, and scholarships in one place.",
 };
 
 const localeDirection: Record<Locale, "rtl" | "ltr"> = {

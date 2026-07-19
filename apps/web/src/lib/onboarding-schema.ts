@@ -48,13 +48,6 @@ export const INTAKE_YEARS: readonly number[] = Array.from(
 // for the final submit.
 // ---------------------------------------------------------------------------
 
-export const destinationSchema = z.object({
-  destinations: z
-    .array(z.string().length(2))
-    .min(1, "Select at least one destination")
-    .max(5, "Choose up to 5 destinations"),
-});
-
 export const studyLevelSchema = z.object({
   studyLevel: z.enum(STUDY_LEVELS),
 });
@@ -143,7 +136,6 @@ export const accountSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const WIZARD_STEPS = [
-  { key: "destination", schema: destinationSchema },
   { key: "studyLevel", schema: studyLevelSchema },
   { key: "academics", schema: academicsSchema },
   { key: "field", schema: fieldSchema },
@@ -165,7 +157,6 @@ export type WizardStepKey = (typeof WIZARD_STEPS)[number]["key"];
 // ---------------------------------------------------------------------------
 
 export const profileSchema = z.object({
-  destinations: destinationSchema.shape.destinations,
   studyLevel: studyLevelSchema.shape.studyLevel,
   gradingScheme: z.enum(GRADING_SCHEMES),
   gradeValue: z.coerce.number().positive(),

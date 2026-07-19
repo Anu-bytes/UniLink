@@ -99,7 +99,6 @@ async function registerWithProfile(body: unknown) {
     await tx.studentProfile.create({
       data: {
         userId: created.id,
-        destinations: profile.destinations,
         studyLevel: profile.studyLevel,
         gradingScheme: profile.gradingScheme,
         gradeValue: profile.gradeValue,

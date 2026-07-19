@@ -1,4 +1,3 @@
-import { ChevronDown } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -10,9 +9,9 @@ export async function SiteHeader() {
   const t = await getTranslations("Nav");
 
   const links = [
-    { href: "/students", label: t("students"), caret: false },
-    { href: "/destinations", label: t("studyDestinations"), caret: true },
-    { href: "/partners", label: t("partners"), caret: true },
+    { href: "/students", label: t("students") },
+    { href: "/about", label: t("about") },
+    { href: "/partners", label: t("partners") },
   ] as const;
 
   return (
@@ -25,12 +24,9 @@ export async function SiteHeader() {
                 <Link
                     key={link.href}
                     href={link.href}
-                    className="group inline-flex items-center gap-1 text-[18px] font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB]"
+                    className="inline-flex items-center text-[18px] font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB]"
                 >
                   {link.label}
-                  {link.caret ? (
-                      <ChevronDown className="size-[18px] text-[#292E3E] transition-transform duration-200 group-hover:translate-y-0.5" aria-hidden />
-                  ) : null}
                 </Link>
             ))}
           </nav>

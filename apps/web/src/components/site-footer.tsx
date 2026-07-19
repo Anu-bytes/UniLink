@@ -11,7 +11,6 @@ export async function SiteFooter() {
       links: [
         { href: "/programs", label: t("programs") },
         { href: "/universities", label: t("universities") },
-        { href: "/destinations", label: t("destinations") },
       ],
     },
     {
