@@ -1,11 +1,14 @@
-import { ChevronDown, MapPin } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { ChevronDown } from "lucide-react";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { FeaturedUniversities } from "@/components/featured-universities";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { StatsCounters } from "@/components/stats-counters";
 import { Reveal } from "@/components/reveal";
-import { PartnerCountryTabs } from "@/components/partner-country-tabs";
+import { getLandingCatalog } from "@/lib/catalog";
+
+export const dynamic = "force-dynamic";
 
 function PrimaryButton({
   href,
@@ -28,16 +31,9 @@ function PrimaryButton({
 
 export default async function HomePage() {
   const t = await getTranslations("Home.landing");
+  const locale = await getLocale();
+  const catalog = await getLandingCatalog(locale);
 
-  const testimonials = t.raw("testimonials.items") as {
-    quote: string;
-    name: string;
-  }[];
-  const countries = t.raw("partners.countries") as string[];
-  const institutions = t.raw("partners.institutions") as {
-    name: string;
-    location: string;
-  }[];
   const faqs = t.raw("faq.items") as { q: string; a?: string }[];
   const getStartedCards = t.raw("getStarted.cards") as {
     title: string;
@@ -94,7 +90,7 @@ export default async function HomePage() {
           </Reveal>
 
           <div className="mt-10 md:mt-14">
-            <StatsCounters />
+            <StatsCounters values={catalog.stats} />
           </div>
 
           <Reveal>
@@ -115,42 +111,46 @@ export default async function HomePage() {
         </div>
       </section>
 
-      {/* TESTIMONIALS */}
-      <section className="bg-[#F5F8FF]">
-        <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
-          <Reveal>
-            <h2 className="text-center text-[clamp(1.75rem,5vw,2.5rem)] font-bold leading-tight text-[#363B51]">
-              {t("testimonials.title")}
-            </h2>
-            <p className="mt-3 text-center text-base leading-7 text-[#292E3E] md:text-[18px]">
-              {t("testimonials.subtitle")}
-            </p>
-          </Reveal>
+      {catalog.testimonials.length > 0 ? (
+        <section className="bg-[#F5F8FF]">
+          <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
+            <Reveal>
+              <h2 className="text-center text-[clamp(1.75rem,5vw,2.5rem)] font-bold leading-tight text-[#363B51]">
+                {t("testimonials.title")}
+              </h2>
+              <p className="mt-3 text-center text-base leading-7 text-[#292E3E] md:text-[18px]">
+                {t("testimonials.subtitle")}
+              </p>
+            </Reveal>
 
-          <div className="mt-10 grid gap-5 md:mt-12 md:grid-cols-2 md:gap-8">
-            {testimonials.map((tst, i) => (
-              <Reveal key={tst.name} delay={i * 90}>
-                <figure className="hover-lift flex h-full flex-col rounded-2xl bg-white p-6 shadow-sm md:p-8">
-                  <blockquote className="text-base leading-7 text-[#292E3E] md:text-[18px] md:leading-8">
-                    {tst.quote}
-                  </blockquote>
-                  <figcaption className="mt-auto flex items-center gap-3 pt-6">
-                    <ImagePlaceholder
-                      w={48}
-                      h={48}
-                      rounded="rounded-full"
-                      label=""
-                    />
-                    <span className="text-[16px] font-semibold text-[#363B51]">
-                      {tst.name}
-                    </span>
-                  </figcaption>
-                </figure>
-              </Reveal>
-            ))}
+            <div className="mt-10 grid gap-5 md:mt-12 md:grid-cols-2 md:gap-8">
+              {catalog.testimonials.map((testimonial, i) => (
+                <Reveal key={testimonial.id} delay={i * 90}>
+                  <figure className="hover-lift flex h-full flex-col rounded-2xl bg-white p-6 shadow-sm md:p-8">
+                    <blockquote className="text-base leading-7 text-[#292E3E] md:text-[18px] md:leading-8">
+                      {testimonial.quote}
+                    </blockquote>
+                    <figcaption className="mt-auto flex items-center gap-3 pt-6">
+                      <ImagePlaceholder
+                        w={48}
+                        h={48}
+                        rounded="rounded-full"
+                        label=""
+                      />
+                      <span className="text-[16px] font-semibold text-[#363B51]">
+                        {testimonial.studentName}
+                        {testimonial.location
+                          ? `, ${testimonial.location}`
+                          : ""}
+                      </span>
+                    </figcaption>
+                  </figure>
+                </Reveal>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      ) : null}
 
       {/* TRUSTED PARTNERS */}
       <section className="bg-white">
@@ -165,32 +165,17 @@ export default async function HomePage() {
           </Reveal>
 
           <div className="mt-10">
-            <PartnerCountryTabs countries={countries} />
-          </div>
-
-          <div className="mt-10 grid gap-5 md:mt-12 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-            {institutions.map((inst, i) => (
-              <Reveal key={inst.name} delay={(i % 3) * 90}>
-                <div className="hover-lift h-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm">
-                  <ImagePlaceholder
-                    w={338}
-                    h={226}
-                    rounded="rounded-none"
-                    className="w-full"
-                    label="Institution 338×226"
-                  />
-                  <div className="min-w-0 p-5 md:p-6">
-                    <h3 className="text-[20px] font-bold text-[#363B51]">
-                      {inst.name}
-                    </h3>
-                    <p className="mt-2 flex min-w-0 items-start gap-1.5 text-[15px] leading-6 text-[#5a6072]">
-                      <MapPin className="mt-1 size-4 shrink-0 text-[#1E6DEB]" />
-                      <span>{inst.location}</span>
-                    </p>
-                  </div>
-                </div>
-              </Reveal>
-            ))}
+            {catalog.universities.length > 0 ? (
+              <FeaturedUniversities
+                universities={catalog.universities}
+                allLabel={t("partners.allCities")}
+                filterLabel={t("partners.filterLabel")}
+              />
+            ) : (
+              <p className="rounded-2xl bg-[#F5F8FF] px-6 py-10 text-center text-base text-[#5a6072]">
+                {t("partners.empty")}
+              </p>
+            )}
           </div>
 
           <div className="mt-12 flex justify-center">

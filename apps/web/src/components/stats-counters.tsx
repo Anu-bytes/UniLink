@@ -21,14 +21,14 @@ type Stat = {
   label: string;
 };
 
-// Numeric config only; labels come from translations (Home.counters.items).
-// Figures are Egypt-scoped placeholders — replace with verified numbers.
-const statConfig: Omit<Stat, "label">[] = [
-  { icon: Landmark, color: "#1E6DEB", target: 100, decimals: 0, suffix: "+" },
-  { icon: BookOpen, color: "#F5245F", target: 2000, decimals: 0, comma: true, suffix: "+" },
-  { icon: Users, color: "#17A398", target: 50000, decimals: 0, comma: true, suffix: "+" },
-  { icon: MapPin, color: "#F0852E", target: 27, decimals: 0 },
-  { icon: Award, color: "#A945D6", target: 500, decimals: 0, comma: true, suffix: "+" },
+// Visual config only; values come from live database counts and labels from
+// translations (Home.counters.items).
+const statConfig: Omit<Stat, "label" | "target">[] = [
+  { icon: Landmark, color: "#1E6DEB", decimals: 0, comma: true },
+  { icon: BookOpen, color: "#F5245F", decimals: 0, comma: true },
+  { icon: Users, color: "#17A398", decimals: 0, comma: true },
+  { icon: MapPin, color: "#F0852E", decimals: 0, comma: true },
+  { icon: Award, color: "#A945D6", decimals: 0, comma: true },
 ];
 
 function useCountUp(target: number, started: boolean, duration = 1600) {
@@ -93,11 +93,12 @@ function StatCard({ stat, started }: { stat: Stat; started: boolean }) {
   );
 }
 
-export function StatsCounters() {
+export function StatsCounters({ values }: { values: number[] }) {
   const t = useTranslations("Home.counters");
   const labels = t.raw("items") as string[];
   const stats: Stat[] = statConfig.map((s, i) => ({
     ...s,
+    target: values[i] ?? 0,
     label: labels[i] ?? "",
   }));
 

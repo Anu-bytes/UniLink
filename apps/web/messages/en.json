@@ -42,43 +42,14 @@
       },
       "testimonials": {
         "title": "What Our Students Have to Say",
-        "subtitle": "Hear from students who found their university through UniLink.",
-        "items": [
-          {
-            "quote": "UniLink saved me weeks. I compared fees and admission requirements for six universities in a single afternoon.",
-            "name": "Mariam H., Cairo"
-          },
-          {
-            "quote": "I finally understood which programs I actually qualified for — and exactly what they would cost.",
-            "name": "Youssef A., Alexandria"
-          }
-        ]
+        "subtitle": "Hear from students who found their university through UniLink."
       },
       "partners": {
         "eyebrow": "Our Coverage",
         "title": "Private, Public, and Specialized Universities Across Egypt",
-        "countries": [
-          "Cairo",
-          "Giza",
-          "Alexandria",
-          "New Capital",
-          "Mansoura",
-          "Assiut"
-        ],
-        "institutions": [
-          {
-            "name": "Cairo University",
-            "location": "Giza, Egypt"
-          },
-          {
-            "name": "Ain Shams University",
-            "location": "Cairo, Egypt"
-          },
-          {
-            "name": "Alexandria University",
-            "location": "Alexandria, Egypt"
-          }
-        ],
+        "allCities": "All",
+        "filterLabel": "Filter universities by city",
+        "empty": "Published universities will appear here once they are added to the catalogue.",
         "exploreMore": "Explore More Universities"
       },
       "programsBand": {
@@ -378,11 +349,34 @@
   },
   "Programs": {
     "title": "Programs",
-    "subtitle": "Search and filter programs across our partner universities — this page is being built out next."
+    "subtitle": "Explore published programs across Egyptian universities.",
+    "emptyTitle": "No programs published yet",
+    "emptyBody": "Programs will appear here after their details have been verified and published.",
+    "levelLabel": "Study level",
+    "fieldLabel": "Field of study",
+    "durationLabel": "Duration",
+    "tuitionLabel": "Tuition",
+    "durationMonths": "{count, plural, one {# month} other {# months}}",
+    "levels": {
+      "CERTIFICATE": "Certificate",
+      "DIPLOMA": "Diploma",
+      "BACHELOR": "Bachelor's",
+      "MASTER": "Master's",
+      "DOCTORATE": "Doctorate"
+    }
   },
   "Universities": {
     "title": "Universities",
-    "subtitle": "Browse accredited partner universities by destination — full profiles are coming soon."
+    "subtitle": "Browse published universities in the UniLink catalogue.",
+    "emptyTitle": "No universities published yet",
+    "emptyBody": "Verified university profiles will appear here once they are published.",
+    "programCount": "{count, plural, one {# published program} other {# published programs}}",
+    "visitWebsite": "Visit website",
+    "types": {
+      "PUBLIC": "Public university",
+      "PRIVATE": "Private university",
+      "SPECIALIZED": "Specialized university"
+    }
   },
   "About": {
     "eyebrow": "About UniLink",
