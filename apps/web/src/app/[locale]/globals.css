@@ -111,6 +111,15 @@ body {
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
 }
 
+h1,
+h2,
+h3,
+p,
+blockquote,
+summary {
+  overflow-wrap: anywhere;
+}
+
 /* Arabic locale: swap the sans stack to Cairo for headings and body alike.
    Every font token chains back to --font-geist-sans, so overriding it here
    flips the whole site's typography for the ar pages. */
@@ -160,6 +169,11 @@ html[lang="ar"] body {
 @layer base {
   * {
     @apply border-border outline-ring/50;
+  }
+  img,
+  video {
+    max-inline-size: 100%;
+    block-size: auto;
   }
   body {
     @apply bg-background text-foreground;

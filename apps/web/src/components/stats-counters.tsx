@@ -41,8 +41,8 @@ function useCountUp(target: number, started: boolean, duration = 1600) {
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     if (prefersReduced) {
-      setValue(target);
-      return;
+      const frame = requestAnimationFrame(() => setValue(target));
+      return () => cancelAnimationFrame(frame);
     }
 
     let raf = 0;
@@ -73,20 +73,22 @@ function StatCard({ stat, started }: { stat: Stat; started: boolean }) {
   const Icon = stat.icon;
 
   return (
-    <div className="rounded-2xl bg-white p-6 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.18)]">
+    <div className="min-w-0 rounded-2xl bg-white p-4 shadow-[0_12px_40px_-12px_rgba(15,23,42,0.18)] md:p-6">
       <div
-        className="flex size-16 items-center justify-center rounded-2xl"
+        className="flex size-14 items-center justify-center rounded-2xl md:size-16"
         style={{ backgroundColor: stat.color }}
       >
-        <Icon className="size-7 text-white" strokeWidth={2} />
+        <Icon className="size-6 text-white md:size-7" strokeWidth={2} />
       </div>
       <div
-        className="mt-5 text-[30px] font-bold leading-none tabular-nums"
+        className="mt-4 text-[clamp(1.5rem,6vw,1.875rem)] font-bold leading-none tabular-nums md:mt-5"
         style={{ color: stat.color }}
       >
         {format(value, stat)}
       </div>
-      <div className="mt-2 text-[15px] text-[#5a6072]">{stat.label}</div>
+      <div className="mt-2 text-sm leading-5 text-[#5a6072] md:text-[15px]">
+        {stat.label}
+      </div>
     </div>
   );
 }
@@ -121,7 +123,7 @@ export function StatsCounters() {
   return (
     <div
       ref={ref}
-      className="grid grid-cols-2 gap-5 sm:grid-cols-3 lg:grid-cols-5"
+      className="grid grid-cols-2 gap-3 md:grid-cols-3 md:gap-5 lg:grid-cols-5"
     >
       {stats.map((stat) => (
         <StatCard key={stat.label} stat={stat} started={started} />

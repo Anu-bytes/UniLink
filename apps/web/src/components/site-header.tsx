@@ -17,15 +17,15 @@ export async function SiteHeader() {
 
   return (
     <StickyHeaderShell className="font-[family-name:var(--font-open-sans)]">
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 sm:h-20 sm:px-6 lg:px-8">
-        <Logo className="shrink-0 [&_img]:h-9 sm:[&_img]:h-12" />
+      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 md:h-20 md:px-6 lg:px-8">
+        <Logo className="min-h-11 shrink-0 [&_img]:h-9 md:[&_img]:h-12" />
 
         <nav className="hidden items-center gap-5 lg:flex xl:gap-8">
           {links.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className="inline-flex items-center whitespace-nowrap text-base font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB] xl:text-[18px]"
+              className="inline-flex min-h-11 items-center whitespace-nowrap text-base font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:text-[18px]"
             >
               {link.label}
             </Link>
@@ -40,32 +40,32 @@ export async function SiteHeader() {
               it is hidden here but the hamburger is already gone. */}
           <Link
             href="/onboarding"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-3 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 xl:h-14 xl:px-5 xl:text-[18px]"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-3 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
           >
             {t("registerAsStudent")}
           </Link>
 
           <Link
             href="/login"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#1859c4] xl:h-14 xl:px-6 xl:text-[18px]"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
           >
             {t("login")}
           </Link>
         </div>
 
         <details className="group relative lg:hidden">
-          <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 bg-white text-[#292E3E] transition-colors hover:bg-slate-50 [&::-webkit-details-marker]:hidden">
-            <span className="sr-only">Navigation</span>
+          <summary className="flex size-11 cursor-pointer list-none items-center justify-center rounded-lg border border-slate-200 bg-white text-[#292E3E] transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] [&::-webkit-details-marker]:hidden">
+            <span className="sr-only">Open navigation menu</span>
             <Menu className="size-6" aria-hidden />
           </summary>
 
-          <div className="absolute end-0 top-[calc(100%+0.75rem)] z-50 w-[min(20rem,calc(100vw-2rem))] rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
+          <div className="absolute end-0 top-[calc(100%+0.75rem)] z-50 max-h-[calc(100dvh-5rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-4 shadow-xl">
             <nav className="flex flex-col">
               {links.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className="rounded-lg px-3 py-3 text-base font-semibold text-[#292E3E] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
+                  className="inline-flex min-h-12 items-center rounded-lg px-3 py-2 text-base font-semibold text-[#292E3E] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
                 >
                   {link.label}
                 </Link>
