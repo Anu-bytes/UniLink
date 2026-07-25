@@ -14,47 +14,90 @@
     "registerAsStudent": "Register as a Student"
   },
   "Footer": {
-    "tagline": "Your guide to universities in Egypt.",
+    "tagline": "A smart platform to discover and compare universities in Egypt.",
+    "quickLinks": "Quick links",
+    "info": "Information",
+    "policies": "Policies",
+    "followUs": "Follow us",
     "platform": "Platform",
     "programs": "Programs",
     "universities": "Universities",
+    "specializations": "Specializations",
+    "scholarships": "Scholarships",
+    "articles": "Articles",
     "company": "Company",
     "about": "About us",
     "contact": "Contact",
+    "faq": "FAQ",
     "careers": "Careers",
     "legal": "Legal",
     "privacy": "Privacy policy",
-    "terms": "Terms of service",
+    "terms": "Terms & conditions",
     "rights": "All rights reserved."
   },
   "Home": {
     "landing": {
       "hero": {
+        "badge": "Your platform for choosing a university in Egypt",
         "titleLead": "Your Future Starts",
         "titleHighlight": "Right Here in Egypt",
         "subtitle": "Explore private, public, and specialized universities across Egypt. Compare programs, fees, and admission requirements — all in one place.",
         "cta": "Register as a Student"
       },
-      "fastest": {
-        "title": "The Fastest and Easiest Way to Choose Your University in Egypt",
-        "body": "We gather accurate, up-to-date information on Egyptian universities — available programs, admission requirements, tuition fees, and scholarships — so you can decide on your academic future with confidence.",
-        "cta": "Create a Student Account"
-      },
       "testimonials": {
         "title": "What Our Students Have to Say",
-        "subtitle": "Hear from students who found their university through UniLink."
+        "subtitle": "From students who found their university through UniLink.",
+        "prev": "Previous",
+        "next": "Next"
       },
       "partners": {
         "eyebrow": "Our Coverage",
+        "featuredTitle": "Featured Universities",
         "title": "Private, Public, and Specialized Universities Across Egypt",
         "allCities": "All",
         "filterLabel": "Filter universities by city",
+        "programsLabel": "Programs",
+        "viewDetails": "View details",
         "empty": "Published universities will appear here once they are added to the catalogue.",
         "exploreMore": "Explore More Universities"
       },
-      "programsBand": {
-        "title": "Browse Programs from Universities Across Egypt",
-        "cta": "Start Your Student Journey"
+      "howItWorks": {
+        "title": "How It Works",
+        "steps": [
+          "Create a free account",
+          "Set your interests and budget",
+          "Browse universities that fit",
+          "Compare and pick the best",
+          "Apply at the right time"
+        ]
+      },
+      "features": {
+        "student": {
+          "title": "Why Students Use UniLink",
+          "items": [
+            "Save hours of searching across university websites.",
+            "Compare every option in one place.",
+            "Up-to-date, trustworthy information.",
+            "Completely free for students."
+          ]
+        },
+        "decision": {
+          "title": "Better Help Making the Decision",
+          "body": "We help parents compare universities based on education quality, tuition fees, accreditations, and employment prospects."
+        }
+      },
+      "represent": {
+        "title": "Do You Represent a University?",
+        "body": "Join UniLink to reach students interested in your academic programs and strengthen your student-outreach efforts through a digital platform that combines data, analytics, and smart marketing.",
+        "features": [
+          "Performance reports",
+          "University profile page",
+          "Digital marketing campaigns",
+          "Student behavior & interest analytics",
+          "University dashboard & analytics",
+          "Interested, qualified applicants"
+        ],
+        "primaryCta": "Request a demo or become a partner"
       },
       "faq": {
         "eyebrow": "FAQ",
@@ -79,23 +122,6 @@
           {
             "q": "Can UniLink help me choose a university?",
             "a": "Yes. Answer a few quick questions and we'll match you with programs that fit your grades, budget, and interests."
-          }
-        ]
-      },
-      "getStarted": {
-        "title": "Get Started with UniLink",
-        "cards": [
-          {
-            "title": "I'm a student looking for a university",
-            "cta": "Find my match"
-          },
-          {
-            "title": "I represent a university",
-            "cta": "Partner with us"
-          },
-          {
-            "title": "I want to list my programs",
-            "cta": "Get in touch"
           }
         ]
       }

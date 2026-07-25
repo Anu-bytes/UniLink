@@ -1,5 +1,5 @@
 import { Menu } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { Logo } from "@/components/logo";
@@ -8,6 +8,13 @@ import { StickyHeaderShell } from "@/components/sticky-header-shell";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
+  const locale = await getLocale();
+
+  // Open Sans has no Arabic glyphs, so Arabic falls back to an unstyled system
+  // font. Use Cairo (--font-arabic) for Arabic; Open Sans for Latin locales.
+  const fontClass = locale.startsWith("ar")
+    ? "font-[family-name:var(--font-arabic)]"
+    : "font-[family-name:var(--font-open-sans)]";
 
   const links = [
     { href: "/students", label: t("students") },
@@ -16,7 +23,7 @@ export async function SiteHeader() {
   ] as const;
 
   return (
-    <StickyHeaderShell className="font-[family-name:var(--font-open-sans)]">
+    <StickyHeaderShell className={fontClass}>
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 md:h-20 md:px-6 lg:px-8">
         <Logo className="min-h-11 shrink-0 [&_img]:h-9 md:[&_img]:h-12" />
 
@@ -25,7 +32,7 @@ export async function SiteHeader() {
             <Link
               key={link.href}
               href={link.href}
-              className="inline-flex min-h-11 items-center whitespace-nowrap text-base font-semibold leading-7 text-[#292E3E] transition-colors hover:text-[#1E6DEB] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:text-[18px]"
+              className="inline-flex min-h-11 items-center whitespace-nowrap text-[17px] font-bold leading-7 text-[#1F2A44] transition-colors hover:text-[#1E6DEB] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:text-[20px]"
             >
               {link.label}
             </Link>
@@ -40,14 +47,14 @@ export async function SiteHeader() {
               it is hidden here but the hamburger is already gone. */}
           <Link
             href="/onboarding"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-3 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
           >
             {t("registerAsStudent")}
           </Link>
 
           <Link
             href="/login"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-3 text-sm font-semibold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
           >
             {t("login")}
           </Link>

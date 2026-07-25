@@ -1,9 +1,9 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { MapPin } from "lucide-react";
+import { ArrowRight, MapPin } from "lucide-react";
 
-import { ImagePlaceholder } from "@/components/image-placeholder";
+import { Link } from "@/i18n/navigation";
 import type { UniversityCardData } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
@@ -11,10 +11,14 @@ export function FeaturedUniversities({
   universities,
   allLabel,
   filterLabel,
+  programsLabel,
+  viewDetailsLabel,
 }: {
   universities: UniversityCardData[];
   allLabel: string;
   filterLabel: string;
+  programsLabel: string;
+  viewDetailsLabel: string;
 }) {
   const [activeCity, setActiveCity] = useState<string | null>(null);
   const cities = useMemo(
@@ -55,48 +59,64 @@ export function FeaturedUniversities({
         })}
       </div>
 
-      <div className="mt-10 grid gap-5 md:mt-12 md:grid-cols-2 md:gap-8 lg:grid-cols-3">
-        {visible.map((university) => (
-          <article
-            key={university.id}
-            className="hover-lift h-full overflow-hidden rounded-2xl border border-slate-200 bg-white shadow-sm"
-          >
-            {university.coverImageUrl ? (
-              <div
-                role="img"
-                aria-label={university.name}
-                className="aspect-[338/226] w-full bg-slate-200 bg-cover bg-center"
-                style={{
-                  backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
-                }}
-              />
-            ) : (
-              <ImagePlaceholder
-                w={338}
-                h={226}
-                rounded="rounded-none"
-                className="w-full"
-                label=""
-              />
-            )}
-            <div className="min-w-0 p-5 md:p-6">
-              <h3 className="text-[20px] font-bold text-[#363B51]">
-                {university.name}
-              </h3>
-              <p className="mt-2 flex min-w-0 items-start gap-1.5 text-[15px] leading-6 text-[#5a6072]">
-                <MapPin className="mt-1 size-4 shrink-0 text-[#1E6DEB]" />
-                <span>
-                  {university.city}, {university.country}
+      <div className="mt-10 grid gap-5 md:mt-12 md:grid-cols-2 md:gap-6 lg:grid-cols-4">
+        {visible.map((university) => {
+          const initial = university.name.trim().charAt(0) || "U";
+          return (
+            <article
+              key={university.id}
+              className="hover-lift group flex h-full flex-col overflow-hidden rounded-2xl border border-[#E7EDF5] bg-white text-center shadow-sm transition-colors hover:border-[#1E6DEB]/40"
+            >
+              <div className="aspect-[16/9] w-full overflow-hidden">
+                {university.coverImageUrl ? (
+                  <div
+                    role="img"
+                    aria-label={university.name}
+                    className="size-full bg-slate-200 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+                    style={{
+                      backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
+                    }}
+                  />
+                ) : (
+                  <div className="flex size-full items-center justify-center bg-gradient-to-br from-[#EAF1FF] to-[#DCE7FA] text-xs font-medium text-[#9db4e0] transition-transform duration-500 group-hover:scale-105">
+                    {university.name}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex flex-1 flex-col items-center px-5 pb-5">
+                {/* logo badge overlapping the cover image */}
+                <span className="-mt-8 flex size-16 items-center justify-center rounded-full border-4 border-white bg-white text-xl font-bold text-[#1E6DEB] shadow-sm transition-transform duration-300 group-hover:-translate-y-1">
+                  {initial}
                 </span>
-              </p>
-              {university.description ? (
-                <p className="mt-3 line-clamp-3 text-sm leading-6 text-[#5a6072]">
-                  {university.description}
+
+                <h3 className="mt-3 text-[17px] font-bold leading-6 text-[#16233F]">
+                  {university.name}
+                </h3>
+
+                <p className="mt-2 inline-flex items-center gap-1.5 text-sm text-[#5a6072]">
+                  <MapPin className="size-4 shrink-0 text-[#1E6DEB]" />
+                  {university.city}
                 </p>
-              ) : null}
-            </div>
-          </article>
-        ))}
+
+                <p className="mt-1 text-sm text-[#5a6072]">
+                  {programsLabel}: {university.programCount}+
+                </p>
+
+                <Link
+                  href={`/universities/${university.slug}`}
+                  className="mt-auto inline-flex items-center gap-1 pt-4 text-sm font-semibold text-[#1E6DEB] transition-colors hover:text-[#1859c4] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+                >
+                  {viewDetailsLabel}
+                  <ArrowRight
+                    className="size-4 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
+                    aria-hidden
+                  />
+                </Link>
+              </div>
+            </article>
+          );
+        })}
       </div>
     </>
   );

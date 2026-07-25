@@ -220,8 +220,78 @@ html[lang="ar"] body {
   .ul-float {
     animation: ul-float 4s ease-in-out infinite;
   }
+  .ul-float-slow {
+    animation: ul-float 7s ease-in-out infinite;
+  }
   .ul-spin-slow {
     animation: ul-spin-slow 18s linear infinite;
+  }
+
+  /* Soft drifting blobs for section backgrounds. Transform-only + heavy blur,
+     so they stay cheap and sit behind content (pointer-events: none). */
+  @keyframes ul-blob {
+    0%,
+    100% {
+      transform: translate(0, 0) scale(1);
+    }
+    33% {
+      transform: translate(16px, -20px) scale(1.06);
+    }
+    66% {
+      transform: translate(-14px, 12px) scale(0.96);
+    }
+  }
+  .ul-blob {
+    animation: ul-blob 16s ease-in-out infinite;
+  }
+
+  /* One-shot pop used for icon tiles / badges entering view. */
+  @keyframes ul-pop {
+    0% {
+      transform: scale(0.6);
+      opacity: 0;
+    }
+    60% {
+      transform: scale(1.08);
+      opacity: 1;
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+
+  /* Gentle attention pulse for a status dot. */
+  @keyframes ul-pulse-dot {
+    0%,
+    100% {
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      opacity: 0.55;
+      transform: scale(0.82);
+    }
+  }
+  .ul-pulse-dot {
+    animation: ul-pulse-dot 1.8s ease-in-out infinite;
+  }
+
+  /* Warm red↔orange blink for the hero badge status dot (brand accent). */
+  @keyframes ul-blink-warm {
+    0%,
+    100% {
+      background-color: #f82c1f;
+      opacity: 1;
+      transform: scale(1);
+    }
+    50% {
+      background-color: #ff8a00;
+      opacity: 0.65;
+      transform: scale(0.8);
+    }
+  }
+  .ul-blink-warm {
+    animation: ul-blink-warm 1.4s ease-in-out infinite;
   }
 
   /* Card/tile hover elevation — GPU-friendly transform + shadow only. */
@@ -251,7 +321,11 @@ html[lang="ar"] body {
     transform: none;
   }
   .ul-float,
-  .ul-spin-slow {
+  .ul-float-slow,
+  .ul-spin-slow,
+  .ul-blob,
+  .ul-pulse-dot,
+  .ul-blink-warm {
     animation: none;
   }
 }
