@@ -41,7 +41,7 @@
         "badge": "Your platform for choosing a university in Egypt",
         "titleLead": "Your Future Starts",
         "titleHighlight": "Right Here in Egypt",
-        "subtitle": "Explore private, public, and specialized universities across Egypt. Compare programs, fees, and admission requirements — all in one place.",
+        "subtitle": "Explore and compare private and national universities in Egypt. Colleges, majors, fees, admission requirements, and scholarships, all in one place.",
         "cta": "Register as a Student"
       },
       "testimonials": {
@@ -113,7 +113,7 @@
           },
           {
             "q": "Does UniLink help with studying abroad?",
-            "a": "No — we focus exclusively on universities inside Egypt, so everything here is local and relevant to you."
+            "a": "No. We focus exclusively on universities inside Egypt, so everything here is local and relevant to you."
           },
           {
             "q": "How current are the tuition fees?",
@@ -180,7 +180,7 @@
     },
     "forgotPassword": {
       "title": "Reset your password",
-      "subtitle": "Password recovery is coming soon — check back shortly."
+      "subtitle": "Password recovery is coming soon. Check back shortly."
     }
   },
   "Onboarding": {
@@ -318,7 +318,7 @@
   },
   "Students": {
     "title": "For students",
-    "subtitle": "Everything you need to find, apply to, and start your study abroad program — full student resources are coming soon.",
+    "subtitle": "Everything you need to find, apply to, and start your study abroad program. Full student resources are coming soon.",
     "landing": {
       "hero": {
         "titleLead": "Study Abroad with",
@@ -407,7 +407,7 @@
   "About": {
     "eyebrow": "About UniLink",
     "title": "Your guide to universities in Egypt",
-    "lead": "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt. We bring together accurate, up-to-date information on universities, programs, admission requirements, tuition fees, and scholarships — all in one place.",
+    "lead": "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt. We bring together accurate, up-to-date information on universities, programs, admission requirements, tuition fees, and scholarships, all in one place.",
     "badge": "Egypt only",
     "mission": {
       "title": "Why we built UniLink",
@@ -461,7 +461,7 @@
         },
         {
           "q": "Does UniLink help with studying abroad?",
-          "a": "No — we focus exclusively on universities inside Egypt, so everything you find here is local and relevant to you."
+          "a": "No. We focus exclusively on universities inside Egypt, so everything you find here is local and relevant to you."
         },
         {
           "q": "How current is the information?",
