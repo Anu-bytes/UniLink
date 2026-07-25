@@ -70,8 +70,12 @@ export default async function LocaleLayout({
       lang={locale}
       dir={dir}
       className={`${geistSans.variable} ${geistMono.variable} ${openSans.variable} ${cairo.variable} h-full antialiased`}
+      // Browser extensions (QuillBot, Grammarly, Dark Reader, …) inject
+      // attributes onto <html> before React hydrates. Suppressing the warning
+      // on this single element avoids a false hydration mismatch.
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">
+      <body className="min-h-full flex flex-col" suppressHydrationWarning>
         <NextIntlClientProvider messages={messages}>
           <DirectionProvider direction={dir}>{children}</DirectionProvider>
         </NextIntlClientProvider>
