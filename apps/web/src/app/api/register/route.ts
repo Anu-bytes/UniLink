@@ -100,7 +100,9 @@ async function registerWithProfile(body: unknown) {
       data: {
         userId: created.id,
         studyLevel: profile.studyLevel,
-        gradingScheme: profile.gradingScheme,
+        highSchoolSystem: profile.highSchoolSystem,
+        highSchoolSystemOther: profile.highSchoolSystemOther ?? null,
+        graduationYear: profile.graduationYear,
         gradeValue: profile.gradeValue,
         fieldsOfStudy: profile.fieldsOfStudy,
         englishTest: profile.englishTest,

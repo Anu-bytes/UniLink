@@ -134,6 +134,22 @@
         "Governorates covered",
         "Scholarships listed"
       ]
+    },
+    "stats": {
+      "items": [
+        {
+          "value": "60+",
+          "label": "Universities in Egypt"
+        },
+        {
+          "value": "20,000+",
+          "label": "Students guided"
+        },
+        {
+          "value": "500+",
+          "label": "Programs listed"
+        }
+      ]
     }
   },
   "Auth": {
@@ -198,15 +214,20 @@
       "help": "This helps us show programs that fit your academic stage."
     },
     "academics": {
-      "name": "Academics",
-      "heading": "How did you score academically?",
-      "help": "Your grades help us check which programs you're eligible for.",
-      "schemeLabel": "Grading scheme",
-      "gradeLabel": "Your grade",
-      "gradePlaceholder": "e.g. 85"
+      "name": "Academic Informations",
+      "heading": "Tell us about your academic background",
+      "help": "This helps us check which programs you're eligible for.",
+      "systemLabel": "High school system",
+      "systemPlaceholder": "Select your high school system",
+      "otherLabel": "Please specify",
+      "otherPlaceholder": "e.g. French Baccalaureate",
+      "graduationYearLabel": "Expected year of graduation",
+      "graduationYearPlaceholder": "Select year",
+      "gradeLabel": "Expected grade",
+      "gradePlaceholder": "e.g. 95% or 3.8 GPA"
     },
     "field": {
-      "name": "Field of Study",
+      "name": "Study preferences",
       "heading": "What would you like to study?",
       "help": "We'll use this to find programs with the best career outcomes in your field. Choose up to 3.",
       "placeholder": "Search field of study…",
@@ -240,8 +261,8 @@
       "yearPlaceholder": "Select year"
     },
     "financials": {
-      "name": "Financials",
-      "heading": "Select your tuition budget (EGP)?",
+      "name": "Annual tuition budget",
+      "heading": "Select your annual tuition budget (EGP)?",
       "help": "We'll use this to prioritize programs and scholarships that fit your financial goals.",
       "label": "Tuition budget (EGP)",
       "placeholder": "Select your budget…"
@@ -254,10 +275,14 @@
         "MASTER": "Master's degree",
         "DOCTORATE": "Doctorate / PhD"
       },
-      "gradingScheme": {
-        "percentage": "Percentage (out of 100)",
-        "gpa4": "GPA (out of 4.0)",
-        "gpa10": "GPA (out of 10)"
+      "highSchoolSystem": {
+        "THANAWEYA_AMMA": "Egyptian Thanaweya Amma",
+        "IGCSE": "IGCSE",
+        "AMERICAN_DIPLOMA": "American Diploma",
+        "STEM": "STEM",
+        "AL_AZHAR": "Al-Azhar",
+        "ARAB_CERTIFICATE": "Arab High School Certificate",
+        "OTHER": "Other"
       },
       "englishTest": {
         "IELTS": "IELTS",

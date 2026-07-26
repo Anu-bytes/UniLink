@@ -22,7 +22,15 @@ export const ENGLISH_TESTS = [
   "NONE",
 ] as const;
 
-export const GRADING_SCHEMES = ["percentage", "gpa4", "gpa10"] as const;
+export const HIGH_SCHOOL_SYSTEMS = [
+  "THANAWEYA_AMMA",
+  "IGCSE",
+  "AMERICAN_DIPLOMA",
+  "STEM",
+  "AL_AZHAR",
+  "ARAB_CERTIFICATE",
+  "OTHER",
+] as const;
 
 export const INTAKE_SEASONS = ["WINTER", "SPRING", "SUMMER", "FALL"] as const;
 
@@ -35,11 +43,19 @@ export const BUDGET_BANDS = [
 ] as const;
 
 const currentYear = new Date().getFullYear();
-// Current year plus the next four (5 intake years total).
-const INTAKE_YEAR_COUNT = 5;
+// Previous year, current year, and next year (3 intake years total),
+// e.g. 2025, 2026, 2027.
+const INTAKE_YEAR_COUNT = 3;
 export const INTAKE_YEARS: readonly number[] = Array.from(
   { length: INTAKE_YEAR_COUNT },
-  (_, i) => currentYear + i,
+  (_, i) => currentYear - 1 + i,
+);
+
+// Expected high-school graduation years: from four years ahead down to ten
+// years back, covering upcoming as well as recent graduates.
+export const GRADUATION_YEARS: readonly number[] = Array.from(
+  { length: 15 },
+  (_, i) => currentYear + 4 - i,
 );
 
 // ---------------------------------------------------------------------------
@@ -54,24 +70,24 @@ export const studyLevelSchema = z.object({
 
 export const academicsSchema = z
   .object({
-    gradingScheme: z.enum(GRADING_SCHEMES),
-    gradeValue: z.coerce
-      .number({ invalid_type_error: "Enter your grade" })
-      .positive("Enter your grade"),
+    highSchoolSystem: z.enum(HIGH_SCHOOL_SYSTEMS),
+    // Free-text detail, only required when the chosen system is "OTHER".
+    highSchoolSystemOther: z.string().trim().max(80).optional(),
+    graduationYear: z.coerce
+      .number()
+      .int()
+      .refine((y) => (GRADUATION_YEARS as readonly number[]).includes(y), {
+        message: "Select your expected graduation year",
+      }),
+    // Kept free-text so it fits any system (percentage, GPA, letter grades…).
+    gradeValue: z.string().trim().min(1, "Enter your expected grade"),
   })
   .superRefine((data, ctx) => {
-    // Sanity-bound the grade to the chosen scheme.
-    const max =
-      data.gradingScheme === "gpa4"
-        ? 4
-        : data.gradingScheme === "gpa10"
-          ? 10
-          : 100; // percentage
-    if (data.gradeValue > max) {
+    if (data.highSchoolSystem === "OTHER" && !data.highSchoolSystemOther) {
       ctx.addIssue({
         code: z.ZodIssueCode.custom,
-        path: ["gradeValue"],
-        message: `Grade cannot exceed ${max} for this scheme`,
+        path: ["highSchoolSystemOther"],
+        message: "Please specify your high school system",
       });
     }
   });
@@ -158,8 +174,10 @@ export type WizardStepKey = (typeof WIZARD_STEPS)[number]["key"];
 
 export const profileSchema = z.object({
   studyLevel: studyLevelSchema.shape.studyLevel,
-  gradingScheme: z.enum(GRADING_SCHEMES),
-  gradeValue: z.coerce.number().positive(),
+  highSchoolSystem: z.enum(HIGH_SCHOOL_SYSTEMS),
+  highSchoolSystemOther: z.string().trim().max(80).optional(),
+  graduationYear: z.coerce.number().int(),
+  gradeValue: z.string().trim().min(1),
   fieldsOfStudy: fieldSchema.shape.fieldsOfStudy,
   englishTest: z.enum(ENGLISH_TESTS),
   englishScore: z.coerce.number().positive().optional(),

@@ -8,6 +8,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Megaphone,
+  Star,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -18,7 +19,6 @@ import { Link } from "@/i18n/navigation";
 import { FeaturedUniversities } from "@/components/featured-universities";
 import { HeroStats } from "@/components/hero-stats";
 import { HowItWorks } from "@/components/how-it-works";
-import { ImagePlaceholder } from "@/components/image-placeholder";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { getLandingCatalog } from "@/lib/catalog";
@@ -124,13 +124,52 @@ export default async function HomePage() {
               delay={120}
               className="flex min-w-0 items-center justify-center lg:justify-end"
             >
-              <ImagePlaceholder
-                w={560}
-                h={460}
-                className="ul-float-slow w-full max-w-[34rem] bg-slate-300/50 shadow-[0_30px_60px_-30px_rgba(15,23,42,0.35)]"
-                rounded="rounded-[28px]"
-                label="Hero image 560×460"
-              />
+              <div className="ul-float-slow relative w-full max-w-[33rem] px-4 pb-6 pt-2">
+                {/* layered gradient accent behind the photo for depth */}
+                <div
+                  aria-hidden
+                  className="absolute inset-x-2 inset-y-4 -z-10 rotate-[4deg] rounded-[40px] bg-gradient-to-br from-[#1E6DEB]/25 via-[#3B86F7]/12 to-transparent"
+                />
+                {/* dotted pattern accent */}
+                <div
+                  aria-hidden
+                  className="absolute -top-2 end-0 -z-10 hidden size-28 rounded-full bg-[radial-gradient(rgba(30,109,235,0.28)_1.5px,transparent_1.5px)] [background-size:12px_12px] lg:block"
+                />
+
+                {/* white card mount around the photo */}
+                <div className="relative rounded-[30px] bg-white p-2.5 shadow-[0_40px_80px_-32px_rgba(15,23,42,0.5)] ring-1 ring-black/5">
+                  <div className="relative aspect-[5/4] overflow-hidden rounded-[22px] bg-slate-100">
+                    <Image
+                      src="/images/hero-booth.png"
+                      alt="UniLink"
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 33rem"
+                      className="object-cover"
+                      priority
+                    />
+                    <div
+                      aria-hidden
+                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0C1A34]/25 via-transparent to-transparent"
+                    />
+                  </div>
+                </div>
+
+                {/* floating badge */}
+                <div className="absolute -bottom-1 start-0 flex items-center gap-2.5 rounded-2xl border border-black/5 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur">
+                  <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-md">
+                    <GraduationCap className="size-5" aria-hidden />
+                  </span>
+                  <div className="flex gap-0.5">
+                    {Array.from({ length: 5 }).map((_, i) => (
+                      <Star
+                        key={i}
+                        className="size-3.5 fill-[#F5A623] text-[#F5A623]"
+                        aria-hidden
+                      />
+                    ))}
+                  </div>
+                </div>
+              </div>
             </Reveal>
           </div>
         </div>
@@ -237,17 +276,28 @@ export default async function HomePage() {
       </section>
 
       {/* REPRESENT A UNIVERSITY */}
-      <section className="bg-[#EEF4FE]">
-        <div className="mx-auto max-w-7xl px-4 py-14 md:px-6 md:py-20">
-          <div className="grid items-center gap-8 lg:grid-cols-2 lg:gap-12">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#EAF2FE] to-[#F7FAFF]">
+        <div className="mx-auto max-w-7xl px-4 py-16 md:px-6 md:py-24">
+          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-16">
             <Reveal className="flex justify-center lg:justify-start">
-              <ImagePlaceholder
-                w={520}
-                h={360}
-                rounded="rounded-[24px]"
-                className="w-full max-w-[32rem] bg-slate-300/50"
-                label=""
-              />
+              <div className="relative w-full max-w-[32rem]">
+                {/* decorative frame behind the photo, offset off the corner and
+                    gently floating on its own */}
+                <div
+                  aria-hidden
+                  className="ul-float-slow absolute inset-0 translate-x-5 translate-y-5 rounded-[26px] border-[3px] border-[#1E6DEB]/45 bg-[#1E6DEB]/5 rtl:-translate-x-5"
+                />
+                {/* static framed photo */}
+                <div className="relative z-10 aspect-[520/360] overflow-hidden rounded-[24px] bg-white shadow-[0_30px_70px_-34px_rgba(15,23,42,0.5)] ring-1 ring-black/5">
+                  <Image
+                    src="/images/represent-platform.jpg"
+                    alt={t("represent.title")}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 32rem"
+                    className="object-cover"
+                  />
+                </div>
+              </div>
             </Reveal>
 
             <Reveal delay={100} className="min-w-0 text-center lg:text-start">
@@ -258,18 +308,18 @@ export default async function HomePage() {
                 {t("represent.body")}
               </p>
 
-              <ul className="mt-6 grid grid-cols-2 gap-x-4 gap-y-4 sm:grid-cols-3">
+              <ul className="mt-8 grid gap-3 sm:grid-cols-2">
                 {representFeatures.map((feature, i) => {
                   const Icon = representIcons[i] ?? BarChart3;
                   return (
                     <li
                       key={feature}
-                      className="group flex flex-col items-center gap-2 text-center lg:items-start lg:text-start"
+                      className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 text-start shadow-sm ring-1 ring-black/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
                     >
-                      <span className="flex size-11 items-center justify-center rounded-xl bg-white text-[#1E6DEB] shadow-sm transition-all duration-300 group-hover:-translate-y-1 group-hover:bg-[#1E6DEB] group-hover:text-white group-hover:shadow-md">
+                      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#1E6DEB]/10 text-[#1E6DEB]">
                         <Icon className="size-5" strokeWidth={1.75} />
                       </span>
-                      <span className="text-xs leading-5 text-[#2D3748] md:text-[13px]">
+                      <span className="text-[13px] font-semibold leading-5 text-[#2D3748]">
                         {feature}
                       </span>
                     </li>

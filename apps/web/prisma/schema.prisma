@@ -86,10 +86,12 @@ model StudentProfile {
   userId String @unique
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  studyLevel    StudyLevel
-  gradingScheme String // "percentage" | "gpa4" | "gpa10"
-  gradeValue    Float
-  fieldsOfStudy String[]
+  studyLevel            StudyLevel
+  highSchoolSystem      String // e.g. THANAWEYA_AMMA, IGCSE, AMERICAN_DIPLOMA…
+  highSchoolSystemOther String? // free text when highSchoolSystem = OTHER
+  graduationYear        Int // expected high-school graduation year
+  gradeValue            String // expected grade, free text to fit any system
+  fieldsOfStudy         String[]
   englishTest   EnglishTest  @default(NONE)
   englishScore  Float? // null when englishTest = NONE
   nationality   String // ISO 3166-1 alpha-2 country code
