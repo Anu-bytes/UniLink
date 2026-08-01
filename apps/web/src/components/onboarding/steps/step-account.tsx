@@ -18,18 +18,24 @@ export function AccountStep({
   onFinish,
   error,
 }: {
-  onFinish: (account: { email: string; password: string }) => void;
+  onFinish: (account: {
+    email: string;
+    phone: string;
+    password: string;
+  }) => void;
   error: string | null;
 }) {
   const t = useTranslations("Onboarding.account");
   const { data, setData } = useWizard();
   const form = useStepForm(accountSchema, {
     email: data.email,
+    phone: data.phone,
     password: data.password,
     acceptTerms: data.acceptTerms === true ? true : undefined,
   });
 
   const email = (form.values.email as string) ?? "";
+  const phone = (form.values.phone as string) ?? "";
   const password = (form.values.password as string) ?? "";
   const acceptTerms = Boolean(form.values.acceptTerms);
 
@@ -37,9 +43,13 @@ export function AccountStep({
     e.preventDefault();
     const valid = form.validate();
     if (!valid) return;
-    // Persist email so a refresh keeps it (password intentionally not stored).
-    setData({ email: valid.email });
-    onFinish({ email: valid.email, password: valid.password });
+    // Persist email and phone so a refresh keeps them (password not stored).
+    setData({ email: valid.email, phone: valid.phone });
+    onFinish({
+      email: valid.email,
+      phone: valid.phone,
+      password: valid.password,
+    });
   }
 
   const terms = t.rich("terms", {
@@ -79,6 +89,18 @@ export function AccountStep({
           placeholder={t("emailPlaceholder")}
           value={email}
           onChange={(e) => form.setValue("email", e.target.value)}
+        />
+      </Field>
+
+      <Field label={t("phoneLabel")} error={form.errors.phone}>
+        <Input
+          type="tel"
+          autoComplete="tel"
+          inputMode="tel"
+          dir="ltr"
+          placeholder={t("phonePlaceholder")}
+          value={phone}
+          onChange={(e) => form.setValue("phone", e.target.value)}
         />
       </Field>
 

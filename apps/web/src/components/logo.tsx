@@ -18,10 +18,14 @@ export function Logo({
       aria-label="UniLink"
     >
       <Image
-        src={isFull ? "/logo/unilink-logo-full.png" : "/logo/unilink-logo-mark.png"}
+        src={
+          isFull
+            ? "/logo/unilink-logo-full-v2.png"
+            : "/logo/unilink-logo-mark-v2.png"
+        }
         alt="UniLink"
-        width={isFull ? 466 : 229}
-        height={isFull ? 149 : 259}
+        width={isFull ? 451 : 112}
+        height={isFull ? 134 : 130}
         className={isFull ? "h-12 w-auto" : "h-11 w-auto object-contain"}
         priority
       />

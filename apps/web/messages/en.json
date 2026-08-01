@@ -128,11 +128,11 @@
     },
     "counters": {
       "items": [
-        "Universities in Egypt",
-        "Programs listed",
-        "Students guided",
+        "Universities",
+        "Programs",
+        "Students",
         "Governorates covered",
-        "Scholarships listed"
+        "Scholarships"
       ]
     },
     "stats": {
@@ -207,6 +207,17 @@
     "common": {
       "select": "Select…",
       "clear": "Clear selection"
+    },
+    "personalInfo": {
+      "name": "Personal Information",
+      "heading": "Tell us a bit about yourself",
+      "help": "We'll use your name and country to personalize your matches and unlock country-specific scholarships and visa guides.",
+      "firstNameLabel": "First name",
+      "firstNamePlaceholder": "e.g. Sara",
+      "lastNameLabel": "Last name",
+      "lastNamePlaceholder": "e.g. Ahmed",
+      "countryLabel": "Country",
+      "countryPlaceholder": "Search your country…"
     },
     "studyLevel": {
       "name": "Study Level",
@@ -311,6 +322,8 @@
       "help": "Create an account to save your answers and see your matches.",
       "emailLabel": "Email",
       "emailPlaceholder": "you@example.com",
+      "phoneLabel": "Phone number",
+      "phonePlaceholder": "+20 100 123 4567",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Create a password",
       "orContinueWith": "Or continue with",

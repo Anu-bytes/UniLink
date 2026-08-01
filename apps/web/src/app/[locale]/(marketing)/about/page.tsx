@@ -87,10 +87,10 @@ export default async function AboutPage() {
               <div className="grid grid-cols-2 gap-4">
                 <div className="ul-float flex aspect-square items-center justify-center rounded-3xl bg-white p-6 shadow-[0_24px_60px_-20px_rgba(30,109,235,0.45)] ring-1 ring-[#1E6DEB]/10">
                   <Image
-                    src="/logo/unilink-logo-mark.png"
+                    src="/logo/unilink-logo-mark-v2.png"
                     alt="UniLink"
-                    width={229}
-                    height={259}
+                    width={112}
+                    height={130}
                     className="h-20 w-auto object-contain"
                   />
                 </div>

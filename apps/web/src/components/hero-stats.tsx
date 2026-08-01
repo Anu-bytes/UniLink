@@ -3,7 +3,9 @@
 import { useEffect, useRef, useState } from "react";
 import { Award, Building2, BookOpen, Users, type LucideIcon } from "lucide-react";
 
-const icons: LucideIcon[] = [Award, Users, BookOpen, Building2];
+// Order matches heroStatOrder in the homepage: university, program,
+// student, scholarship.
+const icons: LucideIcon[] = [Building2, BookOpen, Users, Award];
 
 function useCountUp(target: number, started: boolean, duration = 1400) {
   const [value, setValue] = useState(0);
@@ -45,16 +47,18 @@ function StatCard({
   started: boolean;
 }) {
   const current = useCountUp(value, started);
+  // No backdrop-blur here on purpose: the hero background behind these cards
+  // animates, so a backdrop filter would re-blur every frame.
   return (
-    <div className="hover-lift group flex items-center gap-3 rounded-2xl border border-white/70 bg-white/80 px-3 py-3 shadow-sm backdrop-blur-sm md:px-4">
-      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#1E6DEB]/10 text-[#1E6DEB] transition-transform duration-300 group-hover:scale-110 md:size-10">
+    <div className="hover-lift group flex items-center justify-center gap-3 rounded-2xl border border-white/80 bg-white/90 px-3 py-4 shadow-[0_10px_30px_-18px_rgba(15,23,42,0.45)]">
+      <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#1E6DEB]/10 text-[#1E6DEB] transition-transform duration-300 group-hover:scale-110">
         <Icon className="size-5" strokeWidth={2} />
       </span>
-      <div className="min-w-0">
-        <div className="text-[18px] font-bold leading-none tabular-nums text-[#16233F] md:text-[20px]">
+      <div>
+        <div className="text-[20px] font-bold leading-none tabular-nums text-[#16233F]">
           +{Math.round(current).toLocaleString("en-US")}
         </div>
-        <div className="mt-1 truncate text-xs leading-4 text-[#5a6072] md:text-[13px]">
+        <div className="mt-1 text-xs leading-4 text-[#5a6072] md:text-[13px]">
           {label}
         </div>
       </div>

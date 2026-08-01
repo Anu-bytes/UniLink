@@ -23,6 +23,9 @@ const baseSchema = z.object({
 // wizard enforces a 10-char password client-side; we require min 10 here too.
 const onboardingSchema = z.object({
   email: z.string().email(),
+  phone: z.string().trim().min(7, "Enter a valid phone number"),
+  firstName: z.string().trim().min(1).max(50),
+  lastName: z.string().trim().min(1).max(50),
   password: z.string().min(10, "Password must be at least 10 characters"),
   profile: profileSchema,
 });
@@ -80,7 +83,7 @@ async function registerWithProfile(body: unknown) {
     );
   }
 
-  const { email, password, profile } = parsed.data;
+  const { email, phone, firstName, lastName, password, profile } = parsed.data;
 
   if (await emailTaken(email)) {
     return conflict();
@@ -92,24 +95,33 @@ async function registerWithProfile(body: unknown) {
   // persisted, so we never leave a credential-less or profile-less account.
   const user = await prisma.$transaction(async (tx) => {
     const created = await tx.user.create({
-      data: { email, passwordHash },
+      data: {
+        email,
+        phone,
+        firstName,
+        lastName,
+        name: `${firstName} ${lastName}`,
+        passwordHash,
+      },
       select: { id: true, email: true },
     });
 
     await tx.studentProfile.create({
       data: {
         userId: created.id,
-        studyLevel: profile.studyLevel,
+        // Study level is no longer collected in onboarding; the column is still
+        // NOT NULL, so default new profiles to bachelor.
+        studyLevel: "BACHELOR",
         highSchoolSystem: profile.highSchoolSystem,
         highSchoolSystemOther: profile.highSchoolSystemOther ?? null,
         graduationYear: profile.graduationYear,
         gradeValue: profile.gradeValue,
         fieldsOfStudy: profile.fieldsOfStudy,
-        englishTest: profile.englishTest,
-        englishScore: profile.englishScore ?? null,
         nationality: profile.nationality,
-        intakeSeason: profile.intakeSeason,
-        intakeYear: profile.intakeYear,
+        // Intake is no longer collected in onboarding; the columns are still
+        // NOT NULL, so default new profiles to the upcoming fall intake.
+        intakeSeason: "FALL",
+        intakeYear: new Date().getFullYear(),
         budgetBand: profile.budgetBand,
       },
     });

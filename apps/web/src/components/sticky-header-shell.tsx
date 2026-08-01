@@ -39,7 +39,9 @@ export function StickyHeaderShell({
   return (
     <header
       className={cn(
-        "sticky top-0 z-50 border-b bg-background/90 backdrop-blur-sm transition-shadow duration-300",
+        // No backdrop-blur: the header is sticky and always on screen, so a
+        // backdrop filter re-blurs the strip behind it on every scroll frame.
+        "sticky top-0 z-50 border-b bg-background/95 transition-shadow duration-300",
         scrolled
           ? "border-border shadow-[0_6px_24px_-12px_rgba(15,23,42,0.25)]"
           : "border-transparent",

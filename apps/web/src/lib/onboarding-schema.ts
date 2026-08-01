@@ -51,11 +51,11 @@ export const INTAKE_YEARS: readonly number[] = Array.from(
   (_, i) => currentYear - 1 + i,
 );
 
-// Expected high-school graduation years: from four years ahead down to ten
-// years back, covering upcoming as well as recent graduates.
+// Expected high-school graduation years: previous, current, and next year
+// (e.g. 2025, 2026, 2027).
 export const GRADUATION_YEARS: readonly number[] = Array.from(
-  { length: 15 },
-  (_, i) => currentYear + 4 - i,
+  { length: 3 },
+  (_, i) => currentYear - 1 + i,
 );
 
 // ---------------------------------------------------------------------------
@@ -66,6 +66,14 @@ export const GRADUATION_YEARS: readonly number[] = Array.from(
 
 export const studyLevelSchema = z.object({
   studyLevel: z.enum(STUDY_LEVELS),
+});
+
+// First step: name + country. firstName/lastName live on the User; nationality
+// (the country code) is a StudentProfile field.
+export const personalInfoSchema = z.object({
+  firstName: z.string().trim().min(1, "Enter your first name").max(50),
+  lastName: z.string().trim().min(1, "Enter your last name").max(50),
+  nationality: z.string().length(2, "Select your country"),
 });
 
 export const academicsSchema = z
@@ -135,6 +143,11 @@ export const financialsSchema = z.object({
 // Reuses the same password policy as the existing /api/register route.
 export const accountSchema = z.object({
   email: z.string().email("Enter a valid email"),
+  phone: z
+    .string()
+    .trim()
+    .min(7, "Enter a valid phone number")
+    .regex(/^[+\d][\d\s()-]{6,}$/, "Enter a valid phone number"),
   password: z
     .string()
     .min(10, "Password must be at least 10 characters")
@@ -152,12 +165,9 @@ export const accountSchema = z.object({
 // ---------------------------------------------------------------------------
 
 export const WIZARD_STEPS = [
-  { key: "studyLevel", schema: studyLevelSchema },
+  { key: "personalInfo", schema: personalInfoSchema },
   { key: "academics", schema: academicsSchema },
   { key: "field", schema: fieldSchema },
-  { key: "english", schema: englishSchema },
-  { key: "nationality", schema: nationalitySchema },
-  { key: "intake", schema: intakeSchema },
   { key: "financials", schema: financialsSchema },
   { key: "account", schema: accountSchema },
 ] as const;
@@ -173,22 +183,20 @@ export type WizardStepKey = (typeof WIZARD_STEPS)[number]["key"];
 // ---------------------------------------------------------------------------
 
 export const profileSchema = z.object({
-  studyLevel: studyLevelSchema.shape.studyLevel,
   highSchoolSystem: z.enum(HIGH_SCHOOL_SYSTEMS),
   highSchoolSystemOther: z.string().trim().max(80).optional(),
   graduationYear: z.coerce.number().int(),
   gradeValue: z.string().trim().min(1),
   fieldsOfStudy: fieldSchema.shape.fieldsOfStudy,
-  englishTest: z.enum(ENGLISH_TESTS),
-  englishScore: z.coerce.number().positive().optional(),
   nationality: nationalitySchema.shape.nationality,
-  intakeSeason: intakeSchema.shape.intakeSeason,
-  intakeYear: intakeSchema.shape.intakeYear,
   budgetBand: financialsSchema.shape.budgetBand,
 });
 
 export const registerPayloadSchema = z.object({
   email: accountSchema.shape.email,
+  phone: accountSchema.shape.phone,
+  firstName: personalInfoSchema.shape.firstName,
+  lastName: personalInfoSchema.shape.lastName,
   password: accountSchema.shape.password,
   profile: profileSchema,
 });
@@ -203,7 +211,10 @@ export type RegisterPayload = z.infer<typeof registerPayloadSchema>;
 // The wizard accumulates a partial version of all fields as the user advances.
 export type WizardData = Partial<
   ProfileData & {
+    firstName: string;
+    lastName: string;
     email: string;
+    phone: string;
     password: string;
     acceptTerms: boolean;
   }
