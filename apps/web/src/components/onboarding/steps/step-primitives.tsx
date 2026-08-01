@@ -2,7 +2,14 @@
 
 import { useState, type ReactNode } from "react";
 import Image from "next/image";
-import { MessageSquareText, Sparkles } from "lucide-react";
+import {
+  BookOpen,
+  Globe,
+  GraduationCap,
+  MessageSquareText,
+  Sparkles,
+  Wallet,
+} from "lucide-react";
 import type { z } from "zod";
 
 import { cn } from "@/lib/utils";
@@ -59,58 +66,74 @@ function Mascot() {
   return (
     <div className="flex size-11 shrink-0 items-center justify-center overflow-hidden rounded-full bg-brand-blue-light sm:size-12">
       <Image
-        src="/logo/unilink-logo-mark.png"
+        src="/logo/unilink-logo-mark-v2.png"
         alt=""
-        width={40}
-        height={40}
-        className="size-8 object-contain"
+        width={48}
+        height={48}
+        className="size-10 object-contain"
       />
     </div>
   );
 }
 
 // -----------------------------------------------------------------------------
-// Illustration panel: rings + optional orbiting flag/emoji badges around a
-// central icon. Approximates the reference art with our own styling.
+// Illustration panel: a soft brand-gradient scene with glow, rings, a few
+// floating themed icons, and a bold gradient chip holding the per-step icon.
 // -----------------------------------------------------------------------------
 
-const ORBIT_POS = [
-  "top-6 start-10",
-  "top-5 end-12",
-  "top-1/3 start-4",
-  "top-1/2 end-6",
-  "bottom-10 start-12",
-  "bottom-7 end-14",
-  "bottom-1/3 start-1/3",
-  "top-1/4 end-1/3",
-];
+const FLOATING_ICONS = [
+  { Icon: GraduationCap, pos: "top-8 start-10", color: "text-brand-blue" },
+  { Icon: BookOpen, pos: "top-7 end-12", color: "text-brand-red" },
+  { Icon: Globe, pos: "bottom-10 start-12", color: "text-brand-blue" },
+  { Icon: Wallet, pos: "bottom-8 end-12", color: "text-brand-blue" },
+] as const;
 
-export function IllustrationPanel({
-  children,
-  orbits,
-}: {
-  children: ReactNode;
-  orbits?: string[];
-}) {
+export function IllustrationPanel({ children }: { children: ReactNode }) {
   return (
-    <div className="relative hidden min-h-[280px] overflow-hidden rounded-2xl bg-brand-blue-light md:flex md:items-center md:justify-center">
-      <div className="absolute size-72 rounded-full border border-brand-blue/10" />
-      <div className="absolute size-52 rounded-full border border-brand-blue/10" />
-      <div className="absolute size-32 rounded-full border border-brand-blue/10" />
+    <div className="relative hidden min-h-[280px] items-center justify-center overflow-hidden rounded-2xl bg-gradient-to-br from-brand-blue-light via-white to-brand-blue-light md:flex">
+      {/* soft glow blobs for depth */}
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -start-10 -top-10 size-40 rounded-full bg-brand-blue/25 blur-3xl"
+      />
+      <div
+        aria-hidden
+        className="pointer-events-none absolute -bottom-12 -end-8 size-44 rounded-full bg-brand-red/15 blur-3xl"
+      />
 
-      {orbits?.slice(0, ORBIT_POS.length).map((emoji, i) => (
+      {/* concentric rings */}
+      <div
+        aria-hidden
+        className="absolute size-64 rounded-full border border-brand-blue/10"
+      />
+      <div
+        aria-hidden
+        className="absolute size-44 rounded-full border border-brand-blue/10"
+      />
+
+      {/* dotted accent */}
+      <div
+        aria-hidden
+        className="absolute end-6 top-6 size-16 rounded-full bg-[radial-gradient(rgba(0,99,231,0.3)_1.5px,transparent_1.5px)] [background-size:11px_11px]"
+      />
+
+      {/* floating themed icons */}
+      {FLOATING_ICONS.map(({ Icon, pos, color }, i) => (
         <span
           key={i}
+          aria-hidden
           className={cn(
-            "absolute flex size-9 items-center justify-center rounded-full bg-white text-lg shadow-sm",
-            ORBIT_POS[i],
+            "absolute flex size-11 items-center justify-center rounded-2xl bg-white shadow-md",
+            pos,
+            color,
           )}
         >
-          {emoji}
+          <Icon className="size-5" strokeWidth={2} />
         </span>
       ))}
 
-      <div className="relative flex size-24 items-center justify-center rounded-2xl bg-white text-brand-blue shadow-sm">
+      {/* central gradient chip with the per-step icon */}
+      <div className="ul-float-slow relative flex size-28 items-center justify-center rounded-[28px] bg-gradient-to-br from-brand-blue to-brand-blue-dark text-white shadow-[0_22px_45px_-15px_rgba(0,99,231,0.7)] ring-8 ring-white/60">
         {children}
       </div>
     </div>
@@ -128,7 +151,6 @@ export function StepShell({
   submitLabel,
   onSubmit,
   illustration,
-  orbits,
   children,
   submitting,
 }: {
@@ -137,7 +159,6 @@ export function StepShell({
   submitLabel: string;
   onSubmit: (e: React.FormEvent<HTMLFormElement>) => void;
   illustration: ReactNode;
-  orbits?: string[];
   children: ReactNode;
   submitting?: boolean;
 }) {
@@ -151,7 +172,7 @@ export function StepShell({
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
-        <IllustrationPanel orbits={orbits}>{illustration}</IllustrationPanel>
+        <IllustrationPanel>{illustration}</IllustrationPanel>
         <div className="flex flex-col justify-center gap-4">{children}</div>
       </div>
 

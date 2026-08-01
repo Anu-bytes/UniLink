@@ -35,11 +35,23 @@ export function Wizard() {
     return <div className="min-h-[420px]" aria-hidden />;
   }
 
-  async function handleFinish(account: { email: string; password: string }) {
+  async function handleFinish(account: {
+    email: string;
+    phone: string;
+    password: string;
+  }) {
     setError(null);
     setPhase("submitting");
 
-    const { email, password, acceptTerms: _t, ...profile } = {
+    const {
+      email,
+      phone,
+      firstName,
+      lastName,
+      password,
+      acceptTerms: _t,
+      ...profile
+    } = {
       ...data,
       ...account,
     };
@@ -49,7 +61,14 @@ export function Wizard() {
       const res = await fetch("/api/register", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, password, profile }),
+        body: JSON.stringify({
+          email,
+          phone,
+          firstName,
+          lastName,
+          password,
+          profile,
+        }),
       });
 
       if (!res.ok) {

@@ -19,6 +19,7 @@ import { Link } from "@/i18n/navigation";
 import { FeaturedUniversities } from "@/components/featured-universities";
 import { HeroStats } from "@/components/hero-stats";
 import { HowItWorks } from "@/components/how-it-works";
+import { MotionSection } from "@/components/motion-section";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { getLandingCatalog } from "@/lib/catalog";
@@ -35,8 +36,8 @@ const representIcons: LucideIcon[] = [
 ];
 
 // Hero stat order maps into catalog.stats / counters.items:
-// [scholarships(4), students(2), programs(1), universities(0)]
-const heroStatOrder = [4, 2, 1, 0];
+// [universities(0), programs(1), students(2), scholarships(4)]
+const heroStatOrder = [0, 1, 2, 4];
 
 function PrimaryButton({
   href,
@@ -75,18 +76,19 @@ export default async function HomePage() {
   return (
     <div className="font-[family-name:var(--font-open-sans)] text-[#2D3748]">
       {/* HERO */}
-      <section className="relative overflow-hidden bg-gradient-to-b from-[#EAF2FE] to-white">
-        {/* decorative drifting blobs */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-0">
-          <span className="ul-blob absolute -left-24 -top-24 size-72 rounded-full bg-[#1E6DEB]/10 blur-3xl" />
-          <span className="ul-blob absolute -right-16 top-24 size-80 rounded-full bg-[#7AA5F5]/20 blur-3xl [animation-delay:-6s]" />
-          <span className="ul-blob absolute bottom-0 left-1/3 size-64 rounded-full bg-[#B9D0FA]/25 blur-3xl [animation-delay:-10s]" />
+      <MotionSection className="ul-mesh relative isolate overflow-hidden">
+        {/* decorative backdrop: a single soft blob behind the image + dot grid */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
+          <span className="ul-drift absolute -right-24 -top-16 size-80 rounded-full bg-[#F5A623]/18 blur-3xl [animation-delay:-7s] [animation-duration:21s]" />
+          <span className="ul-dots absolute -inset-8" />
+          {/* soft hand-off into the white section below */}
+          <span className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-white" />
         </div>
 
         <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16 lg:py-20">
           <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
             <Reveal className="min-w-0 text-center lg:text-start">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#CFE0FB] bg-white/80 px-4 py-1.5 text-[13px] font-semibold text-[#1E6DEB] shadow-sm backdrop-blur-sm">
+              <span className="inline-flex items-center gap-2 rounded-full border border-[#CFE0FB] bg-white/90 px-4 py-1.5 text-[13px] font-semibold text-[#1E6DEB] shadow-sm">
                 <span className="relative flex size-2.5">
                   <span className="ul-blink-warm inline-flex size-2.5 rounded-full bg-[#f82c1f]" />
                 </span>
@@ -95,7 +97,9 @@ export default async function HomePage() {
 
               <h1 className="mt-4 text-[clamp(2rem,6vw,3rem)] font-bold leading-[1.15] text-[#16233F]">
                 {t("hero.titleLead")}{" "}
-                <span className="text-[#1E6DEB]">{t("hero.titleHighlight")}</span>
+                <span className="ul-text-shine text-[#1E6DEB]">
+                  {t("hero.titleHighlight")}
+                </span>
               </h1>
               <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#4A5568] md:mt-5 md:text-[18px] md:leading-8 lg:mx-0">
                 {t("hero.subtitle")}
@@ -108,8 +112,20 @@ export default async function HomePage() {
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Link
                   href="/onboarding"
-                  className="group inline-flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#1E6DEB] to-[#3B86F7] px-8 py-4 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-14px_rgba(30,109,235,0.8)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:translate-y-0 motion-reduce:transform-none sm:w-auto"
+                  className="group relative inline-flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#1E6DEB] to-[#3B86F7] px-8 py-4 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-14px_rgba(30,109,235,0.8)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:translate-y-0 motion-reduce:transform-none sm:w-auto"
                 >
+                  {/* pulse ring, outside the clip so it can scale past the edge */}
+                  <span
+                    aria-hidden
+                    className="ul-cta-ring pointer-events-none absolute inset-0 rounded-full ring-2 ring-[#3B86F7]"
+                  />
+                  {/* shine passing over the button, clipped to its own layer */}
+                  <span
+                    aria-hidden
+                    className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
+                  >
+                    <span className="ul-sheen absolute inset-y-0 -left-1/4 w-1/4 bg-gradient-to-r from-transparent via-white/35 to-transparent [animation-duration:6s]" />
+                  </span>
                   <GraduationCap className="size-5 shrink-0" aria-hidden />
                   {t("hero.cta")}
                   <ArrowRight
@@ -128,7 +144,7 @@ export default async function HomePage() {
                 {/* layered gradient accent behind the photo for depth */}
                 <div
                   aria-hidden
-                  className="absolute inset-x-2 inset-y-4 -z-10 rotate-[4deg] rounded-[40px] bg-gradient-to-br from-[#1E6DEB]/25 via-[#3B86F7]/12 to-transparent"
+                  className="absolute inset-x-2 inset-y-4 -z-10 rotate-[4deg] rounded-[40px] bg-gradient-to-br from-[#1E6DEB]/40 via-[#3B86F7]/22 to-[#F5A623]/25 blur-[2px]"
                 />
                 {/* dotted pattern accent */}
                 <div
@@ -138,9 +154,14 @@ export default async function HomePage() {
 
                 {/* white card mount around the photo */}
                 <div className="relative rounded-[30px] bg-white p-2.5 shadow-[0_40px_80px_-32px_rgba(15,23,42,0.5)] ring-1 ring-black/5">
+                  {/* halo turning behind the card */}
+                  <div
+                    aria-hidden
+                    className="ul-ring-glow pointer-events-none absolute -inset-4 -z-10 rounded-[44px] opacity-70 blur-2xl"
+                  />
                   <div className="relative aspect-[5/4] overflow-hidden rounded-[22px] bg-slate-100">
                     <Image
-                      src="/images/hero-booth.png"
+                      src="/images/hero-booth-v2.png"
                       alt="UniLink"
                       fill
                       sizes="(max-width: 1024px) 100vw, 33rem"
@@ -151,11 +172,16 @@ export default async function HomePage() {
                       aria-hidden
                       className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0C1A34]/25 via-transparent to-transparent"
                     />
+                    {/* light sweeping across the card */}
+                    <span
+                      aria-hidden
+                      className="ul-sheen pointer-events-none absolute inset-y-0 -left-1/4 w-1/4 bg-gradient-to-r from-transparent via-white/45 to-transparent"
+                    />
                   </div>
                 </div>
 
-                {/* floating badge */}
-                <div className="absolute -bottom-1 start-0 flex items-center gap-2.5 rounded-2xl border border-black/5 bg-white/95 px-3.5 py-2.5 shadow-xl backdrop-blur">
+                {/* rating badge */}
+                <div className="absolute -bottom-1 start-0 flex items-center gap-2.5 rounded-2xl border border-black/5 bg-white px-3.5 py-2.5 shadow-xl">
                   <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-md">
                     <GraduationCap className="size-5" aria-hidden />
                   </span>
@@ -173,7 +199,7 @@ export default async function HomePage() {
             </Reveal>
           </div>
         </div>
-      </section>
+      </MotionSection>
 
       {/* FEATURED UNIVERSITIES */}
       <section className="bg-white">
@@ -239,7 +265,7 @@ export default async function HomePage() {
               {/* Photo column (left in RTL) */}
               <div className="relative min-h-[13rem] w-full shrink-0 bg-slate-100 sm:min-h-0 sm:w-[42%]">
                 <Image
-                  src="/images/why-student.jpg"
+                  src="/images/why-student.png"
                   alt={t("features.student.title")}
                   fill
                   sizes="(max-width: 640px) 100vw, 22vw"
@@ -254,7 +280,7 @@ export default async function HomePage() {
               {/* Photo column (right in RTL) — fills to the border like the student card */}
               <div className="relative min-h-[13rem] w-full shrink-0 sm:min-h-0 sm:w-[42%]">
                 <Image
-                  src="/images/decision-family.png"
+                  src="/images/decision-family-v2.png"
                   alt={t("features.decision.title")}
                   fill
                   sizes="(max-width: 640px) 100vw, 22vw"
@@ -290,7 +316,7 @@ export default async function HomePage() {
                 {/* static framed photo */}
                 <div className="relative z-10 aspect-[520/360] overflow-hidden rounded-[24px] bg-white shadow-[0_30px_70px_-34px_rgba(15,23,42,0.5)] ring-1 ring-black/5">
                   <Image
-                    src="/images/represent-platform.jpg"
+                    src="/images/represent-platform.png"
                     alt={t("represent.title")}
                     fill
                     sizes="(max-width: 1024px) 100vw, 32rem"
@@ -314,7 +340,7 @@ export default async function HomePage() {
                   return (
                     <li
                       key={feature}
-                      className="flex items-center gap-3 rounded-2xl bg-white/80 p-3 text-start shadow-sm ring-1 ring-black/5 backdrop-blur-sm transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                      className="flex items-center gap-3 rounded-2xl bg-white/90 p-3 text-start shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
                     >
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#1E6DEB]/10 text-[#1E6DEB]">
                         <Icon className="size-5" strokeWidth={1.75} />

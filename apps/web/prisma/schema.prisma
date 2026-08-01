@@ -19,7 +19,10 @@ datasource db {
 model User {
   id             String          @id @default(cuid())
   name           String?
+  firstName      String? // collected at onboarding registration
+  lastName       String?
   email          String          @unique
+  phone          String? // collected at onboarding registration
   emailVerified  DateTime?
   image          String?
   // Set only for email/password (credentials) accounts. OAuth users have none.

@@ -57,6 +57,7 @@ export function SearchMultiSelect({
     if (atMax || selected.has(val)) return;
     onChange([...value, val]);
     setQuery("");
+    setOpen(false);
   }
   function remove(val: string) {
     onChange(value.filter((v) => v !== val));
@@ -75,6 +76,10 @@ export function SearchMultiSelect({
             disabled={atMax}
             placeholder={atMax ? "" : placeholder}
             onFocus={() => {
+              cancelClose();
+              setOpen(true);
+            }}
+            onClick={() => {
               cancelClose();
               setOpen(true);
             }}

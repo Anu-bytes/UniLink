@@ -245,6 +245,180 @@ html[lang="ar"] body {
     animation: ul-blob 16s ease-in-out infinite;
   }
 
+  /* Hero atmosphere. A static multi-stop mesh carries the colour, and the
+     moving pieces on top are transform/opacity only so they stay on the
+     compositor. Everything sits behind content and is aria-hidden. */
+  .ul-mesh {
+    background-color: #edf3ff;
+    background-image:
+      radial-gradient(58% 52% at 8% 4%, rgba(59, 134, 247, 0.34), transparent 62%),
+      radial-gradient(42% 42% at 96% 0%, rgba(245, 166, 35, 0.2), transparent 62%),
+      radial-gradient(56% 58% at 84% 96%, rgba(30, 109, 235, 0.26), transparent 62%),
+      radial-gradient(40% 42% at 4% 100%, rgba(248, 44, 31, 0.12), transparent 62%),
+      linear-gradient(180deg, #e6efff 0%, #f3f8ff 58%, #ffffff 100%);
+  }
+
+  /* Fine dot grid, faded out at the edges so it never fights with copy. */
+  .ul-dots {
+    background-image: radial-gradient(
+      rgba(30, 109, 235, 0.22) 1.2px,
+      transparent 1.2px
+    );
+    background-size: 22px 22px;
+    -webkit-mask-image: radial-gradient(
+      75% 65% at 50% 35%,
+      #000 0%,
+      transparent 78%
+    );
+    mask-image: radial-gradient(75% 65% at 50% 35%, #000 0%, transparent 78%);
+  }
+
+  /* Wandering blob, wider travel than .ul-blob for the hero backdrop. */
+  @keyframes ul-drift {
+    0%,
+    100% {
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    25% {
+      transform: translate3d(4%, -7%, 0) scale(1.09);
+    }
+    50% {
+      transform: translate3d(-5%, 5%, 0) scale(0.94);
+    }
+    75% {
+      transform: translate3d(6%, 6%, 0) scale(1.05);
+    }
+  }
+  .ul-drift {
+    animation: ul-drift 22s ease-in-out infinite;
+  }
+
+  /* Seamless pan for a tiled pattern: travels exactly one tile, so it loops
+     without a seam. Transform-based, so the tile layer stays composited. */
+  @keyframes ul-tile-drift {
+    from {
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      transform: translate3d(22px, 22px, 0);
+    }
+  }
+  .ul-tile-drift {
+    animation: ul-tile-drift 14s linear infinite;
+  }
+
+  /* Motes rising through the hero. --ul-x sets the horizontal wander. */
+  @keyframes ul-rise {
+    0% {
+      transform: translate3d(0, 0, 0) scale(0.5);
+      opacity: 0;
+    }
+    12% {
+      opacity: 0.9;
+    }
+    80% {
+      opacity: 0.7;
+    }
+    100% {
+      transform: translate3d(var(--ul-x, 24px), -260px, 0) scale(1.15);
+      opacity: 0;
+    }
+  }
+  .ul-rise {
+    animation: ul-rise 15s ease-in-out infinite;
+  }
+
+  /* Slow halo turning behind the hero photo card. */
+  @keyframes ul-ring-spin {
+    to {
+      transform: rotate(360deg);
+    }
+  }
+  .ul-ring-glow {
+    background: conic-gradient(
+      from 0deg,
+      transparent 0deg,
+      rgba(59, 134, 247, 0.55) 55deg,
+      transparent 135deg,
+      transparent 205deg,
+      rgba(245, 166, 35, 0.42) 265deg,
+      transparent 345deg
+    );
+    animation: ul-ring-spin 16s linear infinite;
+  }
+
+  /* Gradient that travels through the highlighted headline word. */
+  @keyframes ul-text-shine {
+    to {
+      background-position: 200% center;
+    }
+  }
+  .ul-text-shine {
+    /* Blue only, and the travelling band goes deeper rather than lighter:
+       the warm accent (1.8:1 here) and any lighter blue (<3:1) would drop
+       the word below the large-text contrast floor as the sweep passed. */
+    background-image: linear-gradient(
+      100deg,
+      #1e6deb 0%,
+      #1e6deb 8%,
+      #1750b8 22%,
+      #1e6deb 38%,
+      #1e6deb 100%
+    );
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    -webkit-text-fill-color: transparent;
+    animation: ul-text-shine 7s linear infinite;
+  }
+  /* Clipped text has no colour of its own; give it one back in forced-colours
+     mode so the word never disappears. */
+  @media (forced-colors: active) {
+    .ul-text-shine {
+      background-image: none;
+      color: CanvasText;
+      -webkit-text-fill-color: CanvasText;
+    }
+  }
+
+  /* Breathing ring on the primary hero CTA. Applied to a ring element that
+     scales and fades, not to the button's box-shadow: animating box-shadow
+     repaints on the main thread every frame, this stays on the compositor. */
+  @keyframes ul-cta-ring {
+    0% {
+      transform: scale(1);
+      opacity: 0.5;
+    }
+    70%,
+    100% {
+      transform: scale(1.14);
+      opacity: 0;
+    }
+  }
+  .ul-cta-ring {
+    animation: ul-cta-ring 3.2s ease-out infinite;
+  }
+
+  /* Light sweeping across the hero photo card. */
+  @keyframes ul-sheen {
+    0% {
+      transform: translateX(-160%) skewX(-14deg);
+      opacity: 0;
+    }
+    10% {
+      opacity: 1;
+    }
+    55%,
+    100% {
+      transform: translateX(420%) skewX(-14deg);
+      opacity: 0;
+    }
+  }
+  .ul-sheen {
+    animation: ul-sheen 11s ease-in-out infinite;
+  }
+
   /* One-shot pop used for icon tiles / badges entering view. */
   @keyframes ul-pop {
     0% {
@@ -294,6 +468,14 @@ html[lang="ar"] body {
     animation: ul-blink-warm 1.4s ease-in-out infinite;
   }
 
+  /* Set by <MotionSection> once the section leaves the viewport: stops every
+     decorative animation inside it from costing compositor frames while the
+     user reads the rest of the page. */
+  .ul-motion-paused,
+  .ul-motion-paused * {
+    animation-play-state: paused;
+  }
+
   /* Card/tile hover elevation — GPU-friendly transform + shadow only. */
   .hover-lift {
     transition:
@@ -324,8 +506,21 @@ html[lang="ar"] body {
   .ul-float-slow,
   .ul-spin-slow,
   .ul-blob,
+  .ul-drift,
+  .ul-sheen,
+  .ul-tile-drift,
+  .ul-rise,
+  .ul-ring-glow,
+  .ul-text-shine,
+  .ul-cta-ring,
   .ul-pulse-dot,
   .ul-blink-warm {
     animation: none;
+  }
+  /* These only exist as motion, so hide them rather than freeze them mid-travel. */
+  .ul-sheen,
+  .ul-rise,
+  .ul-cta-ring {
+    opacity: 0;
   }
 }

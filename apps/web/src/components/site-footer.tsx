@@ -78,10 +78,10 @@ export async function SiteFooter() {
         <div className="space-y-4">
           <Link href="/" className="inline-flex items-center gap-2" aria-label="UniLink">
             <Image
-              src="/logo/unilink-logo-mark.png"
+              src="/logo/unilink-logo-mark-v2.png"
               alt=""
-              width={229}
-              height={259}
+              width={112}
+              height={130}
               className="h-9 w-auto object-contain"
             />
             <span className="text-2xl font-bold text-white">UniLink</span>

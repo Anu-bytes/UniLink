@@ -128,11 +128,11 @@
     },
     "counters": {
       "items": [
-        "جامعة في مصر",
-        "برنامج دراسي",
-        "طالب استفاد",
+        "جامعة",
+        "برنامج",
+        "طالب",
         "محافظة مغطاة",
-        "منحة دراسية"
+        "منحة"
       ]
     },
     "stats": {
@@ -207,6 +207,17 @@
     "common": {
       "select": "اختر…",
       "clear": "مسح الاختيار"
+    },
+    "personalInfo": {
+      "name": "المعلومات الشخصية",
+      "heading": "أخبرنا قليلاً عن نفسك",
+      "help": "سنستخدم اسمك وبلدك لتخصيص نتائجك وفتح المنح الدراسية وأدلة التأشيرات الخاصة ببلدك.",
+      "firstNameLabel": "الاسم الأول",
+      "firstNamePlaceholder": "مثال: سارة",
+      "lastNameLabel": "اسم العائلة",
+      "lastNamePlaceholder": "مثال: أحمد",
+      "countryLabel": "الدولة",
+      "countryPlaceholder": "ابحث عن دولتك…"
     },
     "studyLevel": {
       "name": "المستوى الدراسي",
@@ -311,6 +322,8 @@
       "help": "أنشئ حسابًا لحفظ إجاباتك ومشاهدة نتائجك.",
       "emailLabel": "البريد الإلكتروني",
       "emailPlaceholder": "example@email.com",
+      "phoneLabel": "رقم الهاتف",
+      "phonePlaceholder": "+20 100 123 4567",
       "passwordLabel": "كلمة المرور",
       "passwordPlaceholder": "أنشئ كلمة مرور",
       "orContinueWith": "أو تابع باستخدام",
