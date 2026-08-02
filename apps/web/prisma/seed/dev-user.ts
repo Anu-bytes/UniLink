@@ -8,8 +8,37 @@
 // Development only: the password is committed on purpose and the script
 // refuses to run against a production database.
 
+import { readFileSync } from "node:fs";
+import { resolve } from "node:path";
+
 import { PrismaClient } from "@prisma/client";
 import bcrypt from "bcryptjs";
+
+// `prisma db seed` loads .env via the Prisma CLI, but this script runs under
+// tsx directly, which does not. Load it here so DATABASE_URL is set before the
+// client is constructed. Existing environment variables always win.
+function loadEnv() {
+  let contents: string;
+  try {
+    contents = readFileSync(resolve(process.cwd(), ".env"), "utf8");
+  } catch {
+    return; // No .env file; rely on whatever is already exported.
+  }
+
+  for (const line of contents.split("\n")) {
+    const match = /^\s*([\w.-]+)\s*=\s*(.*)?\s*$/.exec(line);
+    if (!match || line.trim().startsWith("#")) continue;
+
+    const [, key, rawValue = ""] = match;
+    if (process.env[key] !== undefined) continue;
+
+    process.env[key] = rawValue
+      .trim()
+      .replace(/^(['"])(.*)\1$/s, "$2");
+  }
+}
+
+loadEnv();
 
 const prisma = new PrismaClient();
 

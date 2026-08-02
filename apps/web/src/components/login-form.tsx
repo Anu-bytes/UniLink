@@ -4,14 +4,17 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
-import { Link, useRouter } from "@/i18n/navigation";
+import { Link } from "@/i18n/navigation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
 export function LoginForm({
   labels,
+  callbackUrl,
 }: {
+  /** Where the auth gate wanted to send the visitor before it redirected here. */
+  callbackUrl?: string;
   labels: {
     emailLabel: string;
     emailPlaceholder: string;
@@ -23,7 +26,6 @@ export function LoginForm({
     hidePassword: string;
   };
 }) {
-  const router = useRouter();
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
@@ -43,12 +45,27 @@ export function LoginForm({
     setLoading(false);
 
     if (!result || result.error) {
-      setError("Invalid email or password");
+      // CredentialsSignin means the lookup ran and rejected the details.
+      // Anything else is a server-side fault (bad config, database down), and
+      // reporting it as a wrong password sends you hunting the wrong problem.
+      setError(
+        result?.error && result.error !== "CredentialsSignin"
+          ? `Sign-in failed: ${result.error}`
+          : "Invalid email or password",
+      );
       return;
     }
 
-    router.push("/");
-    router.refresh();
+    // Only follow same-origin relative paths, so a crafted ?callbackUrl=
+    // cannot bounce a freshly signed-in user to another site.
+    const target =
+      callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
+        ? callbackUrl
+        : "/";
+
+    // `target` already carries its locale prefix, so use the plain router
+    // rather than the locale-aware one, which would prefix it twice.
+    window.location.assign(target);
   }
 
   return (

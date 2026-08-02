@@ -6,7 +6,12 @@ import { Separator } from "@/components/ui/separator";
 import { SocialAuthButtons } from "@/components/social-auth-buttons";
 import { LoginForm } from "@/components/login-form";
 
-export default async function LoginPage() {
+export default async function LoginPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ callbackUrl?: string }>;
+}) {
+  const { callbackUrl } = await searchParams;
   const t = await getTranslations("Auth.login");
   const statsT = await getTranslations("Home.stats");
   const stats = (
@@ -67,6 +72,7 @@ export default async function LoginPage() {
           </div>
 
           <LoginForm
+            callbackUrl={callbackUrl}
             labels={{
               emailLabel: t("emailLabel"),
               emailPlaceholder: t("emailPlaceholder"),
