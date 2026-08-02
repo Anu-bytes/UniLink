@@ -23,6 +23,8 @@ export async function SiteHeader() {
     ? "text-[21px] xl:text-[24px]"
     : "text-[17px] xl:text-[19px]";
 
+  // Universities is intentionally absent here: it is reachable from the
+  // footer's quick links (and from in-page CTAs), not the main nav.
   const links = [
     { href: "/students", label: t("students") },
     { href: "/about", label: t("about") },

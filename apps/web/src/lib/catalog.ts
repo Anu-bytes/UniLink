@@ -10,7 +10,12 @@ export type UniversityCardData = {
   description: string | null;
   coverImageUrl: string | null;
   websiteUrl: string | null;
+  logoUrl: string | null;
+  establishedYear: number | null;
+  isRecommended: boolean;
+  isTrending: boolean;
   programCount: number;
+  facultyCount: number;
 };
 
 export type ProgramCardData = {
@@ -41,9 +46,18 @@ export type LandingCatalogData = {
 
 const publishedUniversityWhere = { publishedAt: { not: null } } as const;
 
-function localized(
+export function localized(
   locale: string,
   english: string,
+  arabic: string | null,
+) {
+  return locale.startsWith("ar") && arabic ? arabic : english;
+}
+
+/** Same as `localized` but tolerates a null English value. */
+export function localizedOrNull(
+  locale: string,
+  english: string | null,
   arabic: string | null,
 ) {
   return locale.startsWith("ar") && arabic ? arabic : english;
@@ -65,7 +79,11 @@ function mapUniversity(
     descriptionAr: string | null;
     coverImageUrl: string | null;
     websiteUrl: string | null;
-    _count: { programs: number };
+    logoUrl: string | null;
+    establishedYear: number | null;
+    isRecommended: boolean;
+    isTrending: boolean;
+    _count: { programs: number; faculties: number };
   },
 ): UniversityCardData {
   return {
@@ -75,13 +93,19 @@ function mapUniversity(
     city: localized(locale, university.city, university.cityAr),
     country: localized(locale, university.country, university.countryAr),
     type: university.type,
-    description:
-      locale.startsWith("ar") && university.descriptionAr
-        ? university.descriptionAr
-        : university.description,
+    description: localizedOrNull(
+      locale,
+      university.description,
+      university.descriptionAr,
+    ),
     coverImageUrl: university.coverImageUrl,
     websiteUrl: university.websiteUrl,
+    logoUrl: university.logoUrl,
+    establishedYear: university.establishedYear,
+    isRecommended: university.isRecommended,
+    isTrending: university.isTrending,
     programCount: university._count.programs,
+    facultyCount: university._count.faculties,
   };
 }
 
@@ -99,7 +123,13 @@ const universityCardSelect = {
   descriptionAr: true,
   coverImageUrl: true,
   websiteUrl: true,
-  _count: { select: { programs: { where: { isPublished: true } } } },
+  logoUrl: true,
+  establishedYear: true,
+  isRecommended: true,
+  isTrending: true,
+  _count: {
+    select: { programs: { where: { isPublished: true } }, faculties: true },
+  },
 } as const;
 
 export async function getLandingCatalog(
@@ -145,10 +175,11 @@ export async function getLandingCatalog(
         id: testimonial.id,
         studentName: testimonial.studentName,
         quote: localized(locale, testimonial.quote, testimonial.quoteAr),
-        location:
-          locale.startsWith("ar") && testimonial.locationAr
-            ? testimonial.locationAr
-            : testimonial.location,
+        location: localizedOrNull(
+          locale,
+          testimonial.location,
+          testimonial.locationAr,
+        ),
         avatarUrl: testimonial.avatarUrl,
       })),
       stats: [
@@ -165,14 +196,54 @@ export async function getLandingCatalog(
   }
 }
 
-export async function getPublishedUniversities(locale: string) {
+export type UniversityDirectoryFilters = {
+  q?: string;
+  types?: string[];
+  cities?: string[];
+};
+
+export async function getPublishedUniversities(
+  locale: string,
+  filters: UniversityDirectoryFilters = {},
+) {
   const universities = await prisma.university.findMany({
-    where: publishedUniversityWhere,
-    orderBy: [{ name: "asc" }],
+    where: {
+      ...publishedUniversityWhere,
+      ...(filters.types?.length
+        ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
+        : {}),
+      ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+      ...(filters.q
+        ? {
+            OR: [
+              { name: { contains: filters.q, mode: "insensitive" as const } },
+              { nameAr: { contains: filters.q } },
+              { city: { contains: filters.q, mode: "insensitive" as const } },
+              { cityAr: { contains: filters.q } },
+            ],
+          }
+        : {}),
+    },
+    orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
     select: universityCardSelect,
   });
 
   return universities.map((university) => mapUniversity(locale, university));
+}
+
+/** Distinct cities across published universities, for the directory filter. */
+export async function getUniversityCities(locale: string) {
+  const rows = await prisma.university.findMany({
+    where: publishedUniversityWhere,
+    distinct: ["city"],
+    orderBy: { city: "asc" },
+    select: { city: true, cityAr: true },
+  });
+
+  return rows.map((row) => ({
+    value: row.city,
+    label: localized(locale, row.city, row.cityAr),
+  }));
 }
 
 export async function getPublishedPrograms(
@@ -213,4 +284,229 @@ export async function getPublishedPrograms(
     tuitionFee: program.tuitionFee?.toString() ?? null,
     currency: program.currency,
   }));
+}
+
+// ---------------------------------------------------------------------------
+// University detail page
+// ---------------------------------------------------------------------------
+
+export type UniversityDetailProgram = {
+  id: string;
+  slug: string;
+  name: string;
+  studyLevel: string;
+  fieldOfStudy: string;
+  durationMonths: number | null;
+  durationLabel: string | null;
+  tuitionFee: number | null;
+  tuitionPeriod: string;
+  currency: string;
+  applicationFee: number | null;
+  applicationFeeWaived: boolean;
+  minGradePercent: number | null;
+  tags: string[];
+};
+
+export type UniversityDetailFaculty = {
+  id: string;
+  slug: string;
+  name: string;
+  description: string | null;
+  imageUrl: string | null;
+  programs: UniversityDetailProgram[];
+};
+
+export type UniversityDetailData = {
+  id: string;
+  slug: string;
+  name: string;
+  type: "PUBLIC" | "PRIVATE" | "SPECIALIZED";
+  city: string;
+  country: string;
+  addressLine: string | null;
+  description: string | null;
+  aboutRich: string | null;
+  websiteUrl: string | null;
+  logoUrl: string | null;
+  coverImageUrl: string | null;
+  phone: string | null;
+  email: string | null;
+  establishedYear: number | null;
+  latitude: number | null;
+  longitude: number | null;
+  viewCount: number;
+  isRecommended: boolean;
+  isTrending: boolean;
+  createdAt: Date;
+  updatedAt: Date;
+  images: { id: string; url: string; alt: string | null }[];
+  features: { id: string; title: string; body: string | null }[];
+  admissionRequirements: { id: string; title: string | null; body: string }[];
+  admissionCriteria: { id: string; title: string | null; body: string }[];
+  tuitionNotes: { id: string; title: string | null; body: string }[];
+  minimumScores: {
+    id: string;
+    system: string;
+    minScore: number;
+    unit: string;
+    year: number | null;
+    facultyName: string | null;
+  }[];
+  faculties: UniversityDetailFaculty[];
+  programCount: number;
+};
+
+export async function getUniversityDetail(
+  locale: string,
+  slug: string,
+): Promise<UniversityDetailData | null> {
+  const university = await prisma.university.findFirst({
+    where: { slug, ...publishedUniversityWhere },
+    include: {
+      images: { orderBy: { sortOrder: "asc" } },
+      features: { orderBy: { sortOrder: "asc" } },
+      contentBlocks: { orderBy: { sortOrder: "asc" } },
+      minimumScores: {
+        orderBy: { system: "asc" },
+        include: { faculty: { select: { name: true, nameAr: true } } },
+      },
+      faculties: {
+        orderBy: { sortOrder: "asc" },
+        include: {
+          programs: {
+            where: { isPublished: true },
+            orderBy: { name: "asc" },
+          },
+        },
+      },
+    },
+  });
+
+  if (!university) return null;
+
+  const blocksOf = (section: string) =>
+    university.contentBlocks
+      .filter((block) => block.section === section)
+      .map((block) => ({
+        id: block.id,
+        title: localizedOrNull(locale, block.title, block.titleAr),
+        body: localized(locale, block.body, block.bodyAr),
+      }));
+
+  return {
+    id: university.id,
+    slug: university.slug,
+    name: localized(locale, university.name, university.nameAr),
+    type: university.type,
+    city: localized(locale, university.city, university.cityAr),
+    country: localized(locale, university.country, university.countryAr),
+    addressLine: localizedOrNull(
+      locale,
+      university.addressLine,
+      university.addressLineAr,
+    ),
+    description: localizedOrNull(
+      locale,
+      university.description,
+      university.descriptionAr,
+    ),
+    aboutRich: localizedOrNull(locale, university.aboutRich, university.aboutRichAr),
+    websiteUrl: university.websiteUrl,
+    logoUrl: university.logoUrl,
+    coverImageUrl: university.coverImageUrl,
+    phone: university.phone,
+    email: university.email,
+    establishedYear: university.establishedYear,
+    latitude: university.latitude,
+    longitude: university.longitude,
+    viewCount: university.viewCount,
+    isRecommended: university.isRecommended,
+    isTrending: university.isTrending,
+    createdAt: university.createdAt,
+    updatedAt: university.updatedAt,
+    images: university.images.map((image) => ({
+      id: image.id,
+      url: image.url,
+      alt: localizedOrNull(locale, image.alt, image.altAr),
+    })),
+    features: university.features.map((feature) => ({
+      id: feature.id,
+      title: localized(locale, feature.title, feature.titleAr),
+      body: localizedOrNull(locale, feature.body, feature.bodyAr),
+    })),
+    admissionRequirements: blocksOf("ADMISSION_REQUIREMENTS"),
+    admissionCriteria: blocksOf("ADMISSION_CRITERIA"),
+    tuitionNotes: blocksOf("TUITION_NOTES"),
+    minimumScores: university.minimumScores.map((score) => ({
+      id: score.id,
+      system: score.system,
+      minScore: Number(score.minScore),
+      unit: score.unit,
+      year: score.year,
+      facultyName: score.faculty
+        ? localized(locale, score.faculty.name, score.faculty.nameAr)
+        : null,
+    })),
+    faculties: university.faculties.map((faculty) => ({
+      id: faculty.id,
+      slug: faculty.slug,
+      name: localized(locale, faculty.name, faculty.nameAr),
+      description: localizedOrNull(
+        locale,
+        faculty.description,
+        faculty.descriptionAr,
+      ),
+      imageUrl: faculty.imageUrl,
+      programs: faculty.programs.map((program) => ({
+        id: program.id,
+        slug: program.slug,
+        name: localized(locale, program.name, program.nameAr),
+        studyLevel: program.studyLevel,
+        fieldOfStudy: program.fieldOfStudy,
+        durationMonths: program.durationMonths,
+        durationLabel: localizedOrNull(
+          locale,
+          program.durationLabel,
+          program.durationLabelAr,
+        ),
+        tuitionFee: program.tuitionFee ? Number(program.tuitionFee) : null,
+        tuitionPeriod: program.tuitionPeriod,
+        currency: program.currency,
+        applicationFee: program.applicationFee
+          ? Number(program.applicationFee)
+          : null,
+        applicationFeeWaived: program.applicationFeeWaived,
+        minGradePercent: program.minGradePercent,
+        tags: program.tags,
+      })),
+    })),
+    programCount: university.faculties.reduce(
+      (total, faculty) => total + faculty.programs.length,
+      0,
+    ),
+  };
+}
+
+/** Slugs of every published university, for `generateStaticParams`/sitemaps. */
+export async function getUniversitySlugs() {
+  const rows = await prisma.university.findMany({
+    where: publishedUniversityWhere,
+    select: { slug: true },
+  });
+  return rows.map((row) => row.slug);
+}
+
+/**
+ * Bump the hero view counter. Deliberately fire-and-forget: a failed increment
+ * must never break the page render.
+ */
+export async function incrementUniversityViews(id: string) {
+  try {
+    await prisma.university.update({
+      where: { id },
+      data: { viewCount: { increment: 1 } },
+    });
+  } catch (error) {
+    console.error("Unable to increment university view count", error);
+  }
 }

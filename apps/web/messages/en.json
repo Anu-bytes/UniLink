@@ -443,79 +443,95 @@
     }
   },
   "About": {
-    "eyebrow": "About UniLink",
-    "title": "Your guide to universities in Egypt",
-    "lead": "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt. We bring together accurate, up-to-date information on universities, programs, admission requirements, tuition fees, and scholarships, all in one place.",
-    "badge": "Egypt only",
+    "hero": {
+      "title": "About us",
+      "tagline": "We believe that choosing a university is a decision that changes the future",
+      "intro": "Every year, thousands of students and parents face a real challenge searching for the right university among dozens of universities and study programs, with scattered information, unclear comparisons, and complicated application procedures.",
+      "bridge": "That is where the idea of UniLink came from",
+      "body": "We created UniLink to be the digital platform that connects students with universities in a smart and transparent way, and helps every student make the right decision based on their interests, means, and goals, not just on advertising or incomplete information.",
+      "cta": "Discover more",
+      "imageAlt": "A family exploring universities together on a laptop"
+    },
+    "vision": {
+      "title": "Our vision",
+      "body": "To become the leading digital platform in Egypt that connects students with higher education institutions, and to contribute to the digital transformation of the university education sector by providing a unified, easy, and trusted experience for everyone involved."
+    },
     "mission": {
-      "title": "Why we built UniLink",
-      "body": "Choosing a university shouldn't mean digging through scattered pages and outdated files. We gather everything in one place so you can make the right decision about your academic future with confidence."
+      "title": "Our mission",
+      "body": "Empowering students to reach the right information, compare universities easily, and choose their future with confidence, while providing digital solutions that help universities reach the students best suited to their academic programs."
     },
-    "photos": {
-      "campus": "Campus photo",
-      "students": "Students photo"
+    "offer": {
+      "title": "What do we offer?",
+      "students": {
+        "title": "For students",
+        "imageAlt": "A student browsing universities on UniLink",
+        "items": [
+          "Explore Egyptian universities in one place.",
+          "Compare universities and study programs easily.",
+          "Search by major, location, tuition fees, and study system.",
+          "Access accurate and up to date information about universities.",
+          "Follow application dates and important news.",
+          "Apply to participating universities through a simplified digital experience."
+        ]
+      },
+      "universities": {
+        "title": "For universities",
+        "imageAlt": "A university campus",
+        "items": [
+          "Reach students who are already interested in their programs.",
+          "Improve the quality of communication with applicants.",
+          "Benefit from data and analytics to understand student interests and market trends.",
+          "Strengthen digital transformation across admissions and marketing."
+        ]
+      }
     },
-    "services": {
-      "title": "What you'll find here",
-      "subtitle": "Everything you need to compare Egyptian universities, in one place.",
+    "why": {
+      "title": "Why UniLink?",
+      "imageAlt": "Students at the UniLink stand",
+      "body1": "Because we do not only list universities. We build an experience that helps students make a life defining decision with confidence, and gives universities a more efficient channel to reach the right students.",
+      "body2": "We rely on simplicity, transparency, accurate information, and continuous development to deliver a digital education experience that matches the ambitions of a new generation."
+    },
+    "values": {
+      "title": "Our values",
       "items": [
         {
-          "title": "Universities",
-          "body": "Private, public, and specialized universities across Egypt."
+          "title": "Transparency",
+          "body": "We provide clear and accurate information that helps you make the right decision."
         },
         {
-          "title": "Programs & majors",
-          "body": "Browse what each university offers and where it leads."
+          "title": "Innovation",
+          "body": "We use technology to simplify the university search and application journey."
         },
         {
-          "title": "Admission requirements",
-          "body": "Know exactly what a program asks for before you apply."
+          "title": "Reliability",
+          "body": "We work for our data and services to be a source that students and universities can rely on."
         },
         {
-          "title": "Tuition fees",
-          "body": "Clear, current fees so there are no surprises."
-        },
-        {
-          "title": "Scholarships",
-          "body": "Find the grants and discounts you may qualify for."
-        },
-        {
-          "title": "Always current",
-          "body": "We refresh our data from official university sources."
+          "title": "User focus",
+          "body": "We design every feature on the platform starting from the needs of the student and the university."
         }
       ]
     },
-    "faq": {
-      "eyebrow": "Q&A",
-      "title": "Questions, answered",
+    "stats": {
+      "title": "Numbers that speak for us",
       "items": [
         {
-          "q": "Is UniLink free to use?",
-          "a": "Yes. Browsing universities, programs, fees, and scholarships is completely free."
+          "value": "60+",
+          "label": "Egyptian universities"
         },
         {
-          "q": "Which universities do you cover?",
-          "a": "Private, public, and specialized universities across Egypt."
+          "value": "500+",
+          "label": "Academic programs"
         },
         {
-          "q": "Does UniLink help with studying abroad?",
-          "a": "No. We focus exclusively on universities inside Egypt, so everything you find here is local and relevant to you."
+          "value": "10,000+",
+          "label": "Searches and comparisons"
         },
         {
-          "q": "How current is the information?",
-          "a": "We review and refresh our data regularly from official university sources."
-        },
-        {
-          "q": "Can UniLink help me choose?",
-          "a": "Yes. Answer a few quick questions and we'll match you with programs that fit your grades, budget, and interests."
+          "value": "An Egyptian platform",
+          "label": "Supporting digital transformation in higher education"
         }
       ]
-    },
-    "cta": {
-      "title": "Ready to find your university?",
-      "body": "Tell us a little about yourself and we'll handle the matching.",
-      "primary": "Get started",
-      "secondary": "Browse universities"
     }
   },
   "Contact": {
@@ -533,5 +549,369 @@
   "Terms": {
     "title": "Terms of service",
     "subtitle": "Our full terms of service are being finalized and will be published here."
+  },
+  "Catalog": {
+    "levels": {
+      "CERTIFICATE": "Certificate",
+      "DIPLOMA": "Diploma",
+      "BACHELOR": "Bachelor's Degree",
+      "MASTER": "Master's Degree",
+      "DOCTORATE": "Doctorate"
+    },
+    "levelWithYears": "{years}-Year {level}",
+    "universityTypes": {
+      "PUBLIC": "Public University",
+      "PRIVATE": "Private University",
+      "SPECIALIZED": "Specialized University"
+    },
+    "tags": {
+      "HIGH_JOB_DEMAND": "High Job Demand",
+      "SCHOLARSHIPS_AVAILABLE": "Scholarships Available",
+      "FAST_ACCEPTANCE": "Fast Acceptance",
+      "WAIVED_APPLICATION_FEE": "Waived Application Fee",
+      "FINANCIAL_AID_AVAILABLE": "Financial Aid Available",
+      "CREDIT_HOURS": "Credit Hours"
+    },
+    "seasons": {
+      "WINTER": "Winter",
+      "SPRING": "Spring",
+      "SUMMER": "Summer",
+      "FALL": "Fall"
+    },
+    "systems": {
+      "THANAWEYA_AMMA": "Thanaweya Amma",
+      "IGCSE": "IGCSE",
+      "AMERICAN_DIPLOMA": "American Diploma",
+      "STEM": "STEM Schools",
+      "AL_AZHAR": "Al-Azhar Certificate",
+      "ARAB_CERTIFICATE": "Arab Certificate",
+      "OTHER": "Other"
+    },
+    "englishTests": {
+      "IELTS": "IELTS",
+      "TOEFL": "TOEFL",
+      "PTE": "PTE",
+      "DUOLINGO": "Duolingo",
+      "NONE": "No test taken"
+    },
+    "units": {
+      "PERCENT": "%",
+      "GPA": "GPA",
+      "POINTS": "points"
+    },
+    "tuitionPeriods": {
+      "YEAR": "/year",
+      "TERM": "/term",
+      "TOTAL": "total"
+    },
+    "durationYears": "{count, plural, one {# year} other {# years}}",
+    "durationMonths": "{count, plural, one {# month} other {# months}}"
+  },
+  "UniversityDetail": {
+    "breadcrumbHome": "Home",
+    "breadcrumbUniversities": "Universities",
+    "established": "Established",
+    "facultiesStat": "Faculties",
+    "programsStat": "Programs",
+    "facultiesCount": "+ {count}",
+    "applicationInformation": "Application Information",
+    "save": "Save university",
+    "share": "Share",
+    "shareCopied": "Link copied",
+    "creationDate": "Creation Date",
+    "latestUpdate": "Latest Update",
+    "views": "{count} Views",
+    "recommended": "recommend",
+    "trending": "Trending Now",
+    "tabs": {
+      "about": "About the University",
+      "faculties": "Faculties",
+      "location": "Location",
+      "requirements": "Admission Requirements",
+      "criteria": "Admission Criteria",
+      "scores": "Minimum Scores",
+      "tuition": "Tuition Fees"
+    },
+    "aboutHeading": "About {name}",
+    "featuresHeading": "Features of {name}",
+    "facultiesHeading": "Faculties and programs",
+    "facultyProgramCount": "{count, plural, one {# program} other {# programs}}",
+    "viewProgram": "View program",
+    "location": {
+      "heading": "Where the campus is",
+      "address": "Our Address",
+      "phone": "Contact us anytime",
+      "email": "Reach us via email",
+      "openInMaps": "Open in Google Maps",
+      "mapAlt": "Map showing the campus location",
+      "noCoordinates": "Map coordinates have not been added for this campus yet."
+    },
+    "scores": {
+      "heading": "Minimum accepted scores",
+      "intro": "The lowest secondary-certificate result accepted in the most recent admission round.",
+      "system": "Certificate",
+      "minimum": "Minimum score",
+      "scope": "Applies to",
+      "year": "Year",
+      "universityWide": "All faculties"
+    },
+    "tuition": {
+      "heading": "Tuition fees by program",
+      "program": "Program",
+      "faculty": "Faculty",
+      "level": "Level",
+      "fee": "Tuition",
+      "applicationFee": "Application fee",
+      "waived": "Waived"
+    },
+    "emptySection": "This information has not been published yet.",
+    "notFoundTitle": "University not found",
+    "notFoundBody": "This university is not published, or the link is out of date.",
+    "backToUniversities": "Back to universities",
+    "searchPrograms": "Search all programs"
+  },
+  "UniversityDirectory": {
+    "searchLabel": "Search universities",
+    "searchPlaceholder": "University or city name",
+    "typeLabel": "University type",
+    "cityLabel": "City",
+    "allTypes": "All types",
+    "allCities": "All cities",
+    "clear": "Clear filters",
+    "resultCount": "{count, plural, one {# university} other {# universities}}",
+    "viewProfile": "View profile",
+    "established": "Est. {year}",
+    "facultyCount": "{count, plural, one {# faculty} other {# faculties}}"
+  },
+  "ProgramDetail": {
+    "breadcrumbHome": "Home",
+    "breadcrumbUniversities": "Universities",
+    "overview": "Overview",
+    "aboutProgram": "About this program",
+    "level": "Level",
+    "field": "Field of study",
+    "faculty": "Faculty",
+    "duration": "Duration",
+    "tuition": "Tuition",
+    "applicationFee": "Application fee",
+    "waived": "Waived",
+    "minimumGrade": "Minimum secondary grade",
+    "englishRequirements": "English proficiency",
+    "intakes": "Available intakes",
+    "deadline": "Apply by {date}",
+    "noDeadline": "No published deadline",
+    "coopAvailable": "Co-op or internship available",
+    "startApplication": "Start application",
+    "compare": "Add to compare",
+    "backToUniversity": "Back to {name}",
+    "notFoundTitle": "Program not found",
+    "notFoundBody": "This program is not published, or the link is out of date.",
+    "notSpecified": "Not specified"
+  },
+  "App": {
+    "sidebar": {
+      "home": "Home",
+      "search": "Search",
+      "applications": "My Applications",
+      "profile": "Profile",
+      "collapse": "Collapse",
+      "expand": "Expand",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu"
+    },
+    "saved": "Saved programs",
+    "account": "Account",
+    "signOut": "Sign out",
+    "backToSite": "Back to site"
+  },
+  "AppHome": {
+    "greeting": "Welcome back, {name}",
+    "greetingAnonymous": "Welcome back",
+    "subtitle": "Pick up where you left off, or start a new search.",
+    "startSearching": "Search programs",
+    "stats": {
+      "saved": "Saved programs",
+      "applications": "Applications",
+      "matches": "Strong matches"
+    },
+    "profileCardTitle": "Complete your profile",
+    "profileCardBody": "Add your grades, budget and preferred fields so we can score how likely you are to be accepted.",
+    "profileCardCta": "Complete profile",
+    "recentApplications": "Recent applications",
+    "seeAll": "See all",
+    "noApplications": "You have not started any applications yet."
+  },
+  "Search": {
+    "title": "Tell us what you're searching for",
+    "aiLabel": "UniLink AI",
+    "aiHint": "Enter program search criteria (e.g. city, degree, tuition, etc.), and UniLink will match them to the right filters.",
+    "aiPlaceholder": "Try \"Computer science bachelor in Cairo under 100k\"",
+    "aiButton": "Search",
+    "filtersButton": "Filters & Eligibility",
+    "filtersCount": "Filters & Eligibility ({count})",
+    "resolvedLabel": "Matched to",
+    "unmatchedLabel": "Not recognised",
+    "clearAll": "Clear all",
+    "recommendedBadge": "AI recommended",
+    "recommendedTitle": "Recommended for you",
+    "recommendedSubtitle": "Based on your profile, grades and preferred fields.",
+    "recommendedNoProfile": "Complete your profile to get personalised recommendations.",
+    "moreTitle": "More programs",
+    "moreSubtitle": "Browse the full catalogue. Refine with filters or the search above.",
+    "resultCount": "{count, plural, one {# program} other {# programs}}",
+    "emptyTitle": "No programs match these filters",
+    "emptyBody": "Try removing a filter, or widen your tuition range.",
+    "loadMore": "Load more",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}",
+    "sortLabel": "Sort by",
+    "sort": {
+      "match": "Best match",
+      "tuitionAsc": "Tuition: low to high",
+      "tuitionDesc": "Tuition: high to low",
+      "name": "Program name"
+    },
+    "card": {
+      "successChance": "SUCCESS CHANCE",
+      "tuition": "TUITION",
+      "applicationFee": "APP. FEE",
+      "duration": "DURATION",
+      "intake": "INTAKE",
+      "waived": "Waived",
+      "notSpecified": "Not specified",
+      "perYear": "{amount}/year",
+      "startApplication": "Start application",
+      "applied": "Application started",
+      "compare": "Compare",
+      "comparing": "Comparing",
+      "details": "Details",
+      "save": "Save program",
+      "unsave": "Remove from saved"
+    },
+    "bands": {
+      "PERFECT": "Perfect Match",
+      "STRONG": "Strong Match",
+      "GOOD": "Good Match",
+      "POSSIBLE": "Possible Match"
+    },
+    "filters": {
+      "title": "Filters & Eligibility",
+      "close": "Close filters",
+      "level": "Study level",
+      "field": "Field of study",
+      "city": "City",
+      "universityType": "University type",
+      "tuition": "Tuition per year (EGP)",
+      "min": "Min",
+      "max": "Max",
+      "intakeYear": "Intake year",
+      "intakeSeason": "Intake season",
+      "perks": "Eligibility & perks",
+      "anyYear": "Any year",
+      "anySeason": "Any season",
+      "apply": "Show results",
+      "clear": "Clear all"
+    }
+  },
+  "Compare": {
+    "title": "Compare programs",
+    "subtitle": "{count, plural, one {# program} other {# programs}} side by side",
+    "back": "Back to search",
+    "download": "Download",
+    "downloadCsv": "Download as CSV",
+    "downloadPrint": "Print or save as PDF",
+    "viewDetails": "View details",
+    "remove": "Remove from comparison",
+    "emptyTitle": "Nothing to compare yet",
+    "emptyBody": "Pick at least two programs from the search results and they will show up here side by side.",
+    "backToSearch": "Back to search",
+    "groups": {
+      "overview": "Overview",
+      "cost": "Cost",
+      "features": "Features",
+      "requirements": "Requirements"
+    },
+    "rows": {
+      "location": "Location",
+      "level": "Level",
+      "duration": "Duration",
+      "intake": "Intake",
+      "faculty": "Faculty",
+      "tuition": "Tuition (per year)",
+      "applicationFee": "Application fee",
+      "coop": "Co-op available",
+      "scholarships": "Scholarships available",
+      "creditHours": "Credit hours system",
+      "minimumGrade": "Minimum grade",
+      "english": "English proficiency"
+    },
+    "yes": "Yes",
+    "no": "No",
+    "notSpecified": "Not specified",
+    "waived": "Waived",
+    "tray": {
+      "title": "{count, plural, one {# program ready to compare} other {# programs ready to compare}}",
+      "subtitle": "Stack tuition, intake and perks in one view.",
+      "clear": "Clear",
+      "compare": "Compare",
+      "limit": "You can compare up to {max} programs at a time.",
+      "remove": "Remove {name}"
+    }
+  },
+  "Applications": {
+    "title": "My Applications",
+    "subtitle": "Everything you have started, in one place.",
+    "emptyTitle": "No applications yet",
+    "emptyBody": "When you start an application from a program card it will appear here.",
+    "browse": "Browse programs",
+    "startedOn": "Started {date}",
+    "submittedOn": "Submitted {date}",
+    "viewProgram": "View program",
+    "withdraw": "Withdraw",
+    "status": {
+      "DRAFT": "Draft",
+      "SUBMITTED": "Submitted",
+      "IN_REVIEW": "In review",
+      "OFFER": "Offer received",
+      "REJECTED": "Not accepted",
+      "WITHDRAWN": "Withdrawn"
+    }
+  },
+  "Saved": {
+    "title": "Saved programs",
+    "subtitle": "Programs you starred while searching.",
+    "emptyTitle": "Nothing saved yet",
+    "emptyBody": "Tap the heart on any program card to keep it here for later.",
+    "browse": "Browse programs"
+  },
+  "AppProfile": {
+    "title": "Profile",
+    "subtitle": "This is what we use to score how well a program fits you.",
+    "account": "Account",
+    "name": "Name",
+    "email": "Email",
+    "phone": "Phone",
+    "academics": "Academics",
+    "highSchoolSystem": "Secondary certificate",
+    "graduationYear": "Graduation year",
+    "grade": "Expected grade",
+    "preferences": "Preferences",
+    "fieldsOfStudy": "Fields of study",
+    "budget": "Tuition budget",
+    "intake": "Preferred intake",
+    "english": "English proficiency",
+    "englishNone": "No test taken",
+    "nationality": "Nationality",
+    "noProfileTitle": "No study profile yet",
+    "noProfileBody": "Finish the onboarding questions so we can match programs to your grades, budget and preferred fields.",
+    "completeProfile": "Complete profile",
+    "budgetBands": {
+      "UNDER_100K": "Under EGP 100,000 per year",
+      "B100_200K": "EGP 100,000 to 200,000 per year",
+      "B200_300K": "EGP 200,000 to 300,000 per year",
+      "B300_500K": "EGP 300,000 to 500,000 per year",
+      "OVER_500K": "Over EGP 500,000 per year"
+    }
   }
 }
