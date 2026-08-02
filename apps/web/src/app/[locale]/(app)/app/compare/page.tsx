@@ -77,6 +77,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
       (yearsFromMonths(program.durationMonths)
         ? tCatalog("durationYears", {
             count: yearsFromMonths(program.durationMonths)!,
+            value: formatNumber(locale, yearsFromMonths(program.durationMonths)!),
           })
         : t("notSpecified")),
     intake:

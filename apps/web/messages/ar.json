@@ -11,7 +11,9 @@
     "partners": "الشركاء",
     "about": "من نحن",
     "login": "تسجيل الدخول",
-    "registerAsStudent": "سجّل كطالب"
+    "registerAsStudent": "سجّل كطالب",
+    "openMenu": "فتح القائمة",
+    "closeMenu": "إغلاق القائمة"
   },
   "Footer": {
     "tagline": "منصة ذكية لاكتشاف الجامعات والمقارنة بينها في مصر.",
@@ -444,7 +446,8 @@
   },
   "About": {
     "hero": {
-      "title": "من نحن",
+      "title": "عن يوني لينك",
+      "flagAlt": "مصر",
       "tagline": "نؤمن أن اختيار الجامعة قرار يغيّر المستقبل",
       "intro": "في كل عام، يواجه آلاف الطلاب وأولياء الأمور تحدّيًا كبيرًا في البحث عن الجامعة المناسبة وسط عشرات الجامعات والبرامج الدراسية، مع معلومات متفرقة، ومقارنات غير واضحة، وإجراءات تقديم معقدة.",
       "bridge": "من هنا جاءت فكرة UniLink",
@@ -604,7 +607,7 @@
       "TERM": "/للفصل",
       "TOTAL": "إجمالي"
     },
-    "durationYears": "{count, plural, zero {# سنوات} one {سنة واحدة} two {سنتان} few {# سنوات} many {# سنة} other {# سنة}}",
+    "durationYears": "{count, plural, zero {{value} سنوات} one {سنة واحدة} two {سنتان} few {{value} سنوات} many {{value} سنة} other {{value} سنة}}",
     "durationMonths": "{count, plural, zero {# شهور} one {شهر واحد} two {شهران} few {# شهور} many {# شهراً} other {# شهر}}"
   },
   "UniversityDetail": {

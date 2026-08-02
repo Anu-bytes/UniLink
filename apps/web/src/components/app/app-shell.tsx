@@ -58,9 +58,21 @@ export function AppShell({
     setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
   }, []);
 
+  // Covers navigation to a different route. Tapping the link for the route you
+  // are already on does not change the pathname, so the links close it directly
+  // as well.
   useEffect(() => {
     setDrawerOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (!drawerOpen) return;
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setDrawerOpen(false);
+    }
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [drawerOpen]);
 
   function toggleCollapsed() {
     setCollapsed((previous) => {
@@ -109,6 +121,7 @@ export function AppShell({
             <Link
               key={item.href}
               href={item.href}
+              onClick={() => setDrawerOpen(false)}
               aria-current={active ? "page" : undefined}
               title={collapsed ? t(`sidebar.${item.labelKey}`) : undefined}
               className={cn(

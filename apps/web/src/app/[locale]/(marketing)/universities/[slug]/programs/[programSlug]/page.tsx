@@ -116,7 +116,10 @@ export default async function ProgramDetailPage({ params }: PageProps) {
   const duration =
     program.durationLabel ??
     (years
-      ? tCatalog("durationYears", { count: years })
+      ? tCatalog("durationYears", {
+          count: years,
+          value: formatNumber(locale, years),
+        })
       : program.durationMonths
         ? tCatalog("durationMonths", { count: program.durationMonths })
         : null);

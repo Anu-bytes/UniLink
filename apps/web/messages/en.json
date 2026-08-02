@@ -11,7 +11,9 @@
     "partners": "Partners",
     "about": "About us",
     "login": "Log in",
-    "registerAsStudent": "Register as a Student"
+    "registerAsStudent": "Register as a Student",
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
   },
   "Footer": {
     "tagline": "A smart platform to discover and compare universities in Egypt.",
@@ -444,7 +446,8 @@
   },
   "About": {
     "hero": {
-      "title": "About us",
+      "title": "About UniLink",
+      "flagAlt": "Egypt",
       "tagline": "We believe that choosing a university is a decision that changes the future",
       "intro": "Every year, thousands of students and parents face a real challenge searching for the right university among dozens of universities and study programs, with scattered information, unclear comparisons, and complicated application procedures.",
       "bridge": "That is where the idea of UniLink came from",
@@ -604,7 +607,7 @@
       "TERM": "/term",
       "TOTAL": "total"
     },
-    "durationYears": "{count, plural, one {# year} other {# years}}",
+    "durationYears": "{count, plural, one {{value} year} other {{value} years}}",
     "durationMonths": "{count, plural, one {# month} other {# months}}"
   },
   "UniversityDetail": {

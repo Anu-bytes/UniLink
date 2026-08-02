@@ -48,7 +48,18 @@ export default async function AboutPage() {
               in RTL, renders on the start (right) side like the design. */}
           <Reveal className="max-w-[36rem]">
             <h1 className="text-[38px] font-bold leading-[1.15] text-[#16233F] sm:text-[52px]">
-              {t("hero.title")}
+              {t("hero.title")}{" "}
+              {/* Sized in em so the flag tracks the responsive heading, and
+                  served as a plain img because next/image refuses to optimise
+                  SVG without dangerouslyAllowSVG. */}
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src="/flags/eg.svg"
+                alt={t("hero.flagAlt")}
+                width={900}
+                height={600}
+                className="inline-block h-[0.72em] w-auto rounded-[3px] align-baseline shadow-sm ring-1 ring-black/10"
+              />
             </h1>
             <p className="mt-4 text-[19px] font-bold leading-8 text-[#1E6DEB] sm:text-[22px]">
               {t("hero.tagline")}
