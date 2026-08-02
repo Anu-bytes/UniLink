@@ -524,3 +524,26 @@ html[lang="ar"] body {
     opacity: 0;
   }
 }
+
+/* Printing is how "Download > Print or save as PDF" works on the compare page:
+   drop the app chrome so only the comparison table reaches the paper. */
+@media print {
+  aside,
+  header {
+    display: none !important;
+  }
+
+  body {
+    background: #fff;
+  }
+
+  table {
+    break-inside: auto;
+  }
+
+  tr,
+  th,
+  td {
+    break-inside: avoid;
+  }
+}

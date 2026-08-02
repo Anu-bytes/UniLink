@@ -31,6 +31,8 @@ model User {
   accounts       Account[]
   sessions       Session[]
   studentProfile StudentProfile?
+  savedPrograms  SavedProgram[]
+  applications   Application[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
 }
@@ -90,7 +92,7 @@ model StudentProfile {
   user   User   @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   studyLevel            StudyLevel
-  highSchoolSystem      String // e.g. THANAWEYA_AMMA, IGCSE, AMERICAN_DIPLOMA…
+  highSchoolSystem      HighSchoolSystem
   highSchoolSystemOther String? // free text when highSchoolSystem = OTHER
   graduationYear        Int // expected high-school graduation year
   gradeValue            String // expected grade, free text to fit any system
@@ -114,6 +116,19 @@ enum StudyLevel {
   BACHELOR
   MASTER
   DOCTORATE
+}
+
+// Secondary-education certificate a student holds. Mirrors HIGH_SCHOOL_SYSTEMS
+// in src/lib/onboarding-schema.ts and doubles as the row key of the
+// "Minimum Scores" tab on a university page.
+enum HighSchoolSystem {
+  THANAWEYA_AMMA
+  IGCSE
+  AMERICAN_DIPLOMA
+  STEM
+  AL_AZHAR
+  ARAB_CERTIFICATE
+  OTHER
 }
 
 enum EnglishTest {
@@ -151,16 +166,34 @@ model University {
   cityAr        String?
   description   String?
   descriptionAr String?
+  // Long-form body of the "About the University" tab. `description` stays the
+  // short blurb used on cards and in the page hero.
+  aboutRich     String?
+  aboutRichAr   String?
   websiteUrl    String?
   logoUrl       String?
   coverImageUrl String?
+  establishedYear Int?
+  addressLine     String?
+  addressLineAr   String?
+  phone           String?
+  email           String?
+  // Denormalised page-view counter shown in the hero meta row.
+  viewCount       Int          @default(0)
   isFeatured    Boolean        @default(false)
+  isRecommended Boolean        @default(false)
+  isTrending    Boolean        @default(false)
   publishedAt   DateTime?
   // Location as plain coordinates (simplified from the old PostGIS point).
   latitude      Float?
   longitude     Float?
   programs      Program[]
+  faculties     Faculty[]
   scholarships  Scholarship[]
+  images        UniversityImage[]
+  features      UniversityFeature[]
+  contentBlocks UniversityContentBlock[]
+  minimumScores MinimumScore[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -176,10 +209,107 @@ enum UniversityType {
   SPECIALIZED
 }
 
+// Gallery strip beside the university hero. The first image doubles as the
+// large preview when `coverImageUrl` is not set.
+model UniversityImage {
+  id           String     @id @default(cuid())
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  url          String
+  alt          String?
+  altAr        String?
+  sortOrder    Int        @default(0)
+
+  @@index([universityId, sortOrder])
+}
+
+// Bullet points rendered under "Features of <university>" in the About tab.
+model UniversityFeature {
+  id           String     @id @default(cuid())
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  title        String
+  titleAr      String?
+  body         String?
+  bodyAr       String?
+  sortOrder    Int        @default(0)
+
+  @@index([universityId, sortOrder])
+}
+
+// Free-form prose for the tabs that are pure copy (admission requirements and
+// criteria, tuition notes). Kept generic so the admin dashboard can add,
+// reorder and translate blocks without a schema change.
+model UniversityContentBlock {
+  id           String         @id @default(cuid())
+  universityId String
+  university   University     @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  section      ContentSection
+  title        String?
+  titleAr      String?
+  body         String
+  bodyAr       String?
+  sortOrder    Int            @default(0)
+
+  @@index([universityId, section, sortOrder])
+}
+
+enum ContentSection {
+  ADMISSION_REQUIREMENTS
+  ADMISSION_CRITERIA
+  TUITION_NOTES
+  ABOUT_EXTRA
+}
+
+model Faculty {
+  id            String        @id @default(cuid())
+  universityId  String
+  university    University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  name          String
+  nameAr        String?
+  slug          String
+  description   String?
+  descriptionAr String?
+  imageUrl      String?
+  sortOrder     Int           @default(0)
+  programs      Program[]
+  minimumScores MinimumScore[]
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @updatedAt
+
+  @@unique([universityId, slug])
+  @@index([universityId, sortOrder])
+}
+
+// One row of the "Minimum Scores" tab: the cut-off for a given certificate
+// system, either university-wide (facultyId null) or per faculty.
+model MinimumScore {
+  id           String     @id @default(cuid())
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  facultyId    String?
+  faculty      Faculty?   @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  system       HighSchoolSystem
+  minScore     Decimal    @db.Decimal(6, 2)
+  unit         ScoreUnit  @default(PERCENT)
+  year         Int?
+
+  @@index([universityId])
+  @@index([facultyId])
+}
+
+enum ScoreUnit {
+  PERCENT
+  GPA
+  POINTS
+}
+
 model Program {
   id             String     @id @default(cuid())
   universityId   String
   university     University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  facultyId      String?
+  faculty        Faculty?   @relation(fields: [facultyId], references: [id], onDelete: SetNull)
   name           String
   nameAr         String?
   slug           String
@@ -188,17 +318,112 @@ model Program {
   studyLevel     StudyLevel
   fieldOfStudy   String
   durationMonths Int?
-  tuitionFee     Decimal?   @db.Decimal(12, 2)
-  currency       String     @default("EGP") @db.Char(3)
+  // Overrides the duration derived from `durationMonths` when a program needs
+  // wording like "4 year bachelor's degree including an optional internship".
+  durationLabel   String?
+  durationLabelAr String?
+  tuitionFee     Decimal?      @db.Decimal(12, 2)
+  tuitionPeriod  TuitionPeriod @default(YEAR)
+  currency       String        @default("EGP") @db.Char(3)
+  applicationFee Decimal?      @db.Decimal(12, 2)
+  applicationFeeWaived Boolean @default(false)
+  // Minimum secondary-certificate percentage. Compared against the student's
+  // onboarding grade by src/lib/matching.ts.
+  minGradePercent      Float?
+  coopAvailable        Boolean @default(false)
+  tags                 ProgramTag[]
+  intakes              ProgramIntake[]
+  englishRequirements  ProgramEnglishRequirement[]
+  savedBy              SavedProgram[]
+  applications         Application[]
   isPublished    Boolean    @default(false)
   createdAt      DateTime   @default(now())
   updatedAt      DateTime   @updatedAt
 
   @@unique([universityId, slug])
   @@index([universityId])
+  @@index([facultyId])
   @@index([studyLevel])
   @@index([fieldOfStudy])
   @@index([isPublished])
+}
+
+enum TuitionPeriod {
+  YEAR
+  TERM
+  TOTAL
+}
+
+// Perk pills on the program card, and the quick filters above the results.
+enum ProgramTag {
+  HIGH_JOB_DEMAND
+  SCHOLARSHIPS_AVAILABLE
+  FAST_ACCEPTANCE
+  WAIVED_APPLICATION_FEE
+  FINANCIAL_AID_AVAILABLE
+  CREDIT_HOURS
+}
+
+model ProgramIntake {
+  id                  String       @id @default(cuid())
+  programId           String
+  program             Program      @relation(fields: [programId], references: [id], onDelete: Cascade)
+  season              IntakeSeason
+  year                Int
+  applicationDeadline DateTime?
+
+  @@unique([programId, season, year])
+  @@index([programId])
+  @@index([year, season])
+}
+
+model ProgramEnglishRequirement {
+  id        String      @id @default(cuid())
+  programId String
+  program   Program     @relation(fields: [programId], references: [id], onDelete: Cascade)
+  test      EnglishTest
+  minScore  Float
+
+  @@unique([programId, test])
+  @@index([programId])
+}
+
+// The heart on a program card.
+model SavedProgram {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId String
+  program   Program  @relation(fields: [programId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, programId])
+  @@index([userId])
+}
+
+model Application {
+  id          String            @id @default(cuid())
+  userId      String
+  user        User              @relation(fields: [userId], references: [id], onDelete: Cascade)
+  programId   String
+  program     Program           @relation(fields: [programId], references: [id], onDelete: Cascade)
+  status      ApplicationStatus @default(DRAFT)
+  submittedAt DateTime?
+  notes       String?
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+
+  @@unique([userId, programId])
+  @@index([userId, status])
+}
+
+enum ApplicationStatus {
+  DRAFT
+  SUBMITTED
+  IN_REVIEW
+  OFFER
+  REJECTED
+  WITHDRAWN
 }
 
 model Scholarship {

@@ -17,7 +17,7 @@ Web platform connecting students with universities and study-abroad programs.
 unilink-workspace/
 ├─ apps/
 │  └─ web/            # Next.js app (frontend + API routes)
-│     ├─ prisma/      # schema.prisma + migrations
+│     ├─ prisma/      # schema.prisma, migrations, seed/
 │     ├─ messages/    # i18n translation files (en.json, ar.json)
 │     ├─ public/      # static assets
 │     └─ src/         # app code (app/, components/, lib/, i18n/)
@@ -74,7 +74,11 @@ Skip this step when using Supabase.
 
 ```bash
 npm run db:migrate     # apply migrations
+npm run db:seed        # load the Egyptian university catalogue
 ```
+
+The seed is idempotent and only touches the universities it owns (matched by
+slug), so it is safe to re-run after editing `apps/web/prisma/seed/data.ts`.
 
 ### 6. Run the app
 
@@ -83,6 +87,20 @@ npm run dev
 ```
 
 Open http://localhost:3000
+
+## Main surfaces
+
+| Route | What it is |
+|---|---|
+| `/{locale}/universities` | Public directory of published universities |
+| `/{locale}/universities/[slug]` | University profile: gallery hero plus the About / Faculties / Location / Admission Requirements / Admission Criteria / Minimum Scores / Tuition Fees tabs (`?tab=` is linkable) |
+| `/{locale}/universities/[slug]/programs/[programSlug]` | Program profile |
+| `/{locale}/app/search` | Signed-in program search: natural-language search bar, filters, match-scored result cards |
+| `/{locale}/app/compare` | Side-by-side comparison of up to four programs |
+| `/{locale}/app/applications`, `/app/saved`, `/app/profile` | Student workspace |
+
+Everything under `/{locale}/app` requires a session; `src/proxy.ts` redirects
+anonymous visitors to `/login`.
 
 ## Scripts (run from repo root)
 
@@ -94,4 +112,5 @@ Open http://localhost:3000
 | `npm run lint` | Lint the web app |
 | `npm run db:generate` | Generate the Prisma client |
 | `npm run db:migrate` | Create & apply a dev migration |
+| `npm run db:seed` | Seed the university / faculty / program catalogue |
 | `npm run db:studio` | Open Prisma Studio |
