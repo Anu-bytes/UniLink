@@ -32,9 +32,9 @@ function loadEnv() {
     const [, key, rawValue = ""] = match;
     if (process.env[key] !== undefined) continue;
 
-    process.env[key] = rawValue
-      .trim()
-      .replace(/^(['"])(.*)\1$/s, "$2");
+    // No dotAll flag: the value is already a single trimmed line, and `s`
+    // requires an ES2018 compile target that this project does not set.
+    process.env[key] = rawValue.trim().replace(/^(['"])(.*)\1$/, "$2");
   }
 }
 
