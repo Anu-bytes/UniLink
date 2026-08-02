@@ -12,7 +12,12 @@
     "db:migrate": "prisma migrate dev",
     "db:deploy": "prisma migrate deploy",
     "db:push": "prisma db push",
+    "db:seed": "prisma db seed",
+    "db:seed:user": "tsx prisma/seed/dev-user.ts",
     "db:studio": "prisma studio"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed/index.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
@@ -42,6 +47,7 @@
     "eslint-config-next": "16.2.10",
     "prisma": "^6.5.0",
     "tailwindcss": "^4",
+    "tsx": "^4.19.2",
     "typescript": "^5"
   }
 }
