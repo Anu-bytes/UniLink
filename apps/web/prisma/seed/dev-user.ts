@@ -8,7 +8,7 @@
 // Development only: the password is committed on purpose and the script
 // refuses to run against a production database.
 
-import { PrismaClient } from "@prisma/client";
+import { PrismaClient, type Prisma } from "@prisma/client";
 import bcrypt from "bcryptjs";
 
 const prisma = new PrismaClient();
@@ -26,7 +26,7 @@ async function main() {
   const passwordHash = await bcrypt.hash(PASSWORD, 10);
   const currentYear = new Date().getFullYear();
 
-  const profile = {
+  const profile: Omit<Prisma.StudentProfileUncheckedCreateInput, "userId"> = {
     studyLevel: "BACHELOR",
     highSchoolSystem: "THANAWEYA_AMMA",
     graduationYear: currentYear,
@@ -40,7 +40,7 @@ async function main() {
     intakeSeason: "FALL",
     intakeYear: currentYear,
     budgetBand: "B100_200K",
-  } as const;
+  };
 
   const user = await prisma.user.upsert({
     where: { email: EMAIL },
