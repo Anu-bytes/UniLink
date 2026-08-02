@@ -7,7 +7,7 @@ import { useState, useTransition } from "react";
 import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/components/app/compare-context";
 import { UniversityLogo } from "@/components/university-logo";
-import { formatMoney, yearsFromMonths } from "@/lib/format";
+import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 import { BAND_STYLES } from "@/lib/matching";
 import type { ProgramResult } from "@/lib/program-search";
 import { cn } from "@/lib/utils";
@@ -164,7 +164,10 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
             <dd className="mt-0.5 font-semibold text-[#1F2A44]">
               {program.durationLabel ??
                 (years
-                  ? tCatalog("durationYears", { count: years })
+                  ? tCatalog("durationYears", {
+                      count: years,
+                      value: formatNumber(locale, years),
+                    })
                   : t("card.notSpecified"))}
             </dd>
           </div>

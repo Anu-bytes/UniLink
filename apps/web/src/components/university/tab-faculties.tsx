@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { EmptySection } from "@/components/university/prose";
 import type { UniversityDetailData } from "@/lib/catalog";
-import { formatMoney, yearsFromMonths } from "@/lib/format";
+import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 
 export async function TabFaculties({
   university,
@@ -66,7 +66,10 @@ export async function TabFaculties({
                         <p className="mt-1 text-sm text-[#5a6072]">
                           {tCatalog(`levels.${program.studyLevel}`)}
                           {years
-                            ? ` · ${tCatalog("durationYears", { count: years })}`
+                            ? ` · ${tCatalog("durationYears", {
+                                count: years,
+                                value: formatNumber(locale, years),
+                              })}`
                             : null}
                         </p>
                       </div>

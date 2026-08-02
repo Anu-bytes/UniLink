@@ -7,11 +7,12 @@ import {
   SlidersHorizontal,
   Zap,
 } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useState, useTransition, type ComponentType } from "react";
 
 import { useRouter } from "@/i18n/navigation";
 import { FiltersPanel } from "@/components/app/filters-panel";
+import { formatNumber } from "@/lib/format";
 import {
   QUICK_TAGS,
   countActiveFilters,
@@ -45,6 +46,7 @@ export function FilterBar({
 }) {
   const t = useTranslations("Search");
   const tCatalog = useTranslations("Catalog");
+  const locale = useLocale();
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
   const [panelOpen, setPanelOpen] = useState(false);
@@ -88,7 +90,7 @@ export function FilterBar({
         >
           <SlidersHorizontal className="size-4" aria-hidden />
           {activeCount > 0
-            ? t("filtersCount", { count: activeCount })
+            ? t("filtersCount", { count: formatNumber(locale, activeCount) })
             : t("filtersButton")}
         </button>
 
