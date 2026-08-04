@@ -3,9 +3,12 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { ImagePlaceholder } from "@/components/image-placeholder";
 import { StepsSlider, type Step } from "@/components/steps-slider";
+import { getPrimaryCta } from "@/lib/primary-cta";
 
 export default async function StudentsPage() {
   const t = await getTranslations("Students.landing");
+  const heroCta = await getPrimaryCta(t("hero.cta"));
+  const bandCta = await getPrimaryCta(t("band.cta"));
 
   const rawSteps = t.raw("steps") as {
     tab: string;
@@ -39,10 +42,10 @@ export default async function StudentsPage() {
               </p>
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Link
-                  href="/onboarding"
+                  href={heroCta.href}
                   className="inline-flex h-14 items-center justify-center rounded-[8px] bg-[#1E6DEB] px-7 text-[18px] font-semibold text-white transition-colors hover:bg-[#1859c4]"
                 >
-                  {t("hero.cta")}
+                  {heroCta.label}
                 </Link>
               </div>
             </div>
@@ -73,10 +76,10 @@ export default async function StudentsPage() {
             {t("band.title")}
           </h2>
           <Link
-            href="/onboarding"
+            href={bandCta.href}
             className="inline-flex h-14 items-center justify-center rounded-[8px] bg-white px-7 text-[18px] font-semibold text-[#1E6DEB] transition-colors hover:bg-white/90"
           >
-            {t("band.cta")}
+            {bandCta.label}
           </Link>
         </div>
       </section>

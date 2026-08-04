@@ -1,6 +1,8 @@
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
+import { AccountMenu } from "@/components/account-menu";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MobileNav } from "@/components/mobile-nav";
@@ -9,6 +11,15 @@ import { StickyHeaderShell } from "@/components/sticky-header-shell";
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
   const locale = await getLocale();
+  const session = await auth();
+
+  const user = session?.user
+    ? {
+        name: session.user.name ?? null,
+        email: session.user.email ?? null,
+        image: session.user.image ?? null,
+      }
+    : null;
 
   // Open Sans has no Arabic glyphs, so Arabic falls back to an unstyled system
   // font. Use Cairo (--font-arabic) for Arabic; Open Sans for Latin locales.
@@ -51,22 +62,36 @@ export async function SiteHeader() {
         <div className="hidden items-center gap-2 lg:flex xl:gap-3">
           <LanguageSwitcher />
 
-          {/* Both CTAs stay visible for the whole lg+ range. Below lg they
-              live in the mobile menu, so neither can fall into a gap where
-              it is hidden here but the hamburger is already gone. */}
-          <Link
-            href="/onboarding"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
-          >
-            {t("registerAsStudent")}
-          </Link>
+          {user ? (
+            <>
+              <Link
+                href="/app/search"
+                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+              >
+                {t("searchPrograms")}
+              </Link>
+              <AccountMenu user={user} />
+            </>
+          ) : (
+            <>
+              {/* Both CTAs stay visible for the whole lg+ range. Below lg they
+                  live in the mobile menu, so neither can fall into a gap where
+                  it is hidden here but the hamburger is already gone. */}
+              <Link
+                href="/onboarding"
+                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
+              >
+                {t("registerAsStudent")}
+              </Link>
 
-          <Link
-            href="/login"
-            className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
-          >
-            {t("login")}
-          </Link>
+              <Link
+                href="/login"
+                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+              >
+                {t("login")}
+              </Link>
+            </>
+          )}
         </div>
 
         <MobileNav
@@ -77,6 +102,7 @@ export async function SiteHeader() {
           registerLabel={t("registerAsStudent")}
           loginHref="/login"
           loginLabel={t("login")}
+          user={user}
         >
           <LanguageSwitcher />
         </MobileNav>

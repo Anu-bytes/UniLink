@@ -1,5 +1,7 @@
 import { z } from "zod";
 
+import { FIELDS_OF_STUDY } from "@/lib/fields";
+
 // ---------------------------------------------------------------------------
 // Option constants — mirror the Prisma enums in prisma/schema.prisma.
 // The `value` is what we persist; labels are resolved via next-intl at render
@@ -200,6 +202,80 @@ export const registerPayloadSchema = z.object({
   password: accountSchema.shape.password,
   profile: profileSchema,
 });
+
+// ---------------------------------------------------------------------------
+// Preferences editing (the "Preferences" card on /app/profile).
+//
+// Composed from the wizard schemas above so the two entry points cannot drift.
+// This is the schema the API route validates against: the client runs it too,
+// but only as a convenience.
+// ---------------------------------------------------------------------------
+
+/** Only values the app actually knows about; blocks arbitrary strings. */
+const FIELD_VALUES = new Set(FIELDS_OF_STUDY.map((field) => field.value));
+
+/**
+ * Plausible score bounds per test, so a profile cannot claim IELTS 9000 and
+ * skew every match calculation.
+ */
+export const ENGLISH_SCORE_RANGES = {
+  IELTS: { min: 0, max: 9 },
+  TOEFL: { min: 0, max: 120 },
+  PTE: { min: 10, max: 90 },
+  DUOLINGO: { min: 10, max: 160 },
+} as const satisfies Record<
+  Exclude<(typeof ENGLISH_TESTS)[number], "NONE">,
+  { min: number; max: number }
+>;
+
+export const preferencesSchema = z
+  .object({
+    fieldsOfStudy: z
+      .array(
+        z.string().refine((value) => FIELD_VALUES.has(value), {
+          message: "Unknown field of study",
+        }),
+      )
+      // Never allow the section to be emptied.
+      .min(1, "Select at least one field of study")
+      .max(3, "Choose up to 3 fields of study"),
+    budgetBand: z.enum(BUDGET_BANDS),
+    intakeSeason: z.enum(INTAKE_SEASONS),
+    intakeYear: z.coerce
+      .number()
+      .int()
+      .refine((year) => (INTAKE_YEARS as readonly number[]).includes(year), {
+        message: "Select an intake year",
+      }),
+    englishTest: z.enum(ENGLISH_TESTS),
+    // Null clears the score; only valid when no test is selected.
+    englishScore: z.coerce.number().nullable().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.englishTest === "NONE") {
+      return;
+    }
+
+    if (data.englishScore == null) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["englishScore"],
+        message: "Enter your test score",
+      });
+      return;
+    }
+
+    const range = ENGLISH_SCORE_RANGES[data.englishTest];
+    if (data.englishScore < range.min || data.englishScore > range.max) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["englishScore"],
+        message: `Score must be between ${range.min} and ${range.max}`,
+      });
+    }
+  });
+
+export type PreferencesData = z.infer<typeof preferencesSchema>;
 
 // ---------------------------------------------------------------------------
 // Types

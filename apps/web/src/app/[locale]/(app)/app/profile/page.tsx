@@ -1,11 +1,18 @@
-import { UserRound } from "lucide-react";
+import { GraduationCap, Mail, UserRound } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
+import { AvatarUploader } from "@/components/app/avatar-uploader";
+import { PreferencesSection } from "@/components/app/preferences-section";
+import {
+  CompletenessBar,
+  ProfileCard,
+  ProfileField,
+} from "@/components/app/profile-card";
+import { isStorageConfigured } from "@/lib/supabase-storage";
 import { COUNTRIES } from "@/lib/countries";
-import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { formatNumber } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -29,147 +36,143 @@ export default async function ProfilePage() {
 
   const profile = user.studentProfile;
 
-  const fieldLabels =
-    profile?.fieldsOfStudy.map((value) => {
-      const field = FIELDS_OF_STUDY.find((entry) => entry.value === value);
-      if (!field) return value;
-      return isArabic ? field.ar : field.en;
-    }) ?? [];
-
   const country = profile
     ? COUNTRIES.find((entry) => entry.code === profile.nationality)
     : undefined;
 
+  // Everything the match scorer reads, plus the contact details. Drives the
+  // completeness meter so a vague set of results has a visible explanation.
+  const completionChecks = [
+    Boolean(user.name),
+    Boolean(user.phone),
+    Boolean(user.image),
+    Boolean(profile),
+    Boolean(profile?.gradeValue),
+    Boolean(profile?.fieldsOfStudy.length),
+    Boolean(profile && profile.englishTest !== "NONE"),
+  ];
+  const complete = completionChecks.filter(Boolean).length;
+
   return (
-    <div className="mx-auto max-w-3xl px-4 py-6 pb-32 md:px-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1F2A44] md:text-3xl">
-        {t("title")}
-      </h1>
-      <p className="mt-1 text-sm text-[#5a6072]">{t("subtitle")}</p>
+    <div className="mx-auto max-w-5xl px-4 py-6 pb-32 md:px-6 md:py-8">
+      <header>
+        <h1 className="text-2xl font-bold text-[#1F2A44] md:text-3xl">
+          {t("title")}
+        </h1>
+        <p className="mt-1 text-sm text-[#5a6072]">{t("subtitle")}</p>
+      </header>
 
-      <section className="mt-6 rounded-xl border border-slate-200 bg-white p-5 md:p-6">
-        <h2 className="text-lg font-bold text-[#1F2A44]">{t("account")}</h2>
-        <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-          <Field label={t("name")} value={user.name ?? "—"} />
-          <Field label={t("email")} value={user.email} ltr />
-          <Field label={t("phone")} value={user.phone ?? "—"} ltr />
-        </dl>
-      </section>
-
-      {profile ? (
-        <>
-          <section className="mt-4 rounded-xl border border-slate-200 bg-white p-5 md:p-6">
-            <h2 className="text-lg font-bold text-[#1F2A44]">{t("academics")}</h2>
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-              <Field
-                label={t("highSchoolSystem")}
-                value={
-                  profile.highSchoolSystem === "OTHER" &&
-                  profile.highSchoolSystemOther
-                    ? profile.highSchoolSystemOther
-                    : tCatalog(`systems.${profile.highSchoolSystem}`)
-                }
-              />
-              <Field
-                label={t("graduationYear")}
-                value={formatNumber(locale, profile.graduationYear)}
-              />
-              <Field label={t("grade")} value={profile.gradeValue} />
-              <Field
-                label={t("nationality")}
-                value={
-                  country
-                    ? isArabic
-                      ? country.nameAr
-                      : country.name
-                    : profile.nationality
-                }
-              />
-            </dl>
-          </section>
-
-          <section className="mt-4 rounded-xl border border-slate-200 bg-white p-5 md:p-6">
-            <h2 className="text-lg font-bold text-[#1F2A44]">
-              {t("preferences")}
-            </h2>
-            <dl className="mt-4 grid gap-4 sm:grid-cols-2">
-              <div className="sm:col-span-2">
-                <dt className="text-sm font-semibold text-[#5a6072]">
-                  {t("fieldsOfStudy")}
-                </dt>
-                <dd className="mt-2 flex flex-wrap gap-2">
-                  {fieldLabels.map((label) => (
-                    <span
-                      key={label}
-                      className="rounded-full bg-[#EEF3FF] px-3 py-1 text-sm font-semibold text-[#1E3A8A]"
-                    >
-                      {label}
-                    </span>
-                  ))}
-                </dd>
-              </div>
-              <Field
-                label={t("budget")}
-                value={t(`budgetBands.${profile.budgetBand}`)}
-              />
-              <Field
-                label={t("intake")}
-                value={`${tCatalog(`seasons.${profile.intakeSeason}`)} ${formatNumber(locale, profile.intakeYear)}`}
-              />
-              <Field
-                label={t("english")}
-                value={
-                  profile.englishTest === "NONE"
-                    ? t("englishNone")
-                    : `${tCatalog(`englishTests.${profile.englishTest}`)}${
-                        profile.englishScore != null
-                          ? ` · ${formatNumber(locale, profile.englishScore)}`
-                          : ""
-                      }`
-                }
-              />
-            </dl>
-          </section>
-        </>
-      ) : (
-        <section className="mt-4 rounded-xl bg-[#F5F8FF] px-6 py-14 text-center">
-          <UserRound className="mx-auto size-8 text-[#98A0B4]" aria-hidden />
-          <h2 className="mt-3 text-lg font-bold text-[#1F2A44]">
-            {t("noProfileTitle")}
-          </h2>
-          <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6072]">
-            {t("noProfileBody")}
-          </p>
-          <Link
-            href="/onboarding"
-            className="mt-6 inline-flex min-h-12 items-center justify-center rounded-lg bg-[#1E6DEB] px-6 text-sm font-bold text-white hover:bg-[#1859c4]"
+      <div className="mt-6 space-y-4">
+        <ProfileCard icon={UserRound} title={t("account")}>
+          <AvatarUploader
+            user={{ name: user.name, email: user.email, image: user.image }}
+            storageReady={isStorageConfigured()}
           >
-            {t("completeProfile")}
-          </Link>
-        </section>
-      )}
-    </div>
-  );
-}
+            <div className="min-w-0">
+              <p className="truncate text-xl font-bold text-[#1F2A44]">
+                {user.name ?? t("noName")}
+              </p>
+              <p
+                dir="ltr"
+                className="mt-0.5 flex items-center gap-1.5 truncate text-sm text-[#5a6072] rtl:justify-end"
+              >
+                <Mail className="size-3.5 shrink-0" aria-hidden />
+                {user.email}
+              </p>
+            </div>
+          </AvatarUploader>
 
-function Field({
-  label,
-  value,
-  ltr,
-}: {
-  label: string;
-  value: string | null;
-  ltr?: boolean;
-}) {
-  return (
-    <div>
-      <dt className="text-sm font-semibold text-[#5a6072]">{label}</dt>
-      <dd
-        dir={ltr ? "ltr" : undefined}
-        className="mt-1 break-words text-base font-semibold text-[#1F2A44]"
-      >
-        {value ?? "—"}
-      </dd>
+          <dl className="mt-6 grid gap-5 border-t border-slate-100 pt-5 sm:grid-cols-2">
+            <ProfileField
+              label={t("phone")}
+              value={user.phone}
+              emptyLabel={t("notSet")}
+              ltr
+            />
+            <ProfileField
+              label={t("nationality")}
+              value={
+                country ? (isArabic ? country.nameAr : country.name) : null
+              }
+              emptyLabel={t("notSet")}
+            />
+          </dl>
+
+          <div className="mt-6 rounded-xl bg-[#F7F9FE] p-4">
+            <CompletenessBar
+              complete={complete}
+              total={completionChecks.length}
+              label={t("completeness")}
+              hint={t("completenessHint")}
+            />
+          </div>
+        </ProfileCard>
+
+        {profile ? (
+          <>
+            <ProfileCard
+              icon={GraduationCap}
+              title={t("academics")}
+              description={t("academicsHint")}
+            >
+              <dl className="grid gap-5 sm:grid-cols-2">
+                <ProfileField
+                  label={t("highSchoolSystem")}
+                  value={
+                    profile.highSchoolSystem === "OTHER" &&
+                    profile.highSchoolSystemOther
+                      ? profile.highSchoolSystemOther
+                      : tCatalog(`systems.${profile.highSchoolSystem}`)
+                  }
+                  emptyLabel={t("notSet")}
+                />
+                <ProfileField
+                  label={t("graduationYear")}
+                  value={formatNumber(locale, profile.graduationYear)}
+                  emptyLabel={t("notSet")}
+                />
+                <ProfileField
+                  label={t("grade")}
+                  value={profile.gradeValue}
+                  emptyLabel={t("notSet")}
+                />
+              </dl>
+            </ProfileCard>
+
+            <PreferencesSection
+              initial={{
+                fieldsOfStudy: profile.fieldsOfStudy,
+                budgetBand: profile.budgetBand,
+                intakeSeason: profile.intakeSeason,
+                intakeYear: profile.intakeYear,
+                englishTest: profile.englishTest,
+                englishScore: profile.englishScore,
+              }}
+            />
+          </>
+        ) : (
+          <div className="rounded-2xl border border-dashed border-slate-300 bg-[#F7F9FE] px-6 py-14 text-center">
+            <span
+              aria-hidden
+              className="mx-auto flex size-12 items-center justify-center rounded-full bg-white text-[#1E6DEB] shadow-sm"
+            >
+              <GraduationCap className="size-6" />
+            </span>
+            <h2 className="mt-4 text-lg font-bold text-[#1F2A44]">
+              {t("noProfileTitle")}
+            </h2>
+            <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6072]">
+              {t("noProfileBody")}
+            </p>
+            <Link
+              href="/onboarding"
+              className="mt-6 inline-flex min-h-12 items-center justify-center rounded-lg bg-[#1E6DEB] px-6 text-sm font-bold text-white transition-colors hover:bg-[#1859c4]"
+            >
+              {t("completeProfile")}
+            </Link>
+          </div>
+        )}
+      </div>
     </div>
   );
 }
