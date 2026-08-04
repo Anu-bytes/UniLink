@@ -13,7 +13,8 @@
     "login": "Log in",
     "registerAsStudent": "Register as a Student",
     "openMenu": "Open menu",
-    "closeMenu": "Close menu"
+    "closeMenu": "Close menu",
+    "searchPrograms": "Search programs"
   },
   "Footer": {
     "tagline": "A smart platform to discover and compare universities in Egypt.",
@@ -915,6 +916,33 @@
       "B200_300K": "EGP 200,000 to 300,000 per year",
       "B300_500K": "EGP 300,000 to 500,000 per year",
       "OVER_500K": "Over EGP 500,000 per year"
-    }
+    },
+    "avatar": {
+      "upload": "Upload photo",
+      "change": "Change photo",
+      "remove": "Remove",
+      "hint": "JPEG, PNG or WebP, up to 2 MB.",
+      "errorTooLarge": "That image is larger than 2 MB. Pick a smaller one.",
+      "errorFormat": "Only JPEG, PNG and WebP images are accepted.",
+      "errorRateLimited": "You just changed your photo. Try again in a moment.",
+      "errorNotConfigured": "Photo uploads are not configured on this server yet.",
+      "errorGeneric": "That did not upload. Please try again."
+    },
+    "edit": "Edit",
+    "save": "Save",
+    "cancel": "Cancel",
+    "fieldsHint": "Pick between 1 and {max}. You cannot remove the last one.",
+    "englishScore": "Score ({min} to {max})",
+    "preferencesError": "Could not save your preferences. Please try again.",
+    "noName": "Unnamed student",
+    "notSet": "Not set",
+    "completeness": "Profile completeness",
+    "completenessHint": "A fuller profile gives sharper match scores on the search page.",
+    "academicsHint": "Set during onboarding.",
+    "preferencesHint": "These drive your match scores."
+  },
+  "Account": {
+    "account": "Account",
+    "dashboard": "My dashboard"
   }
 }

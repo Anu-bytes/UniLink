@@ -8,6 +8,7 @@ import {
   GraduationCap,
   LayoutDashboard,
   Megaphone,
+  Search,
   Star,
   Users,
   type LucideIcon,
@@ -23,6 +24,7 @@ import { MotionSection } from "@/components/motion-section";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { getLandingCatalog } from "@/lib/catalog";
+import { getPrimaryCta } from "@/lib/primary-cta";
 
 export const dynamic = "force-dynamic";
 
@@ -63,6 +65,7 @@ export default async function HomePage() {
   const tc = await getTranslations("Home.counters");
   const locale = await getLocale();
   const catalog = await getLandingCatalog(locale);
+  const primaryCta = await getPrimaryCta(t("hero.cta"));
 
   const counterLabels = tc.raw("items") as string[];
   const heroValues = heroStatOrder.map((i) => catalog.stats[i] ?? 0);
@@ -111,7 +114,7 @@ export default async function HomePage() {
 
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Link
-                  href="/onboarding"
+                  href={primaryCta.href}
                   className="group relative inline-flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#1E6DEB] to-[#3B86F7] px-8 py-4 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-14px_rgba(30,109,235,0.8)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:translate-y-0 motion-reduce:transform-none sm:w-auto"
                 >
                   {/* pulse ring, outside the clip so it can scale past the edge */}
@@ -126,8 +129,12 @@ export default async function HomePage() {
                   >
                     <span className="ul-sheen absolute inset-y-0 -left-1/4 w-1/4 bg-gradient-to-r from-transparent via-white/35 to-transparent [animation-duration:6s]" />
                   </span>
-                  <GraduationCap className="size-5 shrink-0" aria-hidden />
-                  {t("hero.cta")}
+                  {primaryCta.signedIn ? (
+                    <Search className="size-5 shrink-0" aria-hidden />
+                  ) : (
+                    <GraduationCap className="size-5 shrink-0" aria-hidden />
+                  )}
+                  {primaryCta.label}
                   <ArrowRight
                     className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
                     aria-hidden
