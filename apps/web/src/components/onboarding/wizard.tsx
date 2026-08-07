@@ -1,11 +1,10 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { signIn } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
-import { useRouter } from "@/i18n/navigation";
 import { WIZARD_STEPS, TOTAL_STEPS } from "@/lib/onboarding-schema";
 import { useWizard } from "./wizard-context";
 import { WizardProgress } from "./wizard-progress";
@@ -16,7 +15,7 @@ type Phase = "form" | "submitting" | "done";
 
 export function Wizard() {
   const t = useTranslations("Onboarding");
-  const router = useRouter();
+  const locale = useLocale();
   const { step, data, hydrated, back, goTo, reset } = useWizard();
 
   const [phase, setPhase] = useState<Phase>("form");
@@ -102,8 +101,14 @@ export function Wizard() {
 
   function handleView() {
     reset();
-    router.push("/");
-    router.refresh();
+    // The button offers to show the matched programs, so send the student to
+    // the search surface rather than the marketing homepage.
+    //
+    // A full page load rather than a client transition: the session cookie was
+    // only just set by signIn, and /app is gated on that cookie in the proxy.
+    // A soft navigation can reach the gate before the cookie is visible to it,
+    // which bounces the new account straight back to /login.
+    window.location.assign(`/${locale}/app/search`);
   }
 
   if (phase === "submitting" || phase === "done") {
