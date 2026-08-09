@@ -1,4 +1,4 @@
-import { Sparkles } from "lucide-react";
+import { Target } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -22,18 +22,18 @@ export async function RecommendedPanel({
   if (programs.length === 0) return null;
 
   return (
-    <section className="rounded-xl border-2 border-[#DCC9FB] bg-white p-4 md:p-5">
-      <span className="inline-flex items-center gap-1.5 rounded-md bg-[#EFE9FE] px-2 py-1 text-xs font-bold text-[#6B3FD4]">
-        <Sparkles className="size-3.5" aria-hidden />
+    <section className="rounded-xl border-2 border-[#1E6DEB]/25 bg-white p-4 md:p-5">
+      <span className="inline-flex items-center gap-1.5 rounded-md bg-[#EEF3FF] px-2 py-1 text-xs font-bold text-[#1E3A8A]">
+        <Target className="size-3.5" aria-hidden />
         {t("recommendedBadge")}
       </span>
 
       <div className="mt-3 flex items-center gap-3">
         <span
           aria-hidden
-          className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#6B3FD4] to-[#1E6DEB] text-white"
+          className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white"
         >
-          <Sparkles className="size-5" />
+          <Target className="size-5" />
         </span>
         <h2 className="text-xl font-bold text-[#1F2A44] md:text-2xl">
           {t("recommendedTitle")}

@@ -1,6 +1,6 @@
 "use client";
 
-import { Loader2, Sparkles, X } from "lucide-react";
+import { Lightbulb, Loader2, Search, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
@@ -8,9 +8,9 @@ import { useRouter } from "@/i18n/navigation";
 import type { MatchedTerm } from "@/lib/search-query";
 
 /**
- * The "search with AI" panel. Submitting posts the raw text to the parse route,
- * which resolves it to filters; the resolved filters go straight into the URL,
- * so the results below are plain server-rendered output.
+ * The natural-language search field. Submitting posts the raw text to the parse
+ * route, which resolves it to filters; the resolved filters go straight into
+ * the URL, so the results below are plain server-rendered output.
  */
 export function AiSearchBar({
   initialQuery,
@@ -59,49 +59,73 @@ export function AiSearchBar({
     }
   }
 
+  function clear() {
+    setValue("");
+    startTransition(() => router.replace("/app/search"));
+  }
+
   const busy = isPending || isParsing;
 
   return (
-    <div className="rounded-xl border border-slate-200 bg-[#F8FAFF] p-4 md:p-5">
-      <p className="flex flex-wrap items-center gap-2 text-sm text-[#5a6072]">
-        <span className="inline-flex items-center gap-1.5 rounded-md bg-[#EFE9FE] px-2 py-1 text-xs font-bold text-[#6B3FD4]">
-          <Sparkles className="size-3.5" aria-hidden />
-          {t("aiLabel")}
-        </span>
-        {t("aiHint")}
-      </p>
+    <div>
+      {/* One unified control: the field and its button share a border that
+          lights up together on focus, rather than sitting as two separate
+          boxes inside a tinted panel. */}
+      <form
+        onSubmit={submit}
+        className="flex items-center gap-1 rounded-xl border-2 border-slate-200 bg-white p-1.5 shadow-sm transition-colors focus-within:border-[#1E6DEB] focus-within:ring-4 focus-within:ring-[#1E6DEB]/10"
+      >
+        <Search
+          className="ms-2.5 size-5 shrink-0 text-[#98A0B4]"
+          aria-hidden
+        />
 
-      <form onSubmit={submit} className="mt-3 flex flex-wrap gap-2">
-        <div className="relative min-w-56 flex-1">
-          <Sparkles
-            className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#6B3FD4]"
-            aria-hidden
-          />
-          <label htmlFor="ai-search" className="sr-only">
-            {t("title")}
-          </label>
-          <input
-            id="ai-search"
-            type="search"
-            value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder={t("aiPlaceholder")}
-            className="h-12 w-full rounded-lg border border-slate-200 bg-white ps-9 pe-3 text-sm text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
-          />
-        </div>
+        <label htmlFor="ai-search" className="sr-only">
+          {t("title")}
+        </label>
+        <input
+          id="ai-search"
+          type="text"
+          value={value}
+          onChange={(event) => setValue(event.target.value)}
+          placeholder={t("aiPlaceholder")}
+          className="h-11 min-w-0 flex-1 bg-transparent px-2.5 text-[15px] text-[#1F2A44] outline-none placeholder:text-[#98A0B4]"
+        />
+
+        {value ? (
+          <button
+            type="button"
+            onClick={clear}
+            aria-label={t("clearSearch")}
+            className="flex size-9 shrink-0 items-center justify-center rounded-lg text-[#98A0B4] transition-colors hover:bg-slate-100 hover:text-[#1F2A44]"
+          >
+            <X className="size-4" aria-hidden />
+          </button>
+        ) : null}
 
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex h-12 items-center justify-center gap-2 rounded-lg bg-[#1E6DEB] px-6 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] disabled:opacity-70"
+          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] disabled:opacity-70"
         >
-          {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : null}
-          {t("aiButton")}
+          {busy ? (
+            <Loader2 className="size-4 animate-spin" aria-hidden />
+          ) : (
+            <Search className="size-4 sm:hidden" aria-hidden />
+          )}
+          <span className="hidden sm:inline">{t("aiButton")}</span>
         </button>
       </form>
 
+      {/* Hint sits under the field as a caption, so it stops competing with
+          the input for attention. */}
+      <p className="mt-2 flex items-start gap-1.5 px-1 text-xs leading-5 text-[#5a6072]">
+        <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-[#1E6DEB]" aria-hidden />
+        <span>{t("aiHint")}</span>
+      </p>
+
       {matched.length > 0 || unmatched.length > 0 ? (
-        <div className="mt-3 flex flex-wrap items-center gap-2 text-xs">
+        <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
           {matched.length > 0 ? (
             <>
               <span className="font-semibold text-[#5a6072]">
@@ -110,7 +134,7 @@ export function AiSearchBar({
               {matched.map((term) => (
                 <span
                   key={`${term.kind}-${term.value}`}
-                  className="rounded-md bg-white px-2 py-1 font-semibold text-[#1E3A8A] ring-1 ring-slate-200"
+                  className="rounded-md bg-[#EEF3FF] px-2 py-1 font-semibold text-[#1E3A8A]"
                 >
                   {term.label}
                 </span>

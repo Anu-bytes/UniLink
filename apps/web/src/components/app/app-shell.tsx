@@ -28,12 +28,19 @@ type NavItem = {
   icon: ComponentType<{ className?: string }>;
   /** Sub-paths that should also light this item up. */
   extraMatches?: string[];
+  /** Marks the section as previewed but not finished. Does not gate access. */
+  comingSoon?: boolean;
 };
 
 const NAV: NavItem[] = [
   { href: "/app", labelKey: "home", icon: Home },
   { href: "/app/search", labelKey: "search", icon: Search, extraMatches: ["/app/compare"] },
-  { href: "/app/applications", labelKey: "applications", icon: GraduationCap },
+  {
+    href: "/app/applications",
+    labelKey: "applications",
+    icon: GraduationCap,
+    comingSoon: true,
+  },
   { href: "/app/profile", labelKey: "profile", icon: User },
 ];
 
@@ -134,9 +141,19 @@ export function AppShell({
             >
               <item.icon className="size-[18px] shrink-0" />
               {collapsed ? (
-                <span className="sr-only">{t(`sidebar.${item.labelKey}`)}</span>
+                <span className="sr-only">
+                  {t(`sidebar.${item.labelKey}`)}
+                  {item.comingSoon ? ` (${t("comingSoon")})` : null}
+                </span>
               ) : (
-                <span>{t(`sidebar.${item.labelKey}`)}</span>
+                <>
+                  <span>{t(`sidebar.${item.labelKey}`)}</span>
+                  {item.comingSoon ? (
+                    <span className="ms-auto shrink-0 rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#B77714]">
+                      {t("comingSoon")}
+                    </span>
+                  ) : null}
+                </>
               )}
             </Link>
           );

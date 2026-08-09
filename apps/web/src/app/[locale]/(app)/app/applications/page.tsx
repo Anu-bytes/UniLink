@@ -1,4 +1,4 @@
-import { FileText, MapPin } from "lucide-react";
+import { FileText, Info, MapPin } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -23,6 +23,7 @@ const STATUS_STYLES: Record<string, string> = {
 
 export default async function ApplicationsPage() {
   const t = await getTranslations("Applications");
+  const tApp = await getTranslations("App");
   const tCatalog = await getTranslations("Catalog");
   const locale = await getLocale();
   const session = await auth();
@@ -33,10 +34,30 @@ export default async function ApplicationsPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-4 py-6 pb-32 md:px-6 md:py-8">
-      <h1 className="text-2xl font-bold text-[#1F2A44] md:text-3xl">
-        {t("title")}
-      </h1>
+      <div className="flex flex-wrap items-center gap-3">
+        <h1 className="text-2xl font-bold text-[#1F2A44] md:text-3xl">
+          {t("title")}
+        </h1>
+        <span className="rounded-full bg-[#FFF6E5] px-3 py-1 text-xs font-bold uppercase tracking-wide text-[#B77714]">
+          {tApp("comingSoon")}
+        </span>
+      </div>
       <p className="mt-1 text-sm text-[#5a6072]">{t("subtitle")}</p>
+
+      {/* The section is usable today: applications are saved and tracked here.
+          What is not built yet is submitting them onward to the university, so
+          the notice sets that expectation without gating anything. */}
+      <div className="mt-5 flex items-start gap-3 rounded-xl border border-[#F3DFB4] bg-[#FFFBF2] p-4">
+        <Info className="mt-0.5 size-5 shrink-0 text-[#B77714]" aria-hidden />
+        <div className="min-w-0">
+          <p className="text-sm font-bold text-[#8A5A0F]">
+            {t("previewTitle")}
+          </p>
+          <p className="mt-1 text-sm leading-6 text-[#7A6440]">
+            {t("previewBody")}
+          </p>
+        </div>
+      </div>
 
       {applications.length > 0 ? (
         <ul className="mt-6 space-y-4">

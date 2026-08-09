@@ -3,11 +3,11 @@
 import { useState, type ReactNode } from "react";
 import Image from "next/image";
 import {
+  ArrowRight,
   BookOpen,
   Globe,
   GraduationCap,
   MessageSquareText,
-  Sparkles,
   Wallet,
 } from "lucide-react";
 import type { z } from "zod";
@@ -186,8 +186,10 @@ export function StepShell({
         disabled={submitting}
         className="group w-full gap-2 bg-gradient-to-r from-brand-blue to-violet-600 py-6 text-base font-semibold text-white transition-all hover:opacity-95 hover:shadow-lg hover:shadow-brand-blue/25 active:scale-[0.99] disabled:opacity-70 motion-reduce:transition-none"
       >
-        <Sparkles className="size-5 transition-transform group-hover:rotate-12" />
         {submitLabel}
+        {/* Nudges forward on hover rather than rotating: an arrow reads as
+            "continue", so the motion should follow the reading direction. */}
+        <ArrowRight className="size-5 transition-transform group-hover:translate-x-0.5 rtl:rotate-180 rtl:group-hover:-translate-x-0.5" />
       </Button>
     </form>
   );
