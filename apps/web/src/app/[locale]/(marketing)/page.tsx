@@ -129,12 +129,11 @@ export default async function HomePage() {
                   >
                     <span className="ul-sheen absolute inset-y-0 -left-1/4 w-1/4 bg-gradient-to-r from-transparent via-white/35 to-transparent [animation-duration:6s]" />
                   </span>
-                  {primaryCta.signedIn ? (
-                    <Search className="size-5 shrink-0" aria-hidden />
-                  ) : (
-                    <GraduationCap className="size-5 shrink-0" aria-hidden />
-                  )}
-                  {primaryCta.label}
+                  <Search className="size-5 shrink-0" aria-hidden />
+                  {/* The hero keeps its own wording in both states; only the
+                      destination changes, to registration or straight to
+                      search once the student has an account. */}
+                  {t("hero.cta")}
                   <ArrowRight
                     className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
                     aria-hidden

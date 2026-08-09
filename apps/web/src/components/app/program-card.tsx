@@ -2,7 +2,7 @@
 
 import { ExternalLink, Heart, MapPin } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState, useTransition } from "react";
+import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/components/app/compare-context";
@@ -18,13 +18,12 @@ import { cn } from "@/lib/utils";
  */
 export function ProgramCard({ program }: { program: ProgramResult }) {
   const t = useTranslations("Search");
+  const tApp = useTranslations("App");
   const tCatalog = useTranslations("Catalog");
   const locale = useLocale();
   const compare = useCompare();
 
   const [saved, setSaved] = useState(program.saved);
-  const [applied, setApplied] = useState(program.applied);
-  const [isPending, startTransition] = useTransition();
 
   const selected = compare.isSelected(program.id);
   const band = program.match?.band;
@@ -59,22 +58,6 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
       console.error("Unable to update saved programs", error);
       setSaved(!next);
     }
-  }
-
-  function startApplication() {
-    startTransition(async () => {
-      try {
-        const response = await fetch("/api/applications", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ programId: program.id }),
-        });
-        if (!response.ok) throw new Error(await response.text());
-        setApplied(true);
-      } catch (error) {
-        console.error("Unable to start this application", error);
-      }
-    });
   }
 
   return (
@@ -217,19 +200,16 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
               />
             </button>
 
-            <button
-              type="button"
-              onClick={startApplication}
-              disabled={applied || isPending}
-              className={cn(
-                "h-10 flex-1 rounded-md text-sm font-bold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
-                applied
-                  ? "cursor-default bg-[#E9F7F0] text-[#1F7A4D]"
-                  : "bg-[#1E6DEB] text-white hover:bg-[#1859c4] disabled:opacity-70",
-              )}
+            {/* Details is the primary action: it is the step every student
+                takes, whereas starting an application is a later commitment
+                and its tracking is still in preview. */}
+            <Link
+              href={`/universities/${program.university.slug}/programs/${program.slug}`}
+              className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-[#1E6DEB] text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
             >
-              {applied ? t("card.applied") : t("card.startApplication")}
-            </button>
+              {t("card.details")}
+              <ExternalLink className="size-3.5" aria-hidden />
+            </Link>
           </div>
 
           <div className="mt-2 flex gap-2">
@@ -255,13 +235,20 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
               {selected ? t("card.comparing") : t("card.compare")}
             </button>
 
-            <Link
-              href={`/universities/${program.university.slug}/programs/${program.slug}`}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-md border border-slate-200 text-sm font-semibold text-[#1F2A44] transition-colors hover:bg-slate-50"
+            {/* Disabled until applications leave preview. POST /api/applications
+                still exists and works, so re-enabling means restoring an
+                onClick that posts the program id and flipping this back to a
+                filled button. */}
+            <button
+              type="button"
+              disabled
+              className="inline-flex h-10 flex-1 cursor-not-allowed items-center justify-center gap-1.5 rounded-md border border-slate-200 bg-slate-50 text-sm font-semibold text-[#98A0B4]"
             >
-              {t("card.details")}
-              <ExternalLink className="size-3.5" aria-hidden />
-            </Link>
+              {t("card.startApplication")}
+              <span className="rounded-full bg-[#FFF6E5] px-1.5 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#B77714]">
+                {tApp("comingSoon")}
+              </span>
+            </button>
           </div>
         </div>
       </div>

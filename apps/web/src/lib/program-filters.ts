@@ -59,6 +59,38 @@ export type SearchFilters = z.infer<typeof searchFiltersSchema>;
 
 export const PAGE_SIZE = 12;
 
+/**
+ * Quick tuition brackets in EGP per year, surfaced as a dropdown in the filter
+ * bar. Tuition and location are the two things students filter on first, so
+ * both get a control of their own rather than living inside the filter drawer.
+ *
+ * `min`/`max` map straight onto the SearchFilters range, so the dropdown and
+ * the drawer's numeric inputs drive the same two fields.
+ */
+export const TUITION_RANGES = [
+  { key: "under100", min: undefined, max: 100_000 },
+  { key: "from100to200", min: 100_000, max: 200_000 },
+  { key: "from200to300", min: 200_000, max: 300_000 },
+  { key: "from300to500", min: 300_000, max: 500_000 },
+  { key: "over500", min: 500_000, max: undefined },
+] as const;
+
+export type TuitionRangeKey = (typeof TUITION_RANGES)[number]["key"];
+
+/**
+ * The bracket the current filters correspond to, or "" when the range was set
+ * by hand in the drawer and matches no preset.
+ */
+export function tuitionRangeKeyOf(
+  filters: Pick<SearchFilters, "minTuition" | "maxTuition">,
+): TuitionRangeKey | "" {
+  const match = TUITION_RANGES.find(
+    (range) =>
+      range.min === filters.minTuition && range.max === filters.maxTuition,
+  );
+  return match ? match.key : "";
+}
+
 /** Upper bound in EGP per year for each onboarding budget band. */
 export const BUDGET_BAND_CEILING: Record<string, number> = {
   UNDER_100K: 100_000,

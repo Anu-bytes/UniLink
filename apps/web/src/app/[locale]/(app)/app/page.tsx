@@ -1,4 +1,4 @@
-import { FileText, Heart, Search, Sparkles, TrendingUp } from "lucide-react";
+import { FileText, Heart, Search, TrendingUp, UserRoundPen } from "lucide-react";
 import { redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -91,12 +91,12 @@ export default async function AppHomePage() {
       </div>
 
       {!profile ? (
-        <section className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border-2 border-[#DCC9FB] bg-[#FBF9FF] p-5">
+        <section className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border-2 border-[#1E6DEB]/25 bg-[#F7F9FE] p-5">
           <span
             aria-hidden
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#6B3FD4] to-[#1E6DEB] text-white"
+            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white"
           >
-            <Sparkles className="size-5" />
+            <UserRoundPen className="size-5" />
           </span>
           <div className="min-w-0 flex-1">
             <h2 className="font-bold text-[#1F2A44]">{t("profileCardTitle")}</h2>
@@ -104,7 +104,7 @@ export default async function AppHomePage() {
           </div>
           <Link
             href="/onboarding"
-            className="inline-flex min-h-11 items-center rounded-lg bg-[#6B3FD4] px-5 text-sm font-bold text-white hover:bg-[#5a33b8]"
+            className="inline-flex min-h-11 items-center rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white hover:bg-[#1859c4]"
           >
             {t("profileCardCta")}
           </Link>

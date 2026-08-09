@@ -31,7 +31,7 @@ export function UniversityLogo({
     );
   }
 
-  const { initials, background, color } = initialsAvatar(name);
+  const { initials, background, color } = initialsAvatar(name, "organization");
 
   return (
     <span

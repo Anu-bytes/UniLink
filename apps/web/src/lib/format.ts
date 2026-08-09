@@ -68,24 +68,72 @@ export function yearsFromMonths(months: number | null | undefined) {
   return months / 12;
 }
 
-/** Deterministic pastel background for a logo placeholder, keyed by name. */
-export function initialsAvatar(name: string) {
-  const initials = name
-    .replace(/^(the|al|el)\s+/i, "")
+/**
+ * Palette for initials placeholders. Constrained to the brand's blue family
+ * rather than a free hue rotation, which produced pinks and greens that
+ * clashed with everything around them.
+ */
+const AVATAR_PALETTE = [
+  { background: "#EEF3FF", color: "#1E3A8A" },
+  { background: "#E4EEFC", color: "#1E6DEB" },
+  { background: "#E7F0F6", color: "#15607D" },
+  { background: "#EAEFF9", color: "#33497A" },
+  { background: "#EDF1F7", color: "#3F4657" },
+] as const;
+
+/**
+ * Words that carry no identity and must not supply the initial. Nearly every
+ * Egyptian institution starts with "جامعة" (University), so without this every
+ * placeholder in the catalogue would read the same letter.
+ */
+const GENERIC_NAME_WORDS = new Set([
+  "the", "of", "in", "and", "for", "at",
+  "university", "universities", "academy", "college", "institute", "city", "school",
+  "جامعة", "الجامعة", "أكاديمية", "الأكاديمية", "مدينة", "المدينة",
+  "كلية", "الكلية", "معهد", "المعهد", "في", "و", "من",
+]);
+
+/** Leading Arabic definite article, so "الإسكندرية" yields "إ" not "ا". */
+function stripArabicArticle(word: string) {
+  return word.length > 2 && word.startsWith("ال") ? word.slice(2) : word;
+}
+
+/**
+ * Deterministic initials badge used wherever a real logo or photo is missing.
+ *
+ * `organization` takes a single letter from the first meaningful word: two
+ * Arabic letters do not read as initials the way Latin ones do, and at the
+ * sizes these render (36-56px) one glyph is simply clearer.
+ */
+export function initialsAvatar(
+  name: string,
+  kind: "person" | "organization" = "person",
+) {
+  const words = name
+    .trim()
     .split(/\s+/)
-    .slice(0, 2)
-    .map((word) => word[0] ?? "")
-    .join("")
-    .toUpperCase();
+    .filter((word) => word && !GENERIC_NAME_WORDS.has(word.toLowerCase()));
+
+  const meaningful = words.length > 0 ? words : name.trim().split(/\s+/);
+
+  const initials =
+    kind === "organization"
+      ? (stripArabicArticle(meaningful[0] ?? "")[0] ?? "").toUpperCase()
+      : meaningful
+          .slice(0, 2)
+          .map((word) => word[0] ?? "")
+          .join("")
+          .toUpperCase();
 
   let hash = 0;
   for (let i = 0; i < name.length; i += 1) {
-    hash = (hash * 31 + name.charCodeAt(i)) % 360;
+    hash = (hash * 31 + name.charCodeAt(i)) % 997;
   }
+  const swatch = AVATAR_PALETTE[hash % AVATAR_PALETTE.length];
 
   return {
     initials: initials || "U",
-    background: `hsl(${hash} 62% 92%)`,
-    color: `hsl(${hash} 58% 34%)`,
+    background: swatch.background,
+    color: swatch.color,
   };
 }

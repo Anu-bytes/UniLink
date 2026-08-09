@@ -3,7 +3,9 @@
 import {
   BadgePercent,
   Banknote,
+  ChevronDown,
   GraduationCap,
+  MapPin,
   SlidersHorizontal,
   Zap,
 } from "lucide-react";
@@ -15,8 +17,10 @@ import { FiltersPanel } from "@/components/app/filters-panel";
 import { formatNumber } from "@/lib/format";
 import {
   QUICK_TAGS,
+  TUITION_RANGES,
   countActiveFilters,
   filtersToSearchParams,
+  tuitionRangeKeyOf,
   type ProgramTagValue,
   type SearchFilters,
 } from "@/lib/program-filters";
@@ -36,7 +40,11 @@ export type FilterOptions = {
   universities: { value: string; label: string }[];
 };
 
-/** The chip row: the full-filters opener plus the quick tag toggles. */
+/**
+ * The chip row above the results. Tuition and city get dedicated dropdowns
+ * because they are what students narrow on first; everything else stays in the
+ * filter drawer behind "Filters & Eligibility".
+ */
 export function FilterBar({
   filters,
   options,
@@ -53,6 +61,8 @@ export function FilterBar({
 
   const activeCount = countActiveFilters(filters);
   const activeTags = new Set(filters.tags ?? []);
+  const activeCity = filters.cities?.[0] ?? "";
+  const activeRange = tuitionRangeKeyOf(filters);
 
   function push(next: SearchFilters) {
     const query = filtersToSearchParams({ ...next, page: 1 }).toString();
@@ -69,6 +79,19 @@ export function FilterBar({
     push({
       ...filters,
       tags: tags.size > 0 ? ([...tags] as SearchFilters["tags"]) : undefined,
+    });
+  }
+
+  function selectCity(city: string) {
+    push({ ...filters, cities: city ? [city] : undefined });
+  }
+
+  function selectTuition(key: string) {
+    const range = TUITION_RANGES.find((entry) => entry.key === key);
+    push({
+      ...filters,
+      minTuition: range?.min,
+      maxTuition: range?.max,
     });
   }
 
@@ -93,6 +116,32 @@ export function FilterBar({
             ? t("filtersCount", { count: formatNumber(locale, activeCount) })
             : t("filtersButton")}
         </button>
+
+        {/* City and tuition are the two filters students reach for first, so
+            they sit next to the drawer button and carry more visual weight
+            than the perk chips further along the row. */}
+        <SelectChip
+          icon={MapPin}
+          label={t("filters.city")}
+          value={activeCity}
+          onChange={selectCity}
+          placeholder={t("filters.anyCity")}
+          options={options.cities}
+        />
+
+        <SelectChip
+          icon={Banknote}
+          label={t("filters.tuition")}
+          value={activeRange}
+          onChange={selectTuition}
+          placeholder={t("filters.anyTuition")}
+          options={TUITION_RANGES.map((range) => ({
+            value: range.key,
+            label: t(`tuitionRanges.${range.key}`),
+          }))}
+        />
+
+        <span aria-hidden className="hidden h-6 w-px bg-slate-200 sm:block" />
 
         {QUICK_TAGS.map((tag) => {
           const Icon = TAG_ICONS[tag];
@@ -139,6 +188,62 @@ export function FilterBar({
         />
       ) : null}
     </>
+  );
+}
+
+/**
+ * A native select styled as a chip. Native rather than a custom dropdown so it
+ * keeps platform keyboard and touch behaviour, and needs no extra JS.
+ */
+function SelectChip({
+  icon: Icon,
+  label,
+  value,
+  onChange,
+  placeholder,
+  options,
+}: {
+  icon: ComponentType<{ className?: string }>;
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  placeholder: string;
+  options: { value: string; label: string }[];
+}) {
+  const active = Boolean(value);
+
+  return (
+    <div className="relative">
+      {/* Icon stays brand blue in both states: these two are the highlighted
+          primary filters, so they should read as active controls even before
+          anything is chosen. */}
+      <Icon
+        className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#1E6DEB]"
+        aria-hidden
+      />
+      <select
+        aria-label={label}
+        value={value}
+        onChange={(event) => onChange(event.target.value)}
+        className={cn(
+          "h-10 cursor-pointer appearance-none rounded-lg border-2 ps-9 pe-8 text-sm font-semibold shadow-sm outline-none transition-colors focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25",
+          active
+            ? "border-[#1E6DEB] bg-[#EEF3FF] text-[#1E6DEB]"
+            : "border-[#1E6DEB]/35 bg-white text-[#1F2A44] hover:border-[#1E6DEB]/60 hover:bg-[#F7F9FE]",
+        )}
+      >
+        <option value="">{placeholder}</option>
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </select>
+      <ChevronDown
+        className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-[#1E6DEB]"
+        aria-hidden
+      />
+    </div>
   );
 }
 

@@ -14,7 +14,7 @@
     "registerAsStudent": "Register as a Student",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "searchPrograms": "Search programs"
+    "searchPrograms": "Search universities and programs"
   },
   "Footer": {
     "tagline": "A smart platform to discover and compare universities in Egypt.",
@@ -45,7 +45,7 @@
         "titleLead": "Your Future Starts",
         "titleHighlight": "Right Here in Egypt",
         "subtitle": "Explore and compare private and national universities in Egypt. Colleges, majors, fees, admission requirements, and scholarships, all in one place.",
-        "cta": "Register as a Student"
+        "cta": "Start your university search"
       },
       "testimonials": {
         "title": "What Our Students Have to Say",
@@ -216,9 +216,9 @@
       "heading": "Tell us a bit about yourself",
       "help": "We'll use your name and country to personalize your matches and unlock country-specific scholarships and visa guides.",
       "firstNameLabel": "First name",
-      "firstNamePlaceholder": "e.g. Sara",
+      "firstNamePlaceholder": "First name",
       "lastNameLabel": "Last name",
-      "lastNamePlaceholder": "e.g. Ahmed",
+      "lastNamePlaceholder": "Last name",
       "countryLabel": "Country",
       "countryPlaceholder": "Search your country…"
     },
@@ -234,11 +234,11 @@
       "systemLabel": "High school system",
       "systemPlaceholder": "Select your high school system",
       "otherLabel": "Please specify",
-      "otherPlaceholder": "e.g. French Baccalaureate",
+      "otherPlaceholder": "Name of your high school system",
       "graduationYearLabel": "Expected year of graduation",
       "graduationYearPlaceholder": "Select year",
       "gradeLabel": "Expected grade",
-      "gradePlaceholder": "e.g. 95% or 3.8 GPA"
+      "gradePlaceholder": "Percentage or GPA"
     },
     "field": {
       "name": "Study preferences",
@@ -254,7 +254,7 @@
       "help": "We'll match English score requirements so you only see programs you qualify for.",
       "testLabel": "English test",
       "scoreLabel": "Your score",
-      "scorePlaceholder": "e.g. 7.5"
+      "scorePlaceholder": "Your score"
     },
     "nationality": {
       "name": "Nationality",
@@ -324,9 +324,9 @@
       "heading": "Create your account",
       "help": "Create an account to save your answers and see your matches.",
       "emailLabel": "Email",
-      "emailPlaceholder": "you@example.com",
+      "emailPlaceholder": "Email address",
       "phoneLabel": "Phone number",
-      "phonePlaceholder": "+20 100 123 4567",
+      "phonePlaceholder": "Phone number",
       "passwordLabel": "Password",
       "passwordPlaceholder": "Create a password",
       "orContinueWith": "Or continue with",
@@ -547,12 +547,178 @@
     "subtitle": "We're not hiring publicly yet, but check back soon for open roles."
   },
   "Privacy": {
-    "title": "Privacy policy",
-    "subtitle": "Our full privacy policy is being finalized and will be published here."
+    "title": "Privacy Policy",
+    "subtitle": "What personal data we collect, why, and the rights you have over it.",
+    "lastUpdated": "Last updated: {date}",
+    "lastUpdatedDate": "August 2, 2026",
+    "tocTitle": "On this page",
+    "backToTop": "Back to top",
+    "intro": "This Policy explains what personal data UniLink collects when you search for universities, build a study profile, save programs, and track your applications, and what rights you have over that data. Please read it together with our Terms of Service.",
+    "sections": [
+      {
+        "heading": "Introduction and Scope",
+        "body": "This Privacy Policy explains how UniLink (“we”, “us”, “our”) collects, uses, discloses, and protects your personal data when you use the UniLink website, application, and related services (together, the “Platform” or “Service”). It applies to prospective students, their parents or guardians, and any other visitor to the Platform.\n\nThis Policy should be read together with our Terms of Service. If you do not agree with this Policy, please do not use the Service. We process personal data in accordance with the Egyptian Personal Data Protection Law No. 151 of 2020 and other applicable law."
+      },
+      {
+        "heading": "Who Is Responsible for Your Data",
+        "body": "UniLink acts as the data controller for the personal data described in this Policy: we decide what data is collected and why. If you have any question about how we handle your data, contact us using the details in the “Contact Us” section below."
+      },
+      {
+        "heading": "Personal Data We Collect",
+        "body": "Account information: your name, email address, phone number, and, if you sign in with a password, a securely hashed version of it. We never store your password in plain text.\nStudy profile: your expected secondary-certificate system and grade, graduation year, fields of study, nationality, budget range, preferred intake, and English test type and score, as provided during onboarding or later edited on your profile.\nProfile picture: an optional photo you upload, stored as an image file.\nActivity on the Platform: the programs you save, the applications you start tracking and their status, and search filters you apply during your current session.\nSign-in data: if you choose to sign in with Google, we receive your name, email address, and profile picture from Google, as permitted by your Google account settings.\nTechnical data: your IP address, browser type, device information, and pages you visit, collected automatically as part of operating the Service securely."
+      },
+      {
+        "heading": "How We Collect Your Data",
+        "body": "We collect data in three ways: directly from you, when you register, complete your study profile, upload a photo, save a program, or track an application; automatically, through cookies and similar technologies as described in the Cookies section below; and from third parties, specifically Google, if you choose to sign in through it."
+      },
+      {
+        "heading": "How We Use Your Data",
+        "body": "To create and manage your account, and to authenticate you when you sign in.\nTo operate the core features of the Service: searching and comparing universities and programs, saving programs, and tracking your own application progress.\nTo calculate the “success chance” estimates and “recommended for you” suggestions described in our Terms of Service, based on the study profile you provide.\nTo communicate with you about your account or the Service, including security notices.\nTo maintain the security of the Service, investigate misuse, and enforce our Terms of Service.\nTo comply with our legal obligations, and to establish, exercise, or defend legal claims."
+      },
+      {
+        "heading": "Legal Bases for Processing",
+        "body": "Where the Personal Data Protection Law No. 151 of 2020 requires a legal basis for processing, we rely on the following: performance of a contract, to provide the Service you asked for, such as creating your account and returning search results; your consent, for optional features such as uploading a profile picture or signing in through Google, which you may withdraw at any time; and our legitimate interest, in keeping the Service secure and improving it, balanced against your rights and freedoms.\n\nWhere we process sensitive categories of personal data, or where the law otherwise requires it, we will ask for your explicit consent before doing so."
+      },
+      {
+        "heading": "Cookies and Local Storage",
+        "body": "We use a small number of cookies and browser storage mechanisms that are necessary for the Service to work:\nA session cookie, set when you sign in, which keeps you authenticated as you move between pages\nA language preference, so the site remembers whether you chose Arabic or English\nLocal storage in your browser for interface preferences, such as whether the sidebar is collapsed, and for programs you have selected to compare, which stays on your device and is not sent to our servers as tracking data\n\nWe do not currently use analytics, advertising, or marketing cookies. If we introduce them in the future, we will update this Policy and request your consent where required by law."
+      },
+      {
+        "heading": "Sharing Your Information",
+        "body": "We do not sell your personal data. We share it only in the following circumstances:\n\nService providers: we use Supabase to host our database and to store uploaded profile pictures, and Google to offer sign-in with your Google account. These providers process data on our behalf and are contractually required to protect it.\n\nUniversity Partners: the Platform does not currently transmit your personal data to any University Partner automatically when you save a program or start tracking an application. If we introduce a feature that submits your information directly to a University Partner, we will clearly disclose this to you before you use it and will only do so with your consent.\n\nLegal and safety reasons: we may disclose data where required by law, to respond to a valid legal request from a competent authority, or to protect the rights, property, or safety of UniLink, our Users, or the public.\n\nBusiness transfers: if UniLink is involved in a merger, acquisition, or sale of assets, your data may be transferred as part of that transaction, subject to the protections of this Policy."
+      },
+      {
+        "heading": "International Data Transfers",
+        "body": "Our database and file storage are hosted on Supabase’s infrastructure, which may process and store data outside Egypt. Where we transfer personal data internationally, we take appropriate measures to protect it consistent with the requirements of the Personal Data Protection Law No. 151 of 2020."
+      },
+      {
+        "heading": "Data Retention",
+        "body": "We retain your personal data for as long as your account remains active, and for a reasonable period afterward to comply with legal obligations, resolve disputes, and enforce our agreements. If you delete your account, we will delete or anonymize your personal data within a reasonable period, except where we are required or permitted by law to retain it, for example for accounting or legal-defense purposes."
+      },
+      {
+        "heading": "Your Rights",
+        "body": "Subject to applicable law, including the Personal Data Protection Law No. 151 of 2020, you have the right to: access the personal data we hold about you; correct inaccurate or incomplete data; request deletion of your data; object to or restrict certain processing; withdraw consent you previously gave, without affecting processing carried out before the withdrawal; and receive a copy of your data in a portable format.\n\nYou can exercise many of these rights directly from your account: edit your study profile and account details, remove your profile picture, remove saved programs, and withdraw applications, all from the Profile, Saved, and Applications pages. For any request we cannot fulfil in-product, including full account deletion, contact us using the details below."
+      },
+      {
+        "heading": "Children’s Privacy",
+        "body": "The Service is intended for use by prospective students, a significant number of whom are under 18, the age of legal majority in the Arab Republic of Egypt. If you are under 18, a parent or legal guardian must review this Policy and consent to the processing of your personal data on your behalf, consistent with the eligibility requirements in our Terms of Service.\n\nIf we learn that we have collected personal data from a child without the appropriate parental or guardian consent, we will take steps to delete that data or obtain the required consent."
+      },
+      {
+        "heading": "Data Security",
+        "body": "We take reasonable technical and organizational measures to protect your personal data, including encrypting connections to the Service, storing passwords as salted cryptographic hashes rather than plain text, restricting administrative access to our database and storage to authorized personnel, and validating uploaded images on our servers rather than trusting information supplied by your browser.\n\nNo method of transmission or storage is completely secure. While we work to protect your personal data, we cannot guarantee its absolute security."
+      },
+      {
+        "heading": "Third-Party Links",
+        "body": "The Service may contain links to University Partner websites or other third-party sites. This Policy does not apply to those sites. We encourage you to review the privacy policy of any third-party site you visit."
+      },
+      {
+        "heading": "Changes to This Policy",
+        "body": "We may update this Policy from time to time to reflect changes in our practices or for other operational, legal, or regulatory reasons. If we make material changes, we will provide reasonable notice, such as by posting a notice on the Platform or updating the “Last updated” date on this page. Your continued use of the Service after any changes take effect constitutes your acknowledgment of the revised Policy."
+      },
+      {
+        "heading": "Contact Us",
+        "body": "If you have any questions about this Policy or wish to exercise any of your data protection rights, please contact us at hello@unilink.example."
+      }
+    ]
   },
   "Terms": {
-    "title": "Terms of service",
-    "subtitle": "Our full terms of service are being finalized and will be published here."
+    "title": "Terms of Service",
+    "subtitle": "The rules for using UniLink to search, compare, and track your university applications.",
+    "lastUpdated": "Last updated: {date}",
+    "lastUpdatedDate": "August 2, 2026",
+    "tocTitle": "On this page",
+    "backToTop": "Back to top",
+    "intro": "These Terms explain the rules for using UniLink: what the Service is, what we ask of you, how the search, comparison, and application-tracking tools work, and what happens if something goes wrong. Please read them together with our Privacy Policy before you create an account.",
+    "sections": [
+      {
+        "heading": "Acceptance of These Terms",
+        "body": "Welcome to UniLink. These Terms of Service (“Terms”) form a binding agreement between you and UniLink governing your access to and use of the UniLink website, application, and related services (together, the “Platform” or “Service”). By creating an account, browsing the Platform, or otherwise using the Service, you agree to be bound by these Terms and by our Privacy Policy, which is incorporated into these Terms by reference.\n\nIf you do not agree to these Terms, you must not access or use the Service. If you are using the Service on behalf of an organization, for example a school or education agency, you represent that you have the authority to bind that organization to these Terms."
+      },
+      {
+        "heading": "Definitions",
+        "body": "“Platform” or “Service” means the UniLink website, application, and any related tools, features, and content we make available.\n“User”, “you”, or “your” means any individual who accesses or uses the Service, including prospective students and, where applicable, their parents or guardians.\n“University Partner” means any university, faculty, or higher-education institution whose programs, admission requirements, or other information is listed on the Platform.\n“Content” means any information, text, images, data, or other material submitted to, generated by, or displayed on the Platform, including your profile information and any profile picture you upload.\n“Application” means a record you create on the Platform to track your interest in, and progress toward applying to, a specific program."
+      },
+      {
+        "heading": "Eligibility and Minors",
+        "body": "You must be at least 13 years old to create an account. Because many of our Users are secondary-school students preparing to apply to university, we recognize that a significant number of Users are under 18, the age of legal majority in the Arab Republic of Egypt. If you are under 18, you may only use the Service with the involvement and consent of a parent or legal guardian, who agrees to be bound by these Terms on your behalf and takes responsibility for your use of the Service.\n\nWe may, at our discretion, request confirmation of parental or guardian consent for Users we reasonably believe to be minors, and may suspend or limit access to an account until that confirmation is provided."
+      },
+      {
+        "heading": "Description of the Service",
+        "body": "UniLink is an independent discovery and comparison platform that helps students research Egyptian universities and academic programs, compare tuition fees, admission requirements, and other program details, save programs of interest, and track their own application progress.\n\nUniLink is not a university, a government body, or an accredited academic institution, and we do not make admission decisions. Information about University Partners, including tuition, admission requirements, minimum accepted scores, and intake dates, is provided for general informational purposes, may be sourced from University Partners or public sources, and may change without notice. Always verify current information directly with the relevant University Partner before making any academic or financial decision."
+      },
+      {
+        "heading": "Account Registration and Security",
+        "body": "To access certain features of the Service, you must create an account using a valid email address and password, or by signing in through a supported third-party provider such as Google. You agree to provide accurate, current, and complete information during registration and to keep that information up to date.\n\nYou are responsible for maintaining the confidentiality of your password and for all activity that occurs under your account. You must notify us promptly if you become aware of any unauthorized access to or use of your account. We are not liable for any loss or damage arising from your failure to safeguard your account credentials.\n\nYou may not create more than one account for yourself, impersonate any other person, or create an account for anyone other than yourself without their permission."
+      },
+      {
+        "heading": "Acceptable Use",
+        "body": "When using the Service, you agree not to:\nProvide false, misleading, or fraudulent information, including about your academic history, test scores, or identity\nUse automated means, including bots, scrapers, or crawlers, to access, collect data from, or interact with the Service without our prior written consent\nAttempt to gain unauthorized access to any part of the Service, other Users’ accounts, or our systems and networks\nInterfere with or disrupt the integrity or performance of the Service, including by introducing viruses, malware, or other harmful code\nUse the Service for any unlawful purpose or in violation of any applicable law or regulation, including the laws of the Arab Republic of Egypt\nReproduce, duplicate, copy, sell, resell, or exploit any portion of the Service without our express written permission\nHarass, threaten, or harm any other User, University Partner, or member of our team\n\nWe reserve the right to investigate suspected violations of this section and to take appropriate action, including suspending or terminating your account."
+      },
+      {
+        "heading": "Your Content",
+        "body": "The Service allows you to submit certain information and Content, including your name, contact details, academic history, study preferences, and an optional profile picture. You retain ownership of any Content you submit. By submitting Content, you grant UniLink a non-exclusive, worldwide, royalty-free license to host, store, reproduce, and display that Content solely to operate, maintain, and improve the Service and, where applicable, to share relevant information with a University Partner in connection with an Application you choose to track.\n\nYou represent that any Content you submit, including any image you upload as a profile picture, is accurate, does not infringe any third party’s intellectual property or other rights, and does not contain unlawful, obscene, defamatory, or otherwise objectionable material. Profile pictures must be a real photograph or image you have the right to use. Image uploads are limited to 2 megabytes and must be a valid JPEG, PNG, or WebP file; we do not accept other file types.\n\nWe reserve the right, but do not assume an obligation, to review, remove, or restrict access to any Content that we reasonably believe violates these Terms or applicable law."
+      },
+      {
+        "heading": "University and Program Information",
+        "body": "Listings for University Partners, including descriptions, faculties, tuition fees, admission requirements, minimum accepted scores, and intake dates, are provided for general informational purposes only and do not constitute an offer, guarantee, or binding commitment by UniLink or by the relevant University Partner.\n\nWe make reasonable efforts to keep this information accurate and up to date, but we do not warrant its completeness, accuracy, or timeliness. Tuition fees, admission criteria, and program availability are set exclusively by each University Partner and are subject to change without notice."
+      },
+      {
+        "heading": "Application Tracking Tool",
+        "body": "The “Start Application” feature and related tools let you create and track an internal record of your interest in, and progress toward, a specific program (an “Application” as we use that term on the Platform). Using this feature helps you organize your own application process. It does not submit, file, or lodge an application with any University Partner on your behalf, unless we explicitly state otherwise for a specific program.\n\nYou remain solely responsible for submitting any required application materials, fees, and documentation directly to the relevant University Partner through its official application channels, and for meeting that University Partner’s deadlines and requirements. UniLink is not responsible for any missed deadline, incomplete application, or adverse admission outcome."
+      },
+      {
+        "heading": "Search, Matching, and “Success Chance” Estimates",
+        "body": "The Platform includes tools that estimate how well a program may fit your stated academic profile and preferences, including a “success chance” indicator and a “recommended for you” list. These estimates are generated automatically from information you provide, such as your expected grade, test scores, and budget, compared against published program criteria. They are provided for general guidance only, are not a prediction, promise, or guarantee of admission, and should not be relied upon as the sole basis for any academic or financial decision.\n\nAdmission decisions are made exclusively by the relevant University Partner, based on its own criteria and processes, which may differ from the information available on the Platform."
+      },
+      {
+        "heading": "Fees",
+        "body": "As of the effective date of these Terms, creating an account and using the core features of the Service, including search, comparison, saving programs, and application tracking, is free of charge to students. We reserve the right to introduce fees for certain features in the future, in which case we will provide reasonable advance notice and obtain your consent before charging you.\n\nWe may charge University Partners or other organizations for placement, promotion, or other services related to the Platform. Any such arrangement does not affect the information or estimates provided to you as a student User."
+      },
+      {
+        "heading": "Intellectual Property",
+        "body": "The Service, including its design, text, graphics, logos, software, and other content created by UniLink, excluding Content you submit and information provided by University Partners, is owned by UniLink or its licensors and is protected by Egyptian and international intellectual property laws. Except as expressly permitted by these Terms, you may not copy, modify, distribute, sell, or lease any part of the Service.\n\n“UniLink” and our logo are trademarks of UniLink. You may not use them without our prior written consent."
+      },
+      {
+        "heading": "Privacy and Data Protection",
+        "body": "We process your personal data in accordance with our Privacy Policy and applicable law, including the Egyptian Personal Data Protection Law No. 151 of 2020. Our Privacy Policy explains what data we collect, how we use it, who we may share it with, including University Partners where relevant to an Application you choose to track, and the rights available to you as a data subject.\n\nBy using the Service, you acknowledge that you have read and understood our Privacy Policy. Where required by law, we will obtain your explicit consent before processing sensitive categories of personal data."
+      },
+      {
+        "heading": "Third-Party Links and Services",
+        "body": "The Service may contain links to University Partner websites, or rely on third-party services that are not owned or controlled by UniLink, including sign-in through Google. We are not responsible for the content, policies, or practices of any third-party website or service. Your use of any third-party website or service is governed by that third party’s own terms and privacy policy."
+      },
+      {
+        "heading": "Disclaimer of Warranties",
+        "body": "The Service is provided “as is” and “as available”, without warranties of any kind, whether express, implied, or statutory, including implied warranties of merchantability, fitness for a particular purpose, non-infringement, or that the Service will be uninterrupted, secure, timely, or error-free. We do not warrant the accuracy, completeness, or reliability of any information provided by University Partners or generated by the Platform’s search, comparison, or matching tools.\n\nNothing in this section limits any warranty or right that cannot be excluded or limited under applicable Egyptian law, including the Consumer Protection Law No. 181 of 2018, to the extent it applies to your use of the Service."
+      },
+      {
+        "heading": "Limitation of Liability",
+        "body": "To the fullest extent permitted by applicable law, UniLink and its officers, employees, and agents will not be liable for any indirect, incidental, special, consequential, or punitive damages, or any loss of profits, data, goodwill, or opportunity, including a missed admission opportunity, arising out of or related to your use of, or inability to use, the Service, even if we have been advised of the possibility of such damages.\n\nTo the fullest extent permitted by applicable law, our total aggregate liability to you for any claim arising out of or relating to these Terms or the Service will not exceed the greater of (a) the amount, if any, you paid us in the twelve months preceding the claim, or (b) one thousand Egyptian pounds (EGP 1,000). This limitation does not apply to liability that cannot be limited or excluded under Egyptian law, including liability for death, personal injury, or fraud."
+      },
+      {
+        "heading": "Indemnification",
+        "body": "You agree to indemnify and hold harmless UniLink and its officers, employees, and agents from and against any claims, damages, losses, and expenses, including reasonable legal fees, arising out of or related to your violation of these Terms, your Content, or your misuse of the Service."
+      },
+      {
+        "heading": "Suspension and Termination",
+        "body": "You may stop using the Service and delete your account at any time. We may suspend or terminate your access to the Service, in whole or in part, at any time and without prior notice, if we reasonably believe you have violated these Terms, engaged in fraudulent or unlawful conduct, or created risk or possible legal exposure for UniLink, other Users, or University Partners.\n\nUpon termination, your right to use the Service will immediately cease. Sections of these Terms that by their nature should survive termination, including Intellectual Property, Disclaimer of Warranties, Limitation of Liability, Indemnification, and Governing Law, will survive."
+      },
+      {
+        "heading": "Changes to the Service or These Terms",
+        "body": "We may modify, suspend, or discontinue any part of the Service at any time. We may also update these Terms from time to time. If we make material changes, we will provide reasonable notice, such as by posting a notice on the Platform or updating the “Last updated” date on this page. Your continued use of the Service after any changes take effect constitutes your acceptance of the revised Terms."
+      },
+      {
+        "heading": "Governing Law and Dispute Resolution",
+        "body": "These Terms and any dispute arising out of or relating to them or to the Service are governed by the laws of the Arab Republic of Egypt, without regard to its conflict-of-law principles.\n\nIf a dispute arises, we encourage you to contact us first so that we can try to resolve it informally. If a dispute cannot be resolved informally, it will be subject to the exclusive jurisdiction of the competent courts of Cairo, Arab Republic of Egypt, except where applicable consumer protection law grants you the right to bring a claim in your local jurisdiction."
+      },
+      {
+        "heading": "General Provisions",
+        "body": "If any provision of these Terms is found to be unenforceable or invalid, that provision will be limited or eliminated to the minimum extent necessary, and the remaining provisions will remain in full force and effect.\n\nThese Terms, together with our Privacy Policy, constitute the entire agreement between you and UniLink regarding the Service. Our failure to enforce any right or provision of these Terms will not be considered a waiver of that right or provision. You may not assign or transfer these Terms without our prior written consent; we may assign these Terms without restriction.\n\nThese Terms are made available in both Arabic and English. In the event of any inconsistency between the two versions, the Arabic version will prevail, unless applicable law requires otherwise."
+      },
+      {
+        "heading": "Contact Us",
+        "body": "If you have any questions about these Terms, please contact us at hello@unilink.example."
+      }
+    ]
   },
   "Catalog": {
     "levels": {
@@ -726,7 +892,8 @@
     "saved": "Saved programs",
     "account": "Account",
     "signOut": "Sign out",
-    "backToSite": "Back to site"
+    "backToSite": "Back to site",
+    "comingSoon": "Soon"
   },
   "AppHome": {
     "greeting": "Welcome back, {name}",
@@ -749,7 +916,7 @@
     "title": "Tell us what you're searching for",
     "aiLabel": "UniLink AI",
     "aiHint": "Enter program search criteria (e.g. city, degree, tuition, etc.), and UniLink will match them to the right filters.",
-    "aiPlaceholder": "Try \"Computer science bachelor in Cairo under 100k\"",
+    "aiPlaceholder": "Try \"Computer science in Cairo under 100k\"",
     "aiButton": "Search",
     "filtersButton": "Filters & Eligibility",
     "filtersCount": "Filters & Eligibility ({count})",
@@ -815,7 +982,17 @@
       "anyYear": "Any year",
       "anySeason": "Any season",
       "apply": "Show results",
-      "clear": "Clear all"
+      "clear": "Clear all",
+      "anyCity": "Any city",
+      "anyTuition": "Any tuition"
+    },
+    "clearSearch": "Clear search",
+    "tuitionRanges": {
+      "under100": "Under 100k",
+      "from100to200": "100k to 200k",
+      "from200to300": "200k to 300k",
+      "from300to500": "300k to 500k",
+      "over500": "Over 500k"
     }
   },
   "Compare": {
@@ -880,7 +1057,9 @@
       "OFFER": "Offer received",
       "REJECTED": "Not accepted",
       "WITHDRAWN": "Withdrawn"
-    }
+    },
+    "previewTitle": "Application tracking is in preview",
+    "previewBody": "You can start, track, and withdraw applications here today, and everything you record is saved to your account. Submitting an application directly to a university through UniLink is not available yet, so keep applying through each university’s own official channels as well."
   },
   "Saved": {
     "title": "Saved programs",
