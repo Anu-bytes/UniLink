@@ -16,7 +16,9 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState, type ComponentType } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { LanguageSwitcher } from "@/components/language-switcher";
 import { Logo } from "@/components/logo";
+import { useSavedCount } from "@/components/app/saved-context";
 import { cn } from "@/lib/utils";
 import { initialsAvatar } from "@/lib/format";
 
@@ -47,14 +49,13 @@ const NAV: NavItem[] = [
 export function AppShell({
   children,
   user,
-  savedCount,
 }: {
   children: React.ReactNode;
   user: { name: string | null; email: string | null; image: string | null };
-  savedCount: number;
 }) {
   const t = useTranslations("App");
   const pathname = usePathname();
+  const { count: savedCount } = useSavedCount();
 
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
@@ -222,16 +223,30 @@ export function AppShell({
             <Menu className="size-5" aria-hidden />
           </button>
 
-          <div className="ms-auto flex items-center gap-1">
+          <div className="ms-auto flex items-center gap-1 sm:gap-2">
+            {/* Same control as the marketing header, so switching language
+                keeps you on the current app page rather than sending you
+                back to the site. */}
+            <LanguageSwitcher />
+
             <Link
               href="/app/saved"
               aria-label={t("saved")}
               title={t("saved")}
-              className="relative flex size-10 items-center justify-center rounded-lg text-[#3F4657] transition-colors hover:bg-slate-50 hover:text-[#1E6DEB]"
+              className={cn(
+                "flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors sm:px-3.5",
+                savedCount > 0
+                  ? "bg-[#FFF0EE] text-[#F82C1F] hover:bg-[#FFE3DF]"
+                  : "bg-slate-100 text-[#3F4657] hover:bg-slate-200",
+              )}
             >
-              <Heart className="size-5" aria-hidden />
+              <Heart
+                className={cn("size-4", savedCount > 0 && "fill-current")}
+                aria-hidden
+              />
+              <span className="hidden sm:inline">{t("savedNav")}</span>
               {savedCount > 0 ? (
-                <span className="absolute end-1 top-1 flex min-w-4 items-center justify-center rounded-full bg-[#F82C1F] px-1 text-[10px] font-bold leading-4 text-white">
+                <span className="flex min-w-5 items-center justify-center rounded-full bg-[#F82C1F] px-1.5 text-[11px] font-bold leading-5 text-white">
                   {savedCount}
                 </span>
               ) : null}

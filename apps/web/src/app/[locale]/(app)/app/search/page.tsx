@@ -2,19 +2,18 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { AiSearchBar } from "@/components/app/ai-search-bar";
+import { FacultyCard } from "@/components/app/faculty-card";
 import { FilterBar } from "@/components/app/filter-bar";
-import { ProgramCard } from "@/components/app/program-card";
 import { RecommendedPanel } from "@/components/app/recommended-panel";
 import { SearchPagination } from "@/components/app/search-pagination";
 import { SortSelect } from "@/components/app/sort-select";
 import { getUniversityCities } from "@/lib/catalog";
-import { parseSearchFilters, type SearchFilters } from "@/lib/program-filters";
 import {
-  getMatchProfile,
-  getRecommendedPrograms,
-  getSearchVocabulary,
-  searchPrograms,
-} from "@/lib/program-search";
+  getRecommendedFaculties,
+  searchFaculties,
+} from "@/lib/faculty-search";
+import { parseSearchFilters, type SearchFilters } from "@/lib/program-filters";
+import { getMatchProfile, getSearchVocabulary } from "@/lib/program-search";
 import { parseSearchQuery, type MatchedTerm } from "@/lib/search-query";
 
 export const dynamic = "force-dynamic";
@@ -25,6 +24,7 @@ type PageProps = {
 
 export default async function SearchPage({ searchParams }: PageProps) {
   const t = await getTranslations("Search");
+  const tFaculty = await getTranslations("FacultySearch");
   const locale = await getLocale();
   const session = await auth();
   const userId = session?.user?.id ?? null;
@@ -50,6 +50,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
       urlFilters.levels?.length ||
       urlFilters.cities?.length ||
       urlFilters.universities?.length ||
+      urlFilters.faculties?.length ||
       urlFilters.universityTypes?.length ||
       urlFilters.tags?.length ||
       urlFilters.minTuition != null ||
@@ -61,8 +62,8 @@ export default async function SearchPage({ searchParams }: PageProps) {
   }
 
   const [page, recommended, profile, cities] = await Promise.all([
-    searchPrograms(locale, filters, userId),
-    getRecommendedPrograms(locale, userId),
+    searchFaculties(locale, filters, userId),
+    getRecommendedFaculties(locale, userId),
     getMatchProfile(userId),
     getUniversityCities(locale),
   ]);
@@ -95,30 +96,48 @@ export default async function SearchPage({ searchParams }: PageProps) {
       </div>
 
       <div className="mt-8">
-        <RecommendedPanel programs={recommended} hasProfile={profile != null} />
+        <RecommendedPanel faculties={recommended} hasProfile={profile != null} />
       </div>
 
       <section className="mt-10">
         <div className="flex flex-wrap items-end justify-between gap-3">
           <div>
-            <h2 className="text-xl font-bold text-[#1F2A44] md:text-2xl">
-              {t("moreTitle")}
+            <h2 className="flex items-center gap-2.5 text-xl font-bold text-[#1F2A44] md:text-2xl">
+              <span aria-hidden className="h-6 w-1.5 rounded-full bg-[#F82C1F]" />
+              {tFaculty("resultsTitle")}
             </h2>
-            <p className="mt-1 text-sm text-[#5a6072]">{t("moreSubtitle")}</p>
+            <p className="mt-1 text-sm text-[#5a6072]">
+              {tFaculty("resultsSubtitle")}
+            </p>
           </div>
           <div className="flex items-center gap-3">
-            <p className="text-sm font-semibold text-[#5a6072]">
-              {t("resultCount", { count: page.total })}
+            <p className="rounded-full bg-[#FFF0EE] px-3 py-1.5 text-sm font-bold text-[#F82C1F]">
+              {tFaculty("resultCount", { count: page.total })}
             </p>
             <SortSelect filters={filters} />
           </div>
         </div>
 
+        {/* Shown when the named faculty had no match and the search widened to
+            others teaching the same subjects. */}
+        {page.broadened ? (
+          <p className="mt-4 rounded-lg border border-[#F3DFB4] bg-[#FFFBF2] px-4 py-3 text-sm text-[#7A6440]">
+            {tFaculty("broadened")}
+          </p>
+        ) : null}
+
         {page.results.length > 0 ? (
           <>
-            <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-              {page.results.map((program) => (
-                <ProgramCard key={program.id} program={program} />
+            <SearchPagination
+              filters={filters}
+              page={page.page}
+              totalPages={page.pageCount}
+              className="mt-5 mb-1"
+            />
+
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+              {page.results.map((faculty) => (
+                <FacultyCard key={faculty.id} faculty={faculty} />
               ))}
             </div>
 

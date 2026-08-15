@@ -4,15 +4,12 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
-import { ProgramCard } from "@/components/app/program-card";
+import { FacultyCard } from "@/components/app/faculty-card";
 import { UniversityLogo } from "@/components/university-logo";
+import { getRecommendedFaculties } from "@/lib/faculty-search";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
-import {
-  getApplications,
-  getMatchProfile,
-  getRecommendedPrograms,
-} from "@/lib/program-search";
+import { getApplications, getMatchProfile } from "@/lib/program-search";
 
 export const dynamic = "force-dynamic";
 
@@ -26,9 +23,9 @@ export default async function AppHomePage() {
   const userId = session.user.id;
 
   const [savedCount, applications, recommended, profile] = await Promise.all([
-    prisma.savedProgram.count({ where: { userId } }),
+    prisma.savedFaculty.count({ where: { userId } }),
     getApplications(locale, userId),
-    getRecommendedPrograms(locale, userId, 4),
+    getRecommendedFaculties(locale, userId, 4),
     getMatchProfile(userId),
   ]);
 
@@ -117,8 +114,8 @@ export default async function AppHomePage() {
             {t("stats.matches")}
           </h2>
           <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-            {recommended.map((program) => (
-              <ProgramCard key={program.id} program={program} />
+            {recommended.map((faculty) => (
+              <FacultyCard key={faculty.id} faculty={faculty} />
             ))}
           </div>
         </section>

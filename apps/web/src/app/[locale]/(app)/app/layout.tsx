@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { AppShell } from "@/components/app/app-shell";
 import { CompareProvider } from "@/components/app/compare-context";
 import { CompareTray } from "@/components/app/compare-tray";
+import { SavedProvider } from "@/components/app/saved-context";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -23,23 +24,24 @@ export default async function AppLayout({
     redirect(`/${locale}/login?callbackUrl=/${locale}/app`);
   }
 
-  const savedCount = await prisma.savedProgram.count({
+  const savedCount = await prisma.savedFaculty.count({
     where: { userId: session.user.id },
   });
 
   return (
-    <CompareProvider>
-      <AppShell
-        user={{
-          name: session.user.name ?? null,
-          email: session.user.email ?? null,
-          image: session.user.image ?? null,
-        }}
-        savedCount={savedCount}
-      >
-        {children}
-      </AppShell>
-      <CompareTray />
-    </CompareProvider>
+    <SavedProvider initialCount={savedCount}>
+      <CompareProvider>
+        <AppShell
+          user={{
+            name: session.user.name ?? null,
+            email: session.user.email ?? null,
+            image: session.user.image ?? null,
+          }}
+        >
+          {children}
+        </AppShell>
+        <CompareTray />
+      </CompareProvider>
+    </SavedProvider>
   );
 }

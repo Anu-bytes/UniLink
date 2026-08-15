@@ -1,8 +1,7 @@
 "use client";
 
-import { ExternalLink, Heart, MapPin } from "lucide-react";
+import { ExternalLink, MapPin } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/components/app/compare-context";
@@ -23,8 +22,6 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
   const locale = useLocale();
   const compare = useCompare();
 
-  const [saved, setSaved] = useState(program.saved);
-
   const selected = compare.isSelected(program.id);
   const band = program.match?.band;
   const bandStyle = band ? BAND_STYLES[band] : null;
@@ -43,22 +40,6 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
     : formatMoney(locale, program.applicationFee, program.currency);
 
   const nextIntake = program.intakes[0];
-
-  async function toggleSaved() {
-    const next = !saved;
-    setSaved(next);
-    try {
-      const response = await fetch("/api/saved", {
-        method: next ? "POST" : "DELETE",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ programId: program.id }),
-      });
-      if (!response.ok) throw new Error(await response.text());
-    } catch (error) {
-      console.error("Unable to update saved programs", error);
-      setSaved(!next);
-    }
-  }
 
   return (
     <article className="flex h-full flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">
@@ -180,37 +161,16 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
         ) : null}
 
         <div className="mt-auto pt-4">
-          <div className="flex gap-2">
-            <button
-              type="button"
-              onClick={toggleSaved}
-              aria-pressed={saved}
-              aria-label={saved ? t("card.unsave") : t("card.save")}
-              title={saved ? t("card.unsave") : t("card.save")}
-              className={cn(
-                "flex size-10 shrink-0 items-center justify-center rounded-md border transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
-                saved
-                  ? "border-[#F82C1F] bg-[#FFF0EE] text-[#F82C1F]"
-                  : "border-slate-200 text-[#5a6072] hover:bg-slate-50",
-              )}
-            >
-              <Heart
-                className={cn("size-4", saved && "fill-current")}
-                aria-hidden
-              />
-            </button>
-
-            {/* Details is the primary action: it is the step every student
-                takes, whereas starting an application is a later commitment
-                and its tracking is still in preview. */}
-            <Link
-              href={`/universities/${program.university.slug}/programs/${program.slug}`}
-              className="inline-flex h-10 flex-1 items-center justify-center gap-1.5 rounded-md bg-[#1E6DEB] text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-            >
-              {t("card.details")}
-              <ExternalLink className="size-3.5" aria-hidden />
-            </Link>
-          </div>
+          {/* Details is the primary action: it is the step every student
+              takes, whereas starting an application is a later commitment
+              and its tracking is still in preview. */}
+          <Link
+            href={`/universities/${program.university.slug}/programs/${program.slug}`}
+            className="inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#1E6DEB] text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+          >
+            {t("card.details")}
+            <ExternalLink className="size-3.5" aria-hidden />
+          </Link>
 
           <div className="mt-2 flex gap-2">
             <button
@@ -218,6 +178,7 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
               onClick={() =>
                 compare.toggle({
                   id: program.id,
+                  kind: "program",
                   name: program.name,
                   universityName: program.university.name,
                   logoUrl: program.university.logoUrl,

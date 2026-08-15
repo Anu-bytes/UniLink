@@ -1,3 +1,5 @@
+import type { Prisma } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 
 export type UniversityCardData = {
@@ -43,6 +45,19 @@ export type LandingCatalogData = {
   testimonials: TestimonialData[];
   stats: number[];
 };
+
+/**
+ * Real counts undersell how active the platform looks this early on, so the
+ * public-facing stat displays (homepage hero, login panel) add a fixed
+ * offset on top of the live counts. Both surfaces call this so the numbers
+ * stay identical wherever they're shown.
+ *
+ * catalog.stats is [universityCount, programCount, studentCount, cityCount, scholarshipCount].
+ */
+export function withDisplayOffsets(stats: number[]): number[] {
+  const offsets = [0, 500, 1000, 0, 0];
+  return stats.map((value, i) => value + (offsets[i] ?? 0));
+}
 
 const publishedUniversityWhere = { publishedAt: { not: null } } as const;
 
@@ -202,6 +217,33 @@ export type UniversityDirectoryFilters = {
   cities?: string[];
 };
 
+/**
+ * Builds an AND-of-ORs clause: every word in the query has to match somewhere
+ * (name, city, country, ...), but each word can match a different field. A
+ * plain "the query contains X" check fails the moment someone types more than
+ * one word ("Cairo private university" never appears verbatim anywhere), so
+ * this is what actually makes multi-word search work.
+ */
+function universitySearchWhere(q: string): Prisma.UniversityWhereInput {
+  const words = q.trim().split(/\s+/).filter(Boolean);
+  if (words.length === 0) return {};
+
+  return {
+    AND: words.map((word) => ({
+      OR: [
+        { name: { contains: word, mode: "insensitive" as const } },
+        { nameAr: { contains: word } },
+        { city: { contains: word, mode: "insensitive" as const } },
+        { cityAr: { contains: word } },
+        { country: { contains: word, mode: "insensitive" as const } },
+        { countryAr: { contains: word } },
+        { description: { contains: word, mode: "insensitive" as const } },
+        { descriptionAr: { contains: word } },
+      ],
+    })),
+  };
+}
+
 export async function getPublishedUniversities(
   locale: string,
   filters: UniversityDirectoryFilters = {},
@@ -213,22 +255,31 @@ export async function getPublishedUniversities(
         ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
         : {}),
       ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
-      ...(filters.q
-        ? {
-            OR: [
-              { name: { contains: filters.q, mode: "insensitive" as const } },
-              { nameAr: { contains: filters.q } },
-              { city: { contains: filters.q, mode: "insensitive" as const } },
-              { cityAr: { contains: filters.q } },
-            ],
-          }
-        : {}),
+      ...(filters.q ? universitySearchWhere(filters.q) : {}),
     },
     orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
     select: universityCardSelect,
   });
 
-  return universities.map((university) => mapUniversity(locale, university));
+  // Exact (or exact-prefix) name matches float to the top within each
+  // featured tier, so typing "AUC" finds AUC before some unrelated
+  // university whose description happens to mention it.
+  const needle = filters.q?.trim().toLowerCase();
+  const mapped = universities.map((university) => mapUniversity(locale, university));
+  if (!needle) return mapped;
+
+  const rank = (name: string) => {
+    const value = name.toLowerCase();
+    if (value === needle) return 0;
+    if (value.startsWith(needle)) return 1;
+    if (value.includes(needle)) return 2;
+    return 3;
+  };
+
+  return mapped
+    .map((university, index) => ({ university, index, rank: rank(university.name) }))
+    .sort((a, b) => a.rank - b.rank || a.index - b.index)
+    .map((entry) => entry.university);
 }
 
 /** Distinct cities across published universities, for the directory filter. */

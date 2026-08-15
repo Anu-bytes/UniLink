@@ -1,39 +1,13 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
 import { Award, Building2, BookOpen, Users, type LucideIcon } from "lucide-react";
+
+import { useCountUp } from "@/hooks/use-count-up";
+import { useStartedOnVisible } from "@/hooks/use-started-on-visible";
 
 // Order matches heroStatOrder in the homepage: university, program,
 // student, scholarship.
 const icons: LucideIcon[] = [Building2, BookOpen, Users, Award];
-
-function useCountUp(target: number, started: boolean, duration = 1400) {
-  const [value, setValue] = useState(0);
-
-  useEffect(() => {
-    if (!started) return;
-    const prefersReduced =
-      typeof window !== "undefined" &&
-      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      setValue(target);
-      return;
-    }
-    let raf = 0;
-    const start = performance.now();
-    const tick = (now: number) => {
-      const p = Math.min((now - start) / duration, 1);
-      const eased = 1 - Math.pow(1 - p, 3);
-      setValue(target * eased);
-      if (p < 1) raf = requestAnimationFrame(tick);
-      else setValue(target);
-    };
-    raf = requestAnimationFrame(tick);
-    return () => cancelAnimationFrame(raf);
-  }, [started, target, duration]);
-
-  return value;
-}
 
 function StatCard({
   value,
@@ -73,24 +47,7 @@ export function HeroStats({
   values: number[];
   labels: string[];
 }) {
-  const ref = useRef<HTMLDivElement>(null);
-  const [started, setStarted] = useState(false);
-
-  useEffect(() => {
-    const el = ref.current;
-    if (!el) return;
-    const observer = new IntersectionObserver(
-      ([entry]) => {
-        if (entry.isIntersecting) {
-          setStarted(true);
-          observer.disconnect();
-        }
-      },
-      { threshold: 0.3 },
-    );
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, []);
+  const { ref, started } = useStartedOnVisible<HTMLDivElement>();
 
   return (
     <div ref={ref} className="grid grid-cols-2 gap-3 sm:grid-cols-4">

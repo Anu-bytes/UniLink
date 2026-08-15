@@ -1,10 +1,12 @@
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 import { GraduationCap } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
 import { Separator } from "@/components/ui/separator";
 import { SocialAuthButtons } from "@/components/social-auth-buttons";
 import { LoginForm } from "@/components/login-form";
+import { LoginStats } from "@/components/login-stats";
+import { getLandingCatalog, withDisplayOffsets } from "@/lib/catalog";
 
 export default async function LoginPage({
   searchParams,
@@ -14,9 +16,17 @@ export default async function LoginPage({
   const { callbackUrl } = await searchParams;
   const t = await getTranslations("Auth.login");
   const statsT = await getTranslations("Home.stats");
-  const stats = (
+  const locale = await getLocale();
+  const catalog = await getLandingCatalog(locale);
+  const [universityCount, programCount, studentCount] = withDisplayOffsets(
+    catalog.stats,
+  );
+  const statLabels = (
     statsT.raw("items") as { value: string; label: string }[]
-  ).slice(0, 3);
+  )
+    .slice(0, 3)
+    .map((item) => item.label);
+  const statValues = [universityCount, studentCount, programCount];
 
   return (
     <div className="w-full max-w-4xl overflow-hidden rounded-3xl bg-card shadow-xl ring-1 ring-border/50 duration-500 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 motion-reduce:animate-none md:grid md:grid-cols-2">
@@ -36,19 +46,7 @@ export default async function LoginPage({
           <p className="mt-3 max-w-xs text-white/80">{t("subtitle")}</p>
         </div>
 
-        <dl className="relative mt-10 grid grid-cols-3 gap-3">
-          {stats.map((s) => (
-            <div
-              key={s.label}
-              className="rounded-xl bg-white/10 p-3 text-center"
-            >
-              <dt className="text-lg font-bold">{s.value}</dt>
-              <dd className="mt-0.5 text-[11px] leading-tight text-white/70">
-                {s.label}
-              </dd>
-            </div>
-          ))}
-        </dl>
+        <LoginStats values={statValues} labels={statLabels} />
       </div>
 
       {/* Form panel */}

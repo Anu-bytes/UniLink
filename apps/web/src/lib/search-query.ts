@@ -8,6 +8,7 @@
 // own vocabularies (fields of study, university and city names, study levels)
 // and a small set of budget and perk patterns.
 
+import { facultyAcronyms, universityAcronyms } from "@/lib/acronym";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { STUDY_LEVELS } from "@/lib/onboarding-schema";
 import type {
@@ -19,10 +20,24 @@ import { searchFiltersSchema } from "@/lib/program-filters";
 export type Vocabulary = {
   universities: { slug: string; name: string; nameAr: string | null }[];
   cities: { value: string; en: string; ar: string | null }[];
+  faculties: {
+    id: string;
+    name: string;
+    nameAr: string | null;
+    universityName: string;
+  }[];
 };
 
 export type MatchedTerm = {
-  kind: "field" | "level" | "city" | "university" | "type" | "tag" | "budget";
+  kind:
+    | "field"
+    | "level"
+    | "city"
+    | "university"
+    | "faculty"
+    | "type"
+    | "tag"
+    | "budget";
   /** Label to show on the resolved chip, already in the request's locale. */
   label: string;
   /** The filter value this term resolved to. */
@@ -212,10 +227,31 @@ function buildCandidates(vocabulary: Vocabulary, locale: string): Candidate[] {
   }
 
   for (const university of vocabulary.universities) {
-    push("university", university.slug, isArabic && university.nameAr ? university.nameAr : university.name, [
-      university.name,
-      university.nameAr,
-    ]);
+    push(
+      "university",
+      university.slug,
+      isArabic && university.nameAr ? university.nameAr : university.name,
+      [
+        university.name,
+        university.nameAr,
+        // "BUE" resolves the same as the full name.
+        ...universityAcronyms(university.name),
+      ],
+    );
+  }
+
+  for (const faculty of vocabulary.faculties) {
+    push(
+      "faculty",
+      faculty.id,
+      isArabic && faculty.nameAr ? faculty.nameAr : faculty.name,
+      [
+        faculty.name,
+        faculty.nameAr,
+        // "ICS" for "Faculty of Informatics and Computer Science".
+        ...facultyAcronyms(faculty.name),
+      ],
+    );
   }
 
   for (const city of vocabulary.cities) {
@@ -290,6 +326,7 @@ export function parseSearchQuery(
   const levels = collect("level") as SearchFilters["levels"];
   const cities = collect("city");
   const universities = collect("university");
+  const faculties = collect("faculty");
   const universityTypes = collect("type") as SearchFilters["universityTypes"];
   const tags = collect("tag") as SearchFilters["tags"];
 
@@ -300,6 +337,7 @@ export function parseSearchQuery(
     ...(levels?.length ? { levels } : {}),
     ...(cities.length ? { cities } : {}),
     ...(universities.length ? { universities } : {}),
+    ...(faculties.length ? { faculties } : {}),
     ...(universityTypes?.length ? { universityTypes } : {}),
     ...(tags?.length ? { tags } : {}),
     ...(budget?.maxTuition != null ? { maxTuition: budget.maxTuition } : {}),

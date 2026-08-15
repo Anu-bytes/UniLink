@@ -4,12 +4,12 @@ import { z } from "zod";
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
 
-const bodySchema = z.object({ programId: z.string().min(1) });
+const bodySchema = z.object({ facultyId: z.string().min(1) });
 
-async function readProgramId(request: Request) {
+async function readFacultyId(request: Request) {
   try {
     const parsed = bodySchema.safeParse(await request.json());
-    return parsed.success ? parsed.data.programId : null;
+    return parsed.success ? parsed.data.facultyId : null;
   } catch {
     return null;
   }
@@ -21,24 +21,24 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 
-  const programId = await readProgramId(request);
-  if (!programId) {
+  const facultyId = await readFacultyId(request);
+  if (!facultyId) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const program = await prisma.program.findFirst({
-    where: { id: programId, isPublished: true },
+  const faculty = await prisma.faculty.findFirst({
+    where: { id: facultyId },
     select: { id: true },
   });
-  if (!program) {
-    return NextResponse.json({ error: "Program not found" }, { status: 404 });
+  if (!faculty) {
+    return NextResponse.json({ error: "Faculty not found" }, { status: 404 });
   }
 
   // Saving twice is a no-op rather than an error, so a double click is safe.
-  await prisma.savedProgram.upsert({
-    where: { userId_programId: { userId: session.user.id, programId } },
+  await prisma.savedFaculty.upsert({
+    where: { userId_facultyId: { userId: session.user.id, facultyId } },
     update: {},
-    create: { userId: session.user.id, programId },
+    create: { userId: session.user.id, facultyId },
   });
 
   return NextResponse.json({ saved: true }, { status: 201 });
@@ -50,13 +50,13 @@ export async function DELETE(request: Request) {
     return NextResponse.json({ error: "Not signed in" }, { status: 401 });
   }
 
-  const programId = await readProgramId(request);
-  if (!programId) {
+  const facultyId = await readFacultyId(request);
+  if (!facultyId) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  await prisma.savedProgram.deleteMany({
-    where: { userId: session.user.id, programId },
+  await prisma.savedFaculty.deleteMany({
+    where: { userId: session.user.id, facultyId },
   });
 
   return NextResponse.json({ saved: false });
