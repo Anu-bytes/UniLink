@@ -89,7 +89,12 @@ export function AccountMenu({ user }: { user: SessionUser }) {
 
   const items = [
     { href: "/app", label: t("dashboard"), icon: LayoutDashboard },
-    { href: "/app/applications", label: tApp("sidebar.applications"), icon: GraduationCap },
+    {
+      href: "/app/applications",
+      label: tApp("sidebar.applications"),
+      icon: GraduationCap,
+      comingSoon: true,
+    },
     { href: "/app/saved", label: tApp("saved"), icon: Heart },
     { href: "/app/profile", label: tApp("sidebar.profile"), icon: User },
   ];
@@ -135,18 +140,33 @@ export function AccountMenu({ user }: { user: SessionUser }) {
             </div>
           </div>
 
-          {items.map((item) => (
-            <Link
-              key={item.href}
-              href={item.href}
-              role="menuitem"
-              onClick={() => setOpen(false)}
-              className="mt-1 flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-sm font-semibold text-[#3F4657] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
-            >
-              <item.icon className="size-4 shrink-0" aria-hidden />
-              {item.label}
-            </Link>
-          ))}
+          {items.map((item) =>
+            item.comingSoon ? (
+              <span
+                key={item.href}
+                role="menuitem"
+                aria-disabled="true"
+                className="mt-1 flex min-h-11 cursor-not-allowed items-center gap-2.5 rounded-lg px-3 text-sm font-semibold text-[#98A0B4]"
+              >
+                <item.icon className="size-4 shrink-0" aria-hidden />
+                {item.label}
+                <span className="ms-auto shrink-0 rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#B77714]">
+                  {tApp("comingSoon")}
+                </span>
+              </span>
+            ) : (
+              <Link
+                key={item.href}
+                href={item.href}
+                role="menuitem"
+                onClick={() => setOpen(false)}
+                className="mt-1 flex min-h-11 items-center gap-2.5 rounded-lg px-3 text-sm font-semibold text-[#3F4657] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
+              >
+                <item.icon className="size-4 shrink-0" aria-hidden />
+                {item.label}
+              </Link>
+            ),
+          )}
 
           <button
             type="button"
