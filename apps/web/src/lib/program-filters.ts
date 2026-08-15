@@ -43,6 +43,8 @@ export const searchFiltersSchema = z.object({
   levels: csv(z.array(z.enum(STUDY_LEVELS)).max(5)).optional(),
   cities: csv(z.array(z.string().min(1)).max(10)).optional(),
   universities: csv(z.array(z.string().min(1)).max(10)).optional(),
+  /** Faculty ids, set when a query names a specific faculty. */
+  faculties: csv(z.array(z.string().min(1)).max(10)).optional(),
   universityTypes: csv(z.array(z.enum(UNIVERSITY_TYPES)).max(3)).optional(),
   tags: csv(z.array(z.enum(PROGRAM_TAGS)).max(6)).optional(),
   /** Inclusive tuition bounds in EGP per year. */
@@ -126,6 +128,7 @@ export function filtersToSearchParams(filters: SearchFilters): URLSearchParams {
   setList("levels", filters.levels);
   setList("cities", filters.cities);
   setList("universities", filters.universities);
+  setList("faculties", filters.faculties);
   setList("universityTypes", filters.universityTypes);
   setList("tags", filters.tags);
   if (filters.minTuition != null) params.set("minTuition", String(filters.minTuition));
@@ -151,6 +154,7 @@ export function countActiveFilters(filters: SearchFilters): number {
   if (filters.levels?.length) count += 1;
   if (filters.cities?.length) count += 1;
   if (filters.universities?.length) count += 1;
+  if (filters.faculties?.length) count += 1;
   if (filters.universityTypes?.length) count += 1;
   if (filters.tags?.length) count += filters.tags.length;
   if (filters.minTuition != null || filters.maxTuition != null) count += 1;

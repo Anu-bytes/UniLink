@@ -13,8 +13,12 @@ export const MAX_COMPARE = 4;
 
 const STORAGE_KEY = "unilink.compare";
 
+/** Faculties and programs are compared on different attributes. */
+export type CompareKind = "program" | "faculty";
+
 export type CompareEntry = {
   id: string;
+  kind: CompareKind;
   name: string;
   universityName: string;
   logoUrl: string | null;
@@ -23,6 +27,8 @@ export type CompareEntry = {
 type CompareContextValue = {
   entries: CompareEntry[];
   ids: string[];
+  /** What the current selection holds, or null when empty. */
+  kind: CompareKind | null;
   isSelected: (id: string) => boolean;
   toggle: (entry: CompareEntry) => void;
   remove: (id: string) => void;
@@ -40,13 +46,20 @@ function read(): CompareEntry[] {
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
-    return parsed
-      .filter(
-        (entry): entry is CompareEntry =>
-          typeof entry === "object" &&
-          entry !== null &&
-          typeof (entry as CompareEntry).id === "string",
-      )
+    const entries = parsed.filter(
+      (entry): entry is CompareEntry =>
+        typeof entry === "object" &&
+        entry !== null &&
+        typeof (entry as CompareEntry).id === "string" &&
+        ((entry as CompareEntry).kind === "program" ||
+          (entry as CompareEntry).kind === "faculty"),
+    );
+
+    // A selection stored before kinds existed, or a hand-edited one, could
+    // mix the two. Keep only the first kind seen.
+    const kind = entries[0]?.kind;
+    return entries
+      .filter((entry) => entry.kind === kind)
       .slice(0, MAX_COMPARE);
   } catch {
     return [];
@@ -77,6 +90,14 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
       if (previous.some((item) => item.id === entry.id)) {
         return previous.filter((item) => item.id !== entry.id);
       }
+
+      // Faculties and programs are compared on different attributes, so
+      // picking one kind while the other is selected starts a fresh tray
+      // rather than producing a table of mismatched rows.
+      if (previous.length > 0 && previous[0].kind !== entry.kind) {
+        return [entry];
+      }
+
       if (previous.length >= MAX_COMPARE) return previous;
       return [...previous, entry];
     });
@@ -92,6 +113,7 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
     () => ({
       entries,
       ids: entries.map((entry) => entry.id),
+      kind: entries[0]?.kind ?? null,
       isSelected: (id) => entries.some((entry) => entry.id === id),
       toggle,
       remove,

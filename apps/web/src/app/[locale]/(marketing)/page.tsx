@@ -16,14 +16,16 @@ import {
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { FeaturedUniversities } from "@/components/featured-universities";
 import { HeroStats } from "@/components/hero-stats";
+import { HomeSearchBar } from "@/components/home-search-bar";
 import { HowItWorks } from "@/components/how-it-works";
 import { MotionSection } from "@/components/motion-section";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-import { getLandingCatalog } from "@/lib/catalog";
+import { getLandingCatalog, withDisplayOffsets } from "@/lib/catalog";
 import { getPrimaryCta } from "@/lib/primary-cta";
 
 export const dynamic = "force-dynamic";
@@ -64,11 +66,14 @@ export default async function HomePage() {
   const t = await getTranslations("Home.landing");
   const tc = await getTranslations("Home.counters");
   const locale = await getLocale();
+  const session = await auth();
+  const isAuthenticated = Boolean(session?.user?.id);
   const catalog = await getLandingCatalog(locale);
   const primaryCta = await getPrimaryCta(t("hero.cta"));
 
   const counterLabels = tc.raw("items") as string[];
-  const heroValues = heroStatOrder.map((i) => catalog.stats[i] ?? 0);
+  const displayStats = withDisplayOffsets(catalog.stats);
+  const heroValues = heroStatOrder.map((i) => displayStats[i] ?? 0);
   const heroLabels = heroStatOrder.map((i) => counterLabels[i] ?? "");
 
   const faqs = t.raw("faq.items") as { q: string; a?: string }[];
@@ -206,6 +211,27 @@ export default async function HomePage() {
           </div>
         </div>
       </MotionSection>
+
+      {/* QUICK UNIVERSITY SEARCH */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1E6DEB] to-[#12224A] py-14 md:py-20">
+        <div
+          aria-hidden
+          className="ul-dots pointer-events-none absolute -inset-8 opacity-20"
+        />
+        <div className="relative mx-auto max-w-3xl px-4 text-center md:px-6">
+          <Reveal>
+            <h2 className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-white">
+              {t("quickSearch.title")}
+            </h2>
+            <p className="mx-auto mt-2 max-w-lg text-white/80">
+              {t("quickSearch.subtitle")}
+            </p>
+            <div className="mt-7">
+              <HomeSearchBar isAuthenticated={isAuthenticated} />
+            </div>
+          </Reveal>
+        </div>
+      </section>
 
       {/* FEATURED UNIVERSITIES */}
       <section className="bg-white">

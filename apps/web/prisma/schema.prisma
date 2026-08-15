@@ -32,6 +32,7 @@ model User {
   sessions       Session[]
   studentProfile StudentProfile?
   savedPrograms  SavedProgram[]
+  savedFaculties SavedFaculty[]
   applications   Application[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -274,6 +275,7 @@ model Faculty {
   sortOrder     Int           @default(0)
   programs      Program[]
   minimumScores MinimumScore[]
+  savedBy       SavedFaculty[]
   createdAt     DateTime      @default(now())
   updatedAt     DateTime      @updatedAt
 
@@ -388,7 +390,8 @@ model ProgramEnglishRequirement {
   @@index([programId])
 }
 
-// The heart on a program card.
+// Kept for existing saved-program rows and the Application relation; the
+// heart on a card now lives on the faculty, see SavedFaculty below.
 model SavedProgram {
   id        String   @id @default(cuid())
   userId    String
@@ -398,6 +401,19 @@ model SavedProgram {
   createdAt DateTime @default(now())
 
   @@unique([userId, programId])
+  @@index([userId])
+}
+
+// The heart on a faculty card.
+model SavedFaculty {
+  id        String   @id @default(cuid())
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  facultyId String
+  faculty   Faculty  @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  createdAt DateTime @default(now())
+
+  @@unique([userId, facultyId])
   @@index([userId])
 }
 

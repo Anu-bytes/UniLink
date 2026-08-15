@@ -4,8 +4,8 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
-import { ProgramCard } from "@/components/app/program-card";
-import { getSavedPrograms } from "@/lib/program-search";
+import { FacultyCard } from "@/components/app/faculty-card";
+import { getSavedFaculties } from "@/lib/faculty-search";
 
 export const dynamic = "force-dynamic";
 
@@ -16,7 +16,7 @@ export default async function SavedPage() {
 
   if (!session?.user?.id) redirect(`/${locale}/login`);
 
-  const programs = await getSavedPrograms(locale, session.user.id);
+  const faculties = await getSavedFaculties(locale, session.user.id);
 
   return (
     <div className="mx-auto max-w-[86rem] px-4 py-6 pb-32 md:px-6 md:py-8">
@@ -25,10 +25,10 @@ export default async function SavedPage() {
       </h1>
       <p className="mt-1 text-sm text-[#5a6072]">{t("subtitle")}</p>
 
-      {programs.length > 0 ? (
+      {faculties.length > 0 ? (
         <div className="mt-6 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-          {programs.map((program) => (
-            <ProgramCard key={program.id} program={program} />
+          {faculties.map((faculty) => (
+            <FacultyCard key={faculty.id} faculty={faculty} />
           ))}
         </div>
       ) : (

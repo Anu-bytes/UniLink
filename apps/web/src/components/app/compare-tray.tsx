@@ -13,7 +13,7 @@ import { UniversityLogo } from "@/components/university-logo";
  */
 export function CompareTray() {
   const t = useTranslations("Compare.tray");
-  const { entries, ids, clear, remove, ready } = useCompare();
+  const { entries, ids, kind, clear, remove, ready } = useCompare();
   const pathname = usePathname();
 
   if (!ready || entries.length === 0 || pathname.startsWith("/app/compare")) {
@@ -70,7 +70,7 @@ export function CompareTray() {
             {t("clear")}
           </button>
           <Link
-            href={`/app/compare?ids=${ids.join(",")}`}
+            href={`/app/compare?ids=${ids.join(",")}${kind === "faculty" ? "&kind=faculty" : ""}`}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1859c4]"
           >
             {t("compare")}

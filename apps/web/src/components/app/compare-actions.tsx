@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
 import { useRouter } from "@/i18n/navigation";
-import { useCompare } from "@/components/app/compare-context";
+import { useCompare, type CompareEntry } from "@/components/app/compare-context";
 
 /**
  * When someone opens /app/compare without ids (a bookmark, or the sidebar),
@@ -13,12 +13,13 @@ import { useCompare } from "@/components/app/compare-context";
  */
 export function CompareBootstrap({ hasIds }: { hasIds: boolean }) {
   const router = useRouter();
-  const { ids, ready } = useCompare();
+  const { ids, kind, ready } = useCompare();
 
   useEffect(() => {
     if (!ready || hasIds || ids.length === 0) return;
-    router.replace(`/app/compare?ids=${ids.join(",")}`);
-  }, [hasIds, ids, ready, router]);
+    const suffix = kind === "faculty" ? "&kind=faculty" : "";
+    router.replace(`/app/compare?ids=${ids.join(",")}${suffix}`);
+  }, [hasIds, ids, kind, ready, router]);
 
   return null;
 }
@@ -30,7 +31,7 @@ export function CompareBootstrap({ hasIds }: { hasIds: boolean }) {
 export function CompareSync({
   entries,
 }: {
-  entries: { id: string; name: string; universityName: string; logoUrl: string | null }[];
+  entries: CompareEntry[];
 }) {
   const { ids, toggle, ready } = useCompare();
 
@@ -57,7 +58,7 @@ export function CompareRemoveButton({
 }) {
   const t = useTranslations("Compare");
   const router = useRouter();
-  const { remove } = useCompare();
+  const { remove, kind } = useCompare();
 
   return (
     <button
@@ -67,7 +68,12 @@ export function CompareRemoveButton({
       onClick={() => {
         remove(id);
         const next = remainingIds.filter((value) => value !== id);
-        router.replace(next.length > 0 ? `/app/compare?ids=${next.join(",")}` : "/app/compare");
+        const suffix = kind === "faculty" ? "&kind=faculty" : "";
+        router.replace(
+          next.length > 0
+            ? `/app/compare?ids=${next.join(",")}${suffix}`
+            : "/app/compare",
+        );
       }}
       className="flex size-8 items-center justify-center rounded-full text-[#98A0B4] transition-colors hover:bg-slate-100 hover:text-[#1F2A44]"
     >

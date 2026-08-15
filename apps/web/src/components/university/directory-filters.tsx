@@ -1,6 +1,6 @@
 "use client";
 
-import { Search, X } from "lucide-react";
+import { Building2, MapPin, Search, SlidersHorizontal, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
@@ -50,104 +50,106 @@ export function UniversityDirectoryFiltersBar({
         event.preventDefault();
         apply({});
       }}
-      className="flex flex-wrap items-end gap-3 rounded-2xl border border-slate-200 bg-white p-4 shadow-sm"
+      className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_24px_48px_-24px_rgba(15,23,42,0.35)] md:p-5"
       data-pending={isPending || undefined}
     >
-      <div className="min-w-56 flex-1">
-        <label
-          htmlFor="university-search"
-          className="mb-1 block text-sm font-semibold text-[#1F2A44]"
-        >
-          {t("searchLabel")}
-        </label>
-        <div className="relative">
-          <Search
-            className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#98A0B4]"
-            aria-hidden
-          />
-          <input
-            id="university-search"
-            type="search"
-            value={q}
-            onChange={(event) => setQ(event.target.value)}
-            placeholder={t("searchPlaceholder")}
-            className="h-11 w-full rounded-lg border border-slate-200 ps-9 pe-3 text-sm text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
-          />
-        </div>
-      </div>
-
-      <div>
-        <label
-          htmlFor="university-type"
-          className="mb-1 block text-sm font-semibold text-[#1F2A44]"
-        >
-          {t("typeLabel")}
-        </label>
-        <select
-          id="university-type"
-          value={type}
-          onChange={(event) => {
-            setType(event.target.value);
-            apply({ type: event.target.value });
-          }}
-          className="h-11 rounded-lg border border-slate-200 px-3 text-sm text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
-        >
-          <option value="">{t("allTypes")}</option>
-          {UNIVERSITY_TYPES.map((value) => (
-            <option key={value} value={value}>
-              {tCatalog(`universityTypes.${value}`)}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <div>
-        <label
-          htmlFor="university-city"
-          className="mb-1 block text-sm font-semibold text-[#1F2A44]"
-        >
-          {t("cityLabel")}
-        </label>
-        <select
-          id="university-city"
-          value={city}
-          onChange={(event) => {
-            setCity(event.target.value);
-            apply({ city: event.target.value });
-          }}
-          className="h-11 rounded-lg border border-slate-200 px-3 text-sm text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
-        >
-          <option value="">{t("allCities")}</option>
-          {cities.map((option) => (
-            <option key={option.value} value={option.value}>
-              {option.label}
-            </option>
-          ))}
-        </select>
-      </div>
-
-      <button
-        type="submit"
-        className="inline-flex h-11 items-center justify-center rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-      >
+      <label htmlFor="university-search" className="sr-only">
         {t("searchLabel")}
-      </button>
+      </label>
+      <div className="relative">
+        <Search
+          className="pointer-events-none absolute start-4 top-1/2 size-5 -translate-y-1/2 text-[#98A0B4]"
+          aria-hidden
+        />
+        <input
+          id="university-search"
+          type="search"
+          value={q}
+          onChange={(event) => setQ(event.target.value)}
+          placeholder={t("searchPlaceholder")}
+          className="h-[3.25rem] w-full rounded-xl bg-[#F5F7FB] ps-12 pe-4 text-[15px] text-[#1F2A44] outline-none transition-colors placeholder:text-[#98A0B4] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/30"
+        />
+      </div>
 
-      {hasFilters ? (
+      <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto_auto]">
+        <div>
+          <label
+            htmlFor="university-type"
+            className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#5a6072]"
+          >
+            <Building2 className="size-3.5 text-[#1E6DEB]" aria-hidden />
+            {t("typeLabel")}
+          </label>
+          <select
+            id="university-type"
+            value={type}
+            onChange={(event) => {
+              setType(event.target.value);
+              apply({ type: event.target.value });
+            }}
+            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm font-medium text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
+          >
+            <option value="">{t("allTypes")}</option>
+            {UNIVERSITY_TYPES.map((value) => (
+              <option key={value} value={value}>
+                {tCatalog(`universityTypes.${value}`)}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div>
+          <label
+            htmlFor="university-city"
+            className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#5a6072]"
+          >
+            <MapPin className="size-3.5 text-[#1E6DEB]" aria-hidden />
+            {t("cityLabel")}
+          </label>
+          <select
+            id="university-city"
+            value={city}
+            onChange={(event) => {
+              setCity(event.target.value);
+              apply({ city: event.target.value });
+            }}
+            className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm font-medium text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
+          >
+            <option value="">{t("allCities")}</option>
+            {cities.map((option) => (
+              <option key={option.value} value={option.value}>
+                {option.label}
+              </option>
+            ))}
+          </select>
+        </div>
+
         <button
-          type="button"
-          onClick={() => {
-            setQ("");
-            setType("");
-            setCity("");
-            apply({ q: "", type: "", city: "" });
-          }}
-          className="inline-flex h-11 items-center gap-1 rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:text-[#1E6DEB]"
+          type="submit"
+          className="inline-flex h-11 items-center justify-center gap-1.5 self-end rounded-lg bg-[#1E6DEB] px-6 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
         >
-          <X className="size-4" aria-hidden />
-          {t("clear")}
+          <SlidersHorizontal className="size-4" aria-hidden />
+          {t("searchLabel")}
         </button>
-      ) : null}
+
+        {hasFilters ? (
+          <button
+            type="button"
+            onClick={() => {
+              setQ("");
+              setType("");
+              setCity("");
+              apply({ q: "", type: "", city: "" });
+            }}
+            className="inline-flex h-11 items-center justify-center gap-1 self-end rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:text-[#1E6DEB]"
+          >
+            <X className="size-4" aria-hidden />
+            {t("clear")}
+          </button>
+        ) : (
+          <span aria-hidden className="hidden lg:block" />
+        )}
+      </div>
     </form>
   );
 }

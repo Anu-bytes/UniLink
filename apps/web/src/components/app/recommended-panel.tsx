@@ -2,29 +2,34 @@ import { Target } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { ProgramCard } from "@/components/app/program-card";
-import type { ProgramResult } from "@/lib/program-search";
+import { FacultyCard } from "@/components/app/faculty-card";
+import type { FacultyResult } from "@/lib/faculty-search";
 
 /**
  * The bordered "Recommended for you" block above the general results, ordered
  * by the match score computed from the student's onboarding profile.
+ *
+ * Recommends faculties, matching the search results below it: the faculty is
+ * the unit students choose, and its programs live on its own page.
  */
 export async function RecommendedPanel({
-  programs,
+  faculties,
   hasProfile,
 }: {
-  programs: ProgramResult[];
+  faculties: FacultyResult[];
   hasProfile: boolean;
 }) {
   const t = await getTranslations("Search");
   const tProfile = await getTranslations("AppProfile");
 
-  if (programs.length === 0) return null;
+  if (faculties.length === 0) return null;
 
   return (
-    <section className="rounded-xl border-2 border-[#1E6DEB]/25 bg-white p-4 md:p-5">
-      <span className="inline-flex items-center gap-1.5 rounded-md bg-[#EEF3FF] px-2 py-1 text-xs font-bold text-[#1E3A8A]">
-        <Target className="size-3.5" aria-hidden />
+    <section className="relative overflow-hidden rounded-xl border-2 border-[#1E6DEB]/25 bg-white p-4 md:p-5">
+      <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#F82C1F] via-[#1E6DEB] to-[#1E6DEB]" />
+
+      <span className="inline-flex items-center gap-1.5 rounded-md bg-[#FFF0EE] px-2 py-1 text-xs font-bold text-[#F82C1F]">
+        <span className="ul-blink-warm inline-flex size-1.5 rounded-full bg-[#F82C1F]" />
         {t("recommendedBadge")}
       </span>
 
@@ -57,8 +62,8 @@ export async function RecommendedPanel({
       </p>
 
       <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
-        {programs.map((program) => (
-          <ProgramCard key={program.id} program={program} />
+        {faculties.map((faculty) => (
+          <FacultyCard key={faculty.id} faculty={faculty} />
         ))}
       </div>
     </section>
