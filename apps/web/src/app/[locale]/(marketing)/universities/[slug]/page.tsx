@@ -2,12 +2,14 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 
+import { auth } from "@/auth";
 import { UniversityHero } from "@/components/university/university-hero";
 import {
   UniversityTabs,
   isUniversityTab,
   type UniversityTab,
 } from "@/components/university/university-tabs";
+import { GatedContent } from "@/components/university/gated-content";
 import { TabAbout } from "@/components/university/tab-about";
 import { TabContentBlocks } from "@/components/university/tab-content-blocks";
 import { TabFaculties } from "@/components/university/tab-faculties";
@@ -19,6 +21,9 @@ import {
   incrementUniversityViews,
   type UniversityDetailData,
 } from "@/lib/catalog";
+
+/** Tabs that require an account to view. */
+const GATED_TABS: UniversityTab[] = ["requirements", "criteria", "scores", "tuition"];
 
 export const dynamic = "force-dynamic";
 
@@ -54,15 +59,22 @@ export default async function UniversityDetailPage({
   const { tab } = await searchParams;
   const locale = await getLocale();
 
-  const university = await getUniversityDetail(locale, slug);
+  const [university, session] = await Promise.all([
+    getUniversityDetail(locale, slug),
+    auth(),
+  ]);
   if (!university) notFound();
 
   const active: UniversityTab = isUniversityTab(tab) ? tab : "about";
+  const isAuthenticated = Boolean(session?.user?.id);
 
   // Counts pages read, not tab switches, so only the default tab increments.
   if (active === "about") {
     void incrementUniversityViews(university.id);
   }
+
+  const panel = <TabPanel tab={active} university={university} />;
+  const callbackUrl = `/universities/${university.slug}${active === "about" ? "" : `?tab=${active}`}`;
 
   return (
     <>
@@ -73,7 +85,11 @@ export default async function UniversityDetailPage({
           <UniversityTabs slug={university.slug} active={active} />
 
           <div className="p-5 md:p-8">
-            <TabPanel tab={active} university={university} />
+            {!isAuthenticated && GATED_TABS.includes(active) ? (
+              <GatedContent callbackUrl={callbackUrl}>{panel}</GatedContent>
+            ) : (
+              panel
+            )}
           </div>
         </div>
       </section>

@@ -842,6 +842,12 @@
       "waived": "Waived"
     },
     "emptySection": "This information has not been published yet.",
+    "gated": {
+      "title": "Sign in to see this",
+      "body": "Create a free account or log in to view admission requirements, criteria, minimum scores and tuition fees.",
+      "login": "Log in",
+      "register": "Register for free"
+    },
     "notFoundTitle": "University not found",
     "notFoundBody": "This university is not published, or the link is out of date.",
     "backToUniversities": "Back to universities",
