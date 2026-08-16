@@ -73,12 +73,11 @@ export function AiSearchBar({
           boxes inside a tinted panel. */}
       <form
         onSubmit={submit}
-        className="flex items-center gap-1 rounded-xl border-2 border-slate-200 bg-white p-1.5 shadow-sm transition-colors focus-within:border-[#1E6DEB] focus-within:ring-4 focus-within:ring-[#1E6DEB]/10"
+        className="flex items-center gap-1.5 rounded-2xl bg-white p-2 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)] ring-1 ring-black/5 transition-shadow focus-within:ring-2 focus-within:ring-[#1E6DEB]"
       >
-        <Search
-          className="ms-2.5 size-5 shrink-0 text-[#98A0B4]"
-          aria-hidden
-        />
+        <span className="ms-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#EEF3FF] text-[#1E6DEB]">
+          <Search className="size-4" aria-hidden />
+        </span>
 
         <label htmlFor="ai-search" className="sr-only">
           {t("title")}
@@ -89,7 +88,7 @@ export function AiSearchBar({
           value={value}
           onChange={(event) => setValue(event.target.value)}
           placeholder={t("aiPlaceholder")}
-          className="h-11 min-w-0 flex-1 bg-transparent px-2.5 text-[15px] text-[#1F2A44] outline-none placeholder:text-[#98A0B4]"
+          className="h-12 min-w-0 flex-1 bg-transparent px-1 text-[15px] text-[#1F2A44] outline-none placeholder:text-[#98A0B4]"
         />
 
         {value ? (
@@ -97,7 +96,7 @@ export function AiSearchBar({
             type="button"
             onClick={clear}
             aria-label={t("clearSearch")}
-            className="flex size-9 shrink-0 items-center justify-center rounded-lg text-[#98A0B4] transition-colors hover:bg-slate-100 hover:text-[#1F2A44]"
+            className="flex size-9 shrink-0 items-center justify-center rounded-full text-[#98A0B4] transition-colors hover:bg-slate-100 hover:text-[#1F2A44]"
           >
             <X className="size-4" aria-hidden />
           </button>
@@ -106,12 +105,12 @@ export function AiSearchBar({
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex h-11 shrink-0 items-center justify-center gap-2 rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] disabled:opacity-70"
+          className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1E6DEB] px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#1859c4] disabled:opacity-70"
         >
           {busy ? (
-            <Loader2 className="size-4 animate-spin" aria-hidden />
+            <Loader2 className="size-5 animate-spin" aria-hidden />
           ) : (
-            <Search className="size-4 sm:hidden" aria-hidden />
+            <Search className="size-5 sm:hidden" aria-hidden />
           )}
           <span className="hidden sm:inline">{t("aiButton")}</span>
         </button>
@@ -119,9 +118,12 @@ export function AiSearchBar({
 
       {/* Hint sits under the field as a caption, so it stops competing with
           the input for attention. */}
-      <p className="mt-2 flex items-start gap-1.5 px-1 text-xs leading-5 text-[#5a6072]">
+      <p className="mt-2.5 flex items-start gap-1.5 px-1 text-xs leading-5 text-[#5a6072]">
         <Lightbulb className="mt-0.5 size-3.5 shrink-0 text-[#1E6DEB]" aria-hidden />
-        <span>{t("aiHint")}</span>
+        <span>
+          <span className="font-semibold text-[#1E6DEB]">{t("aiLabel")}</span>{" "}
+          {t("aiHint")}
+        </span>
       </p>
 
       {matched.length > 0 || unmatched.length > 0 ? (

@@ -113,7 +113,7 @@ export default async function AppHomePage() {
           <h2 className="text-xl font-bold text-[#1F2A44]">
             {t("stats.matches")}
           </h2>
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+          <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {recommended.map((faculty) => (
               <FacultyCard key={faculty.id} faculty={faculty} />
             ))}

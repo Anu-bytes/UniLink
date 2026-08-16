@@ -62,7 +62,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
   }
 
   const [page, recommended, profile, cities] = await Promise.all([
-    searchFaculties(locale, filters, userId),
+    searchFaculties(locale, filters, userId, unmatched),
     getRecommendedFaculties(locale, userId),
     getMatchProfile(userId),
     getUniversityCities(locale),
@@ -135,7 +135,7 @@ export default async function SearchPage({ searchParams }: PageProps) {
               className="mt-5 mb-1"
             />
 
-            <div className="mt-4 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+            <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
               {page.results.map((faculty) => (
                 <FacultyCard key={faculty.id} faculty={faculty} />
               ))}

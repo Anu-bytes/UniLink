@@ -52,7 +52,10 @@
         "subtitle": "Search over 60 universities across Egypt by name or city.",
         "placeholder": "Search by university name or city…",
         "button": "Search",
-        "lockedCta": "Jump to Smart Search"
+        "lockedCta": "Jump to Smart Search",
+        "unlockHint": "Want AI-matched programs and saved faculties?",
+        "registerCta": "Register free",
+        "loginCta": "Log in"
       },
       "testimonials": {
         "title": "What Our Students Have to Say",
@@ -210,6 +213,7 @@
     }
   },
   "Onboarding": {
+    "backToHome": "Back to home",
     "back": "Go back",
     "continue": "Continue",
     "soon": "Soon",
@@ -1150,6 +1154,7 @@
     "resultCount": "{count, plural, one {# faculty} other {# faculties}}",
     "broadened": "No faculty matched that name exactly, so these teach the same subjects.",
     "tuitionRange": "Tuition range",
+    "cityLabel": "City",
     "programs": "Programs",
     "minGrade": "From",
     "explorePrograms": "Explore programs",
