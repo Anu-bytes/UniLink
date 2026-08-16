@@ -68,7 +68,28 @@ export function HomeSearchBar({ isAuthenticated }: { isAuthenticated: boolean })
             <Lock className="size-3.5 shrink-0 opacity-70" aria-hidden />
           </Link>
         </div>
-      ) : null}
+      ) : (
+        <div className="mt-5 flex flex-wrap items-center justify-center gap-x-3 gap-y-2.5">
+          <span className="flex items-center gap-1.5 text-sm font-medium text-white/85">
+            <Sparkles className="size-4 shrink-0 text-[#F5A623]" aria-hidden />
+            {t("unlockHint")}
+          </span>
+          <span className="flex items-center gap-2">
+            <Link
+              href="/onboarding"
+              className="inline-flex min-h-10 items-center justify-center rounded-full bg-white px-5 text-sm font-bold text-[#1E6DEB] shadow-sm transition-colors hover:bg-white/90 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              {t("registerCta")}
+            </Link>
+            <Link
+              href="/login"
+              className="inline-flex min-h-10 items-center justify-center rounded-full border border-white/50 px-5 text-sm font-bold text-white transition-colors hover:bg-white/10 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            >
+              {t("loginCta")}
+            </Link>
+          </span>
+        </div>
+      )}
     </div>
   );
 }

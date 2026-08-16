@@ -124,26 +124,57 @@ function programConstraints(filters: SearchFilters): Prisma.ProgramWhereInput {
   };
 }
 
+/**
+ * One AND-clause per leftover word the vocabulary parser couldn't attribute
+ * to a known field/level/city/university/faculty: does *this* word appear,
+ * as a partial match, in the faculty's own name, its university's name, or
+ * any of its programs' names? This is what lets a half-typed faculty name
+ * ("informatics"), a specific program name ("business informatics"), or an
+ * unlisted-acronym university still narrow the results, instead of being
+ * silently dropped because it didn't exactly match a vocabulary entry.
+ */
+function facultyTextWhere(words: string[]): Prisma.FacultyWhereInput[] {
+  return words.map((word) => ({
+    OR: [
+      { name: { contains: word, mode: "insensitive" as const } },
+      { nameAr: { contains: word } },
+      { university: { name: { contains: word, mode: "insensitive" as const } } },
+      { university: { nameAr: { contains: word } } },
+      {
+        programs: {
+          some: { name: { contains: word, mode: "insensitive" as const } },
+        },
+      },
+      { programs: { some: { nameAr: { contains: word } } } },
+    ],
+  }));
+}
+
 function buildFacultyWhere(
   filters: SearchFilters,
-  options: { ignoreFacultyIds?: boolean } = {},
+  options: { ignoreFacultyIds?: boolean; textWords?: string[] } = {},
 ): Prisma.FacultyWhereInput {
   return {
-    ...(!options.ignoreFacultyIds && filters.faculties?.length
-      ? { id: { in: filters.faculties } }
-      : {}),
-    university: {
-      publishedAt: { not: null },
-      ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
-      ...(filters.universities?.length
-        ? { slug: { in: filters.universities } }
-        : {}),
-      ...(filters.universityTypes?.length
-        ? { type: { in: filters.universityTypes } }
-        : {}),
-    },
-    // A faculty with no published programs is not a useful result.
-    programs: { some: programConstraints(filters) },
+    AND: [
+      ...(!options.ignoreFacultyIds && filters.faculties?.length
+        ? [{ id: { in: filters.faculties } }]
+        : []),
+      {
+        university: {
+          publishedAt: { not: null },
+          ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+          ...(filters.universities?.length
+            ? { slug: { in: filters.universities } }
+            : {}),
+          ...(filters.universityTypes?.length
+            ? { type: { in: filters.universityTypes } }
+            : {}),
+        },
+      },
+      // A faculty with no published programs is not a useful result.
+      { programs: { some: programConstraints(filters) } },
+      ...(options.textWords?.length ? facultyTextWhere(options.textWords) : []),
+    ],
   };
 }
 
@@ -248,15 +279,24 @@ function sortFaculties(results: FacultyResult[], sort: SearchFilters["sort"]) {
 /**
  * Faculty search.
  *
+ * `textWords` are the leftover terms the vocabulary parser couldn't resolve
+ * to a field/level/city/university/faculty — typically a partial faculty
+ * name, a specific program name, or a university spelled differently than
+ * its stored name/acronyms. They're matched as partial, per-word text
+ * against faculty/university/program names, which is what makes a half-typed
+ * name actually narrow the results instead of being ignored.
+ *
  * When the query named a specific faculty ("BUE ics") the exact faculty is
- * returned on its own. If that yields nothing, the search widens to faculties
- * teaching the same disciplines, so a student always lands on something
- * relevant rather than an empty page.
+ * returned on its own. If that (or a text-word search) yields nothing, the
+ * search widens — to disciplines the named faculty teaches, or by dropping
+ * the unmatched text — so a student always lands on something relevant
+ * rather than an empty page.
  */
 export async function searchFaculties(
   locale: string,
   filters: SearchFilters,
   userId: string | null,
+  textWords: string[] = [],
 ): Promise<FacultySearchPage> {
   const [profile, savedIds] = await Promise.all([
     getMatchProfile(userId),
@@ -277,7 +317,7 @@ export async function searchFaculties(
   }
 
   let broadened = false;
-  let { rows, total } = await run(buildFacultyWhere(filters));
+  let { rows, total } = await run(buildFacultyWhere(filters, { textWords }));
 
   // Nothing under the named faculty: widen to the disciplines it teaches.
   if (rows.length === 0 && filters.faculties?.length) {
@@ -298,11 +338,18 @@ export async function searchFaculties(
     if (disciplines.length > 0) {
       const widened = buildFacultyWhere(
         { ...filters, fields: disciplines },
-        { ignoreFacultyIds: true },
+        { ignoreFacultyIds: true, textWords },
       );
       ({ rows, total } = await run(widened));
       broadened = rows.length > 0;
     }
+  }
+
+  // Nothing matched the leftover text either: drop it and show whatever the
+  // rest of the query resolves to, rather than a blank page.
+  if (rows.length === 0 && textWords.length > 0) {
+    ({ rows, total } = await run(buildFacultyWhere(filters)));
+    broadened = rows.length > 0;
   }
 
   const mapped = rows.map((row) => mapFaculty(locale, row, profile, savedIds));

@@ -28,21 +28,23 @@ export async function RecommendedPanel({
     <section className="relative overflow-hidden rounded-xl border-2 border-[#1E6DEB]/25 bg-white p-4 md:p-5">
       <span aria-hidden className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#F82C1F] via-[#1E6DEB] to-[#1E6DEB]" />
 
-      <span className="inline-flex items-center gap-1.5 rounded-md bg-[#FFF0EE] px-2 py-1 text-xs font-bold text-[#F82C1F]">
-        <span className="ul-blink-warm inline-flex size-1.5 rounded-full bg-[#F82C1F]" />
-        {t("recommendedBadge")}
-      </span>
+      <div className="flex flex-wrap items-center justify-between gap-x-4 gap-y-2">
+        <div className="flex items-center gap-2.5">
+          <span
+            aria-hidden
+            className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white"
+          >
+            <Target className="size-4" />
+          </span>
+          <h2 className="text-lg font-bold text-[#1F2A44] md:text-xl">
+            {t("recommendedTitle")}
+          </h2>
+        </div>
 
-      <div className="mt-3 flex items-center gap-3">
-        <span
-          aria-hidden
-          className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white"
-        >
-          <Target className="size-5" />
+        <span className="inline-flex items-center gap-1.5 rounded-md bg-[#FFF0EE] px-2 py-1 text-xs font-bold text-[#F82C1F]">
+          <span className="ul-blink-warm inline-flex size-1.5 rounded-full bg-[#F82C1F]" />
+          {t("recommendedBadge")}
         </span>
-        <h2 className="text-xl font-bold text-[#1F2A44] md:text-2xl">
-          {t("recommendedTitle")}
-        </h2>
       </div>
 
       <p className="mt-2 text-sm text-[#5a6072]">
@@ -61,7 +63,7 @@ export async function RecommendedPanel({
         )}
       </p>
 
-      <div className="mt-5 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+      <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
         {faculties.map((faculty) => (
           <FacultyCard key={faculty.id} faculty={faculty} />
         ))}

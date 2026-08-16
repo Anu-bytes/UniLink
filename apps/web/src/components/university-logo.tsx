@@ -1,19 +1,22 @@
+import { GraduationCap } from "lucide-react";
+
 import { cn } from "@/lib/utils";
-import { initialsAvatar } from "@/lib/format";
 
 /**
- * Round university mark. Falls back to a deterministic initials badge when no
- * logo has been uploaded, so cards and tables never show a broken image.
+ * Round university mark. Falls back to a brand-gradient cap icon when no
+ * logo has been uploaded — a single arbitrary initial ("E" for "Egypt
+ * University...") reads as a placeholder rather than an identity, so every
+ * institution without a real logo shares this mark instead.
  */
 export function UniversityLogo({
   name,
   logoUrl,
   className,
-  textClassName,
 }: {
   name: string;
   logoUrl?: string | null;
   className?: string;
+  /** @deprecated unused now that the fallback is an icon, not initials. */
   textClassName?: string;
 }) {
   if (logoUrl) {
@@ -31,19 +34,16 @@ export function UniversityLogo({
     );
   }
 
-  const { initials, background, color } = initialsAvatar(name, "organization");
-
   return (
     <span
       aria-hidden
-      style={{ background, color }}
+      title={name}
       className={cn(
-        "flex size-10 shrink-0 items-center justify-center rounded-full border border-white/70 font-bold",
-        textClassName ?? "text-sm",
+        "flex size-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-sm",
         className,
       )}
     >
-      {initials}
+      <GraduationCap className="size-1/2" strokeWidth={2} />
     </span>
   );
 }
