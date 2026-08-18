@@ -39,9 +39,13 @@ export function FeaturedUniversities({
     ? universities.filter((item) => item.city === activeCity)
     : universities;
 
+  const wrapRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLUListElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+  // Which way autoplay is currently gliding; also reset to forward whenever
+  // the rail's contents change (see the activeCity effect below).
+  const autoplayDirection = useRef<1 | -1>(1);
 
   // scrollLeft is negative in RTL in most engines, so compare on magnitude.
   const syncArrows = useCallback(() => {
@@ -65,18 +69,86 @@ export function FeaturedUniversities({
     };
   }, [syncArrows, visible.length]);
 
-  // Reset to the first card when the city filter changes the contents.
+  // Reset to the first card, sliding forward again, whenever the city filter
+  // changes the contents.
   useEffect(() => {
     railRef.current?.scrollTo({ left: 0, behavior: "smooth" });
+    autoplayDirection.current = 1;
   }, [activeCity]);
 
-  function scrollByCard(direction: 1 | -1) {
-    const rail = railRef.current;
-    if (!rail) return;
-    const card = rail.querySelector("li");
-    const step = (card?.clientWidth ?? 260) + 20;
-    rail.scrollBy({ left: step * direction * (isRtl ? -1 : 1), behavior: "smooth" });
-  }
+  const scrollByCard = useCallback(
+    (direction: 1 | -1) => {
+      const rail = railRef.current;
+      if (!rail) return;
+      const card = rail.querySelector("li");
+      const step = (card?.clientWidth ?? 260) + 20;
+      rail.scrollBy({ left: step * direction * (isRtl ? -1 : 1), behavior: "smooth" });
+    },
+    [isRtl],
+  );
+
+  // --- Autoplay: a slow, self-pausing back-and-forth glide -----------------
+  //
+  // Bounces between the two ends rather than snapping back to the start, so
+  // the motion always reads as a continuous slide rather than a jump cut.
+  // Pauses on hover/touch (so it never fights a user mid-swipe), while the
+  // section is scrolled out of view, and entirely under
+  // prefers-reduced-motion.
+  const [interacting, setInteracting] = useState(false);
+  const resumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const [reducedMotion, setReducedMotion] = useState(false);
+  const [inView, setInView] = useState(false);
+
+  useEffect(() => {
+    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
+    setReducedMotion(query.matches);
+    const onChange = () => setReducedMotion(query.matches);
+    query.addEventListener("change", onChange);
+    return () => query.removeEventListener("change", onChange);
+  }, []);
+
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el || typeof IntersectionObserver === "undefined") {
+      setInView(true);
+      return;
+    }
+    const observer = new IntersectionObserver(
+      ([entry]) => setInView(entry.isIntersecting),
+      { threshold: 0.35 },
+    );
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+
+  const pauseForInteraction = useCallback(() => {
+    setInteracting(true);
+    if (resumeTimeout.current) clearTimeout(resumeTimeout.current);
+    resumeTimeout.current = setTimeout(() => setInteracting(false), 4000);
+  }, []);
+
+  useEffect(() => () => {
+    if (resumeTimeout.current) clearTimeout(resumeTimeout.current);
+  }, []);
+
+  useEffect(() => {
+    if (reducedMotion || interacting || !inView || visible.length <= 1) return;
+
+    const id = setInterval(() => {
+      const rail = railRef.current;
+      if (!rail) return;
+      const max = rail.scrollWidth - rail.clientWidth;
+      if (max <= 1) return;
+      const offset = Math.abs(rail.scrollLeft);
+
+      if (offset >= max - 2) autoplayDirection.current = -1;
+      else if (offset <= 2) autoplayDirection.current = 1;
+
+      scrollByCard(autoplayDirection.current);
+    }, 1800);
+
+    return () => clearInterval(id);
+  }, [reducedMotion, interacting, inView, visible.length, scrollByCard]);
 
   return (
     <>
@@ -108,7 +180,13 @@ export function FeaturedUniversities({
         })}
       </div>
 
-      <div className="relative mt-8 md:mt-10">
+      <div
+        ref={wrapRef}
+        className="relative mt-8 md:mt-10"
+        onMouseEnter={pauseForInteraction}
+        onTouchStart={pauseForInteraction}
+        onPointerDown={pauseForInteraction}
+      >
         {/* One row at every breakpoint: the rail scrolls horizontally and snaps
             card to card, rather than wrapping onto a second and third row. */}
         <ul

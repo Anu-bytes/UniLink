@@ -49,11 +49,13 @@
       },
       "quickSearch": {
         "title": "Find your university in seconds",
-        "subtitle": "Search over 60 universities across Egypt by name or city.",
-        "placeholder": "Search by university name or city…",
+        "subtitle": "Search over 60 universities across Egypt by name or city, or describe what you want and preview an AI match.",
+        "placeholder": "Search by name, city, or describe what you want…",
         "button": "Search",
         "lockedCta": "Jump to Smart Search",
-        "unlockHint": "Want AI-matched programs and saved faculties?",
+        "unlockHint": "Register free for AI-powered matching, saved faculties, and more",
+        "unlockHintActive": "That's an AI match preview. Register free to see the full results",
+        "previewLabel": "AI preview:",
         "registerCta": "Register free",
         "loginCta": "Log in"
       },
@@ -852,6 +854,7 @@
       "login": "Log in",
       "register": "Register for free"
     },
+    "programsLocked": "Sign in to view programs",
     "notFoundTitle": "University not found",
     "notFoundBody": "This university is not published, or the link is out of date.",
     "backToUniversities": "Back to universities",

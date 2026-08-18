@@ -72,9 +72,21 @@ const facultyInclude = {
       publishedAt: true,
     },
   },
+  // A search request scores/aggregates up to MAX_SCORED_ROWS faculties, each
+  // with every one of its programs, so trimming this to only the columns
+  // mapFaculty/scoreProgram actually read (not name/description/slug/dates/
+  // etc.) meaningfully cuts what Postgres and Prisma have to move and
+  // serialize on every search. The full program row (for a faculty's detail
+  // page) is fetched separately via getProgramsForCompare.
   programs: {
     where: { isPublished: true },
-    include: {
+    select: {
+      tuitionFee: true,
+      currency: true,
+      minGradePercent: true,
+      fieldOfStudy: true,
+      studyLevel: true,
+      tags: true,
       intakes: { orderBy: { year: "asc" } },
       englishRequirements: true,
     },

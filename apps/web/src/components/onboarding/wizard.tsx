@@ -21,6 +21,17 @@ export function Wizard() {
   const [phase, setPhase] = useState<Phase>("form");
   const [error, setError] = useState<string | null>(null);
 
+  // Carries the query typed into the homepage's live-preview search box (if
+  // any) through the whole wizard, so finishing registration lands the
+  // student straight on the results they typed for instead of a blank
+  // search page. Read once on mount, not via a routing hook, so it survives
+  // every step without re-triggering on navigation.
+  const initialQuery = useRef<string | null>(null);
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    initialQuery.current = new URLSearchParams(window.location.search).get("q");
+  }, []);
+
   // Track direction of travel so the step transition slides the right way.
   const prevStep = useRef(step);
   const forward = step >= prevStep.current;
@@ -108,7 +119,9 @@ export function Wizard() {
     // only just set by signIn, and /app is gated on that cookie in the proxy.
     // A soft navigation can reach the gate before the cookie is visible to it,
     // which bounces the new account straight back to /login.
-    window.location.assign(`/${locale}/app/search`);
+    const query = initialQuery.current;
+    const suffix = query ? `?q=${encodeURIComponent(query)}` : "";
+    window.location.assign(`/${locale}/app/search${suffix}`);
   }
 
   if (phase === "submitting" || phase === "done") {

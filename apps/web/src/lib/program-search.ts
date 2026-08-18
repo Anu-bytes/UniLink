@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 import { localized, localizedOrNull } from "@/lib/catalog";
 import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matching";
@@ -242,8 +243,21 @@ export async function getApplications(
   }));
 }
 
-/** University, city and faculty names used by the natural-language parser. */
-export async function getSearchVocabulary() {
+/**
+ * University, city and faculty names used by the natural-language parser.
+ * Fetched on every search-page render (3 queries), but the catalog it draws
+ * from only changes through admin edits, so it's cached instead of hitting
+ * the pooled connection on every request.
+ */
+export const getSearchVocabulary = unstable_cache(
+  async () => {
+    return getSearchVocabularyUncached();
+  },
+  ["search-vocabulary"],
+  { revalidate: 300 },
+);
+
+async function getSearchVocabularyUncached() {
   const [universities, cities, faculties] = await Promise.all([
     prisma.university.findMany({
       where: { publishedAt: { not: null } },

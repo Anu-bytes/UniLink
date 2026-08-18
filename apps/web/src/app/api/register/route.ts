@@ -1,9 +1,11 @@
+import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
 import { profileSchema } from "@/lib/onboarding-schema";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 // Base (email-only) signup, still used by the simple signup form. Password
 // stays at min 8 here for backward compatibility; the onboarding path below
@@ -31,6 +33,17 @@ const onboardingSchema = z.object({
 });
 
 export async function POST(req: Request) {
+  // Signup has no session gate by design, which also makes it the cheapest
+  // endpoint to hammer for account/db-row spam. A generous per-IP window is
+  // enough to stop scripted abuse without affecting a real user retrying a
+  // typo'd form.
+  if (!rateLimit(`register:ip:${clientIp(req)}`, { limit: 10, windowMs: 60_000 })) {
+    return NextResponse.json(
+      { error: "Too many attempts. Please try again in a minute." },
+      { status: 429 },
+    );
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -66,12 +79,25 @@ async function registerBasic(body: unknown) {
   }
 
   const passwordHash = await bcrypt.hash(password, 10);
-  const user = await prisma.user.create({
-    data: { email, name, passwordHash },
-    select: { id: true, email: true },
-  });
-
-  return NextResponse.json(user, { status: 201 });
+  try {
+    const user = await prisma.user.create({
+      data: { email, name, passwordHash },
+      select: { id: true, email: true },
+    });
+    return NextResponse.json(user, { status: 201 });
+  } catch (error) {
+    // Two signups for the same email racing the emailTaken check above both
+    // reach here; the email's @unique constraint is the real guard, this
+    // just turns the loser's failure into the same clean 409 instead of a
+    // 500.
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return conflict();
+    }
+    throw error;
+  }
 }
 
 async function registerWithProfile(body: unknown) {
@@ -93,43 +119,55 @@ async function registerWithProfile(body: unknown) {
 
   // User + profile are created atomically: if either write fails, neither is
   // persisted, so we never leave a credential-less or profile-less account.
-  const user = await prisma.$transaction(async (tx) => {
-    const created = await tx.user.create({
-      data: {
-        email,
-        phone,
-        firstName,
-        lastName,
-        name: `${firstName} ${lastName}`,
-        passwordHash,
-      },
-      select: { id: true, email: true },
+  try {
+    const user = await prisma.$transaction(async (tx) => {
+      const created = await tx.user.create({
+        data: {
+          email,
+          phone,
+          firstName,
+          lastName,
+          name: `${firstName} ${lastName}`,
+          passwordHash,
+        },
+        select: { id: true, email: true },
+      });
+
+      await tx.studentProfile.create({
+        data: {
+          userId: created.id,
+          // Study level is no longer collected in onboarding; the column is still
+          // NOT NULL, so default new profiles to bachelor.
+          studyLevel: "BACHELOR",
+          highSchoolSystem: profile.highSchoolSystem,
+          highSchoolSystemOther: profile.highSchoolSystemOther ?? null,
+          graduationYear: profile.graduationYear,
+          gradeValue: profile.gradeValue,
+          fieldsOfStudy: profile.fieldsOfStudy,
+          nationality: profile.nationality,
+          // Intake is no longer collected in onboarding; the columns are still
+          // NOT NULL, so default new profiles to the upcoming fall intake.
+          intakeSeason: "FALL",
+          intakeYear: new Date().getFullYear(),
+          budgetBand: profile.budgetBand,
+        },
+      });
+
+      return created;
     });
 
-    await tx.studentProfile.create({
-      data: {
-        userId: created.id,
-        // Study level is no longer collected in onboarding; the column is still
-        // NOT NULL, so default new profiles to bachelor.
-        studyLevel: "BACHELOR",
-        highSchoolSystem: profile.highSchoolSystem,
-        highSchoolSystemOther: profile.highSchoolSystemOther ?? null,
-        graduationYear: profile.graduationYear,
-        gradeValue: profile.gradeValue,
-        fieldsOfStudy: profile.fieldsOfStudy,
-        nationality: profile.nationality,
-        // Intake is no longer collected in onboarding; the columns are still
-        // NOT NULL, so default new profiles to the upcoming fall intake.
-        intakeSeason: "FALL",
-        intakeYear: new Date().getFullYear(),
-        budgetBand: profile.budgetBand,
-      },
-    });
-
-    return created;
-  });
-
-  return NextResponse.json(user, { status: 201 });
+    return NextResponse.json(user, { status: 201 });
+  } catch (error) {
+    // Same race as registerBasic: the loser of two concurrent signups for
+    // the same email gets a clean 409 instead of a 500.
+    if (
+      error instanceof Prisma.PrismaClientKnownRequestError &&
+      error.code === "P2002"
+    ) {
+      return conflict();
+    }
+    throw error;
+  }
 }
 
 async function emailTaken(email: string) {

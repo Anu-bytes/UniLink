@@ -73,8 +73,15 @@ export default async function UniversityDetailPage({
     void incrementUniversityViews(university.id);
   }
 
-  const panel = <TabPanel tab={active} university={university} />;
   const callbackUrl = `/universities/${university.slug}${active === "about" ? "" : `?tab=${active}`}`;
+  const panel = (
+    <TabPanel
+      tab={active}
+      university={university}
+      isAuthenticated={isAuthenticated}
+      callbackUrl={callbackUrl}
+    />
+  );
 
   return (
     <>
@@ -100,13 +107,23 @@ export default async function UniversityDetailPage({
 function TabPanel({
   tab,
   university,
+  isAuthenticated,
+  callbackUrl,
 }: {
   tab: UniversityTab;
   university: UniversityDetailData;
+  isAuthenticated: boolean;
+  callbackUrl: string;
 }) {
   switch (tab) {
     case "faculties":
-      return <TabFaculties university={university} />;
+      return (
+        <TabFaculties
+          university={university}
+          isAuthenticated={isAuthenticated}
+          callbackUrl={callbackUrl}
+        />
+      );
     case "location":
       return <TabLocation university={university} />;
     case "requirements":
