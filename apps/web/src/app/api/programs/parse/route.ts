@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { auth } from "@/auth";
 import { filtersToSearchParams } from "@/lib/program-filters";
 import { getSearchVocabulary } from "@/lib/program-search";
+import { clientIp, rateLimit } from "@/lib/rate-limit";
 import { parseSearchQuery } from "@/lib/search-query";
 
 const bodySchema = z.object({
@@ -12,14 +12,18 @@ const bodySchema = z.object({
 });
 
 /**
- * Turns the free-text search box into a filter query string. The search page
- * runs the same parser server-side, so this route only exists to give the
- * input instant feedback before navigating.
+ * Turns free text into a filter query string. Used two ways: the in-app
+ * search bar (signed-in) calls it right before navigating to results, and
+ * the homepage's live preview (signed-out) calls it on every keystroke to
+ * show what the AI parser resolves the query to, without needing an account:
+ * it only ever returns interpreted labels, never search results, so
+ * there's nothing here that needs to be gated behind a session. Open to
+ * anonymous callers means it needs its own rate limit instead of relying on
+ * auth to keep it from being hammered.
  */
 export async function POST(request: Request) {
-  const session = await auth();
-  if (!session?.user?.id) {
-    return NextResponse.json({ error: "Not signed in" }, { status: 401 });
+  if (!rateLimit(`parse:ip:${clientIp(request)}`, { limit: 60, windowMs: 30_000 })) {
+    return NextResponse.json({ error: "Too many requests" }, { status: 429 });
   }
 
   let body: unknown;

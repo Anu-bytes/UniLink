@@ -1,9 +1,8 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ChevronLeft, ChevronRight, Star } from "lucide-react";
+import { ChevronLeft, ChevronRight, Star, UserRound } from "lucide-react";
 
-import { ImagePlaceholder } from "@/components/image-placeholder";
 import type { TestimonialData } from "@/lib/catalog";
 import { cn } from "@/lib/utils";
 
@@ -65,7 +64,15 @@ export function TestimonialsCarousel({
                   style={{ backgroundImage: `url(${JSON.stringify(t.avatarUrl)})` }}
                 />
               ) : (
-                <ImagePlaceholder w={48} h={48} rounded="rounded-full" label="" />
+                // Same brand-gradient icon badge UniversityLogo falls back to
+                // when there's no real photo, rather than an empty gray box.
+                <span
+                  aria-hidden
+                  title={t.studentName}
+                  className="flex size-12 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-sm"
+                >
+                  <UserRound className="size-1/2" strokeWidth={2} />
+                </span>
               )}
               <div className="min-w-0">
                 <figcaption className="truncate font-semibold text-[#16233F]">

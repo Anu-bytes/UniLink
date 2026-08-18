@@ -1,4 +1,5 @@
 import type { Prisma } from "@prisma/client";
+import { unstable_cache } from "next/cache";
 
 import { prisma } from "@/lib/prisma";
 
@@ -147,7 +148,20 @@ const universityCardSelect = {
   },
 } as const;
 
-export async function getLandingCatalog(
+// Homepage stats/featured-universities/testimonials only change via the admin
+// dashboard, but the page renders dynamically (it reads the session), so
+// without this every hit re-runs 7 queries. Cached per locale for a short
+// window — cheap to keep fresh, and it takes the load off the pooled
+// connection under concurrent traffic.
+export const getLandingCatalog = unstable_cache(
+  async (locale: string): Promise<LandingCatalogData> => {
+    return getLandingCatalogUncached(locale);
+  },
+  ["landing-catalog"],
+  { revalidate: 120 },
+);
+
+async function getLandingCatalogUncached(
   locale: string,
 ): Promise<LandingCatalogData> {
   try {
@@ -282,20 +296,28 @@ export async function getPublishedUniversities(
     .map((entry) => entry.university);
 }
 
-/** Distinct cities across published universities, for the directory filter. */
-export async function getUniversityCities(locale: string) {
-  const rows = await prisma.university.findMany({
-    where: publishedUniversityWhere,
-    distinct: ["city"],
-    orderBy: { city: "asc" },
-    select: { city: true, cityAr: true },
-  });
+/**
+ * Distinct cities across published universities, for the directory/search
+ * filters. Runs on nearly every search-page render, but the published-city
+ * set only moves when a university is added or edited, so it's cached.
+ */
+export const getUniversityCities = unstable_cache(
+  async (locale: string) => {
+    const rows = await prisma.university.findMany({
+      where: publishedUniversityWhere,
+      distinct: ["city"],
+      orderBy: { city: "asc" },
+      select: { city: true, cityAr: true },
+    });
 
-  return rows.map((row) => ({
-    value: row.city,
-    label: localized(locale, row.city, row.cityAr),
-  }));
-}
+    return rows.map((row) => ({
+      value: row.city,
+      label: localized(locale, row.city, row.cityAr),
+    }));
+  },
+  ["university-cities"],
+  { revalidate: 300 },
+);
 
 export async function getPublishedPrograms(
   locale: string,
