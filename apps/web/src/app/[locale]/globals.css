@@ -486,6 +486,254 @@ html[lang="ar"] body {
     transform: translateY(-4px);
     box-shadow: 0 18px 40px -18px rgba(15, 23, 42, 0.28);
   }
+
+  /* ── Splash-assembly loader ────────────────────────────────────────────
+     The UniLink "U" flung apart and pulled back together. Each piece is the
+     same mark PNG under a different clip-path, so the assembled frame is the
+     real logo rather than a traced copy that would drift out of sync whenever
+     the brand asset is updated.
+
+     Two things the source asset forces on us:
+
+     1. The PNG is 500×500 but the mark only occupies x 151–348, y 129–358 of
+        it. Left alone the "U" draws at ~40% of the element, which reads as a
+        tiny logo floating in space. So the element box *is* the mark's own
+        198:230 bounding box and the background is scaled up and re-anchored to
+        fill it — which makes --ul-splash-size the height the "U" really draws
+        at, not the height of a mostly-empty square.
+
+     2. Every cut below runs down a white channel *inside* the mark (the gap
+        under each red flag, the centre column, the curve between the two blue
+        arms), so the four pieces read as parts of the letter in flight and
+        leave no visible seam once assembled.
+
+     Transform/opacity only, so the whole thing stays on the compositor. */
+  .ul-splash {
+    --ul-splash-duration: 4.2s;
+    position: relative;
+    display: block;
+    height: var(--ul-splash-size, 5rem);
+    /* 198 / 230 — the mark's bounding box is taller than it is wide. */
+    width: calc(var(--ul-splash-size, 5rem) * 0.861);
+  }
+
+  .ul-splash-piece {
+    position: absolute;
+    inset: 0;
+    background-image: url("/logo/unilink-logo-mark-v2.png");
+    /* 500/198 wide by 500/230 tall, anchored so the mark's bbox fills the box:
+       151/(500-198) = 50%, 129/(500-230) = 47.78%. */
+    background-size: 252.53% 217.39%;
+    background-position: 50% 47.78%;
+    background-repeat: no-repeat;
+    transform-origin: 50% 50%;
+    will-change: transform, opacity;
+    animation: ul-splash-piece var(--ul-splash-duration)
+      cubic-bezier(0.22, 1, 0.36, 1) infinite;
+    animation-delay: var(--ul-splash-delay, 0ms);
+    /* `both` holds the scattered 0% frame through the stagger delay, so the
+       later pieces do not flash assembled before their first flight. */
+    animation-fill-mode: both;
+  }
+
+  /* The red flag at the top left, cut along the white diagonal beneath it. */
+  .ul-splash-piece-1 {
+    clip-path: polygon(0 0, 40% 0, 40% 21%, 0 42%);
+    --ul-tx: -58%;
+    --ul-ty: -52%;
+    --ul-rot: -20deg;
+  }
+  /* The red pennant at the top right, cut along its own white underside. */
+  .ul-splash-piece-2 {
+    clip-path: polygon(40% 0, 100% 0, 100% 12%, 70% 23%, 40% 30%);
+    --ul-tx: 62%;
+    --ul-ty: -56%;
+    --ul-rot: 22deg;
+  }
+  /* The left arm of the bowl. Its right edge runs down the centre channel,
+     then follows the white curve between the two arms to the bottom tip. */
+  .ul-splash-piece-3 {
+    clip-path: polygon(
+      0 42%,
+      40% 21%,
+      40% 84%,
+      46% 86%,
+      52% 91%,
+      58% 94.5%,
+      63% 96.5%,
+      63% 100%,
+      0 100%
+    );
+    --ul-tx: -56%;
+    --ul-ty: 60%;
+    --ul-rot: 18deg;
+  }
+  /* The right arm, the mirror of the cut above. */
+  .ul-splash-piece-4 {
+    clip-path: polygon(
+      40% 30%,
+      70% 23%,
+      100% 12%,
+      100% 100%,
+      63% 100%,
+      63% 96.5%,
+      58% 94.5%,
+      52% 91%,
+      46% 86%,
+      40% 84%
+    );
+    --ul-tx: 60%;
+    --ul-ty: 58%;
+    --ul-rot: -18deg;
+  }
+
+  @keyframes ul-splash-piece {
+    0% {
+      transform: translate3d(var(--ul-tx), var(--ul-ty), 0)
+        rotate(var(--ul-rot)) scale(0.72);
+      opacity: 0;
+    }
+    12% {
+      opacity: 1;
+    }
+    /* Drift a touch past home, then settle back: reads as weight landing. */
+    34% {
+      transform: translate3d(
+          calc(var(--ul-tx) * -0.05),
+          calc(var(--ul-ty) * -0.05),
+          0
+        )
+        rotate(calc(var(--ul-rot) * -0.04)) scale(1.04);
+      opacity: 1;
+    }
+    /* Assembled, and held there for a third of the cycle so the logo is
+       legible as a logo rather than a shape that never stops moving. */
+    44%,
+    76% {
+      transform: translate3d(0, 0, 0) rotate(0deg) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate3d(var(--ul-tx), var(--ul-ty), 0)
+        rotate(var(--ul-rot)) scale(0.72);
+      opacity: 0;
+    }
+  }
+
+  /* Impact ripple, timed to the moment the last piece lands. Sized off the
+     box width so it stays a circle around a non-square mark. */
+  .ul-splash-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 132%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    border: 2px solid rgba(30, 109, 235, 0.4);
+    opacity: 0;
+    animation: ul-splash-ring var(--ul-splash-duration) ease-out infinite;
+    animation-delay: var(--ul-splash-delay, 0ms);
+    animation-fill-mode: both;
+  }
+  @keyframes ul-splash-ring {
+    0%,
+    38% {
+      transform: translate3d(-50%, -50%, 0) scale(0.5);
+      opacity: 0;
+    }
+    47% {
+      opacity: 0.5;
+    }
+    72%,
+    100% {
+      transform: translate3d(-50%, -50%, 0) scale(1.12);
+      opacity: 0;
+    }
+  }
+
+  /* Droplets flicked out of the bowl on impact. */
+  .ul-splash-drop {
+    position: absolute;
+    left: 50%;
+    top: 72%;
+    width: 6%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: var(--ul-drop-color, #1e6deb);
+    opacity: 0;
+    animation: ul-splash-drop var(--ul-splash-duration)
+      cubic-bezier(0.16, 1, 0.3, 1) infinite;
+    animation-delay: var(--ul-splash-delay, 0ms);
+    animation-fill-mode: both;
+  }
+  @keyframes ul-splash-drop {
+    0%,
+    38% {
+      transform: translate3d(-50%, -50%, 0) scale(0.2);
+      opacity: 0;
+    }
+    46% {
+      opacity: 0.9;
+    }
+    68%,
+    100% {
+      transform: translate3d(
+          calc(-50% + var(--ul-dx)),
+          calc(-50% + var(--ul-dy)),
+          0
+        )
+        scale(0.3);
+      opacity: 0;
+    }
+  }
+
+  /* Soft brand glow that swells as the mark comes together. */
+  .ul-splash-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 165%;
+    aspect-ratio: 1;
+    border-radius: 9999px;
+    background: radial-gradient(
+      circle,
+      rgba(30, 109, 235, 0.16) 0%,
+      rgba(30, 109, 235, 0) 68%
+    );
+    animation: ul-splash-glow var(--ul-splash-duration) ease-in-out infinite;
+  }
+  @keyframes ul-splash-glow {
+    0%,
+    100% {
+      transform: translate3d(-50%, -50%, 0) scale(0.72);
+      opacity: 0;
+    }
+    46% {
+      transform: translate3d(-50%, -50%, 0) scale(1);
+      opacity: 1;
+    }
+    76% {
+      transform: translate3d(-50%, -50%, 0) scale(1.02);
+      opacity: 0.75;
+    }
+  }
+
+  /* Three dots trailing the loader label. */
+  .ul-splash-dot {
+    animation: ul-splash-dot 1.4s ease-in-out infinite;
+    animation-delay: var(--ul-splash-delay, 0ms);
+  }
+  @keyframes ul-splash-dot {
+    0%,
+    100% {
+      opacity: 0.25;
+      transform: translateY(0);
+    }
+    50% {
+      opacity: 1;
+      transform: translateY(-3px);
+    }
+  }
 }
 
 /* Respect users who ask for less motion: show everything immediately and drop
@@ -522,6 +770,32 @@ html[lang="ar"] body {
   .ul-rise,
   .ul-cta-ring {
     opacity: 0;
+  }
+
+  /* The splash loader still has to read as "busy", so freeze it on the
+     assembled mark and let only the label dots carry the activity. */
+  .ul-splash-piece {
+    animation: none;
+    transform: none;
+    opacity: 1;
+  }
+  .ul-splash-ring,
+  .ul-splash-drop,
+  .ul-splash-glow {
+    animation: none;
+    opacity: 0;
+  }
+  .ul-splash-dot {
+    animation: ul-splash-fade 1.4s ease-in-out infinite;
+  }
+  @keyframes ul-splash-fade {
+    0%,
+    100% {
+      opacity: 0.25;
+    }
+    50% {
+      opacity: 1;
+    }
   }
 }
 

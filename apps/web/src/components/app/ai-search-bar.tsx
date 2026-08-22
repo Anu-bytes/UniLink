@@ -4,6 +4,7 @@ import { Lightbulb, Loader2, Search, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useState, useTransition } from "react";
 
+import { SplashLoader } from "@/components/splash-loader";
 import { useRouter } from "@/i18n/navigation";
 import type { MatchedTerm } from "@/lib/search-query";
 
@@ -126,7 +127,16 @@ export function AiSearchBar({
         </span>
       </p>
 
-      {matched.length > 0 || unmatched.length > 0 ? (
+      {/* While the query is being resolved and the results re-render, the
+          splash mark stands in for the answer that is on its way. The stale
+          results stay below it rather than being torn down. */}
+      {busy ? (
+        <div className="mt-4 rounded-2xl bg-[#F5F8FF] px-6 py-8 ring-1 ring-[#1E6DEB]/10">
+          <SplashLoader label={t("searching")} size="6rem" />
+        </div>
+      ) : null}
+
+      {!busy && (matched.length > 0 || unmatched.length > 0) ? (
         <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
           {matched.length > 0 ? (
             <>

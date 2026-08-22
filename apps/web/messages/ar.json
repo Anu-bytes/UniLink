@@ -211,7 +211,39 @@
     },
     "forgotPassword": {
       "title": "إعادة تعيين كلمة المرور",
-      "subtitle": "استعادة كلمة المرور قادمة قريبًا. تفقد الصفحة لاحقًا."
+      "emailStepTitle": "إعادة تعيين كلمة المرور",
+      "emailStepSubtitle": "أدخل بريدك الإلكتروني وسنرسل لك رمزاً من 6 أرقام.",
+      "emailLabel": "البريد الإلكتروني",
+      "emailPlaceholder": "you@example.com",
+      "sendCode": "إرسال الرمز",
+      "codeStepTitle": "تفقد بريدك الإلكتروني",
+      "codeStepSubtitle": "أرسلنا رمزاً من 6 أرقام إلى {email}. ينتهي خلال 10 دقائق.",
+      "codeLabel": "رمز التحقق",
+      "verify": "تحقق من الرمز",
+      "resend": "إعادة الإرسال",
+      "resendIn": "إعادة الإرسال خلال {seconds} ثانية",
+      "changeEmail": "استخدام بريد آخر",
+      "passwordStepTitle": "اختر كلمة مرور جديدة",
+      "passwordStepSubtitle": "ستستخدمها لتسجيل الدخول من الآن.",
+      "passwordLabel": "كلمة المرور الجديدة",
+      "passwordPlaceholder": "أنشئ كلمة مرور",
+      "confirmLabel": "تأكيد كلمة المرور",
+      "confirmPlaceholder": "أعد إدخال كلمة المرور",
+      "showPassword": "إظهار كلمة المرور",
+      "hidePassword": "إخفاء كلمة المرور",
+      "savePassword": "حفظ كلمة المرور",
+      "mismatch": "كلمتا المرور غير متطابقتين.",
+      "requirements": {
+        "minLength": "10 أحرف على الأقل",
+        "lowercase": "حرف إنجليزي صغير",
+        "uppercase": "حرف إنجليزي كبير",
+        "number": "رقم"
+      },
+      "doneTitle": "تم تحديث كلمة المرور",
+      "doneSubtitle": "تم تسجيل خروجك من جميع الأجهزة الأخرى. سجّل الدخول بكلمة المرور الجديدة.",
+      "goToLogin": "الذهاب لتسجيل الدخول",
+      "backToLogin": "العودة لتسجيل الدخول",
+      "genericError": "حدث خطأ ما. حاول مرة أخرى."
     }
   },
   "Onboarding": {
@@ -915,7 +947,8 @@
     "account": "الحساب",
     "signOut": "تسجيل الخروج",
     "backToSite": "العودة للموقع",
-    "comingSoon": "قريباً"
+    "comingSoon": "قريباً",
+    "loading": "جارٍ تحميل يونيلينك"
   },
   "AppHome": {
     "greeting": "أهلاً بعودتك يا {name}",
@@ -940,6 +973,7 @@
     "aiHint": "اكتب معايير البحث عن البرنامج (المدينة، الدرجة، المصروفات وغيرها) وسيحولها يونيلينك إلى عوامل التصفية المناسبة.",
     "aiPlaceholder": "جرّب \"علوم الحاسب في القاهرة أقل من 100 ألف\"",
     "aiButton": "ابحث",
+    "searching": "نجمع لك النتائج المناسبة",
     "filtersButton": "التصفية والأهلية",
     "filtersCount": "التصفية والأهلية ({count})",
     "resolvedLabel": "تم التعرف على",
