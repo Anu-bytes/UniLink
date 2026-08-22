@@ -13,6 +13,9 @@ const credentialsSchema = z.object({
   password: z.string().min(1),
 });
 
+// How stale the password-change check below is allowed to get.
+const REVALIDATE_MS = 60_000;
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   adapter: PrismaAdapter(prisma),
   // Credentials provider requires JWT sessions (database sessions are not
@@ -66,8 +69,44 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   callbacks: {
-    jwt: ({ token, user }) => {
+    jwt: async ({ token, user }) => {
       if (user) token.sub = user.id;
+      if (!token.sub) return token;
+
+      // Resetting a password has to end sessions that were already open,
+      // otherwise the reset does not evict whoever the user is resetting
+      // *because of*. JWT sessions cannot be deleted server-side, so instead
+      // each token carries the account's `passwordChangedAt` and is refused
+      // once the stored value moves past it.
+      //
+      // The check costs one primary-key lookup, throttled to once a minute per
+      // session rather than run on every request. The tradeoff is that a
+      // reset takes up to REVALIDATE_MS to evict an open session; dropping
+      // this to 0 makes eviction immediate at the cost of a query per request.
+      const lastChecked = token.pwdCheckedAt ?? 0;
+      const due = Date.now() - lastChecked >= REVALIDATE_MS;
+      if (!user && !due) return token;
+
+      const account = await prisma.user.findUnique({
+        where: { id: token.sub },
+        select: { passwordChangedAt: true },
+      });
+
+      // The account was deleted while the session was open.
+      if (!account) return null;
+
+      const changedAt = account.passwordChangedAt?.getTime() ?? 0;
+
+      if (user) {
+        // Fresh sign-in: this token is by definition current.
+        token.pwdAt = changedAt;
+      } else if (changedAt > (token.pwdAt ?? 0)) {
+        // Returning null clears the session cookie (see @auth/core's session
+        // action), which is what signs the stale session out.
+        return null;
+      }
+
+      token.pwdCheckedAt = Date.now();
       return token;
     },
     session: ({ session, token }) => {

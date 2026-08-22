@@ -33,6 +33,10 @@ model User {
   studentProfile StudentProfile?
   savedPrograms  SavedProgram[]
   savedFaculties SavedFaculty[]
+  passwordResetTokens PasswordResetToken[]
+  // Bumped on every password change. Sessions minted before this instant are
+  // rejected, so resetting a password logs out whoever else was signed in.
+  passwordChangedAt DateTime?
   applications   Application[]
   createdAt      DateTime        @default(now())
   updatedAt      DateTime        @updatedAt
@@ -79,6 +83,33 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// One in-flight password reset. Rows are short-lived: issuing a new code for
+// an account deletes the account's previous rows, and a completed reset
+// deletes them all.
+//
+// Nothing here is reversible into a credential. `codeHash` is a bcrypt hash of
+// the six-digit code (bcrypt, not SHA, so that a leaked table cannot be
+// brute-forced through a mere million candidates), and `ticketHash` is a
+// SHA-256 hash of the opaque ticket handed out once the code checks out —
+// 256 bits of entropy needs no slow hash.
+model PasswordResetToken {
+  id         String    @id @default(cuid())
+  userId     String
+  user       User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  codeHash   String
+  // Null until the code is verified; set when the reset ticket is issued.
+  ticketHash String?
+  expiresAt  DateTime
+  // Wrong-code guesses against this row. The row dies at MAX_CODE_ATTEMPTS,
+  // which is what stops a 10-minute window being walked through all 10^6 codes.
+  attempts   Int       @default(0)
+  consumedAt DateTime?
+  createdAt  DateTime  @default(now())
+
+  @@index([userId])
+  @@index([expiresAt])
 }
 
 // ---------------------------------------------------------------------------
