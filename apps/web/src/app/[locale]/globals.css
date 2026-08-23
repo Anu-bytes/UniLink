@@ -510,6 +510,15 @@ html[lang="ar"] body {
      Transform/opacity only, so the whole thing stays on the compositor. */
   .ul-splash {
     --ul-splash-duration: 4.2s;
+
+    /* Where in the cycle the animation starts. A loading state often lives for
+       only a few hundred milliseconds, and the cycle does not reach its
+       assembled frame until 44% (~1.85s) in — starting at 0 meant a short wait
+       rendered an invisible box or a few loose fragments and never showed the
+       logo at all. Starting inside the assembled hold (44%–76%) puts the whole
+       mark on screen in the first frame, and the pieces only fly apart if the
+       wait lasts long enough to be worth animating. */
+    --ul-splash-phase: -2.2s;
     position: relative;
     display: block;
     height: var(--ul-splash-size, 5rem);
@@ -530,7 +539,7 @@ html[lang="ar"] body {
     will-change: transform, opacity;
     animation: ul-splash-piece var(--ul-splash-duration)
       cubic-bezier(0.22, 1, 0.36, 1) infinite;
-    animation-delay: var(--ul-splash-delay, 0ms);
+    animation-delay: calc(var(--ul-splash-phase, 0s) + var(--ul-splash-delay, 0ms));
     /* `both` holds the scattered 0% frame through the stagger delay, so the
        later pieces do not flash assembled before their first flight. */
     animation-fill-mode: both;
@@ -632,7 +641,7 @@ html[lang="ar"] body {
     border: 2px solid rgba(30, 109, 235, 0.4);
     opacity: 0;
     animation: ul-splash-ring var(--ul-splash-duration) ease-out infinite;
-    animation-delay: var(--ul-splash-delay, 0ms);
+    animation-delay: calc(var(--ul-splash-phase, 0s) + var(--ul-splash-delay, 0ms));
     animation-fill-mode: both;
   }
   @keyframes ul-splash-ring {
@@ -663,7 +672,7 @@ html[lang="ar"] body {
     opacity: 0;
     animation: ul-splash-drop var(--ul-splash-duration)
       cubic-bezier(0.16, 1, 0.3, 1) infinite;
-    animation-delay: var(--ul-splash-delay, 0ms);
+    animation-delay: calc(var(--ul-splash-phase, 0s) + var(--ul-splash-delay, 0ms));
     animation-fill-mode: both;
   }
   @keyframes ul-splash-drop {
@@ -701,6 +710,8 @@ html[lang="ar"] body {
       rgba(30, 109, 235, 0) 68%
     );
     animation: ul-splash-glow var(--ul-splash-duration) ease-in-out infinite;
+    animation-delay: var(--ul-splash-phase, 0s);
+    animation-fill-mode: both;
   }
   @keyframes ul-splash-glow {
     0%,
@@ -721,7 +732,7 @@ html[lang="ar"] body {
   /* Three dots trailing the loader label. */
   .ul-splash-dot {
     animation: ul-splash-dot 1.4s ease-in-out infinite;
-    animation-delay: var(--ul-splash-delay, 0ms);
+    animation-delay: calc(var(--ul-splash-phase, 0s) + var(--ul-splash-delay, 0ms));
   }
   @keyframes ul-splash-dot {
     0%,
@@ -733,6 +744,47 @@ html[lang="ar"] body {
       opacity: 1;
       transform: translateY(-3px);
     }
+  }
+
+  /* First-paint splash.
+
+     Route-level loading.tsx is a Suspense fallback: it only fills a *server
+     render* wait. In production those are often short enough that React
+     resolves the page before it ever flushes a fallback, so the loader is
+     never sent to the browser at all — and no fallback can cover the browser's
+     own navigation, asset download and hydration, which is the part that
+     actually looks like "the site is loading". This overlay ships inside the
+     initial HTML instead, so it is on screen from the first paint.
+
+     It has two independent dismissals, both pure CSS, so it can never end up
+     stranded over the live site: [data-ready], set once React mounts, and a
+     hard failsafe that hides it at 5s even if the JS never runs at all. */
+  .ul-boot {
+    position: fixed;
+    inset: 0;
+    z-index: 60;
+    display: grid;
+    place-items: center;
+    background: var(--brand-white, #fff);
+    /* Zero-duration animation that only fills after its 5s delay: before then
+       it contributes nothing, so the [data-ready] rule below is free to run. */
+    animation: ul-boot-failsafe 0s linear 5s forwards;
+  }
+  @keyframes ul-boot-failsafe {
+    to {
+      opacity: 0;
+      visibility: hidden;
+    }
+  }
+  /* visibility is delayed by the length of the fade so the overlay is not
+     pulled out from under its own transition. */
+  .ul-boot[data-ready] {
+    opacity: 0;
+    visibility: hidden;
+    pointer-events: none;
+    transition:
+      opacity 0.45s ease,
+      visibility 0s linear 0.45s;
   }
 }
 

@@ -83,7 +83,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       // session rather than run on every request. The tradeoff is that a
       // reset takes up to REVALIDATE_MS to evict an open session; dropping
       // this to 0 makes eviction immediate at the cost of a query per request.
-      const lastChecked = token.pwdCheckedAt ?? 0;
+      //
+      // `JWT extends Record<string, unknown>`, so anything stashed on the token
+      // reads back as `unknown` and must be narrowed before it is used.
+      // Declaring the fields via module augmentation does not work here:
+      // next-auth/jwt only re-exports @auth/core/jwt, so `declare module
+      // "next-auth/jwt"` creates a second, unrelated JWT rather than merging
+      // into the one the callback is actually typed with.
+      const lastChecked =
+        typeof token.pwdCheckedAt === "number" ? token.pwdCheckedAt : 0;
       const due = Date.now() - lastChecked >= REVALIDATE_MS;
       if (!user && !due) return token;
 
@@ -96,11 +104,12 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (!account) return null;
 
       const changedAt = account.passwordChangedAt?.getTime() ?? 0;
+      const stamped = typeof token.pwdAt === "number" ? token.pwdAt : 0;
 
       if (user) {
         // Fresh sign-in: this token is by definition current.
         token.pwdAt = changedAt;
-      } else if (changedAt > (token.pwdAt ?? 0)) {
+      } else if (changedAt > stamped) {
         // Returning null clears the session cookie (see @auth/core's session
         // action), which is what signs the stale session out.
         return null;

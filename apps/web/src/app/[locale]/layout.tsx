@@ -1,11 +1,12 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Open_Sans, Cairo } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, setRequestLocale } from "next-intl/server";
+import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { routing, type Locale } from "@/i18n/routing";
+import { BootSplash } from "@/components/boot-splash";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -63,6 +64,7 @@ export default async function LocaleLayout({
   setRequestLocale(locale);
 
   const messages = await getMessages();
+  const t = await getTranslations("App");
   const dir = localeDirection[locale as Locale];
 
   return (
@@ -76,6 +78,9 @@ export default async function LocaleLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col" suppressHydrationWarning>
+        {/* Covers the browser's own load and hydration, which no route-level
+            loading.tsx can reach. Ships in the initial HTML. */}
+        <BootSplash label={t("loading")} />
         <NextIntlClientProvider messages={messages}>
           <DirectionProvider direction={dir}>{children}</DirectionProvider>
         </NextIntlClientProvider>
