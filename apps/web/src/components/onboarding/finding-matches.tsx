@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useTranslations } from "next-intl";
 import { Check, Loader2 } from "lucide-react";
 
+import { SplashMark } from "@/components/splash-loader";
 import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
@@ -38,9 +39,8 @@ export function FindingMatches({
 
   return (
     <div className="flex flex-col items-center py-6 text-center duration-500 animate-in fade-in-0 zoom-in-95 motion-reduce:animate-none">
-      <div className="relative mb-6 flex size-16 items-center justify-center">
-        <span className="absolute size-16 animate-ping rounded-full bg-brand-blue/15 motion-reduce:hidden" />
-        <Loader2 className="size-12 animate-spin text-brand-blue" />
+      <div className="mb-6 flex items-center justify-center">
+        <SplashMark size="8rem" />
       </div>
 
       <h1 className="text-2xl font-bold sm:text-3xl">{t("title")}</h1>

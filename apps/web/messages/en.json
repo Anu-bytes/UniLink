@@ -211,7 +211,39 @@
     },
     "forgotPassword": {
       "title": "Reset your password",
-      "subtitle": "Password recovery is coming soon. Check back shortly."
+      "emailStepTitle": "Reset your password",
+      "emailStepSubtitle": "Enter your email and we'll send you a 6-digit code.",
+      "emailLabel": "Email",
+      "emailPlaceholder": "you@example.com",
+      "sendCode": "Send code",
+      "codeStepTitle": "Check your email",
+      "codeStepSubtitle": "We sent a 6-digit code to {email}. It expires in 10 minutes.",
+      "codeLabel": "Verification code",
+      "verify": "Verify code",
+      "resend": "Send again",
+      "resendIn": "Send again in {seconds}s",
+      "changeEmail": "Use a different email",
+      "passwordStepTitle": "Choose a new password",
+      "passwordStepSubtitle": "You'll use this to log in from now on.",
+      "passwordLabel": "New password",
+      "passwordPlaceholder": "Create a password",
+      "confirmLabel": "Confirm password",
+      "confirmPlaceholder": "Re-enter your password",
+      "showPassword": "Show password",
+      "hidePassword": "Hide password",
+      "savePassword": "Save password",
+      "mismatch": "Those passwords don't match.",
+      "requirements": {
+        "minLength": "At least 10 characters",
+        "lowercase": "A lowercase letter",
+        "uppercase": "An uppercase letter",
+        "number": "A number"
+      },
+      "doneTitle": "Password updated",
+      "doneSubtitle": "You've been signed out everywhere else. Log in with your new password.",
+      "goToLogin": "Go to login",
+      "backToLogin": "Back to login",
+      "genericError": "Something went wrong. Please try again."
     }
   },
   "Onboarding": {
@@ -915,7 +947,8 @@
     "account": "Account",
     "signOut": "Sign out",
     "backToSite": "Back to site",
-    "comingSoon": "Soon"
+    "comingSoon": "Soon",
+    "loading": "Loading UniLink"
   },
   "AppHome": {
     "greeting": "Welcome back, {name}",
@@ -940,6 +973,7 @@
     "aiHint": "Enter program search criteria (e.g. city, degree, tuition, etc.), and UniLink will match them to the right filters.",
     "aiPlaceholder": "Try \"Computer science in Cairo under 100k\"",
     "aiButton": "Search",
+    "searching": "Assembling your matches",
     "filtersButton": "Filters & Eligibility",
     "filtersCount": "Filters & Eligibility ({count})",
     "resolvedLabel": "Matched to",
