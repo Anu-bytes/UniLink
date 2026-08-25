@@ -1,5 +1,6 @@
 import type { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
+import { cache } from "react";
 
 import { prisma } from "@/lib/prisma";
 
@@ -429,7 +430,16 @@ export type UniversityDetailData = {
   programCount: number;
 };
 
-export async function getUniversityDetail(
+/**
+ * Full university payload for the detail page.
+ *
+ * Wrapped in React `cache` because both routes that use it call it twice per
+ * request: once in `generateMetadata`, again in the page component. Without the
+ * dedupe that is two runs of this query — every faculty, every published
+ * program, plus images, features, content blocks and minimum scores — to render
+ * one page. The cache is per-request, so nothing can go stale.
+ */
+export const getUniversityDetail = cache(async function getUniversityDetail(
   locale: string,
   slug: string,
 ): Promise<UniversityDetailData | null> {
@@ -558,7 +568,7 @@ export async function getUniversityDetail(
       0,
     ),
   };
-}
+});
 
 /** Slugs of every published university, for `generateStaticParams`/sitemaps. */
 export async function getUniversitySlugs() {

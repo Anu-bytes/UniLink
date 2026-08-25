@@ -11,6 +11,15 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+// HEADS UP: free-text search depends on nine pg_trgm GIN indexes that live in
+// raw SQL (see migrations/20260818120000_search_trgm_indexes) and cannot be
+// expressed here. `prisma migrate dev` therefore reads them as drift and offers
+// a migration that DROPs all nine. Applying that silently returns university,
+// faculty and program search to sequential scans.
+//
+// If a generated migration contains "DROP INDEX ..._trgm_idx", delete it and
+// re-run migrations/20260825090000_restore_search_trgm_indexes instead.
+
 // ---------------------------------------------------------------------------
 // Auth.js (NextAuth v5) models
 // https://authjs.dev/getting-started/adapters/prisma

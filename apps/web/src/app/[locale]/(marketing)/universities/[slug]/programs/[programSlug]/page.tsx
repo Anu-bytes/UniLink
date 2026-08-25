@@ -10,6 +10,7 @@ import {
   Layers,
   Percent,
 } from "lucide-react";
+import { cache } from "react";
 import { notFound } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -30,7 +31,13 @@ type PageProps = {
   params: Promise<{ slug: string; programSlug: string; locale: string }>;
 };
 
-async function loadProgram(locale: string, slug: string, programSlug: string) {
+// Deduped for the same reason as getUniversityDetail: generateMetadata and the
+// page component each ask for it, and without this both calls hit the database.
+const loadProgram = cache(async function loadProgram(
+  locale: string,
+  slug: string,
+  programSlug: string,
+) {
   const program = await prisma.program.findFirst({
     where: {
       slug: programSlug,
@@ -82,7 +89,7 @@ async function loadProgram(locale: string, slug: string, programSlug: string) {
       minScore: requirement.minScore,
     })),
   };
-}
+});
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const { slug, programSlug, locale } = await params;
