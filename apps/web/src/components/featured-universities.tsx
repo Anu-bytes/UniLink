@@ -15,6 +15,18 @@ import { cn } from "@/lib/utils";
 // crawl or a blur — adjust here if it should feel faster or slower.
 const AUTOPLAY_PX_PER_SEC = 90;
 
+// How much a mouse hover slows the rail down, as a fraction of full speed —
+// not to a dead stop. An instant full stop the moment the cursor merely
+// crosses into the rail (the previous behaviour, shared with touch/click)
+// read as the rail flinching away from the mouse. Easing down to a slow
+// crawl instead keeps it feeling alive while still making a card easy to aim
+// a click at, and speeds back up just as smoothly once the cursor leaves.
+const HOVER_SPEED_FACTOR = 0.28;
+
+// Time constant, in ms, for the speed easing above (both slowing on hover and
+// recovering on mouse-leave). Larger = more gradual.
+const SPEED_EASE_MS = 450;
+
 export function FeaturedUniversities({
   universities,
   allLabel,
@@ -46,9 +58,11 @@ export function FeaturedUniversities({
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLUListElement>(null);
-  // The first card of the looping second copy. Its offsetLeft is the exact
-  // pixel distance the rail must wrap by — see the autoplay effect below for
-  // why this has to be measured rather than computed as scrollWidth / 2.
+  // The rail's first real card and the first card of its looping second copy.
+  // The *difference* between their offsetLeft values is the exact pixel
+  // distance the rail must wrap by — see the autoplay effect below for why it
+  // has to be a difference of two measured positions, not either one alone.
+  const firstItemRef = useRef<HTMLLIElement>(null);
   const loopStartRef = useRef<HTMLLIElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
@@ -101,13 +115,20 @@ export function FeaturedUniversities({
   // pixel-identical start of the second one. The effect is a loop, never a
   // reversal — closer to a rotating carousel than a left/right slider.
   //
-  // Pauses on hover/touch (so it never fights a user mid-swipe), while the
-  // section is scrolled out of view, and entirely under
-  // prefers-reduced-motion.
+  // Hard-pauses (stops entirely, resumes a few seconds after the last one)
+  // on touch or a click/press — real interaction that autoplay would
+  // otherwise fight, e.g. mid-swipe or while a card is being tapped. It does
+  // NOT hard-pause on a mouse simply hovering; see hoveredRef below for what
+  // that does instead. Also off entirely while the section is scrolled out
+  // of view, and entirely under prefers-reduced-motion.
   const [interacting, setInteracting] = useState(false);
   const resumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
+  // Whether the mouse is currently over the rail. A ref, not state: it is
+  // read once per animation frame by the tick loop below, not something the
+  // rest of the component needs to re-render for.
+  const hoveredRef = useRef(false);
 
   // Looping needs two distinct cards to loop between, and only matters when
   // motion is allowed — reduced motion never autoplays, so there is no reason
@@ -176,6 +197,13 @@ export function FeaturedUniversities({
     // picks up wherever a manual scroll or swipe left the rail before
     // autoplay resumed.
     let position = initialRail.scrollLeft;
+    // Eases toward 1 (full speed) or HOVER_SPEED_FACTOR (slowed) each frame,
+    // rather than snapping straight to the target — see HOVER_SPEED_FACTOR.
+    // Starts at 1 rather than at whatever the target happens to be, so
+    // resuming after a hard pause (interacting flipping back to false, which
+    // restarts this whole effect) comes back at full speed immediately
+    // instead of re-easing up from a stop it never actually had.
+    let speedFactor = 1;
 
     const tick = (now: number) => {
       const rail = railRef.current;
@@ -183,21 +211,45 @@ export function FeaturedUniversities({
       last = now;
 
       if (rail) {
-        // The distance to wrap by is the offset of the second copy's first
-        // card, measured from the DOM — not half of rail.scrollWidth. With N
-        // cards there are N-1 gaps inside one copy but N gaps across the full
-        // doubled rail (the extra one is the seam between the two copies), so
-        // that seam gap can't be split evenly between "belongs to copy one"
-        // and "belongs to copy two". scrollWidth / 2 quietly assumes it can,
-        // landing half a gap short of the real period — a fixed few pixels
-        // every wrap that compound, wrap after wrap, into a visible drift.
-        // Reading the actual card position sidesteps the arithmetic (and any
-        // border/box-sizing quirks) entirely: confirmed by simulation to
-        // produce zero drift across repeated wraps, where scrollWidth / 2
-        // drifted by a constant, compounding amount on every one.
-        const period = loopStartRef.current?.offsetLeft;
+        // The distance to wrap by is the gap between the first real card and
+        // the first card of the looping second copy, measured from the DOM —
+        // not half of rail.scrollWidth. With N cards there are N-1 gaps
+        // inside one copy but N gaps across the full doubled rail (the extra
+        // one is the seam between the two copies), so that seam gap can't be
+        // split evenly between "belongs to copy one" and "belongs to copy
+        // two". scrollWidth / 2 quietly assumes it can, landing half a gap
+        // short of the real period — a fixed few pixels every wrap that
+        // compound, wrap after wrap, into a visible drift.
+        //
+        // It has to be a *difference* of two offsetLefts, not the second
+        // one alone: offsetLeft is always a physical (left-edge) measurement,
+        // but under dir="rtl" the layout runs right to left, so the first
+        // card sits far from the physical left edge too — confirmed directly
+        // in a browser at values like item0 = -285px, loopStart = -2841px.
+        // Using loopStart alone as "the" distance (this component's first
+        // shipped version) made the wrap condition true from frame one,
+        // subtracting a huge wrong number every frame until scrollLeft
+        // rocketed past the end of the scrollable range and sat pinned there
+        // — the rail froze almost immediately, which is exactly what was
+        // reported for the Arabic site. The difference between the two is
+        // correct in both directions: confirmed by simulation to reproduce
+        // the exact same visible sequence of cards on every wrap, in both
+        // dir="ltr" and dir="rtl".
+        const first = firstItemRef.current?.offsetLeft;
+        const loopStart = loopStartRef.current?.offsetLeft;
+        const period =
+          first != null && loopStart != null
+            ? Math.abs(first - loopStart)
+            : undefined;
+
         if (period && period > 1) {
-          const delta = (AUTOPLAY_PX_PER_SEC * elapsed) / 1000;
+          // Exponential ease toward the target factor. `elapsed / SPEED_EASE_MS`
+          // as the lerp weight approximates that time constant regardless of
+          // the actual frame rate, so it looks the same at 60fps or 120fps.
+          const target = hoveredRef.current ? HOVER_SPEED_FACTOR : 1;
+          speedFactor += (target - speedFactor) * Math.min(1, elapsed / SPEED_EASE_MS);
+
+          const delta = (AUTOPLAY_PX_PER_SEC * speedFactor * elapsed) / 1000;
           position += isRtl ? -delta : delta;
 
           if (!isRtl && position >= period) {
@@ -255,7 +307,16 @@ export function FeaturedUniversities({
       <div
         ref={wrapRef}
         className="relative mt-8 md:mt-10"
-        onMouseEnter={pauseForInteraction}
+        // Hover only slows the rail (see hoveredRef/HOVER_SPEED_FACTOR in the
+        // tick loop above) — it does not hard-pause, so there is nothing to
+        // resume from and no cooldown to schedule; the effect keeps running
+        // and simply eases back to full speed once the pointer leaves.
+        onMouseEnter={() => {
+          hoveredRef.current = true;
+        }}
+        onMouseLeave={() => {
+          hoveredRef.current = false;
+        }}
         onTouchStart={pauseForInteraction}
         onPointerDown={pauseForInteraction}
       >
@@ -289,9 +350,16 @@ export function FeaturedUniversities({
           {trackItems.map(({ university, clone }, index) => (
             <li
               key={clone ? `${university.id}-loop` : university.id}
-              // The first item of the second copy doubles as the autoplay
-              // effect's measuring stick — see loopStartRef above.
-              ref={index === visible.length ? loopStartRef : undefined}
+              // Item 0 and the first item of the second copy double as the
+              // autoplay effect's measuring stick — see firstItemRef and
+              // loopStartRef above.
+              ref={
+                index === 0
+                  ? firstItemRef
+                  : index === visible.length
+                    ? loopStartRef
+                    : undefined
+              }
               aria-hidden={clone || undefined}
               className="w-[248px] shrink-0 snap-start sm:w-[264px]"
             >
