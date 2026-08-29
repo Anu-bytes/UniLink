@@ -10,6 +10,11 @@ import type { UniversityCardData } from "@/lib/catalog";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
+// Autoplay speed for the featured-universities rail, in CSS pixels per
+// second. Tuned to read as a brisk, continuous drift rather than either a
+// crawl or a blur — adjust here if it should feel faster or slower.
+const AUTOPLAY_PX_PER_SEC = 90;
+
 export function FeaturedUniversities({
   universities,
   allLabel,
@@ -41,11 +46,12 @@ export function FeaturedUniversities({
 
   const wrapRef = useRef<HTMLDivElement>(null);
   const railRef = useRef<HTMLUListElement>(null);
+  // The first card of the looping second copy. Its offsetLeft is the exact
+  // pixel distance the rail must wrap by — see the autoplay effect below for
+  // why this has to be measured rather than computed as scrollWidth / 2.
+  const loopStartRef = useRef<HTMLLIElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
-  // Which way autoplay is currently gliding; also reset to forward whenever
-  // the rail's contents change (see the activeCity effect below).
-  const autoplayDirection = useRef<1 | -1>(1);
 
   // scrollLeft is negative in RTL in most engines, so compare on magnitude.
   const syncArrows = useCallback(() => {
@@ -69,11 +75,9 @@ export function FeaturedUniversities({
     };
   }, [syncArrows, visible.length]);
 
-  // Reset to the first card, sliding forward again, whenever the city filter
-  // changes the contents.
+  // Reset to the first card whenever the city filter changes the contents.
   useEffect(() => {
     railRef.current?.scrollTo({ left: 0, behavior: "smooth" });
-    autoplayDirection.current = 1;
   }, [activeCity]);
 
   const scrollByCard = useCallback(
@@ -87,10 +91,16 @@ export function FeaturedUniversities({
     [isRtl],
   );
 
-  // --- Autoplay: a slow, self-pausing back-and-forth glide -----------------
+  // --- Autoplay: continuous one-direction rotation --------------------------
   //
-  // Bounces between the two ends rather than snapping back to the start, so
-  // the motion always reads as a continuous slide rather than a jump cut.
+  // This used to bounce a card-width at a time between the two ends, with a
+  // dead pause between each jump — it read as a slow blink-step, not motion.
+  // It now advances by a fraction of a pixel on every animation frame, in one
+  // direction only, and the rail holds two back-to-back copies of the cards
+  // so wrapping past the first copy is invisible: it lands on the
+  // pixel-identical start of the second one. The effect is a loop, never a
+  // reversal — closer to a rotating carousel than a left/right slider.
+  //
   // Pauses on hover/touch (so it never fights a user mid-swipe), while the
   // section is scrolled out of view, and entirely under
   // prefers-reduced-motion.
@@ -98,6 +108,25 @@ export function FeaturedUniversities({
   const resumeTimeout = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [reducedMotion, setReducedMotion] = useState(false);
   const [inView, setInView] = useState(false);
+
+  // Looping needs two distinct cards to loop between, and only matters when
+  // motion is allowed — reduced motion never autoplays, so there is no reason
+  // to double the DOM for a loop that will never run.
+  const shouldLoop = !reducedMotion && visible.length > 1;
+
+  // The rail renders this instead of `visible` directly. The second, looping
+  // copy is marked so it can be pulled out of the accessibility tree and tab
+  // order below — it is a visual duplicate, not a second university.
+  const trackItems = useMemo(
+    () =>
+      shouldLoop
+        ? [
+            ...visible.map((university) => ({ university, clone: false as const })),
+            ...visible.map((university) => ({ university, clone: true as const })),
+          ]
+        : visible.map((university) => ({ university, clone: false as const })),
+    [visible, shouldLoop],
+  );
 
   useEffect(() => {
     const query = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -132,23 +161,49 @@ export function FeaturedUniversities({
   }, []);
 
   useEffect(() => {
-    if (reducedMotion || interacting || !inView || visible.length <= 1) return;
+    if (reducedMotion || interacting || !inView || !shouldLoop) return;
+    if (!railRef.current) return;
 
-    const id = setInterval(() => {
+    let frame = 0;
+    let last = performance.now();
+
+    const tick = (now: number) => {
       const rail = railRef.current;
-      if (!rail) return;
-      const max = rail.scrollWidth - rail.clientWidth;
-      if (max <= 1) return;
-      const offset = Math.abs(rail.scrollLeft);
+      const elapsed = now - last;
+      last = now;
 
-      if (offset >= max - 2) autoplayDirection.current = -1;
-      else if (offset <= 2) autoplayDirection.current = 1;
+      if (rail) {
+        // The distance to wrap by is the offset of the second copy's first
+        // card, measured from the DOM — not half of rail.scrollWidth. With N
+        // cards there are N-1 gaps inside one copy but N gaps across the full
+        // doubled rail (the extra one is the seam between the two copies), so
+        // that seam gap can't be split evenly between "belongs to copy one"
+        // and "belongs to copy two". scrollWidth / 2 quietly assumes it can,
+        // landing half a gap short of the real period — a fixed few pixels
+        // every wrap that compound, wrap after wrap, into a visible drift.
+        // Reading the actual card position sidesteps the arithmetic (and any
+        // border/box-sizing quirks) entirely: confirmed by simulation to
+        // produce zero drift across repeated wraps, where scrollWidth / 2
+        // drifted by a constant, compounding amount on every one.
+        const period = loopStartRef.current?.offsetLeft;
+        if (period && period > 1) {
+          const delta = (AUTOPLAY_PX_PER_SEC * elapsed) / 1000;
+          rail.scrollLeft += isRtl ? -delta : delta;
 
-      scrollByCard(autoplayDirection.current);
-    }, 1800);
+          if (!isRtl && rail.scrollLeft >= period) {
+            rail.scrollLeft -= period;
+          } else if (isRtl && rail.scrollLeft <= -period) {
+            rail.scrollLeft += period;
+          }
+        }
+      }
 
-    return () => clearInterval(id);
-  }, [reducedMotion, interacting, inView, visible.length, scrollByCard]);
+      frame = requestAnimationFrame(tick);
+    };
+
+    frame = requestAnimationFrame(tick);
+    return () => cancelAnimationFrame(frame);
+  }, [reducedMotion, interacting, inView, shouldLoop, isRtl]);
 
   return (
     <>
@@ -188,14 +243,23 @@ export function FeaturedUniversities({
         onPointerDown={pauseForInteraction}
       >
         {/* One row at every breakpoint: the rail scrolls horizontally and snaps
-            card to card, rather than wrapping onto a second and third row. */}
+            card to card, rather than wrapping onto a second and third row.
+            `scroll-smooth` is deliberately absent: it would apply to every
+            scrollLeft write, including the autoplay effect's direct
+            per-frame writes above, and fight the animation it is trying to
+            drive smoothly on its own. Manual jumps (the arrows below) opt
+            into smoothness explicitly via their own scrollBy() call. */}
         <ul
           ref={railRef}
-          className="flex snap-x snap-mandatory gap-5 overflow-x-auto scroll-smooth pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
         >
-          {visible.map((university) => (
+          {trackItems.map(({ university, clone }, index) => (
             <li
-              key={university.id}
+              key={clone ? `${university.id}-loop` : university.id}
+              // The first item of the second copy doubles as the autoplay
+              // effect's measuring stick — see loopStartRef above.
+              ref={index === visible.length ? loopStartRef : undefined}
+              aria-hidden={clone || undefined}
               className="w-[248px] shrink-0 snap-start sm:w-[264px]"
             >
               <UniversityTile
@@ -207,6 +271,7 @@ export function FeaturedUniversities({
                 trendingLabel={tDetail("trending")}
                 viewDetailsLabel={viewDetailsLabel}
                 locale={locale}
+                decorative={clone}
               />
             </li>
           ))}
@@ -272,6 +337,7 @@ function UniversityTile({
   trendingLabel,
   viewDetailsLabel,
   locale,
+  decorative = false,
 }: {
   university: UniversityCardData;
   programsLabel: string;
@@ -281,12 +347,20 @@ function UniversityTile({
   trendingLabel: string;
   viewDetailsLabel: string;
   locale: string;
+  /**
+   * True for the second, looping copy of the rail. It is a visual duplicate
+   * only — pulled out of the accessibility tree and tab order so a screen
+   * reader or keyboard user never lands on the same university twice.
+   */
+  decorative?: boolean;
 }) {
   return (
     // The whole tile is the link, so the tap target is the card rather than a
     // small text CTA. The CTA below is presentational.
     <Link
       href={`/universities/${university.slug}`}
+      aria-hidden={decorative || undefined}
+      tabIndex={decorative ? -1 : undefined}
       className="group flex h-full flex-col overflow-hidden rounded-2xl border border-[#E7EDF5] bg-white shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/40 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
     >
       <div className="relative aspect-[16/10] w-full overflow-hidden">
