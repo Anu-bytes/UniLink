@@ -260,6 +260,11 @@
       "name": "Personal Information",
       "heading": "Tell us a bit about yourself",
       "help": "We'll use your name and country to personalize your matches and unlock country-specific scholarships and visa guides.",
+      "accountRoleLabel": "I'm signing up as a",
+      "accountRole": {
+        "STUDENT": "Student",
+        "PARENT": "Parent"
+      },
       "firstNameLabel": "First name",
       "firstNamePlaceholder": "First name",
       "lastNameLabel": "Last name",
@@ -904,7 +909,10 @@
     "cityCount": "{count, plural, one {# city} other {# cities}}",
     "viewProfile": "Explore university",
     "established": "Est. {year}",
-    "facultyCount": "{count, plural, one {# faculty} other {# faculties}}"
+    "facultyCount": "{count, plural, one {# faculty} other {# faculties}}",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}"
   },
   "ProgramDetail": {
     "breadcrumbHome": "Home",
@@ -1038,7 +1046,9 @@
       "apply": "Show results",
       "clear": "Clear all",
       "anyCity": "Any city",
-      "anyTuition": "Any tuition"
+      "anyTuition": "Any tuition",
+      "cityLimit": "{count} / {max} cities",
+      "moreCities": "+{count, number}"
     },
     "clearSearch": "Clear search",
     "tuitionRanges": {

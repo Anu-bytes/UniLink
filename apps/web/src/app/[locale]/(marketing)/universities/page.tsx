@@ -2,6 +2,8 @@ import {
   ArrowUpRight,
   Building2,
   BookOpen,
+  ChevronLeft,
+  ChevronRight,
   Flame,
   Heart,
   Layers,
@@ -21,7 +23,12 @@ import {
 export const dynamic = "force-dynamic";
 
 type PageProps = {
-  searchParams: Promise<{ q?: string; type?: string; city?: string }>;
+  searchParams: Promise<{
+    q?: string;
+    type?: string;
+    city?: string;
+    page?: string;
+  }>;
 };
 
 export default async function UniversitiesPage({ searchParams }: PageProps) {
@@ -29,17 +36,35 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
   const tDirectory = await getTranslations("UniversityDirectory");
   const locale = await getLocale();
 
-  const { q, type, city } = await searchParams;
-  const [universities, cities] = await Promise.all([
-    getPublishedUniversities(locale, {
-      q: q?.trim() || undefined,
-      types: type ? [type] : undefined,
-      cities: city ? [city] : undefined,
-    }),
+  const { q, type, city, page } = await searchParams;
+  const requested = Number.parseInt(page ?? "1", 10);
+  const [directory, cities] = await Promise.all([
+    getPublishedUniversities(
+      locale,
+      {
+        q: q?.trim() || undefined,
+        types: type ? [type] : undefined,
+        cities: city ? [city] : undefined,
+      },
+      Number.isFinite(requested) && requested > 0 ? requested : 1,
+    ),
     getUniversityCities(locale),
   ]);
 
+  const universities = directory.results;
   const hasActiveFilters = Boolean(q?.trim() || type || city);
+
+  // The filter bar rebuilds the query string from scratch, so changing a filter
+  // already drops the page; only these links need to carry it.
+  const pageHref = (target: number) => {
+    const params = new URLSearchParams();
+    if (q?.trim()) params.set("q", q.trim());
+    if (type) params.set("type", type);
+    if (city) params.set("city", city);
+    if (target > 1) params.set("page", String(target));
+    const query = params.toString();
+    return `/universities${query ? `?${query}` : ""}`;
+  };
 
   return (
     <>
@@ -60,7 +85,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
           <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold text-white/90">
             <span className="flex items-center gap-1.5">
               <Building2 className="size-4" aria-hidden />
-              {tDirectory("resultCount", { count: universities.length })}
+              {tDirectory("resultCount", { count: directory.total })}
             </span>
             <span className="flex items-center gap-1.5">
               <MapPin className="size-4" aria-hidden />
@@ -80,16 +105,55 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
 
         {hasActiveFilters ? (
           <p className="mt-6 text-sm font-semibold text-[#5a6072]">
-            {tDirectory("resultCount", { count: universities.length })}
+            {tDirectory("resultCount", { count: directory.total })}
           </p>
         ) : null}
 
         {universities.length > 0 ? (
-          <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {universities.map((university) => (
-              <UniversityCard key={university.id} university={university} />
-            ))}
-          </div>
+          <>
+            <div className="mt-6 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              {universities.map((university) => (
+                <UniversityCard key={university.id} university={university} />
+              ))}
+            </div>
+
+            {directory.pageCount > 1 ? (
+              <nav
+                aria-label={tDirectory("pageOf", {
+                  page: directory.page,
+                  total: directory.pageCount,
+                })}
+                className="mt-10 flex items-center justify-center gap-3"
+              >
+                {directory.page > 1 ? (
+                  <Link
+                    href={pageHref(directory.page - 1)}
+                    className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#1E6DEB]/40 hover:text-[#1E6DEB]"
+                  >
+                    <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
+                    {tDirectory("previous")}
+                  </Link>
+                ) : null}
+
+                <span className="text-sm font-semibold text-[#5a6072]">
+                  {tDirectory("pageOf", {
+                    page: directory.page,
+                    total: directory.pageCount,
+                  })}
+                </span>
+
+                {directory.page < directory.pageCount ? (
+                  <Link
+                    href={pageHref(directory.page + 1)}
+                    className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#1E6DEB]/40 hover:text-[#1E6DEB]"
+                  >
+                    {tDirectory("next")}
+                    <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />
+                  </Link>
+                ) : null}
+              </nav>
+            ) : null}
+          </>
         ) : (
           <div className="mt-6 rounded-2xl bg-[#F5F8FF] px-6 py-14 text-center">
             <h2 className="text-xl font-bold text-[#363B51]">

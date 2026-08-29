@@ -18,6 +18,13 @@ export type ProgramTagValue = (typeof PROGRAM_TAGS)[number];
 
 export const UNIVERSITY_TYPES = ["PUBLIC", "PRIVATE", "SPECIALIZED"] as const;
 
+/**
+ * Most cities a search can filter on at once. Shared between the schema below
+ * and the two city pickers (the filter-bar dropdown and the drawer's chip
+ * list) so the cap can only ever be changed in one place.
+ */
+export const MAX_CITIES = 5;
+
 /** Quick toggles rendered as chips above the results, in display order. */
 export const QUICK_TAGS: readonly ProgramTagValue[] = [
   "WAIVED_APPLICATION_FEE",
@@ -41,7 +48,17 @@ export const searchFiltersSchema = z.object({
   q: z.string().trim().max(200).optional(),
   fields: csv(z.array(z.string().min(1)).max(10)).optional(),
   levels: csv(z.array(z.enum(STUDY_LEVELS)).max(5)).optional(),
-  cities: csv(z.array(z.string().min(1)).max(10)).optional(),
+  // Truncated to the cap rather than rejected outright: with `.max()` alone,
+  // an object-level parse fails whole (parseSearchFilters below then falls
+  // back to *all* defaults, not just an empty cities list) the moment the
+  // array is one entry too long. That would turn tightening this cap from 10
+  // to 5 into a trap for anyone revisiting an older bookmarked or shared
+  // search URL — every filter on the page would silently reset, not just the
+  // city list. Slicing keeps the other 5 (or fewer) cities and every other
+  // filter intact.
+  cities: csv(z.array(z.string().min(1)))
+    .transform((list) => list.slice(0, MAX_CITIES))
+    .optional(),
   universities: csv(z.array(z.string().min(1)).max(10)).optional(),
   /** Faculty ids, set when a query names a specific faculty. */
   faculties: csv(z.array(z.string().min(1)).max(10)).optional(),

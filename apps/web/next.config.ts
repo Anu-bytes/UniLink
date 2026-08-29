@@ -4,7 +4,34 @@ import path from "node:path";
 
 const withNextIntl = createNextIntlPlugin("./src/i18n/request.ts");
 
+// Next's dev server needs 'unsafe-eval' for webpack HMR and a websocket
+// connection for its live-reload socket; neither is needed once built, so
+// both are dropped from the production policy.
+const isDev = process.env.NODE_ENV !== "production";
+
+// No nonces: large parts of the UI (Tailwind's arbitrary-value utilities,
+// React's `style` prop) render as inline style attributes, which only
+// 'unsafe-inline' (not a nonce) can authorise for style-src. script-src still
+// meaningfully restricts to same-origin + inline — no loading a remote
+// script, which is the more common exfiltration path.
+const csp = [
+  "default-src 'self'",
+  `script-src 'self' 'unsafe-inline'${isDev ? " 'unsafe-eval'" : ""}`,
+  "style-src 'self' 'unsafe-inline'",
+  // Avatar/logo URLs come from Supabase Storage and other admin-entered
+  // hosts, rendered as plain <img>, not next/image — so this can't be
+  // narrowed to next.config's images.remotePatterns without breaking them.
+  "img-src 'self' https: data: blob:",
+  "font-src 'self' data:",
+  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  "frame-ancestors 'none'",
+  "object-src 'none'",
+  "base-uri 'self'",
+  "form-action 'self'",
+].join("; ");
+
 const securityHeaders = [
+  { key: "Content-Security-Policy", value: csp },
   // Stop the browser guessing content types on user-uploaded avatars/etc.
   { key: "X-Content-Type-Options", value: "nosniff" },
   // No embedding in a third-party frame (clickjacking).

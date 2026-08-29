@@ -53,7 +53,13 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         });
         if (!accountOk || !ipOk) return null;
 
-        const user = await prisma.user.findUnique({ where: { email } });
+        // Case-insensitive, matching how the account was ever resolvable via
+        // password reset (see findAccount in lib/password-reset.ts) — without
+        // this, an account whose stored email carries different casing than
+        // what the user types here silently fails to sign in.
+        const user = await prisma.user.findFirst({
+          where: { email: { equals: email, mode: "insensitive" } },
+        });
         if (!user?.passwordHash) return null;
 
         const valid = await bcrypt.compare(password, user.passwordHash);

@@ -260,6 +260,11 @@
       "name": "المعلومات الشخصية",
       "heading": "أخبرنا قليلاً عن نفسك",
       "help": "سنستخدم اسمك وبلدك لتخصيص نتائجك وفتح المنح الدراسية وأدلة التأشيرات الخاصة ببلدك.",
+      "accountRoleLabel": "أنا أسجل بصفتي",
+      "accountRole": {
+        "STUDENT": "طالب",
+        "PARENT": "ولي أمر"
+      },
       "firstNameLabel": "الاسم الأول",
       "firstNamePlaceholder": "الاسم الأول",
       "lastNameLabel": "اسم العائلة",
@@ -904,7 +909,10 @@
     "cityCount": "{count, plural, zero {# مدن} one {مدينة واحدة} two {مدينتان} few {# مدن} many {# مدينة} other {# مدينة}}",
     "viewProfile": "استكشف الجامعة",
     "established": "تأسست {year}",
-    "facultyCount": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}"
+    "facultyCount": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageOf": "صفحة {page} من {total}"
   },
   "ProgramDetail": {
     "breadcrumbHome": "الرئيسية",
@@ -1038,7 +1046,9 @@
       "apply": "عرض النتائج",
       "clear": "مسح الكل",
       "anyCity": "كل المدن",
-      "anyTuition": "كل المصروفات"
+      "anyTuition": "كل المصروفات",
+      "cityLimit": "{count} / {max} مدن",
+      "moreCities": "+{count, number}"
     },
     "clearSearch": "مسح البحث",
     "tuitionRanges": {

@@ -4,7 +4,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 
 import { prisma } from "@/lib/prisma";
-import { profileSchema } from "@/lib/onboarding-schema";
+import { ACCOUNT_ROLES, profileSchema } from "@/lib/onboarding-schema";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
 // Base (email-only) signup, still used by the simple signup form. Password
@@ -28,6 +28,10 @@ const onboardingSchema = z.object({
   phone: z.string().trim().min(7, "Enter a valid phone number"),
   firstName: z.string().trim().min(1).max(50),
   lastName: z.string().trim().min(1).max(50),
+  // Who is filling in the wizard — the applicant, or a parent on their
+  // behalf. Only labels the account; the profile fields are the same either
+  // way.
+  accountRole: z.enum(ACCOUNT_ROLES),
   password: z.string().min(10, "Password must be at least 10 characters"),
   profile: profileSchema,
 });
@@ -109,7 +113,8 @@ async function registerWithProfile(body: unknown) {
     );
   }
 
-  const { email, phone, firstName, lastName, password, profile } = parsed.data;
+  const { email, phone, firstName, lastName, accountRole, password, profile } =
+    parsed.data;
 
   if (await emailTaken(email)) {
     return conflict();
@@ -129,6 +134,7 @@ async function registerWithProfile(body: unknown) {
           lastName,
           name: `${firstName} ${lastName}`,
           passwordHash,
+          role: accountRole,
         },
         select: { id: true, email: true },
       });
@@ -171,7 +177,14 @@ async function registerWithProfile(body: unknown) {
 }
 
 async function emailTaken(email: string) {
-  const existing = await prisma.user.findUnique({ where: { email } });
+  // Case-insensitive: the column's unique index is case-sensitive, so without
+  // this "Test@x.com" and "test@x.com" could both register, leaving a
+  // duplicate account that sign-in (case-insensitive, see auth.ts) and
+  // password reset (see findAccount in lib/password-reset.ts) cannot tell
+  // apart from the other.
+  const existing = await prisma.user.findFirst({
+    where: { email: { equals: email, mode: "insensitive" } },
+  });
   return existing != null;
 }
 
