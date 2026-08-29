@@ -259,30 +259,70 @@ function universitySearchWhere(q: string): Prisma.UniversityWhereInput {
   };
 }
 
+/** Universities per page in the public directory. */
+export const DIRECTORY_PAGE_SIZE = 24;
+
+// A search term is re-ranked in memory (below), which can only order rows we
+// actually hold. This caps how many are pulled to do that. Without a cap the
+// directory read every matching row on every request — fine at 30 universities,
+// not at the catalogue size the marketing copy promises.
+const SEARCH_RANK_WINDOW = 200;
+
+export type UniversityDirectoryPage = {
+  results: UniversityCardData[];
+  /** Total matches in the database, used for the result count. */
+  total: number;
+  page: number;
+  pageCount: number;
+};
+
 export async function getPublishedUniversities(
   locale: string,
   filters: UniversityDirectoryFilters = {},
-) {
-  const universities = await prisma.university.findMany({
-    where: {
-      ...publishedUniversityWhere,
-      ...(filters.types?.length
-        ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
-        : {}),
-      ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
-      ...(filters.q ? universitySearchWhere(filters.q) : {}),
-    },
-    orderBy: [{ isFeatured: "desc" }, { name: "asc" }],
-    select: universityCardSelect,
-  });
+  page = 1,
+): Promise<UniversityDirectoryPage> {
+  const where = {
+    ...publishedUniversityWhere,
+    ...(filters.types?.length
+      ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
+      : {}),
+    ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+    ...(filters.q ? universitySearchWhere(filters.q) : {}),
+  };
 
-  // Exact (or exact-prefix) name matches float to the top within each
-  // featured tier, so typing "AUC" finds AUC before some unrelated
-  // university whose description happens to mention it.
   const needle = filters.q?.trim().toLowerCase();
-  const mapped = universities.map((university) => mapUniversity(locale, university));
-  if (!needle) return mapped;
+  const current = Number.isFinite(page) && page > 0 ? Math.floor(page) : 1;
+  const orderBy = [{ isFeatured: "desc" as const }, { name: "asc" as const }];
 
+  // Without a search term the database order is the final order, so the page
+  // can be taken with skip/take and only DIRECTORY_PAGE_SIZE rows are read.
+  // With one, the window has to come back before it can be ranked.
+  const [total, rows] = await Promise.all([
+    prisma.university.count({ where }),
+    prisma.university.findMany({
+      where,
+      orderBy,
+      select: universityCardSelect,
+      ...(needle
+        ? { take: SEARCH_RANK_WINDOW }
+        : { skip: (current - 1) * DIRECTORY_PAGE_SIZE, take: DIRECTORY_PAGE_SIZE }),
+    }),
+  ]);
+
+  const mapped = rows.map((university) => mapUniversity(locale, university));
+
+  if (!needle) {
+    return {
+      results: mapped,
+      total,
+      page: current,
+      pageCount: Math.max(1, Math.ceil(total / DIRECTORY_PAGE_SIZE)),
+    };
+  }
+
+  // Exact (or exact-prefix) name matches float to the top within each featured
+  // tier, so typing "AUC" finds AUC before some unrelated university whose
+  // description happens to mention it.
   const rank = (name: string) => {
     const value = name.toLowerCase();
     if (value === needle) return 0;
@@ -291,10 +331,24 @@ export async function getPublishedUniversities(
     return 3;
   };
 
-  return mapped
+  const ranked = mapped
     .map((university, index) => ({ university, index, rank: rank(university.name) }))
     .sort((a, b) => a.rank - b.rank || a.index - b.index)
     .map((entry) => entry.university);
+
+  // Paging is limited to what was ranked; `total` still reports the true match
+  // count so the header does not lie about how many there are.
+  const reachable = Math.min(total, SEARCH_RANK_WINDOW);
+  const pageCount = Math.max(1, Math.ceil(reachable / DIRECTORY_PAGE_SIZE));
+  const clamped = Math.min(current, pageCount);
+  const start = (clamped - 1) * DIRECTORY_PAGE_SIZE;
+
+  return {
+    results: ranked.slice(start, start + DIRECTORY_PAGE_SIZE),
+    total,
+    page: clamped,
+    pageCount,
+  };
 }
 
 /**
@@ -411,8 +465,10 @@ export type UniversityDetailData = {
   viewCount: number;
   isRecommended: boolean;
   isTrending: boolean;
-  createdAt: Date;
-  updatedAt: Date;
+  // `Date` from the database, ISO `string` when it comes back through the
+  // cross-request cache, which serialises via JSON. `formatDate` takes either.
+  createdAt: Date | string;
+  updatedAt: Date | string;
   images: { id: string; url: string; alt: string | null }[];
   features: { id: string; title: string; body: string | null }[];
   admissionRequirements: { id: string; title: string | null; body: string }[];
@@ -433,13 +489,35 @@ export type UniversityDetailData = {
 /**
  * Full university payload for the detail page.
  *
- * Wrapped in React `cache` because both routes that use it call it twice per
- * request: once in `generateMetadata`, again in the page component. Without the
- * dedupe that is two runs of this query — every faculty, every published
- * program, plus images, features, content blocks and minimum scores — to render
- * one page. The cache is per-request, so nothing can go stale.
+ * Two layers of caching, doing different jobs:
+ *
+ * - `unstable_cache` keeps the result across requests for a minute. This query
+ *   is the heaviest in the app — every faculty, every published program, plus
+ *   images, features, content blocks and minimum scores — and the page is
+ *   `force-dynamic` because it reads the session, so without this every visitor
+ *   re-runs all of it. The key set is bounded by the published slugs, so it
+ *   cannot be inflated by anything a visitor types.
+ * - React `cache` dedupes within one request, because both routes that use this
+ *   call it twice: once in `generateMetadata`, again in the page component.
+ *
+ * Note the cache round-trips through JSON, so `createdAt`/`updatedAt` come back
+ * as ISO strings on a hit — which is why the type admits `string` and why the
+ * hero formats them via `formatDate`, which accepts both.
  */
-export const getUniversityDetail = cache(async function getUniversityDetail(
+const loadUniversityDetail = unstable_cache(
+  async function loadUniversityDetail(
+    locale: string,
+    slug: string,
+  ): Promise<UniversityDetailData | null> {
+    return getUniversityDetailUncached(locale, slug);
+  },
+  ["university-detail"],
+  { revalidate: 60 },
+);
+
+export const getUniversityDetail = cache(loadUniversityDetail);
+
+async function getUniversityDetailUncached(
   locale: string,
   slug: string,
 ): Promise<UniversityDetailData | null> {
@@ -568,7 +646,7 @@ export const getUniversityDetail = cache(async function getUniversityDetail(
       0,
     ),
   };
-});
+}
 
 /** Slugs of every published university, for `generateStaticParams`/sitemaps. */
 export async function getUniversitySlugs() {
@@ -583,9 +661,22 @@ export async function getUniversitySlugs() {
  * Bump the hero view counter. Deliberately fire-and-forget: a failed increment
  * must never break the page render.
  */
+/**
+ * Bumps the page-view counter.
+ *
+ * `updateMany` rather than `update`: `update` throws when the row is gone and
+ * asks the database for the updated row back, neither of which this needs.
+ *
+ * Callers should hand this to `after()` so it runs once the response has been
+ * sent — a counter must never sit between a visitor and the page, and a bare
+ * floating promise in a serverless function can be cut off when the invocation
+ * ends. Every popular university still serialises writers on its own row, so if
+ * this ever becomes a bottleneck the fix is to stop counting synchronously per
+ * view (sample it, or write append-only rows and roll them up).
+ */
 export async function incrementUniversityViews(id: string) {
   try {
-    await prisma.university.update({
+    await prisma.university.updateMany({
       where: { id },
       data: { viewCount: { increment: 1 } },
     });

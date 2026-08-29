@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { after } from "next/server";
 import { notFound } from "next/navigation";
 import { getLocale } from "next-intl/server";
 
@@ -69,8 +70,12 @@ export default async function UniversityDetailPage({
   const isAuthenticated = Boolean(session?.user?.id);
 
   // Counts pages read, not tab switches, so only the default tab increments.
+  //
+  // Deferred with `after` so the write happens once the response has been sent.
+  // As a floating promise it was both delaying nothing usefully and liable to
+  // be cut short when the serverless invocation ended.
   if (active === "about") {
-    void incrementUniversityViews(university.id);
+    after(() => incrementUniversityViews(university.id));
   }
 
   const callbackUrl = `/universities/${university.slug}${active === "about" ? "" : `?tab=${active}`}`;

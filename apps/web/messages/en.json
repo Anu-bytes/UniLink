@@ -904,7 +904,10 @@
     "cityCount": "{count, plural, one {# city} other {# cities}}",
     "viewProfile": "Explore university",
     "established": "Est. {year}",
-    "facultyCount": "{count, plural, one {# faculty} other {# faculties}}"
+    "facultyCount": "{count, plural, one {# faculty} other {# faculties}}",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "Page {page} of {total}"
   },
   "ProgramDetail": {
     "breadcrumbHome": "Home",

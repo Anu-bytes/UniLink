@@ -904,7 +904,10 @@
     "cityCount": "{count, plural, zero {# مدن} one {مدينة واحدة} two {مدينتان} few {# مدن} many {# مدينة} other {# مدينة}}",
     "viewProfile": "استكشف الجامعة",
     "established": "تأسست {year}",
-    "facultyCount": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}"
+    "facultyCount": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}",
+    "previous": "السابق",
+    "next": "التالي",
+    "pageOf": "صفحة {page} من {total}"
   },
   "ProgramDetail": {
     "breadcrumbHome": "الرئيسية",
