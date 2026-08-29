@@ -162,10 +162,20 @@ export function FeaturedUniversities({
 
   useEffect(() => {
     if (reducedMotion || interacting || !inView || !shouldLoop) return;
-    if (!railRef.current) return;
+    const initialRail = railRef.current;
+    if (!initialRail) return;
 
     let frame = 0;
     let last = performance.now();
+    // Tracked separately from rail.scrollLeft in full JS-number precision.
+    // Reading scrollLeft back and accumulating onto THAT compounds whatever
+    // rounding the browser applies to the property, frame after frame — a
+    // measured 90px/s came out closer to 120px/s over one second of ticks
+    // that way. Writing a value we already know exactly sidesteps it, and
+    // re-reading it fresh here (once, on effect start, not per frame) still
+    // picks up wherever a manual scroll or swipe left the rail before
+    // autoplay resumed.
+    let position = initialRail.scrollLeft;
 
     const tick = (now: number) => {
       const rail = railRef.current;
@@ -188,13 +198,15 @@ export function FeaturedUniversities({
         const period = loopStartRef.current?.offsetLeft;
         if (period && period > 1) {
           const delta = (AUTOPLAY_PX_PER_SEC * elapsed) / 1000;
-          rail.scrollLeft += isRtl ? -delta : delta;
+          position += isRtl ? -delta : delta;
 
-          if (!isRtl && rail.scrollLeft >= period) {
-            rail.scrollLeft -= period;
-          } else if (isRtl && rail.scrollLeft <= -period) {
-            rail.scrollLeft += period;
+          if (!isRtl && position >= period) {
+            position -= period;
+          } else if (isRtl && position <= -period) {
+            position += period;
           }
+
+          rail.scrollLeft = position;
         }
       }
 
@@ -204,6 +216,11 @@ export function FeaturedUniversities({
     frame = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(frame);
   }, [reducedMotion, interacting, inView, shouldLoop, isRtl]);
+
+  // Mirrors the tick effect's guard above exactly, so the two can never drift
+  // out of sync: this is "is the animation currently the thing moving the
+  // rail". See the className comment on the <ul> below for why it matters.
+  const autoplayActive = shouldLoop && !reducedMotion && !interacting && inView;
 
   return (
     <>
@@ -242,16 +259,32 @@ export function FeaturedUniversities({
         onTouchStart={pauseForInteraction}
         onPointerDown={pauseForInteraction}
       >
-        {/* One row at every breakpoint: the rail scrolls horizontally and snaps
-            card to card, rather than wrapping onto a second and third row.
+        {/* One row at every breakpoint: the rail scrolls horizontally and, for
+            manual interaction, snaps card to card rather than wrapping onto a
+            second and third row.
+
             `scroll-smooth` is deliberately absent: it would apply to every
             scrollLeft write, including the autoplay effect's direct
-            per-frame writes above, and fight the animation it is trying to
-            drive smoothly on its own. Manual jumps (the arrows below) opt
-            into smoothness explicitly via their own scrollBy() call. */}
+            per-frame writes, and fight the animation it is trying to drive
+            smoothly on its own. Manual jumps (the arrows below) opt into
+            smoothness explicitly via their own scrollBy() call.
+
+            `snap-x snap-mandatory` is deliberately CONDITIONAL, dropped while
+            `autoplayActive`. Confirmed directly in a browser: with mandatory
+            snap active, `element.scrollLeft = x` for an x that is not itself
+            a snap point is not merely re-corrected later, it is rejected
+            synchronously — the property does not move at all. The autoplay
+            effect's per-frame writes are essentially never on a snap point,
+            so with snap left on throughout, every single write was silently
+            discarded and the rail never actually moved. Snapping only earns
+            its keep once a person is scrolling by hand, so it switches back
+            on exactly then — same condition that gates the effect above. */}
         <ul
           ref={railRef}
-          className="flex snap-x snap-mandatory gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+          className={cn(
+            "flex gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
+            !autoplayActive && "snap-x snap-mandatory",
+          )}
         >
           {trackItems.map(({ university, clone }, index) => (
             <li
