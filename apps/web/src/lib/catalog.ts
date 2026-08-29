@@ -297,15 +297,24 @@ export async function getPublishedUniversities(
   // Without a search term the database order is the final order, so the page
   // can be taken with skip/take and only DIRECTORY_PAGE_SIZE rows are read.
   // With one, the window has to come back before it can be ranked.
+  //
+  // Widened to `number` explicitly: written inline, the two branches of the
+  // ternary carry literal types (`take: 200` vs `take: 24`), and Prisma's
+  // overload resolution treats those as two different argument shapes rather
+  // than one shape with a number field, which tsc rejects.
+  const skip: number | undefined = needle
+    ? undefined
+    : (current - 1) * DIRECTORY_PAGE_SIZE;
+  const take: number = needle ? SEARCH_RANK_WINDOW : DIRECTORY_PAGE_SIZE;
+
   const [total, rows] = await Promise.all([
     prisma.university.count({ where }),
     prisma.university.findMany({
       where,
       orderBy,
       select: universityCardSelect,
-      ...(needle
-        ? { take: SEARCH_RANK_WINDOW }
-        : { skip: (current - 1) * DIRECTORY_PAGE_SIZE, take: DIRECTORY_PAGE_SIZE }),
+      skip,
+      take,
     }),
   ]);
 
