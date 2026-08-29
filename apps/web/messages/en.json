@@ -1041,7 +1041,9 @@
       "apply": "Show results",
       "clear": "Clear all",
       "anyCity": "Any city",
-      "anyTuition": "Any tuition"
+      "anyTuition": "Any tuition",
+      "cityLimit": "{count} / {max} cities",
+      "moreCities": "+{count, number}"
     },
     "clearSearch": "Clear search",
     "tuitionRanges": {

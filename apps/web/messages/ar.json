@@ -1041,7 +1041,9 @@
       "apply": "عرض النتائج",
       "clear": "مسح الكل",
       "anyCity": "كل المدن",
-      "anyTuition": "كل المصروفات"
+      "anyTuition": "كل المصروفات",
+      "cityLimit": "{count} / {max} مدن",
+      "moreCities": "+{count, number}"
     },
     "clearSearch": "مسح البحث",
     "tuitionRanges": {

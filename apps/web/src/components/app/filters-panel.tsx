@@ -7,6 +7,7 @@ import { useEffect, useState } from "react";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { INTAKE_SEASONS, INTAKE_YEARS, STUDY_LEVELS } from "@/lib/onboarding-schema";
 import {
+  MAX_CITIES,
   PROGRAM_TAGS,
   UNIVERSITY_TYPES,
   type SearchFilters,
@@ -45,8 +46,18 @@ export function FiltersPanel({
   ) {
     setDraft((previous) => {
       const current = new Set((previous[key] as string[] | undefined) ?? []);
-      if (current.has(value)) current.delete(value);
-      else current.add(value);
+      if (current.has(value)) {
+        current.delete(value);
+      } else {
+        // Cities are the one facet with a hard cap (see MAX_CITIES): a
+        // narrow list keeps the "in" query it drives cheap, and forcing a
+        // choice among a handful is more useful to a student than letting
+        // the filter grow until it barely excludes anything. A blocked click
+        // is silently a no-op rather than swapping out an existing city —
+        // the disabled state on the chip (below) already tells the user why.
+        if (key === "cities" && current.size >= MAX_CITIES) return previous;
+        current.add(value);
+      }
       return {
         ...previous,
         [key]: current.size > 0 ? [...current] : undefined,
@@ -56,6 +67,8 @@ export function FiltersPanel({
 
   const isOn = (key: keyof SearchFilters, value: string) =>
     ((draft[key] as string[] | undefined) ?? []).includes(value);
+
+  const citiesAtMax = (draft.cities?.length ?? 0) >= MAX_CITIES;
 
   return (
     <div className="fixed inset-0 z-50 flex justify-end">
@@ -127,17 +140,24 @@ export function FiltersPanel({
             </div>
           </Group>
 
-          <Group title={t("city")}>
+          <Group
+            title={t("city")}
+            caption={t("cityLimit", { count: draft.cities?.length ?? 0, max: MAX_CITIES })}
+          >
             <div className="flex flex-wrap gap-2">
-              {options.cities.map((city) => (
-                <Chip
-                  key={city.value}
-                  active={isOn("cities", city.value)}
-                  onClick={() => toggle("cities", city.value)}
-                >
-                  {city.label}
-                </Chip>
-              ))}
+              {options.cities.map((city) => {
+                const active = isOn("cities", city.value);
+                return (
+                  <Chip
+                    key={city.value}
+                    active={active}
+                    disabled={!active && citiesAtMax}
+                    onClick={() => toggle("cities", city.value)}
+                  >
+                    {city.label}
+                  </Chip>
+                );
+              })}
             </div>
           </Group>
 
@@ -267,10 +287,24 @@ export function FiltersPanel({
   );
 }
 
-function Group({ title, children }: { title: string; children: React.ReactNode }) {
+function Group({
+  title,
+  caption,
+  children,
+}: {
+  title: string;
+  /** Optional right-aligned hint, e.g. a running "2 / 5" count. */
+  caption?: string;
+  children: React.ReactNode;
+}) {
   return (
     <section>
-      <h3 className="mb-3 text-sm font-bold text-[#1F2A44]">{title}</h3>
+      <div className="mb-3 flex items-baseline justify-between gap-2">
+        <h3 className="text-sm font-bold text-[#1F2A44]">{title}</h3>
+        {caption ? (
+          <span className="text-xs font-medium text-[#98A0B4]">{caption}</span>
+        ) : null}
+      </div>
       {children}
     </section>
   );
@@ -278,10 +312,16 @@ function Group({ title, children }: { title: string; children: React.ReactNode }
 
 function Chip({
   active,
+  disabled = false,
   onClick,
   children,
 }: {
   active: boolean;
+  /**
+   * True once a cap elsewhere in the same group is reached and this option
+   * is not itself selected — e.g. a 6th city once 5 are already chosen.
+   */
+  disabled?: boolean;
   onClick: () => void;
   children: React.ReactNode;
 }) {
@@ -289,12 +329,15 @@ function Chip({
     <button
       type="button"
       onClick={onClick}
+      disabled={disabled}
       aria-pressed={active}
       className={cn(
         "min-h-9 rounded-full border px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
         active
           ? "border-[#1E6DEB] bg-[#1E6DEB] text-white"
-          : "border-slate-200 text-[#5a6072] hover:bg-slate-50",
+          : disabled
+            ? "cursor-not-allowed border-slate-100 text-[#C3C8D4]"
+            : "border-slate-200 text-[#5a6072] hover:bg-slate-50",
       )}
     >
       {children}
