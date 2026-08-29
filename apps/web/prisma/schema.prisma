@@ -53,6 +53,9 @@ model User {
 
 enum UserRole {
   STUDENT
+  // A parent/guardian filling in the wizard on the applicant's behalf. Uses
+  // the same StudentProfile shape as STUDENT; this only labels the account.
+  PARENT
   PARTNER
   ADMIN
 }

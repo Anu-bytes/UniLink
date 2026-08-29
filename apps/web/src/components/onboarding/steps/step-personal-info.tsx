@@ -3,16 +3,17 @@
 import { useTranslations } from "next-intl";
 import { UserRound } from "lucide-react";
 
-import { personalInfoSchema } from "@/lib/onboarding-schema";
+import { ACCOUNT_ROLES, personalInfoSchema } from "@/lib/onboarding-schema";
 import { Input } from "@/components/ui/input";
 import { useWizard } from "../wizard-context";
-import { StepShell, Field, useStepForm } from "./step-primitives";
+import { StepShell, Field, OptionCards, useStepForm } from "./step-primitives";
 import { CountryCombobox } from "./country-select";
 
 export function StepPersonalInfo() {
   const t = useTranslations("Onboarding");
   const { data, setData, next } = useWizard();
   const form = useStepForm(personalInfoSchema, {
+    accountRole: data.accountRole,
     firstName: data.firstName,
     lastName: data.lastName,
     nationality: data.nationality,
@@ -34,6 +35,21 @@ export function StepPersonalInfo() {
       submitLabel={t("continue")}
       illustration={<UserRound className="size-10" />}
     >
+      <Field
+        label={t("personalInfo.accountRoleLabel")}
+        error={form.errors.accountRole}
+      >
+        <OptionCards
+          columns={2}
+          options={ACCOUNT_ROLES.map((role) => ({
+            value: role,
+            label: t(`personalInfo.accountRole.${role}`),
+          }))}
+          value={form.values.accountRole as (typeof ACCOUNT_ROLES)[number] | undefined}
+          onChange={(role) => form.setValue("accountRole", role)}
+        />
+      </Field>
+
       <div className="grid grid-cols-2 gap-3">
         <Field
           label={t("personalInfo.firstNameLabel")}

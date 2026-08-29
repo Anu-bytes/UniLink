@@ -58,6 +58,7 @@ export function Wizard() {
       phone,
       firstName,
       lastName,
+      accountRole,
       password,
       acceptTerms: _t,
       ...profile
@@ -76,6 +77,7 @@ export function Wizard() {
           phone,
           firstName,
           lastName,
+          accountRole,
           password,
           profile,
         }),

@@ -36,6 +36,9 @@ export const HIGH_SCHOOL_SYSTEMS = [
 
 export const INTAKE_SEASONS = ["WINTER", "SPRING", "SUMMER", "FALL"] as const;
 
+/** Who is filling in the wizard — the applicant, or a parent on their behalf. */
+export const ACCOUNT_ROLES = ["STUDENT", "PARENT"] as const;
+
 export const BUDGET_BANDS = [
   "UNDER_100K",
   "B100_200K",
@@ -73,6 +76,7 @@ export const studyLevelSchema = z.object({
 // First step: name + country. firstName/lastName live on the User; nationality
 // (the country code) is a StudentProfile field.
 export const personalInfoSchema = z.object({
+  accountRole: z.enum(ACCOUNT_ROLES, { message: "Select who is signing up" }),
   firstName: z.string().trim().min(1, "Enter your first name").max(50),
   lastName: z.string().trim().min(1, "Enter your last name").max(50),
   nationality: z.string().length(2, "Select your country"),
@@ -199,6 +203,7 @@ export const registerPayloadSchema = z.object({
   phone: accountSchema.shape.phone,
   firstName: personalInfoSchema.shape.firstName,
   lastName: personalInfoSchema.shape.lastName,
+  accountRole: personalInfoSchema.shape.accountRole,
   password: accountSchema.shape.password,
   profile: profileSchema,
 });
@@ -287,6 +292,7 @@ export type RegisterPayload = z.infer<typeof registerPayloadSchema>;
 // The wizard accumulates a partial version of all fields as the user advances.
 export type WizardData = Partial<
   ProfileData & {
+    accountRole: (typeof ACCOUNT_ROLES)[number];
     firstName: string;
     lastName: string;
     email: string;

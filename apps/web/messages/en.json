@@ -260,6 +260,11 @@
       "name": "Personal Information",
       "heading": "Tell us a bit about yourself",
       "help": "We'll use your name and country to personalize your matches and unlock country-specific scholarships and visa guides.",
+      "accountRoleLabel": "I'm signing up as a",
+      "accountRole": {
+        "STUDENT": "Student",
+        "PARENT": "Parent"
+      },
       "firstNameLabel": "First name",
       "firstNamePlaceholder": "First name",
       "lastNameLabel": "Last name",
