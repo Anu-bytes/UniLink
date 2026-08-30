@@ -1,11 +1,12 @@
 "use client";
 
 import {
+  ArrowLeft,
   ChevronLeft,
   ExternalLink,
   GraduationCap,
   Heart,
-  Home,
+  LayoutDashboard,
   LogOut,
   Menu,
   Search,
@@ -35,7 +36,7 @@ type NavItem = {
 };
 
 const NAV: NavItem[] = [
-  { href: "/app", labelKey: "home", icon: Home },
+  { href: "/app", labelKey: "home", icon: LayoutDashboard },
   { href: "/app/search", labelKey: "search", icon: Search, extraMatches: ["/app/compare"] },
   {
     href: "/app/applications",
@@ -109,7 +110,9 @@ export function AppShell({
         )}
       >
         {collapsed ? (
-          <Link href="/app" aria-label="UniLink">
+          // Same destination as the expanded Logo below: inside the app,
+          // the mark goes to search, not the dashboard/"home".
+          <Link href="/app/search" aria-label="UniLink">
             <span
               aria-hidden
               className="flex size-8 items-center justify-center rounded-lg bg-[#1E6DEB] text-xs font-bold text-white"
@@ -118,7 +121,7 @@ export function AppShell({
             </span>
           </Link>
         ) : (
-          <Logo className="[&_img]:h-7" />
+          <Logo href="/app/search" className="[&_img]:h-7" />
         )}
       </div>
 
@@ -159,6 +162,27 @@ export function AppShell({
             </Link>
           );
         })}
+
+        {/* Last in the list, not a nav destination like the items above it,
+            so a divider marks the break: still a clear, always-visible way
+            out (the account dropdown also has one), not styled as another
+            page inside the app. */}
+        <div className="my-2 border-t border-slate-100" />
+        <Link
+          href="/"
+          title={collapsed ? t("backToSite") : undefined}
+          className={cn(
+            "flex min-h-10 items-center gap-3 rounded-lg px-3 text-[15px] font-normal text-[#5a6072] transition-colors hover:bg-slate-50 hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+            collapsed && "justify-center px-0",
+          )}
+        >
+          <ArrowLeft className="size-[18px] shrink-0 rtl:rotate-180" aria-hidden />
+          {collapsed ? (
+            <span className="sr-only">{t("backToSite")}</span>
+          ) : (
+            <span>{t("backToSite")}</span>
+          )}
+        </Link>
       </nav>
 
       <div className="p-3">

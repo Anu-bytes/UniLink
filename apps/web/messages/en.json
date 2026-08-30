@@ -941,7 +941,7 @@
   },
   "App": {
     "sidebar": {
-      "home": "Home",
+      "home": "Dashboard",
       "search": "Search",
       "applications": "My Applications",
       "profile": "Profile",
@@ -989,6 +989,7 @@
     "clearAll": "Clear all",
     "recommendedBadge": "AI recommended",
     "recommendedTitle": "Recommended for you",
+    "recommendedCount": "{count, plural, one {# match} other {# matches}}",
     "recommendedSubtitle": "Based on your profile, grades and preferred fields.",
     "recommendedNoProfile": "Complete your profile to get personalised recommendations.",
     "moreTitle": "More programs",

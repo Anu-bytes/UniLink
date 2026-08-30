@@ -941,7 +941,7 @@
   },
   "App": {
     "sidebar": {
-      "home": "الرئيسية",
+      "home": "لوحة التحكم",
       "search": "البحث",
       "applications": "طلباتي",
       "profile": "الملف الشخصي",
@@ -989,6 +989,7 @@
     "clearAll": "مسح الكل",
     "recommendedBadge": "ترشيح ذكي",
     "recommendedTitle": "مرشح لك",
+    "recommendedCount": "{count, plural, one {# مطابقة} other {# مطابقات}}",
     "recommendedSubtitle": "بناءً على ملفك الشخصي ودرجاتك والمجالات المفضلة لديك.",
     "recommendedNoProfile": "أكمل ملفك الشخصي للحصول على ترشيحات مخصصة.",
     "moreTitle": "المزيد من البرامج",

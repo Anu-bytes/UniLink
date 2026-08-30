@@ -901,7 +901,10 @@ html[lang="ar"] body {
     padding: 6px 8px !important;
     word-break: break-word;
     border-color: #ccc !important;
-    background: #fff !important;
+    /* Transparent, not white: the compare page's watermark sits behind the
+       table at a negative z-index, and an opaque cell fill would paint
+       right over it, hiding it exactly where it's meant to show. */
+    background: transparent !important;
   }
 
   /* Repeats the column headers (university/program names) on every printed

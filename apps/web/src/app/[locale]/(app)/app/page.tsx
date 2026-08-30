@@ -4,7 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
-import { FacultyCard } from "@/components/app/faculty-card";
+import { RecommendedPanel } from "@/components/app/recommended-panel";
 import { UniversityLogo } from "@/components/university-logo";
 import { getRecommendedFaculties } from "@/lib/faculty-search";
 import { formatDate } from "@/lib/format";
@@ -108,18 +108,13 @@ export default async function AppHomePage() {
         </section>
       ) : null}
 
-      {recommended.length > 0 ? (
-        <section className="mt-10">
-          <h2 className="text-xl font-bold text-[#1F2A44]">
-            {t("stats.matches")}
-          </h2>
-          <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {recommended.map((faculty) => (
-              <FacultyCard key={faculty.id} faculty={faculty} />
-            ))}
-          </div>
-        </section>
-      ) : null}
+      <div className="mt-10">
+        <RecommendedPanel
+          faculties={recommended}
+          hasProfile={profile != null}
+          defaultOpen
+        />
+      </div>
 
       <section className="mt-10">
         <div className="flex items-center justify-between gap-3">
