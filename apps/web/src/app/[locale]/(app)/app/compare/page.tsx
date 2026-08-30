@@ -1,4 +1,5 @@
 import { ArrowLeft, ExternalLink, Check, X, ArrowLeftRight } from "lucide-react";
+import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
@@ -291,6 +292,38 @@ export default async function ComparePage({ searchParams }: PageProps) {
   return (
     <div className="mx-auto max-w-[86rem] px-4 py-6 md:px-6 md:py-8">
       <CompareSync entries={entries} />
+
+      {/* Print/PDF-only branding: invisible on screen (hidden, overridden by
+          the print: variants below), so it never shows up while comparing
+          in the app, only in the "Download > Print or save as PDF" output. */}
+      <div
+        aria-hidden
+        className="hidden print:fixed print:inset-0 print:-z-10 print:flex print:items-center print:justify-center print:overflow-hidden"
+      >
+        {/* Chromium repeats position:fixed elements on every printed page,
+            so this one watermark covers a multi-page comparison too.
+            Negative z-index: normal in-flow content (the header, the table)
+            paints above a fixed element only if it isn't also positioned —
+            a negative index keeps it behind everything else without having
+            to add stacking context overrides to the rest of the page. */}
+        <span className="rotate-[-30deg] whitespace-nowrap text-[110px] font-black tracking-wide text-black/[0.05] select-none">
+          UniLink
+        </span>
+      </div>
+
+      <div
+        aria-hidden
+        className="hidden print:mb-5 print:flex print:items-center print:justify-between print:border-b print:border-slate-300 print:pb-3"
+      >
+        <Image
+          src="/logo/unilink-logo-full-v2.png"
+          alt="UniLink"
+          width={451}
+          height={134}
+          className="h-8 w-auto"
+        />
+        <span className="text-xs text-slate-500">unilink.app</span>
+      </div>
 
       <header className="flex flex-wrap items-center justify-between gap-4">
         <div className="flex items-center gap-3">

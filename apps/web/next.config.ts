@@ -24,6 +24,10 @@ const csp = [
   "img-src 'self' https: data: blob:",
   "font-src 'self' data:",
   `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  // The only <iframe> on the site is the campus map embed on a university's
+  // Location tab (tab-location.tsx). No frame-src falls back to
+  // default-src 'self', which blocks it.
+  "frame-src https://www.openstreetmap.org",
   "frame-ancestors 'none'",
   "object-src 'none'",
   "base-uri 'self'",

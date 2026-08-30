@@ -851,8 +851,20 @@ html[lang="ar"] body {
   }
 }
 
-/* Printing is how "Download > Print or save as PDF" works on the compare page:
-   drop the app chrome so only the comparison table reaches the paper. */
+/* Printing is how "Download > Print or save as PDF" works on the compare
+   page: drop the app chrome so only the comparison table reaches the paper.
+   The table itself is built for a scrollable screen (overflow-x-auto,
+   min-w-[48rem], 256px-min columns) — up to 4 columns of that easily runs
+   past a printed page's width, which is what was clipping it, on top of the
+   browser's default ~1in margins eating into the little width there was. */
+@page {
+  /* Landscape roughly doubles the usable width vs portrait, which up to 4
+     comparison columns needs; portrait was the main reason columns were
+     falling off the page edge. */
+  size: landscape;
+  margin: 12mm;
+}
+
 @media print {
   aside,
   header {
@@ -863,8 +875,39 @@ html[lang="ar"] body {
     background: #fff;
   }
 
+  /* The screen layout scrolls horizontally instead of shrinking the table;
+     printing can't scroll, so without this the table clips at the page
+     edge instead of fitting it. Dropping the rounded card border/radius too:
+     a plain black-on-white table reads better on paper than the screen's
+     card chrome. */
+  .overflow-x-auto {
+    overflow: visible !important;
+    border: none !important;
+    border-radius: 0 !important;
+  }
+
   table {
+    width: 100% !important;
+    min-width: 0 !important;
+    border-collapse: collapse;
+    font-size: 11px;
     break-inside: auto;
+  }
+
+  th,
+  td {
+    min-width: 0 !important;
+    width: auto !important;
+    padding: 6px 8px !important;
+    word-break: break-word;
+    border-color: #ccc !important;
+    background: #fff !important;
+  }
+
+  /* Repeats the column headers (university/program names) on every printed
+     page, instead of only the first, when the comparison spans several. */
+  thead {
+    display: table-header-group;
   }
 
   tr,
