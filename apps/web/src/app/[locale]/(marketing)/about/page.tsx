@@ -362,7 +362,7 @@ function OfferCard({
           fill
           sizes="(max-width: 640px) 90vw, 176px"
           style={{ objectPosition: imagePosition }}
-          className="object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transform-none"
+          className="aspect-[3/4] object-cover transition-transform duration-500 group-hover:scale-[1.04] motion-reduce:transform-none"
         />
       </div>
 

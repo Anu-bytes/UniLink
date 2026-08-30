@@ -19,6 +19,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { FeaturedUniversities } from "@/components/featured-universities";
+import { HeroPhotoCarousel, type HeroPhoto } from "@/components/hero-photo-carousel";
 import { HeroStats } from "@/components/hero-stats";
 import { HomeSearchBar } from "@/components/home-search-bar";
 import { HowItWorks } from "@/components/how-it-works";
@@ -42,6 +43,16 @@ const representIcons: LucideIcon[] = [
 // Hero stat order maps into catalog.stats / counters.items:
 // [universities(0), programs(1), students(2), scholarships(4)]
 const heroStatOrder = [0, 1, 2, 4];
+
+// TODO: replace the two placeholder slots with real photos once they're
+// supplied — `src: null` renders a branded placeholder tile instead of
+// reusing/duplicating the one real photo. Swap in `src` values only; the
+// carousel logic doesn't otherwise change.
+const heroPhotos: HeroPhoto[] = [
+  { src: "/images/hero-booth-v2.png", alt: "UniLink" },
+  { src: null, alt: "UniLink" },
+  { src: null, alt: "UniLink" },
+];
 
 function PrimaryButton({
   href,
@@ -171,14 +182,7 @@ export default async function HomePage() {
                     className="ul-ring-glow pointer-events-none absolute -inset-4 -z-10 rounded-[44px] opacity-70 blur-2xl"
                   />
                   <div className="relative aspect-[5/4] overflow-hidden rounded-[22px] bg-slate-100">
-                    <Image
-                      src="/images/hero-booth-v2.png"
-                      alt="UniLink"
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 33rem"
-                      className="object-cover"
-                      priority
-                    />
+                    <HeroPhotoCarousel photos={heroPhotos} />
                     <div
                       aria-hidden
                       className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0C1A34]/25 via-transparent to-transparent"
@@ -303,7 +307,12 @@ export default async function HomePage() {
                   alt={t("features.student.title")}
                   fill
                   sizes="(max-width: 640px) 100vw, 22vw"
-                  className="object-cover"
+                  // Same no-op-for-layout fix as HeroPhotoCarousel: `fill`
+                  // renders without width/height attributes, which trips
+                  // the "explicit dimensions" audit once this scrolls into
+                  // view and lazy-loads. position:absolute means its own
+                  // aspect-ratio never affects the actual box size here.
+                  className="aspect-[16/10] object-cover"
                 />
               </div>
             </div>
@@ -318,7 +327,7 @@ export default async function HomePage() {
                   alt={t("features.decision.title")}
                   fill
                   sizes="(max-width: 640px) 100vw, 22vw"
-                  className="object-cover"
+                  className="aspect-[16/10] object-cover"
                 />
               </div>
               <div className="flex min-w-0 flex-1 flex-col justify-center p-6 md:p-8">
@@ -354,7 +363,7 @@ export default async function HomePage() {
                     alt={t("represent.title")}
                     fill
                     sizes="(max-width: 1024px) 100vw, 32rem"
-                    className="object-cover"
+                    className="aspect-[520/360] object-cover"
                   />
                 </div>
               </div>
