@@ -298,15 +298,19 @@ export default async function ComparePage({ searchParams }: PageProps) {
           in the app, only in the "Download > Print or save as PDF" output. */}
       <div
         aria-hidden
-        className="hidden print:fixed print:inset-0 print:-z-10 print:flex print:items-center print:justify-center print:overflow-hidden"
+        className="hidden print:pointer-events-none print:fixed print:inset-0 print:flex print:items-center print:justify-center print:overflow-hidden"
       >
         {/* Chromium repeats position:fixed elements on every printed page,
             so this one watermark covers a multi-page comparison too.
-            Negative z-index: normal in-flow content (the header, the table)
-            paints above a fixed element only if it isn't also positioned —
-            a negative index keeps it behind everything else without having
-            to add stacking context overrides to the rest of the page. */}
-        <span className="rotate-[-30deg] whitespace-nowrap text-[110px] font-black tracking-wide text-black/[0.05] select-none">
+            Deliberately no z-index trick to sit "behind" the table: a
+            positioned element with default stacking already paints above
+            plain in-flow content (the table), and relying on a negative
+            z-index plus every table cell staying transparent turned out to
+            be fragile — the table's own backgrounds ended up painting over
+            it, hiding it completely. Faint enough (12% black) that sitting
+            on top of the table doesn't hurt legibility, same as a real
+            watermark. */}
+        <span className="rotate-[-30deg] whitespace-nowrap text-[220px] font-black tracking-wide text-black/[0.12] select-none">
           UniLink
         </span>
       </div>

@@ -4,16 +4,12 @@ import { auth } from "@/auth";
 import { AiSearchBar } from "@/components/app/ai-search-bar";
 import { FacultyCard } from "@/components/app/faculty-card";
 import { FilterBar } from "@/components/app/filter-bar";
-import { RecommendedPanel } from "@/components/app/recommended-panel";
 import { SearchPagination } from "@/components/app/search-pagination";
 import { SortSelect } from "@/components/app/sort-select";
 import { getUniversityCities } from "@/lib/catalog";
-import {
-  getRecommendedFaculties,
-  searchFaculties,
-} from "@/lib/faculty-search";
+import { searchFaculties } from "@/lib/faculty-search";
 import { parseSearchFilters, type SearchFilters } from "@/lib/program-filters";
-import { getMatchProfile, getSearchVocabulary } from "@/lib/program-search";
+import { getSearchVocabulary } from "@/lib/program-search";
 import { parseSearchQuery, type MatchedTerm } from "@/lib/search-query";
 
 export const dynamic = "force-dynamic";
@@ -61,10 +57,8 @@ export default async function SearchPage({ searchParams }: PageProps) {
     }
   }
 
-  const [page, recommended, profile, cities] = await Promise.all([
+  const [page, cities] = await Promise.all([
     searchFaculties(locale, filters, userId, unmatched),
-    getRecommendedFaculties(locale, userId),
-    getMatchProfile(userId),
     getUniversityCities(locale),
   ]);
 
@@ -93,10 +87,6 @@ export default async function SearchPage({ searchParams }: PageProps) {
             })),
           }}
         />
-      </div>
-
-      <div className="mt-8">
-        <RecommendedPanel faculties={recommended} hasProfile={profile != null} />
       </div>
 
       <section className="mt-10">

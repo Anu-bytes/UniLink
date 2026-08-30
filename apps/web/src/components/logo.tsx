@@ -4,16 +4,21 @@ import { cn } from "@/lib/utils";
 
 export function Logo({
   variant = "full",
+  href = "/",
   className,
 }: {
   variant?: "full" | "mark";
+  /** Where the mark links to. Defaults to the marketing homepage; the app
+   * shell overrides this to `/app/search` since "home" inside the app is
+   * search, not the marketing site. */
+  href?: string;
   className?: string;
 }) {
   const isFull = variant === "full";
 
   return (
     <Link
-      href="/"
+      href={href}
       className={cn("flex items-center", className)}
       aria-label="UniLink"
     >
