@@ -1,4 +1,5 @@
 import {
+  Building2,
   CalendarDays,
   Clock,
   Eye,
@@ -6,7 +7,6 @@ import {
   GraduationCap,
   Heart,
   MapPin,
-  Smile,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
@@ -40,7 +40,7 @@ export async function UniversityHero({
       value: university.establishedYear ? String(university.establishedYear) : "—",
     },
     {
-      icon: Smile,
+      icon: Building2,
       label: t("facultiesStat"),
       value: t("facultiesCount", { count: university.faculties.length }),
     },
@@ -71,20 +71,14 @@ export async function UniversityHero({
           </dl>
 
           <div className="mt-5 flex items-center gap-3">
-            <Link
-              href={`/app/search?universities=${university.slug}`}
-              className="inline-flex min-h-12 flex-1 items-center justify-center rounded-xl bg-[#1E3A8A] px-5 text-base font-bold text-white transition-colors hover:bg-[#17307a] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-            >
-              {t("applicationInformation")}
-            </Link>
-
             <button
               type="button"
               aria-label={t("save")}
               title={t("save")}
-              className="flex size-12 items-center justify-center rounded-xl border border-slate-200 bg-white text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+              className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
             >
               <Heart className="size-5" aria-hidden />
+              {t("save")}
             </button>
 
             <ShareButton
