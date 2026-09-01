@@ -468,6 +468,21 @@ html[lang="ar"] body {
     animation: ul-blink-warm 1.4s ease-in-out infinite;
   }
 
+  /* Continuous logo-slider marquee: the track is the placeholder tiles
+     duplicated once, so translating exactly -50% loops seamlessly back to
+     the start. */
+  @keyframes ul-marquee {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(-50%);
+    }
+  }
+  .ul-marquee {
+    animation: ul-marquee 26s linear infinite;
+  }
+
   /* Set by <MotionSection> once the section leaves the viewport: stops every
      decorative animation inside it from costing compositor frames while the
      user reads the rest of the page. */
@@ -814,7 +829,8 @@ html[lang="ar"] body {
   .ul-text-shine,
   .ul-cta-ring,
   .ul-pulse-dot,
-  .ul-blink-warm {
+  .ul-blink-warm,
+  .ul-marquee {
     animation: none;
   }
   /* These only exist as motion, so hide them rather than freeze them mid-travel. */

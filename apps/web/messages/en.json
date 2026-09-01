@@ -409,21 +409,22 @@
   },
   "Students": {
     "title": "For students",
-    "subtitle": "Everything you need to find, apply to, and start your study abroad program. Full student resources are coming soon.",
+    "subtitle": "Everything you need to find and compare universities in Egypt, all in one place.",
     "landing": {
       "hero": {
-        "titleLead": "Study Abroad with",
-        "titleHighlight": "UniLink",
-        "subtitle": "Your journey to studying abroad in just three simple steps. Sign up, find your program, and submit your best application.",
+        "badge": "Built for students exploring universities in Egypt",
+        "titleLead": "Find Your",
+        "titleHighlight": "University in Egypt",
+        "subtitle": "Explore and compare private and national universities in three simple steps: sign up, search with AI-matched results personalized to your grades and budget, then track your applications.",
         "cta": "Register as a Student"
       },
-      "stepsTitle": "3 Steps to Study Success",
+      "stepsTitle": "3 Steps to Find Your University",
       "stepLabel": "Step",
       "steps": [
         {
           "tab": "Sign Up",
           "heading": "Sign Up for Free",
-          "description": "Create your free UniLink student account in minutes. Tell us about yourself and your study goals so we can tailor everything to you.",
+          "description": "Create your free UniLink account in minutes. Tell us about your grades, budget, and interests so every match is personal from day one.",
           "bullets": [
             "No fees to create an account and get started",
             "Save your progress and pick up right where you left off",
@@ -433,36 +434,102 @@
         },
         {
           "tab": "Search",
-          "heading": "Select a Program",
-          "description": "Explore 150,000+ programs across 1,500+ universities and colleges worldwide, and shortlist the ones that match your goals and budget.",
+          "heading": "Explore Universities in Egypt",
+          "description": "Explore {programs} programs across {universities} universities in Egypt, and shortlist the ones that match your grades, budget, and field of study.",
           "bullets": [
-            "Filter by country, tuition, intake, and field of study",
-            "Compare programs side by side to find your best fit",
-            "Discover schools you might never have found on your own"
+            "Filter by city, tuition, field of study, and study level",
+            "Compare faculties side by side to find your best fit",
+            "See your personal match score, based on your own profile"
           ],
-          "cta": "Search Programs"
+          "cta": "Search Universities"
         },
         {
           "tab": "Apply",
-          "heading": "Submit Your Best Application",
-          "description": "Build and submit a strong application with guidance every step of the way, then track its status all the way to your offer letter.",
+          "heading": "Track Your Applications",
+          "description": "Start an application for any published program, keep every one organized in one place, and track its status right from your dashboard.",
           "bullets": [
-            "Upload documents once and reuse them across applications",
-            "Reduce mistakes with guided application checks",
-            "Track your application status in real time"
+            "Start an application for any program in one click",
+            "Keep every application's status in view, in one dashboard",
+            "Come back anytime, nothing is lost"
           ],
-          "cta": "Start Your Application"
+          "cta": "Get Started"
         }
       ],
       "band": {
-        "title": "Ready to Start Your Study Abroad Journey?",
+        "title": "Ready to Find Your University in Egypt?",
         "cta": "Create a Student Account"
       }
     }
   },
   "Partners": {
     "title": "Partners",
-    "subtitle": "Information for partner institutions and recruitment partners is coming soon."
+    "subtitle": "Information for partner institutions and recruitment partners is coming soon.",
+    "landing": {
+      "hero": {
+        "titleLead": "The Future of",
+        "titleHighlight": "Student Enrollment Is Here",
+        "subtitle": "Reach the right students, showcase your university, and turn student interest into qualified leads and applications, all through one platform built for Egypt's higher education market.",
+        "cta": "Partner With Us Today"
+      },
+      "logosTitle": "Trusted Partners",
+      "logosComingSoon": "Soon",
+      "whyChoose": {
+        "title": "Why Universities Choose UniLink?",
+        "cards": [
+          {
+            "title": "Data-Driven Growth",
+            "body": "Understand student interests and make smarter recruitment decisions."
+          },
+          {
+            "title": "Powerful University Dashboard",
+            "body": "Manage your profile, leads, programs, and student insights in one place."
+          },
+          {
+            "title": "Qualified Student Leads",
+            "body": "Connect with students actively searching for universities and programs."
+          },
+          {
+            "title": "Built for Universities",
+            "body": "A dedicated platform designed around the needs of Egypt's higher education institutions."
+          }
+        ],
+        "summary": "UniLink helps universities connect with students who are genuinely interested in their programs, while giving admissions and marketing teams one centralized dashboard to track leads, applications, student data, and follow-ups, turning interest into real applications.",
+        "cta": "Request a Demo"
+      },
+      "howItWorks": {
+        "title": "How Your Partnership Works",
+        "steps": [
+          {
+            "number": "01",
+            "tab": "Get Started",
+            "heading": "Contact Us & Start Your 30-Day Free Trial",
+            "description": "Contact the UniLink team to join the platform and enjoy a 30-day trial. Our team will guide you through onboarding and help you set up your university profile."
+          },
+          {
+            "number": "02",
+            "tab": "Showcase",
+            "heading": "Put Your University in the Spotlight",
+            "description": "Showcase your university, academic programs, tuition fees, admission requirements, and everything students need to make an informed decision."
+          },
+          {
+            "number": "03",
+            "tab": "Connect",
+            "heading": "Connect with Interested Students",
+            "description": "Receive qualified leads from students actively searching, comparing, and exploring universities and programs."
+          },
+          {
+            "number": "04",
+            "tab": "Grow",
+            "heading": "Turn Interest into Enrolment",
+            "description": "Track your leads, applications, and performance through your dedicated university dashboard, turning student interest into real enrolment opportunities."
+          }
+        ]
+      },
+      "band": {
+        "title": "Ready to take your recruitment to the next level of quality, efficiency, and control",
+        "cta": "Partner with us today"
+      }
+    }
   },
   "Programs": {
     "title": "Programs",
@@ -589,8 +656,34 @@
     }
   },
   "Contact": {
-    "title": "Contact us",
-    "subtitle": "Have a question? Reach us at hello@unilink.example and our team will get back to you."
+    "eyebrow": "Get Started",
+    "title": "Partnership Request",
+    "subtitle": "Complete the quick form below, and our team will be in touch shortly to discuss how UniLink can grow your student reach, recruitment process, and enrolment success.",
+    "form": {
+      "universityName": "University Name",
+      "city": "City",
+      "contactFirstName": "Contact First Name",
+      "contactLastName": "Contact Last Name",
+      "contactEmail": "Contact Email",
+      "contactTitle": "Contact Title",
+      "phone": "Phone Number",
+      "message": "Anything else we should know? (optional)",
+      "submit": "Submit Request",
+      "submitting": "Sending…",
+      "successTitle": "Thanks, we've got it!",
+      "successBody": "Our partnerships team will be in touch at {email} shortly.",
+      "genericError": "Something went wrong. Please try again.",
+      "rateLimited": "Too many requests. Please try again in a bit.",
+      "errors": {
+        "universityName": "Enter your university's name",
+        "city": "Enter your city",
+        "contactFirstName": "Enter a first name",
+        "contactLastName": "Enter a last name",
+        "contactEmail": "Enter a valid email address",
+        "contactTitle": "Enter your role or title",
+        "phone": "Enter a valid phone number"
+      }
+    }
   },
   "Careers": {
     "title": "Careers",
@@ -834,7 +927,6 @@
     "facultiesStat": "Faculties",
     "programsStat": "Programs",
     "facultiesCount": "+ {count}",
-    "applicationInformation": "Application Information",
     "save": "Save university",
     "share": "Share",
     "shareCopied": "Link copied",
@@ -985,7 +1077,6 @@
     "filtersButton": "Filters & Eligibility",
     "filtersCount": "Filters & Eligibility ({count})",
     "resolvedLabel": "Matched to",
-    "unmatchedLabel": "Not recognised",
     "clearAll": "Clear all",
     "recommendedBadge": "AI recommended",
     "recommendedTitle": "Recommended for you",
@@ -997,6 +1088,17 @@
     "resultCount": "{count, plural, one {# program} other {# programs}}",
     "emptyTitle": "No programs match these filters",
     "emptyBody": "Try removing a filter, or widen your tuition range.",
+    "promptTitle": "Start your search",
+    "promptBody": "Type what you're looking for above, or use filters to browse faculties by city, field, or tuition.",
+    "modeLabel": "I'm searching for",
+    "modeFaculties": "Faculties",
+    "modeUniversities": "Universities",
+    "universitiesResultsTitle": "Universities",
+    "universitiesResultsSubtitle": "Universities matching your search.",
+    "universitiesEmptyTitle": "No universities match this search",
+    "universitiesEmptyBody": "Try a different name or city.",
+    "universitiesPromptTitle": "Search for a university",
+    "universitiesPromptBody": "Type a university or city name above to see matching profiles.",
     "loadMore": "Load more",
     "previous": "Previous",
     "next": "Next",
