@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 
 import { localized, localizedOrNull } from "@/lib/catalog";
 import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matching";
@@ -160,6 +160,53 @@ function facultyTextWhere(words: string[]): Prisma.FacultyWhereInput[] {
       { programs: { some: { nameAr: { contains: word } } } },
     ],
   }));
+}
+
+/**
+ * Typo-tolerant fallback for leftover text `facultyTextWhere` found nothing
+ * for: instead of requiring the word to appear as a literal substring, ranks
+ * faculties by pg_trgm similarity against their own name, their university's
+ * name, and their programs' names, and keeps anything above a "plausibly the
+ * same word" bar. Only reached once the exact-substring query has already
+ * come back empty, the common, fast, already-indexed path is untouched by
+ * this.
+ */
+async function findFacultyIdsByTrigram(words: string[]): Promise<string[]> {
+  const phrase = words.join(" ").trim();
+  if (!phrase) return [];
+
+  const rows = await prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
+    SELECT f.id
+    FROM "Faculty" f
+    JOIN "University" u ON u.id = f."universityId" AND u."publishedAt" IS NOT NULL
+    WHERE GREATEST(
+      similarity(f.name, ${phrase}),
+      similarity(u.name, ${phrase}),
+      COALESCE(
+        (
+          SELECT MAX(similarity(p.name, ${phrase}))
+          FROM "Program" p
+          WHERE p."facultyId" = f.id AND p."isPublished" = true
+        ),
+        0
+      )
+    ) > 0.25
+    ORDER BY GREATEST(
+      similarity(f.name, ${phrase}),
+      similarity(u.name, ${phrase}),
+      COALESCE(
+        (
+          SELECT MAX(similarity(p.name, ${phrase}))
+          FROM "Program" p
+          WHERE p."facultyId" = f.id AND p."isPublished" = true
+        ),
+        0
+      )
+    ) DESC
+    LIMIT 50
+  `);
+
+  return rows.map((row) => row.id);
 }
 
 function buildFacultyWhere(
@@ -357,11 +404,23 @@ export async function searchFaculties(
     }
   }
 
-  // Nothing matched the leftover text either: drop it and show whatever the
-  // rest of the query resolves to, rather than a blank page.
+  // Nothing matched the leftover text as a literal substring: it might be a
+  // typo ("Ain Shams Univarcity") rather than genuinely unmatched, so try a
+  // similarity-ranked pass before giving up on the text and showing whatever
+  // else the query resolves to.
   if (rows.length === 0 && textWords.length > 0) {
-    ({ rows, total } = await run(buildFacultyWhere(filters)));
-    broadened = rows.length > 0;
+    const trigramIds = await findFacultyIdsByTrigram(textWords);
+    if (trigramIds.length > 0) {
+      ({ rows, total } = await run({
+        AND: [buildFacultyWhere(filters, { textWords: [] }), { id: { in: trigramIds } }],
+      }));
+      broadened = rows.length > 0;
+    }
+
+    if (rows.length === 0) {
+      ({ rows, total } = await run(buildFacultyWhere(filters)));
+      broadened = rows.length > 0;
+    }
   }
 
   const mapped = rows.map((row) => mapFaculty(locale, row, profile, savedIds));

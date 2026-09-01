@@ -274,14 +274,79 @@ function buildCandidates(vocabulary: Vocabulary, locale: string): Candidate[] {
   return candidates.sort((a, b) => b.needle.length - a.needle.length);
 }
 
+type Span = { index: number; length: number };
+
 /** Whole-phrase containment, so "art" does not match inside "smart". */
-function findPhrase(haystack: string, needle: string): number {
+function findPhrase(haystack: string, needle: string): Span | null {
   const pattern = new RegExp(`(?<![\\p{L}\\p{N}])${escapeRegExp(needle)}(?![\\p{L}\\p{N}])`, "u");
-  return haystack.search(pattern);
+  const match = pattern.exec(haystack);
+  return match ? { index: match.index, length: needle.length } : null;
 }
 
 function escapeRegExp(value: string) {
   return value.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+}
+
+/**
+ * Levenshtein edit distance, but gives up the moment it's clear the result
+ * will exceed `max`. This runs against every candidate word in the query,
+ * so a query with a typo shouldn't cost more than one without.
+ */
+function levenshtein(a: string, b: string, max: number): number {
+  if (Math.abs(a.length - b.length) > max) return max + 1;
+  let prevRow = Array.from({ length: b.length + 1 }, (_, j) => j);
+  for (let i = 1; i <= a.length; i++) {
+    const row = [i];
+    let rowMin = i;
+    for (let j = 1; j <= b.length; j++) {
+      const cost = a[i - 1] === b[j - 1] ? 0 : 1;
+      const value = Math.min(row[j - 1] + 1, prevRow[j] + 1, prevRow[j - 1] + cost);
+      row.push(value);
+      rowMin = Math.min(rowMin, value);
+    }
+    if (rowMin > max) return max + 1;
+    prevRow = row;
+  }
+  return prevRow[b.length];
+}
+
+/**
+ * Typo-tolerant fallback for names only (university/faculty/city): slides a
+ * window the same length as `needle`'s word count across `haystack`'s
+ * words, allowing roughly one edit per 4 letters per word (one missed,
+ * extra, or wrong letter), so "amreican univercity" still resolves to
+ * "American University". Words of 3 letters or fewer require an exact
+ * match, short words like city abbreviations are too easy to confuse with
+ * an unrelated word under fuzzy matching. Deliberately not used for
+ * fields/levels/types/tags: that's a small controlled vocabulary where a
+ * wrong fuzzy guess is more likely than a genuine typo.
+ */
+function findPhraseFuzzy(haystack: string, needle: string): Span | null {
+  const needleWords = needle.split(" ").filter(Boolean);
+  if (needleWords.length === 0) return null;
+
+  const words: Span[] = [];
+  const wordPattern = /\S+/g;
+  let match: RegExpExecArray | null;
+  while ((match = wordPattern.exec(haystack))) {
+    words.push({ index: match.index, length: match[0].length });
+  }
+
+  outer: for (let start = 0; start <= words.length - needleWords.length; start++) {
+    for (let k = 0; k < needleWords.length; k++) {
+      const span = words[start + k];
+      const word = haystack.slice(span.index, span.index + span.length);
+      const needleWord = needleWords[k];
+      if (word === needleWord) continue;
+      if (needleWord.length <= 3) continue outer;
+      const allowed = Math.max(1, Math.floor(needleWord.length / 4));
+      if (levenshtein(word, needleWord, allowed) > allowed) continue outer;
+    }
+    const first = words[start];
+    const last = words[start + needleWords.length - 1];
+    return { index: first.index, length: last.index + last.length - first.index };
+  }
+  return null;
 }
 
 export function parseSearchQuery(
@@ -306,17 +371,25 @@ export function parseSearchQuery(
     text = text.replace(budget.phrase, " ");
   }
 
+  const isName = (kind: MatchedTerm["kind"]) =>
+    kind === "university" || kind === "faculty" || kind === "city";
+
   for (const candidate of buildCandidates(vocabulary, locale)) {
     const key = `${candidate.kind}:${candidate.value}`;
     if (seen.has(key)) continue;
 
-    const index = findPhrase(text, candidate.needle);
-    if (index === -1) continue;
+    // Exact match first (cheap, and the common case); a name that isn't
+    // found verbatim gets one more attempt tolerating a typo before giving
+    // up on that candidate entirely.
+    const span =
+      findPhrase(text, candidate.needle) ??
+      (isName(candidate.kind) ? findPhraseFuzzy(text, candidate.needle) : null);
+    if (!span) continue;
 
     seen.add(key);
     matched.push({ kind: candidate.kind, value: candidate.value, label: candidate.label });
     // Blank the span so shorter candidates cannot match inside it.
-    text = `${text.slice(0, index)} ${text.slice(index + candidate.needle.length)}`;
+    text = `${text.slice(0, span.index)} ${text.slice(span.index + span.length)}`;
   }
 
   const collect = (kind: MatchedTerm["kind"]) =>
