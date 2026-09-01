@@ -35,7 +35,7 @@ export function LanguageSwitcher() {
       role="group"
       aria-label="Change language"
       className={cn(
-        "relative inline-grid grid-cols-2 rounded-full border border-border bg-muted p-1 text-sm font-semibold",
+        "relative inline-grid h-10 grid-cols-2 rounded-full border border-border bg-muted p-1 text-sm font-semibold",
         isPending && "opacity-60",
       )}
     >
@@ -61,7 +61,7 @@ export function LanguageSwitcher() {
             aria-label={opt.label}
             title={opt.label}
             className={cn(
-              "relative z-10 min-h-11 min-w-11 rounded-full px-3 py-1.5 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] sm:px-4",
+              "relative z-10 flex h-full items-center justify-center rounded-full px-3 transition-colors duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] sm:px-4",
               active
                 ? "text-brand-blue"
                 : "cursor-pointer text-muted-foreground hover:text-foreground",

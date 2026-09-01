@@ -1,7 +1,11 @@
-import { getTranslations } from "next-intl/server";
-import { SimplePageHero } from "@/components/simple-page-hero";
+import { PartnershipRequestForm } from "@/components/partners/partnership-request-form";
 
-export default async function ContactPage() {
-  const t = await getTranslations("Contact");
-  return <SimplePageHero title={t("title")} subtitle={t("subtitle")} />;
+export default function ContactPage() {
+  return (
+    <div className="bg-[#F7F9FE]">
+      <div className="mx-auto max-w-5xl px-4 py-10 md:px-6 md:py-16">
+        <PartnershipRequestForm />
+      </div>
+    </div>
+  );
 }

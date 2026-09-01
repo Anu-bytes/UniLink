@@ -27,7 +27,6 @@ export const MAX_CITIES = 5;
 
 /** Quick toggles rendered as chips above the results, in display order. */
 export const QUICK_TAGS: readonly ProgramTagValue[] = [
-  "WAIVED_APPLICATION_FEE",
   "SCHOLARSHIPS_AVAILABLE",
   "FAST_ACCEPTANCE",
   "HIGH_JOB_DEMAND",

@@ -247,18 +247,22 @@ export function AppShell({
             <Menu className="size-5" aria-hidden />
           </button>
 
-          <div className="ms-auto flex items-center gap-1 sm:gap-2">
+          <div className="ms-auto flex items-center gap-2 sm:gap-3">
             {/* Same control as the marketing header, so switching language
                 keeps you on the current app page rather than sending you
                 back to the site. */}
             <LanguageSwitcher />
 
+            {/* Same h-10 as the language switcher, and the count sits as a
+                small badge overlapping the icon's corner instead of inline
+                in the pill's flow — that inline badge used to render as a
+                large blob that threw off the whole row's rhythm. */}
             <Link
               href="/app/saved"
               aria-label={t("saved")}
               title={t("saved")}
               className={cn(
-                "flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors sm:px-3.5",
+                "relative flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors sm:px-3.5",
                 savedCount > 0
                   ? "bg-[#FFF0EE] text-[#F82C1F] hover:bg-[#FFE3DF]"
                   : "bg-slate-100 text-[#3F4657] hover:bg-slate-200",
@@ -270,14 +274,14 @@ export function AppShell({
               />
               <span className="hidden sm:inline">{t("savedNav")}</span>
               {savedCount > 0 ? (
-                <span className="flex min-w-5 items-center justify-center rounded-full bg-[#F82C1F] px-1.5 text-[11px] font-bold leading-5 text-white">
+                <span className="absolute -top-1 -end-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-[#F82C1F] px-1 text-[10px] font-bold leading-none text-white ring-2 ring-white">
                   {savedCount}
                 </span>
               ) : null}
             </Link>
 
             <details className="group relative">
-              <summary className="flex size-9 cursor-pointer list-none items-center justify-center rounded-full [&::-webkit-details-marker]:hidden">
+              <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full [&::-webkit-details-marker]:hidden">
                 <span className="sr-only">{t("account")}</span>
                 {user.image ? (
                   // eslint-disable-next-line @next/next/no-img-element -- avatars
@@ -285,13 +289,13 @@ export function AppShell({
                   <img
                     src={user.image}
                     alt=""
-                    className="size-9 rounded-full object-cover"
+                    className="size-10 rounded-full object-cover"
                   />
                 ) : (
                   <span
                     aria-hidden
                     style={{ background: avatar.background, color: avatar.color }}
-                    className="flex size-9 items-center justify-center rounded-full text-xs font-bold"
+                    className="flex size-10 items-center justify-center rounded-full text-xs font-bold"
                   >
                     {avatar.initials}
                   </span>

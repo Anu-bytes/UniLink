@@ -16,11 +16,9 @@ import type { MatchedTerm } from "@/lib/search-query";
 export function AiSearchBar({
   initialQuery,
   matched,
-  unmatched,
 }: {
   initialQuery: string;
   matched: MatchedTerm[];
-  unmatched: string[];
 }) {
   const t = useTranslations("Search");
   const locale = useLocale();
@@ -128,48 +126,43 @@ export function AiSearchBar({
       </p>
 
       {/* While the query is being resolved and the results re-render, the
-          splash mark stands in for the answer that is on its way. The stale
-          results stay below it rather than being torn down. */}
+          splash mark stands in for the answer that is on its way. Bigger and
+          more deliberate than a spinner: results don't show at all until a
+          search actually happens, so for a first search this splash is the
+          main thing on screen, not a small aside next to a stale grid. */}
       {busy ? (
-        <div className="mt-4 rounded-2xl bg-[#F5F8FF] px-6 py-8 ring-1 ring-[#1E6DEB]/10">
-          <SplashLoader label={t("searching")} size="6rem" />
+        <div className="relative mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-[#F5F8FF] to-[#EEF3FF] px-6 py-12 shadow-[0_20px_45px_-24px_rgba(30,109,235,0.35)] ring-1 ring-[#1E6DEB]/10 duration-300 animate-in fade-in-0 zoom-in-95 motion-reduce:animate-none">
+          <span
+            aria-hidden
+            className="ul-drift pointer-events-none absolute -right-10 -top-10 size-40 rounded-full bg-[#1E6DEB]/10 blur-3xl"
+          />
+          <span
+            aria-hidden
+            className="ul-drift pointer-events-none absolute -bottom-10 -left-10 size-40 rounded-full bg-[#F82C1F]/10 blur-3xl [animation-delay:-4s]"
+          />
+          <SplashLoader label={t("searching")} size="8rem" className="relative" />
         </div>
       ) : null}
 
-      {!busy && (matched.length > 0 || unmatched.length > 0) ? (
+      {/* Unmatched leftover words used to show here too ("Not recognised:
+          ..."), but calling out what the parser *couldn't* understand read
+          as the search failing rather than as a caveat, especially since
+          the server still uses those words to widen the search rather than
+          just dropping them. Matched terms alone are enough to show the
+          query was understood. */}
+      {!busy && matched.length > 0 ? (
         <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
-          {matched.length > 0 ? (
-            <>
-              <span className="font-semibold text-[#5a6072]">
-                {t("resolvedLabel")}
-              </span>
-              {matched.map((term) => (
-                <span
-                  key={`${term.kind}-${term.value}`}
-                  className="rounded-md bg-[#EEF3FF] px-2 py-1 font-semibold text-[#1E3A8A]"
-                >
-                  {term.label}
-                </span>
-              ))}
-            </>
-          ) : null}
-
-          {unmatched.length > 0 ? (
-            <>
-              <span className="ms-2 font-semibold text-[#98A0B4]">
-                {t("unmatchedLabel")}
-              </span>
-              {unmatched.slice(0, 5).map((word) => (
-                <span
-                  key={word}
-                  className="inline-flex items-center gap-1 rounded-md bg-white px-2 py-1 text-[#98A0B4] ring-1 ring-slate-200"
-                >
-                  <X className="size-3" aria-hidden />
-                  {word}
-                </span>
-              ))}
-            </>
-          ) : null}
+          <span className="font-semibold text-[#5a6072]">
+            {t("resolvedLabel")}
+          </span>
+          {matched.map((term) => (
+            <span
+              key={`${term.kind}-${term.value}`}
+              className="rounded-md bg-[#EEF3FF] px-2 py-1 font-semibold text-[#1E3A8A]"
+            >
+              {term.label}
+            </span>
+          ))}
         </div>
       ) : null}
     </div>

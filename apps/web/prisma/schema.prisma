@@ -521,3 +521,21 @@ model Testimonial {
 
   @@index([isPublished, sortOrder])
 }
+
+// Submissions from the public Partnership Request form (/contact). A lead
+// inbox, nothing more: no status/workflow fields, no admin UI reads these
+// yet. Whoever handles partnerships checks the table directly for now.
+model PartnershipLead {
+  id               String   @id @default(cuid())
+  universityName   String
+  city             String
+  contactFirstName String
+  contactLastName  String
+  contactEmail     String
+  contactTitle     String
+  phone            String
+  message          String?
+  createdAt        DateTime @default(now())
+
+  @@index([createdAt])
+}

@@ -1,4 +1,4 @@
-import type { Prisma } from "@prisma/client";
+import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
@@ -259,6 +259,48 @@ function universitySearchWhere(q: string): Prisma.UniversityWhereInput {
   };
 }
 
+/**
+ * Fallback for a query that matched nothing literally (a typo, e.g. "Ain Shams
+ * Univarcity"): rank every published university by trigram similarity and
+ * return the ids worth showing, so the caller can re-run its normal query
+ * scoped to just those instead of returning an empty page.
+ */
+async function findUniversityIdsByTrigram(
+  q: string,
+  filters: Pick<UniversityDirectoryFilters, "types" | "cities">,
+): Promise<string[]> {
+  const phrase = q.trim();
+  if (!phrase) return [];
+
+  const typeFilter = filters.types?.length
+    ? Prisma.sql`AND type IN (${Prisma.join(filters.types)})`
+    : Prisma.empty;
+  const cityFilter = filters.cities?.length
+    ? Prisma.sql`AND city IN (${Prisma.join(filters.cities)})`
+    : Prisma.empty;
+
+  const rows = await prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
+    SELECT id
+    FROM "University"
+    WHERE "publishedAt" IS NOT NULL
+      ${typeFilter}
+      ${cityFilter}
+      AND GREATEST(
+        similarity(name, ${phrase}),
+        similarity(city, ${phrase}),
+        similarity(country, ${phrase})
+      ) > 0.25
+    ORDER BY GREATEST(
+      similarity(name, ${phrase}),
+      similarity(city, ${phrase}),
+      similarity(country, ${phrase})
+    ) DESC
+    LIMIT ${SEARCH_RANK_WINDOW}
+  `);
+
+  return rows.map((row) => row.id);
+}
+
 /** Universities per page in the public directory. */
 export const DIRECTORY_PAGE_SIZE = 24;
 
@@ -307,7 +349,7 @@ export async function getPublishedUniversities(
     : (current - 1) * DIRECTORY_PAGE_SIZE;
   const take: number = needle ? SEARCH_RANK_WINDOW : DIRECTORY_PAGE_SIZE;
 
-  const [total, rows] = await Promise.all([
+  let [total, rows] = await Promise.all([
     prisma.university.count({ where }),
     prisma.university.findMany({
       where,
@@ -317,6 +359,31 @@ export async function getPublishedUniversities(
       take,
     }),
   ]);
+
+  // Nothing matched literally: it might be a typo rather than genuinely no
+  // results, so try a similarity-ranked pass before returning an empty page.
+  if (total === 0 && filters.q) {
+    const trigramIds = await findUniversityIdsByTrigram(filters.q, filters);
+    if (trigramIds.length > 0) {
+      const trigramWhere = {
+        ...publishedUniversityWhere,
+        ...(filters.types?.length
+          ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
+          : {}),
+        ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+        id: { in: trigramIds },
+      };
+      [total, rows] = await Promise.all([
+        prisma.university.count({ where: trigramWhere }),
+        prisma.university.findMany({
+          where: trigramWhere,
+          orderBy,
+          select: universityCardSelect,
+          take: SEARCH_RANK_WINDOW,
+        }),
+      ]);
+    }
+  }
 
   const mapped = rows.map((university) => mapUniversity(locale, university));
 

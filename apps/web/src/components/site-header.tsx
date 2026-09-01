@@ -38,8 +38,8 @@ export async function SiteHeader() {
   // footer's quick links (and from in-page CTAs), not the main nav.
   const links = [
     { href: "/students", label: t("students") },
-    { href: "/about", label: t("about") },
     { href: "/partners", label: t("partners") },
+    { href: "/about", label: t("about") },
   ] as const;
 
   return (
