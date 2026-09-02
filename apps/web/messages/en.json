@@ -1344,7 +1344,7 @@
       "search": "Search",
       "clear": "Clear",
       "results": "results",
-      "showing": "Showing {from}-{to} of {total}",
+      "showing": "Showing",
       "of": "of",
       "page": "Page",
       "previous": "Previous",
@@ -1458,6 +1458,268 @@
         "today": "Today",
         "yesterday": "Yesterday",
         "daysAgo": "{days} days ago"
+      }
+    },
+    "universities": {
+      "title": "Universities",
+      "description": "Every university in the directory, published or still a draft.",
+      "new": "New university",
+      "newTitle": "New university",
+      "newDescription": "Just the basics. Media, features, content and scores are added after it is saved.",
+      "searchPlaceholder": "Search by name, city or slug",
+      "viewPublic": "View public page",
+      "columns": {
+        "name": "Name",
+        "type": "Type",
+        "location": "Location",
+        "faculties": "Faculties",
+        "programs": "Programs",
+        "status": "Status"
+      },
+      "filters": {
+        "type": "Type",
+        "allTypes": "All types",
+        "status": "Status",
+        "allStatuses": "All statuses",
+        "featured": "Featured",
+        "allFeatured": "All universities",
+        "featuredOnly": "Featured only",
+        "notFeatured": "Not featured"
+      },
+      "fields": {
+        "name": "Name",
+        "slug": "Slug",
+        "type": "Type",
+        "typePlaceholder": "Select a type",
+        "country": "Country",
+        "city": "City",
+        "establishedYear": "Established",
+        "website": "Website",
+        "phone": "Phone",
+        "email": "Email",
+        "addressLine": "Address",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "description": "Short description (English)",
+        "descriptionAr": "Short description (Arabic)",
+        "aboutRich": "Full description (English)",
+        "aboutRichAr": "Full description (Arabic)",
+        "logo": "Logo",
+        "coverImage": "Cover image",
+        "featured": "Featured",
+        "recommended": "Recommended",
+        "trending": "Trending"
+      },
+      "hints": {
+        "slug": "Used in the public URL. Changing it breaks every existing link to this university.",
+        "logo": "Square image, shown next to the university name across the site.",
+        "coverImage": "Wide 16:9 image, shown behind the header on the university page.",
+        "aboutRich": "Long-form text. Leave a blank line between paragraphs.",
+        "latitude": "Decimal degrees from Google Maps, e.g. 30.0444",
+        "longitude": "Decimal degrees from Google Maps, e.g. 31.2357",
+        "featured": "Shows in the featured strip on the home page and sorts first in the directory.",
+        "recommended": "Adds a “Recommended” badge on the university card and page.",
+        "trending": "Adds a “Trending now” badge on the university card and page.",
+        "published": "An unpublished university stays hidden from the public site and from search."
+      },
+      "sections": {
+        "identity": "Identity",
+        "identityHint": "The name and the URL this university is known by across the site.",
+        "description": "Description",
+        "descriptionHint": "One blurb per language, shown on the university card and page. Arabic falls back to English when left empty.",
+        "location": "Location",
+        "contact": "Contact",
+        "visibility": "Visibility",
+        "visibilityHint": "Where the university appears on the public site."
+      },
+      "tabs": {
+        "label": "Editor sections",
+        "details": "Details",
+        "media": "Media",
+        "features": "Features",
+        "content": "Content",
+        "scores": "Minimum scores"
+      },
+      "media": {
+        "brand": "Logo and cover",
+        "brandHint": "The two images that identify the university wherever it appears.",
+        "gallery": "Gallery",
+        "galleryHint": "Campus photos, shown on the university page in the order below.",
+        "add": "Add image",
+        "addTitle": "Add an image",
+        "added": "Image added",
+        "removed": "Image removed",
+        "alt": "Alt text",
+        "altHint": "Describe the photo for screen readers and for when the image fails to load.",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "emptyTitle": "No images yet",
+        "emptyDescription": "Add campus photos to fill the gallery on the university page.",
+        "deleteTitle": "Delete this image?",
+        "deleteDescription": "The image leaves the gallery and is deleted from storage. This cannot be undone."
+      },
+      "features": {
+        "title": "Features",
+        "description": "Short selling points, listed under the description on the university page.",
+        "add": "Add feature",
+        "addTitle": "New feature",
+        "added": "Feature added",
+        "removed": "Feature removed",
+        "fieldTitle": "Title",
+        "fieldBody": "Body (English)",
+        "fieldBodyAr": "Body (Arabic)",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "emptyTitle": "No features yet",
+        "emptyDescription": "Add a few short points about what sets this university apart.",
+        "deleteTitle": "Delete this feature?",
+        "deleteDescription": "It disappears from the university page in both languages. This cannot be undone."
+      },
+      "content": {
+        "add": "Add block",
+        "addTitle": "New block",
+        "added": "Block added",
+        "removed": "Block removed",
+        "fieldTitle": "Title",
+        "fieldBody": "Body (English)",
+        "fieldBodyAr": "Body (Arabic)",
+        "moveUp": "Move up",
+        "moveDown": "Move down",
+        "emptyTitle": "Nothing here yet",
+        "emptyDescription": "This section stays hidden on the university page until a block is added.",
+        "deleteTitle": "Delete this block?",
+        "deleteDescription": "The block is removed in both languages. This cannot be undone.",
+        "sectionHints": {
+          "ADMISSION_REQUIREMENTS": "Documents and conditions a student has to meet before applying.",
+          "ADMISSION_CRITERIA": "How the university ranks applicants and decides who gets a place.",
+          "TUITION_NOTES": "What the fee table cannot say: instalments, discounts and extra charges.",
+          "ABOUT_EXTRA": "Extra sections about the university, shown after the main description."
+        }
+      },
+      "scores": {
+        "title": "Minimum scores",
+        "description": "The lowest result accepted per certificate, university-wide or for a single faculty.",
+        "add": "Add score",
+        "addTitle": "New minimum score",
+        "added": "Score added",
+        "removed": "Score removed",
+        "system": "Certificate",
+        "faculty": "Faculty",
+        "universityWide": "All faculties",
+        "minScore": "Minimum score",
+        "unit": "Unit",
+        "year": "Year",
+        "emptyTitle": "No minimum scores yet",
+        "emptyDescription": "Add the cut-offs students compare their own results against.",
+        "deleteTitle": "Delete this score?",
+        "deleteDescription": "The cut-off stops showing on the university page. This cannot be undone."
+      },
+      "delete": {
+        "title": "Delete this university?",
+        "description": "Deleting {name} also deletes its faculties, its programs and every student application to them. This cannot be undone.",
+        "confirm": "Delete permanently",
+        "counts": {
+          "faculties": "Faculties",
+          "programs": "Programs",
+          "images": "Images",
+          "features": "Features",
+          "contentBlocks": "Content blocks",
+          "minimumScores": "Minimum scores"
+        }
+      },
+      "toasts": {
+        "created": "University created",
+        "saved": "Changes saved",
+        "deleted": "University deleted",
+        "published": "University published",
+        "unpublished": "University unpublished"
+      },
+      "empty": {
+        "title": "No universities yet",
+        "description": "Add the first one to start building the directory."
+      },
+      "noResults": {
+        "title": "No matches",
+        "description": "No university matches this search and these filters."
+      }
+    },
+    "faculties": {
+      "title": "Faculties",
+      "subtitle": "Every faculty across all universities.",
+      "new": "New faculty",
+      "newTitle": "New faculty",
+      "newSubtitle": "Pick the university it belongs to, then name it.",
+      "searchPlaceholder": "Search by faculty or university",
+      "columns": {
+        "name": "Name",
+        "university": "University",
+        "slug": "Slug",
+        "programs": "Programs",
+        "sortOrder": "Order"
+      },
+      "filters": {
+        "university": "Filter by university",
+        "allUniversities": "All universities"
+      },
+      "fields": {
+        "university": "University",
+        "universityPlaceholder": "Select a university",
+        "name": "Name",
+        "slug": "Slug",
+        "description": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "image": "Image",
+        "sortOrder": "Sort order"
+      },
+      "hints": {
+        "slug": "Used in the public URL. It only has to be unique within this university.",
+        "image": "Shown on the faculty card on the public site.",
+        "sortOrder": "Lower numbers appear first on the university page. Leave it empty to add the faculty last."
+      },
+      "sections": {
+        "identity": "Identity",
+        "identityHint": "Which university the faculty belongs to, and how it is named and linked.",
+        "description": "Description",
+        "descriptionHint": "Shown on the faculty's page. Optional in both languages.",
+        "media": "Image and order"
+      },
+      "programs": {
+        "title": "Programs",
+        "count": "{count} in total",
+        "new": "New program",
+        "viewAll": "View all {count} programs",
+        "empty": {
+          "title": "No programs yet",
+          "description": "Programs filed under this faculty will appear here."
+        }
+      },
+      "move": {
+        "title": "Moving to another university",
+        "description": "The faculty and everything filed under it move to the new university as soon as you save.",
+        "impact": "{programs} programs and {scores} minimum scores move with it."
+      },
+      "delete": {
+        "title": "Delete faculty",
+        "description": "{name} and its minimum scores will be deleted permanently. Its programs are kept, but they will no longer belong to any faculty.",
+        "counts": {
+          "programs": "Programs",
+          "minimumScores": "Minimum scores"
+        },
+        "note": "This cannot be undone.",
+        "confirm": "Delete faculty"
+      },
+      "toasts": {
+        "created": "Faculty created",
+        "saved": "Changes saved",
+        "deleted": "Faculty deleted"
+      },
+      "empty": {
+        "title": "No faculties yet",
+        "description": "Add the first faculty to start filing programs under it."
+      },
+      "noResults": {
+        "title": "No faculties match",
+        "description": "Try a different search, or pick another university."
       }
     }
   }

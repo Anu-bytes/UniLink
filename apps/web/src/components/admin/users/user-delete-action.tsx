@@ -121,20 +121,27 @@ export function UserDeleteAction({
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => void requestDelete()}
-        disabled={pending || lock !== null}
-        aria-label={variant === "icon" ? t("common.delete") : undefined}
-        title={lockHint ?? (variant === "icon" ? t("common.delete") : undefined)}
-        className={cn(
-          DANGER_BUTTON,
-          variant === "icon" && "size-9 justify-center px-0",
-        )}
-      >
-        <Trash2 className="size-4" aria-hidden />
-        {variant === "button" ? t("common.delete") : null}
-      </button>
+      {/* The lock explanation sits on a wrapper, not on the button: a disabled
+          control fires none of the hover events a `title` needs, so a locked
+          row would otherwise refuse the click and explain nothing. */}
+      <span title={lockHint ?? undefined} className="inline-flex">
+        <button
+          type="button"
+          onClick={() => void requestDelete()}
+          disabled={pending || lock !== null}
+          aria-label={variant === "icon" ? t("common.delete") : undefined}
+          title={
+            lockHint || variant !== "icon" ? undefined : t("common.delete")
+          }
+          className={cn(
+            DANGER_BUTTON,
+            variant === "icon" && "size-9 justify-center px-0",
+          )}
+        >
+          <Trash2 className="size-4" aria-hidden />
+          {variant === "button" ? t("common.delete") : null}
+        </button>
+      </span>
 
       <ConfirmDialog
         open={open}
