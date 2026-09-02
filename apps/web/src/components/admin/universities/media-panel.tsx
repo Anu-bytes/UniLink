@@ -8,7 +8,6 @@ import {
   BilingualField,
   ConfirmDialog,
   EmptyState,
-  FormActions,
   FormSection,
   ImageField,
   useToast,
@@ -169,7 +168,7 @@ export function MediaPanel({
           />
         </div>
 
-        <FormActions>
+        <div className="flex flex-wrap items-center justify-end gap-3">
           {mediaDirty ? (
             <p className="me-auto text-[12.5px] text-[#B77714]">
               {t("common.unsavedChanges")}
@@ -186,7 +185,7 @@ export function MediaPanel({
             ) : null}
             {savingMedia ? t("common.saving") : t("common.save")}
           </button>
-        </FormActions>
+        </div>
       </FormSection>
 
       <FormSection
