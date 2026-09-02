@@ -1,3 +1,15 @@
+/**
+ * The university filter's answer for "tied to no university at all", which the
+ * list page turns into a `universityId: null` clause — the API has no query
+ * parameter for it.
+ *
+ * It lives here, not beside the filter that renders it: every export of a
+ * "use client" module reaches a server component as an opaque client
+ * reference, so a page comparing `?universityId` against a constant imported
+ * from one would never match, and the filter would silently return nothing.
+ */
+export const PLATFORM_WIDE = "none";
+
 /** One row of the partnership lead inbox; mirrors the `select` in the list page. */
 export type LeadRow = {
   id: string;

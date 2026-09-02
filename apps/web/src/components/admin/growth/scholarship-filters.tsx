@@ -7,14 +7,11 @@ import { SelectInput, type SelectOption } from "@/components/admin";
 import { usePathname, useRouter } from "@/i18n/navigation";
 
 import { PublishedFilter } from "./published-filter";
-
-/**
- * `PLATFORM_WIDE` is not a university id: it stands for the scholarships with
- * no university at all, which is a filter the API cannot express through
- * `?universityId`. It is a distinct enough answer to be worth its own option,
- * so the page translates it into a `universityId: null` clause.
- */
-export const PLATFORM_WIDE = "none";
+// Not a university id: it stands for the scholarships with no university at
+// all, which is a filter the API cannot express through `?universityId`. It is
+// a distinct enough answer to be worth its own option, so the page translates
+// it into a `universityId: null` clause.
+import { PLATFORM_WIDE } from "./types";
 
 export function ScholarshipFilters({
   universities,

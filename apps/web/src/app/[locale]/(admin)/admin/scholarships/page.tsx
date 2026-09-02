@@ -8,12 +8,10 @@ import {
   TableToolbar,
   type SelectOption,
 } from "@/components/admin";
-import {
-  PLATFORM_WIDE,
-  ScholarshipFilters,
-} from "@/components/admin/growth/scholarship-filters";
+import { ScholarshipFilters } from "@/components/admin/growth/scholarship-filters";
 import { ScholarshipTable } from "@/components/admin/growth/scholarship-table";
 import { PAGE_WRAPPER, PRIMARY_BUTTON } from "@/components/admin/growth/styles";
+import { PLATFORM_WIDE } from "@/components/admin/growth/types";
 import type { ScholarshipRow } from "@/components/admin/growth/types";
 import { Link } from "@/i18n/navigation";
 import { DEFAULT_PER_PAGE, decimalToNumber } from "@/lib/admin-api";
