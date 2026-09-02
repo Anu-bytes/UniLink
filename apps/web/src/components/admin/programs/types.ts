@@ -52,6 +52,8 @@ export const REQUIREMENT_TESTS = [
   "DUOLINGO",
 ] as const satisfies readonly EnglishTest[];
 
+export type ProgramTagValue = (typeof PROGRAM_TAGS)[number];
+
 export type RequirementTest = (typeof REQUIREMENT_TESTS)[number];
 
 export function isRequirementTest(value: string): value is RequirementTest {

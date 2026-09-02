@@ -105,6 +105,7 @@ export function ProgramDetailsForm({
   } | null>(null);
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  const slugPreview = previewSlug(form.slug);
   const complete =
     form.name.trim() !== "" && form.studyLevel !== "" && form.fieldOfStudy !== "";
 
@@ -227,10 +228,12 @@ export function ProgramDetailsForm({
           error={errorFor("slug")}
           hint={
             <>
-              <span dir="ltr" className="font-medium text-[#334155]">
-                {previewSlug(form.slug)}
-              </span>
-              {" · "}
+              {slugPreview ? (
+                <span dir="ltr" className="font-medium text-[#334155]">
+                  {slugPreview}
+                </span>
+              ) : null}
+              {slugPreview ? " · " : null}
               {t("programs.hints.slugEdit")}
             </>
           }

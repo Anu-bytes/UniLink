@@ -1,4 +1,4 @@
-import type { UserRole } from "@prisma/client";
+import type { ApplicationStatus, UserRole } from "@prisma/client";
 
 import type { BadgeTone } from "@/components/admin";
 
@@ -18,4 +18,15 @@ export const USER_ROLE_TONES: Record<UserRole, BadgeTone> = {
   PARENT: "amber",
   PARTNER: "blue",
   ADMIN: "slate",
+};
+
+// The activity card borrows the pipeline's colours so an application reads the
+// same here as it does on the applications board.
+export const APPLICATION_STATUS_TONES: Record<ApplicationStatus, BadgeTone> = {
+  DRAFT: "neutral",
+  SUBMITTED: "blue",
+  IN_REVIEW: "amber",
+  OFFER: "green",
+  REJECTED: "red",
+  WITHDRAWN: "slate",
 };
