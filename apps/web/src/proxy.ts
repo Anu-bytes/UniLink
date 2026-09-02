@@ -5,13 +5,22 @@ import { routing } from "./i18n/routing";
 
 const intlMiddleware = createMiddleware(routing);
 
-// Everything under /{locale}/app is the signed-in product surface.
+// Everything under /{locale}/app is the signed-in product surface, and
+// everything under /{locale}/admin is the back office. Both need a session
+// before the page is worth rendering; only the second also needs a role,
+// which is checked where the role is readable (see the admin layout).
 const APP_PATH = /^\/(?:ar|en)\/app(?:\/|$)/;
+const ADMIN_PATH = /^\/(?:ar|en)\/admin(?:\/|$)/;
 
 /**
  * Locale negotiation first, then the auth gate. The session cookie is checked
  * rather than calling `auth()` so this stays edge-safe and free of the Prisma
  * adapter; the pages themselves re-check with `auth()` before reading data.
+ *
+ * This gate only asks "is there a session cookie". It cannot tell an admin
+ * from a student — the role lives in the database, which is out of reach
+ * here — so /admin gets its real check in src/app/[locale]/(admin)/admin/
+ * layout.tsx and, independently, in every /api/admin route via requireAdmin().
  */
 export default function proxy(request: NextRequest) {
   const response = intlMiddleware(request);
@@ -25,7 +34,7 @@ export default function proxy(request: NextRequest) {
   const rewrite = response.headers.get("x-middleware-rewrite");
   const path = rewrite ? new URL(rewrite).pathname : request.nextUrl.pathname;
 
-  if (!APP_PATH.test(path)) {
+  if (!APP_PATH.test(path) && !ADMIN_PATH.test(path)) {
     return response;
   }
 

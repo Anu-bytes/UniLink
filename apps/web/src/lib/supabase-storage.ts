@@ -10,6 +10,26 @@ import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 
 export const AVATAR_BUCKET = "avatars";
 
+/**
+ * Catalogue media uploaded from the admin dashboard: university logos, cover
+ * photos, gallery shots, faculty images, testimonial portraits. Kept apart
+ * from `avatars` so a bucket-wide policy change on one does not touch the
+ * other, and so avatarPathFromUrl below can never be talked into deleting a
+ * university's cover image.
+ */
+export const MEDIA_BUCKET = "media";
+
+/** Folders allowed inside MEDIA_BUCKET. Anything else is rejected. */
+export const MEDIA_FOLDERS = [
+  "universities",
+  "faculties",
+  "programs",
+  "testimonials",
+  "scholarships",
+] as const;
+
+export type MediaFolder = (typeof MEDIA_FOLDERS)[number];
+
 let client: SupabaseClient | null = null;
 
 /**
@@ -108,4 +128,77 @@ export function avatarPathFromUrl(url: string): string | null {
   const path = url.slice(index + marker.length);
   // Expect exactly "<userId>/<uuid>.<ext>" with no traversal.
   return /^[\w-]+\/[\w-]+\.(jpg|png|webp)$/.test(path) ? path : null;
+}
+
+/**
+ * Upload catalogue media and return its public URL.
+ *
+ * Same shape as uploadAvatar: the folder is an allowlisted constant rather
+ * than anything the caller typed, and the filename is a random UUID, so one
+ * upload can never overwrite another and a deleted object's URL is not
+ * guessable.
+ */
+export async function uploadMedia({
+  folder,
+  bytes,
+  contentType,
+  extension,
+}: {
+  folder: MediaFolder;
+  bytes: Uint8Array;
+  contentType: string;
+  extension: string;
+}): Promise<{ url: string; path: string }> {
+  const supabase = getClient();
+  const path = `${folder}/${crypto.randomUUID()}.${extension}`;
+
+  const { error } = await supabase.storage.from(MEDIA_BUCKET).upload(path, bytes, {
+    // Taken from the sniffed signature, never from the client's header.
+    contentType,
+    cacheControl: "31536000",
+    upsert: false,
+  });
+
+  if (error) {
+    throw new Error(`Media upload failed: ${error.message}`);
+  }
+
+  const { data } = supabase.storage.from(MEDIA_BUCKET).getPublicUrl(path);
+  return { url: data.publicUrl, path };
+}
+
+/**
+ * Extract the storage path from a media URL, returning null for anything that
+ * is not one of our own media objects — an externally hosted logo entered by
+ * hand, say. This is what stops a crafted `logoUrl` making us delete an
+ * arbitrary object.
+ */
+export function mediaPathFromUrl(url: string): string | null {
+  const marker = `/storage/v1/object/public/${MEDIA_BUCKET}/`;
+  const index = url.indexOf(marker);
+  if (index === -1) return null;
+
+  const path = url.slice(index + marker.length);
+  const pattern = new RegExp(
+    `^(?:${MEDIA_FOLDERS.join("|")})/[\\w-]+\\.(jpg|png|webp)$`,
+  );
+  return pattern.test(path) ? path : null;
+}
+
+/**
+ * Remove a previously uploaded media object. Best effort, like
+ * deleteAvatarByUrl: an orphaned object must never fail the request that
+ * replaced or unset it.
+ */
+export async function deleteMediaByUrl(url: string | null | undefined) {
+  if (!url) return;
+
+  const path = mediaPathFromUrl(url);
+  if (!path) return;
+
+  try {
+    await getClient().storage.from(MEDIA_BUCKET).remove([path]);
+  } catch (error) {
+    console.error("Unable to delete the media object", error);
+  }
 }
