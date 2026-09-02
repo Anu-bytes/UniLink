@@ -1457,7 +1457,7 @@
       "relative": {
         "today": "اليوم",
         "yesterday": "أمس",
-        "daysAgo": "قبل {days} يومًا"
+        "daysAgo": "قبل {days} أيام"
       }
     },
     "universities": {

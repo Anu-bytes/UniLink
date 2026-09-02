@@ -59,7 +59,10 @@ export default async function AdminOverviewPage() {
     prisma.program.count(),
     prisma.program.count({ where: { isPublished: true } }),
     prisma.user.count({ where: { role: "STUDENT" } }),
-    prisma.studentProfile.count(),
+    // Scoped to STUDENT accounts, unlike /api/admin/stats' `withProfile`:
+    // registration also writes a StudentProfile for a PARENT account, so the
+    // unscoped count can exceed the headline it is rendered as a share of.
+    prisma.studentProfile.count({ where: { user: { role: "STUDENT" } } }),
     prisma.user.count({ where: { createdAt: { gte: since } } }),
     prisma.application.count(),
     applicationsByStatusQuery,

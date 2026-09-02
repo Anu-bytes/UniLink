@@ -27,7 +27,7 @@ export async function RelativeDate({ value }: { value: Date }) {
       : days === 1
         ? t("yesterday")
         : days < 7
-          ? t("daysAgo", { count: formatNumber(locale, days) })
+          ? t("daysAgo", { days: formatNumber(locale, days) })
           : absolute;
 
   return (
