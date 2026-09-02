@@ -139,6 +139,10 @@ export function UniversityTable({
     {
       key: "name",
       header: t("universities.columns.name"),
+      // Capped, because the longest Egyptian institution names run past 50
+      // characters and an uncapped cell widens the table until the columns
+      // that matter fall off the screen.
+      className: "max-w-[360px]",
       cell: (row) => {
         const avatar = initialsAvatar(row.name, "organization");
         return (
@@ -238,6 +242,7 @@ export function UniversityTable({
       key: "actions",
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
+      sticky: "end",
       cell: (row) => {
         const busy = pendingId === row.id;
         return (

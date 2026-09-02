@@ -103,6 +103,7 @@ export function FacultyTable({
       key: "actions",
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
+      sticky: "end",
       cell: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link

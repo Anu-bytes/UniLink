@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useId, useState } from "react";
 
 import {
+  BilingualField,
   Field,
   FormActions,
   FormSection,
@@ -13,7 +14,6 @@ import {
   SelectInput,
   TextArea,
   TextInput,
-  BilingualField,
   useToast,
   type SelectOption,
 } from "@/components/admin";
@@ -204,14 +204,15 @@ export function FacultyForm({
             <TriangleAlert className="mt-0.5 size-4 shrink-0" aria-hidden />
             <div>
               <p className="font-semibold">{t("faculties.move.title")}</p>
-              <p className="mt-1">
-                {counts
-                  ? t("faculties.move.description", {
-                      programs: formatNumber(locale, counts.programs),
-                      scores: formatNumber(locale, counts.minimumScores),
-                    })
-                  : t("faculties.move.descriptionUnknown")}
-              </p>
+              <p className="mt-1">{t("faculties.move.description")}</p>
+              {counts ? (
+                <p className="mt-1">
+                  {t("faculties.move.impact", {
+                    programs: formatNumber(locale, counts.programs),
+                    scores: formatNumber(locale, counts.minimumScores),
+                  })}
+                </p>
+              ) : null}
             </div>
           </div>
         ) : null}
@@ -299,8 +300,13 @@ export function FacultyForm({
           folder="faculties"
           aspect="video"
           label={t("faculties.fields.image")}
-          hint={errorFor("imageUrl") ?? t("faculties.hints.image")}
+          hint={t("faculties.hints.image")}
         />
+        {errorFor("imageUrl") ? (
+          <p className="text-[12.5px] font-medium text-[#C81F15]">
+            {errorFor("imageUrl")}
+          </p>
+        ) : null}
 
         <Field
           label={t("faculties.fields.sortOrder")}

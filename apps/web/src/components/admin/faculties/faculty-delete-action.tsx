@@ -7,6 +7,7 @@ import { useState } from "react";
 import { ConfirmDialog, useToast } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 import { adminWrite } from "./request";
 import { DANGER_BUTTON } from "./styles";
@@ -106,11 +107,10 @@ export function FacultyDeleteAction({
         disabled={pending}
         aria-label={variant === "icon" ? t("common.delete") : undefined}
         title={variant === "icon" ? t("common.delete") : undefined}
-        className={
-          variant === "icon"
-            ? `${DANGER_BUTTON} size-9 justify-center px-0`
-            : DANGER_BUTTON
-        }
+        className={cn(
+          DANGER_BUTTON,
+          variant === "icon" && "size-9 justify-center px-0",
+        )}
       >
         <Trash2 className="size-4" aria-hidden />
         {variant === "button" ? t("common.delete") : null}

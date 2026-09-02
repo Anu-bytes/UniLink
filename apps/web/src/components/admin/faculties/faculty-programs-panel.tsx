@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { Badge, EmptyState } from "@/components/admin";
 import { Link } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 import { CARD, SECONDARY_BUTTON } from "./styles";
 import type { FacultyProgramRow } from "./types";
@@ -38,7 +39,7 @@ export function FacultyProgramsPanel({
   const newHref = `/admin/programs/new?universityId=${universityId}&facultyId=${facultyId}`;
 
   return (
-    <section className={`overflow-hidden ${CARD}`}>
+    <section className={cn(CARD, "overflow-hidden")}>
       <header className="flex flex-wrap items-center justify-between gap-3 border-b border-[#E2E8F0] px-5 py-4">
         <div className="min-w-0">
           <h2 className="text-[15px] font-semibold text-[#0F172A]">
@@ -50,7 +51,7 @@ export function FacultyProgramsPanel({
         </div>
 
         {rows.length > 0 ? (
-          <Link href={newHref} className={`${SECONDARY_BUTTON} h-9`}>
+          <Link href={newHref} className={cn(SECONDARY_BUTTON, "h-9")}>
             <Plus className="size-4" aria-hidden />
             {t("faculties.programs.new")}
           </Link>
