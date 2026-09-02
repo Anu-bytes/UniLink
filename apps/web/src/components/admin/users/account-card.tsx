@@ -22,8 +22,12 @@ export type AccountUser = {
   createdAt: Date;
 };
 
-/** `name` is set at sign-up but not by every path into the account. */
-function displayName(user: AccountUser): string | null {
+/**
+ * `name` is written at sign-up, but the admin PATCH can clear it, so the two
+ * registration columns are the fallback before an address has to stand in for
+ * a person.
+ */
+export function displayName(user: AccountUser): string | null {
   if (user.name) return user.name;
   const parts = [user.firstName, user.lastName].filter(Boolean);
   return parts.length > 0 ? parts.join(" ") : null;
