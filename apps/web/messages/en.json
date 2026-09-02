@@ -1315,5 +1315,150 @@
     "noPrograms": "This faculty has no published programs yet.",
     "save": "Save faculty",
     "saved": "Saved"
+  },
+  "Admin": {
+    "nav": {
+      "tag": "Admin",
+      "overview": "Overview",
+      "catalogue": "Catalogue",
+      "universities": "Universities",
+      "faculties": "Faculties",
+      "programs": "Programs",
+      "people": "People",
+      "users": "Users",
+      "applications": "Applications",
+      "growth": "Growth",
+      "leads": "Leads",
+      "testimonials": "Testimonials",
+      "scholarships": "Scholarships",
+      "account": "Account",
+      "studentApp": "Student app",
+      "backToSite": "Back to site",
+      "signOut": "Sign out",
+      "openMenu": "Open menu",
+      "closeMenu": "Close menu",
+      "collapse": "Collapse",
+      "expand": "Expand"
+    },
+    "common": {
+      "search": "Search",
+      "clear": "Clear",
+      "results": "results",
+      "showing": "Showing {from}-{to} of {total}",
+      "of": "of",
+      "page": "Page",
+      "previous": "Previous",
+      "next": "Next",
+      "save": "Save",
+      "saving": "Saving…",
+      "saved": "Saved",
+      "cancel": "Cancel",
+      "create": "Create",
+      "edit": "Edit",
+      "view": "View",
+      "delete": "Delete",
+      "remove": "Remove",
+      "replace": "Replace",
+      "actions": "Actions",
+      "confirmDelete": "Delete this permanently?",
+      "dismiss": "Dismiss",
+      "breadcrumb": "Breadcrumb",
+      "english": "English",
+      "arabic": "Arabic",
+      "required": "Required",
+      "optional": "Optional",
+      "loading": "Loading",
+      "noResults": "No results",
+      "published": "Published",
+      "draft": "Draft",
+      "publish": "Publish",
+      "unpublish": "Unpublish",
+      "all": "All",
+      "none": "None",
+      "notSet": "Not set",
+      "filters": "Filters",
+      "clearFilters": "Clear filters",
+      "saveFailed": "Could not save your changes",
+      "deleteFailed": "Could not delete that",
+      "unsavedChanges": "You have unsaved changes",
+      "upload": "Upload an image",
+      "uploadHint": "JPG, PNG or WebP, up to 8 MB",
+      "uploadFailed": "The upload failed. Try again.",
+      "tooLarge": "That image is larger than 8 MB",
+      "unsupportedFormat": "Only JPG, PNG and WebP images are supported",
+      "storageUnavailable": "Image storage is not configured, so paste a URL instead",
+      "imageUrl": "Image URL"
+    },
+    "enums": {
+      "userRoles": {
+        "STUDENT": "Student",
+        "PARENT": "Parent",
+        "PARTNER": "Partner",
+        "ADMIN": "Admin"
+      },
+      "budgetBands": {
+        "UNDER_100K": "Under 100,000 EGP",
+        "B100_200K": "100,000-200,000 EGP",
+        "B200_300K": "200,000-300,000 EGP",
+        "B300_500K": "300,000-500,000 EGP",
+        "OVER_500K": "Over 500,000 EGP"
+      },
+      "contentSection": {
+        "ADMISSION_REQUIREMENTS": "Admission requirements",
+        "ADMISSION_CRITERIA": "Admission criteria",
+        "TUITION_NOTES": "Tuition notes",
+        "ABOUT_EXTRA": "More about the university"
+      }
+    },
+    "overview": {
+      "title": "Overview",
+      "subtitle": "Everything happening across UniLink right now.",
+      "viewAll": "View all",
+      "viewAllSection": "View all {section}",
+      "stats": {
+        "universities": "Universities",
+        "universitiesHint": "{count} published",
+        "programs": "Programs",
+        "programsHint": "{count} published",
+        "students": "Students",
+        "studentsHint": "{count} completed onboarding",
+        "applications": "Applications",
+        "applicationsHint": "{count} awaiting review"
+      },
+      "pipeline": {
+        "title": "Application pipeline",
+        "total": "{count} in total"
+      },
+      "recentApplications": {
+        "title": "Latest applications",
+        "emptyTitle": "No applications yet",
+        "emptyDescription": "They will appear here as soon as students start applying."
+      },
+      "recentUsers": {
+        "title": "Newest sign-ups",
+        "emptyTitle": "Nobody has signed up yet",
+        "emptyDescription": "New accounts will show up here as they register."
+      },
+      "recentLeads": {
+        "title": "Partnership leads",
+        "emptyTitle": "No leads yet",
+        "emptyDescription": "Requests from the partnership form on the contact page land here."
+      },
+      "secondary": {
+        "title": "Elsewhere in the platform",
+        "faculties": "Faculties",
+        "scholarships": "Scholarships",
+        "testimonials": "Testimonials",
+        "savedFaculties": "Saved faculties",
+        "newUsers": "New sign-ups",
+        "newLeads": "New leads",
+        "last30Days": "Last 30 days"
+      },
+      "relative": {
+        "today": "Today",
+        "yesterday": "Yesterday",
+        "daysAgo": "{days} days ago"
+      }
+    }
   }
 }

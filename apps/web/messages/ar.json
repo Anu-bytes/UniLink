@@ -1315,5 +1315,150 @@
     "noPrograms": "لا توجد برامج منشورة في هذه الكلية بعد.",
     "save": "حفظ الكلية",
     "saved": "محفوظة"
+  },
+  "Admin": {
+    "nav": {
+      "tag": "الإدارة",
+      "overview": "نظرة عامة",
+      "catalogue": "الدليل",
+      "universities": "الجامعات",
+      "faculties": "الكليات",
+      "programs": "البرامج",
+      "people": "الأشخاص",
+      "users": "المستخدمون",
+      "applications": "الطلبات",
+      "growth": "النمو",
+      "leads": "طلبات الشراكة",
+      "testimonials": "آراء الطلاب",
+      "scholarships": "المنح",
+      "account": "الحساب",
+      "studentApp": "تطبيق الطالب",
+      "backToSite": "العودة إلى الموقع",
+      "signOut": "تسجيل الخروج",
+      "openMenu": "فتح القائمة",
+      "closeMenu": "إغلاق القائمة",
+      "collapse": "طي",
+      "expand": "توسيع"
+    },
+    "common": {
+      "search": "بحث",
+      "clear": "مسح",
+      "results": "نتيجة",
+      "showing": "عرض {from}-{to} من {total}",
+      "of": "من",
+      "page": "صفحة",
+      "previous": "السابق",
+      "next": "التالي",
+      "save": "حفظ",
+      "saving": "جارٍ الحفظ…",
+      "saved": "تم الحفظ",
+      "cancel": "إلغاء",
+      "create": "إنشاء",
+      "edit": "تعديل",
+      "view": "عرض",
+      "delete": "حذف",
+      "remove": "إزالة",
+      "replace": "استبدال",
+      "actions": "إجراءات",
+      "confirmDelete": "هل تريد الحذف نهائيًا؟",
+      "dismiss": "إغلاق",
+      "breadcrumb": "مسار التنقل",
+      "english": "الإنجليزية",
+      "arabic": "العربية",
+      "required": "مطلوب",
+      "optional": "اختياري",
+      "loading": "جارٍ التحميل",
+      "noResults": "لا توجد نتائج",
+      "published": "منشور",
+      "draft": "مسودة",
+      "publish": "نشر",
+      "unpublish": "إلغاء النشر",
+      "all": "الكل",
+      "none": "لا شيء",
+      "notSet": "غير محدد",
+      "filters": "عوامل التصفية",
+      "clearFilters": "مسح عوامل التصفية",
+      "saveFailed": "تعذّر حفظ التغييرات",
+      "deleteFailed": "تعذّر الحذف",
+      "unsavedChanges": "لديك تغييرات غير محفوظة",
+      "upload": "رفع صورة",
+      "uploadHint": "JPG أو PNG أو WebP، حتى 8 ميجابايت",
+      "uploadFailed": "فشل الرفع. حاول مرة أخرى.",
+      "tooLarge": "حجم الصورة أكبر من 8 ميجابايت",
+      "unsupportedFormat": "الصيغ المدعومة هي JPG و PNG و WebP فقط",
+      "storageUnavailable": "تخزين الصور غير مُهيأ، الصق رابطًا بدلاً من ذلك",
+      "imageUrl": "رابط الصورة"
+    },
+    "enums": {
+      "userRoles": {
+        "STUDENT": "طالب",
+        "PARENT": "ولي أمر",
+        "PARTNER": "شريك",
+        "ADMIN": "مدير"
+      },
+      "budgetBands": {
+        "UNDER_100K": "أقل من 100,000 ج.م.",
+        "B100_200K": "100,000-200,000 ج.م.",
+        "B200_300K": "200,000-300,000 ج.م.",
+        "B300_500K": "300,000-500,000 ج.م.",
+        "OVER_500K": "أكثر من 500,000 ج.م."
+      },
+      "contentSection": {
+        "ADMISSION_REQUIREMENTS": "شروط القبول",
+        "ADMISSION_CRITERIA": "معايير القبول",
+        "TUITION_NOTES": "ملاحظات المصروفات",
+        "ABOUT_EXTRA": "المزيد عن الجامعة"
+      }
+    },
+    "overview": {
+      "title": "نظرة عامة",
+      "subtitle": "كل ما يجري في يوني لينك الآن.",
+      "viewAll": "عرض الكل",
+      "viewAllSection": "عرض كل {section}",
+      "stats": {
+        "universities": "الجامعات",
+        "universitiesHint": "{count} منشورة",
+        "programs": "البرامج",
+        "programsHint": "{count} منشور",
+        "students": "الطلاب",
+        "studentsHint": "{count} أكملوا التسجيل",
+        "applications": "الطلبات",
+        "applicationsHint": "{count} في انتظار المراجعة"
+      },
+      "pipeline": {
+        "title": "مسار الطلبات",
+        "total": "{count} إجمالاً"
+      },
+      "recentApplications": {
+        "title": "أحدث الطلبات",
+        "emptyTitle": "لا توجد طلبات بعد",
+        "emptyDescription": "ستظهر هنا فور بدء الطلاب في التقديم."
+      },
+      "recentUsers": {
+        "title": "أحدث التسجيلات",
+        "emptyTitle": "لم يسجّل أحد بعد",
+        "emptyDescription": "ستظهر الحسابات الجديدة هنا عند تسجيلها."
+      },
+      "recentLeads": {
+        "title": "طلبات الشراكة",
+        "emptyTitle": "لا توجد طلبات بعد",
+        "emptyDescription": "تصل هنا الطلبات المرسلة من نموذج الشراكة في صفحة التواصل."
+      },
+      "secondary": {
+        "title": "في أنحاء المنصة",
+        "faculties": "الكليات",
+        "scholarships": "المنح",
+        "testimonials": "آراء الطلاب",
+        "savedFaculties": "الكليات المحفوظة",
+        "newUsers": "تسجيلات جديدة",
+        "newLeads": "طلبات جديدة",
+        "last30Days": "آخر 30 يومًا"
+      },
+      "relative": {
+        "today": "اليوم",
+        "yesterday": "أمس",
+        "daysAgo": "قبل {days} يومًا"
+      }
+    }
   }
 }
