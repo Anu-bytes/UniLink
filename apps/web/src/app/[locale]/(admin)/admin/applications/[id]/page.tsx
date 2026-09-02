@@ -70,7 +70,11 @@ export default async function AdminApplicationPage({
           { href: "/admin/applications", label: t("applications.title") },
           { label },
         ]}
-        description={`${application.program.name} · ${localized(
+        description={`${localized(
+          locale,
+          application.program.name,
+          application.program.nameAr,
+        )} · ${localized(
           locale,
           application.program.university.name,
           application.program.university.nameAr,
