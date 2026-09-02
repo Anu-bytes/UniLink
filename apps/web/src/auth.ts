@@ -5,6 +5,8 @@ import Credentials from "next-auth/providers/credentials";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
+import type { UserRole } from "@prisma/client";
+
 import { prisma } from "@/lib/prisma";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
@@ -103,7 +105,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const account = await prisma.user.findUnique({
         where: { id: token.sub },
-        select: { passwordChangedAt: true },
+        select: { passwordChangedAt: true, role: true },
       });
 
       // The account was deleted while the session was open.
@@ -121,12 +123,23 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         return null;
       }
 
+      // Refreshed on the same schedule as the password check above, so a
+      // promotion or demotion reaches an open session within REVALIDATE_MS.
+      // The navigation reads this; every route that actually grants admin
+      // power re-reads the row instead (see requireAdmin in lib/admin.ts).
+      token.role = account.role;
+
       token.pwdCheckedAt = Date.now();
       return token;
     },
     session: ({ session, token }) => {
       if (token.sub && session.user) {
         session.user.id = token.sub;
+        // Same `unknown`-on-the-token narrowing as pwdAt/pwdCheckedAt above.
+        session.user.role =
+          typeof token.role === "string"
+            ? (token.role as UserRole)
+            : "STUDENT";
       }
       return session;
     },
