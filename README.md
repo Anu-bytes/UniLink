@@ -98,9 +98,76 @@ Open http://localhost:3000
 | `/{locale}/app/search` | Signed-in program search: natural-language search bar, filters, match-scored result cards |
 | `/{locale}/app/compare` | Side-by-side comparison of up to four programs |
 | `/{locale}/app/applications`, `/app/saved`, `/app/profile` | Student workspace |
+| `/{locale}/admin` | Admin dashboard: catalogue, people, growth (see below) |
 
 Everything under `/{locale}/app` requires a session; `src/proxy.ts` redirects
 anonymous visitors to `/login`.
+
+## Admin dashboard
+
+`/{locale}/admin` is the back office. It is bilingual and RTL-aware like the
+rest of the site, but styled as its own surface — dark sidebar, light content —
+so there is never a doubt about which side of the product you are on.
+
+| Section | Route | What it manages |
+|---|---|---|
+| Overview | `/admin` | Counts across the catalogue, people and leads, plus the newest applications, sign-ups and partnership leads |
+| Universities | `/admin/universities` | The university record and its gallery images, feature bullets, tab content blocks and minimum scores |
+| Faculties | `/admin/faculties` | Faculties under each university |
+| Programs | `/admin/programs` | Programs, their intakes and their English requirements |
+| Users | `/admin/users` | Accounts, roles and the onboarding profile behind each one |
+| Applications | `/admin/applications` | Every student application and its status |
+| Leads | `/admin/leads` | Partnership requests submitted from `/contact` |
+| Testimonials | `/admin/testimonials` | Home-page testimonials |
+| Scholarships | `/admin/scholarships` | Scholarship listings |
+
+### Access
+
+`User.role` decides. Three layers guard the surface, because one is not enough:
+
+1. `src/proxy.ts` sends anonymous visitors to `/login`. It only sees the session
+   cookie, so it cannot tell an admin from a student.
+2. The admin layout calls `getAdminActor()`, which re-reads the row. A signed-in
+   non-admin gets a 404 rather than a "forbidden" page — nothing links here, so
+   confirming the route exists would only help someone guessing.
+3. Every `/api/admin/*` handler independently calls `requireAdmin()`.
+
+The role is also mirrored onto the session token for the navigation to read, but
+that copy is refreshed at most once a minute and is never the authority. Layers 2
+and 3 read the database, so removing someone's access takes effect on their very
+next click.
+
+### Creating the first administrator
+
+Nobody can be promoted from inside the dashboard until somebody is already in it,
+so the first admin is made from the command line:
+
+```bash
+npm run db:seed:admin -- you@example.com                    # promote or create
+npm run db:seed:admin -- you@example.com 'a-strong-password'
+```
+
+An existing account is promoted and its password left alone. A missing account is
+created, and a generated password is printed once. There is deliberately no
+default email or password baked into the repository.
+
+### Endpoints
+
+`src/app/api/admin/*` follows the same shape as the existing routes
+(`api/saved`, `api/applications`): a `route.ts` per resource exporting named HTTP
+methods, zod for the body, `NextResponse.json` for the reply. The shared pieces
+live in `src/lib/admin.ts` (the guard) and `src/lib/admin-api.ts` (pagination,
+`{ error, field }` responses, Prisma error mapping).
+
+Lists accept `?page`, `?perPage`, `?q`, `?sort`, `?order` plus per-resource
+filters, and answer with `{ items, page, perPage, total, totalPages }`. Deletes
+that cascade — a university, a faculty, a program, a user — require an explicit
+`?confirm=true`, and answer 409 with the row counts at stake when it is missing.
+
+Image uploads go to `POST /api/admin/media` (multipart, `file` + `folder`), which
+validates the bytes by signature exactly as the avatar route does and stores them
+in the `media` bucket. With Supabase unset, the image fields fall back to pasting
+a URL.
 
 ## Scripts (run from repo root)
 
@@ -113,4 +180,5 @@ anonymous visitors to `/login`.
 | `npm run db:generate` | Generate the Prisma client |
 | `npm run db:migrate` | Create & apply a dev migration |
 | `npm run db:seed` | Seed the university / faculty / program catalogue |
+| `npm run db:seed:admin -- <email> [password]` | Promote or create an administrator |
 | `npm run db:studio` | Open Prisma Studio |
