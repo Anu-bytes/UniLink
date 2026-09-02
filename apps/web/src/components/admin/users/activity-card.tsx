@@ -1,4 +1,4 @@
-import { ArrowRight, Bookmark, FileText } from "lucide-react";
+import { ArrowRight, Bookmark, BookmarkCheck, FileText } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Badge, EmptyState } from "@/components/admin";
@@ -14,6 +14,7 @@ export async function ActivityCard({
   applications,
   applicationCount,
   savedFacultyCount,
+  savedProgramCount,
 }: {
   /**
    * The applications board filters on free text, not on an account id: its
@@ -27,6 +28,7 @@ export async function ActivityCard({
   applications: UserApplicationRow[];
   applicationCount: number;
   savedFacultyCount: number;
+  savedProgramCount: number;
 }) {
   const t = await getTranslations("Admin.users.activity");
   const tStatus = await getTranslations("Applications.status");
@@ -76,6 +78,26 @@ export async function ActivityCard({
             <p className="text-[12.5px] text-[#64748B]">{t("savedFaculties")}</p>
             <p className="text-[18px] font-semibold tabular-nums text-[#0F172A]">
               {formatNumber(locale, savedFacultyCount)}
+            </p>
+          </div>
+        </div>
+
+        {/* Saved programs are the older of the two saved lists — the heart on a
+            card now saves a faculty. The count still earns its place here
+            because the delete dialog quotes it back from the API, and a number
+            that appears only in a destructive confirmation is one the admin
+            cannot check anywhere. */}
+        <div className="flex items-center gap-3">
+          <span
+            aria-hidden
+            className="flex size-9 shrink-0 items-center justify-center rounded-lg bg-[#EAF2FE] text-[#1E6DEB]"
+          >
+            <BookmarkCheck className="size-[18px]" />
+          </span>
+          <div className="min-w-0">
+            <p className="text-[12.5px] text-[#64748B]">{t("savedPrograms")}</p>
+            <p className="text-[18px] font-semibold tabular-nums text-[#0F172A]">
+              {formatNumber(locale, savedProgramCount)}
             </p>
           </div>
         </div>

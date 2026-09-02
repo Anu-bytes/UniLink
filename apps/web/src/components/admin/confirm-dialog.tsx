@@ -2,15 +2,23 @@
 
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
 
 /**
  * Hand-rolled rather than pulled from a dialog library: the admin needs one
- * modal shape and nothing else, and this keeps the dependency list where it
- * is. No portal — the overlay is `fixed`, so it escapes the form's stacking
- * context on its own.
+ * modal shape and nothing else, and this keeps the dependency list where it is.
+ *
+ * It DOES portal to document.body, though `fixed` alone would seem to be
+ * enough. Several row-action components render this dialog from inside a
+ * DataTable cell, and the pinned actions column carries `sticky end-0 z-[1]`;
+ * a positioned element with a z-index opens a stacking context, so the
+ * overlay's own z-index resolved against that cell's z=1 rather than the page.
+ * The sidebar (z-50) and the top bar then painted straight over the dialog.
+ * Portalling makes the modal independent of wherever it happens to be mounted,
+ * which is what a modal should be.
  */
 export function ConfirmDialog({
   open,
@@ -36,6 +44,13 @@ export function ConfirmDialog({
   const t = useTranslations("Admin");
   const titleId = useId();
   const cancelRef = useRef<HTMLButtonElement>(null);
+  // document does not exist while this renders on the server, and the portal
+  // target has to be the same on the client's first paint, so mount first.
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     if (!open) return;
@@ -52,9 +67,9 @@ export function ConfirmDialog({
     if (open) cancelRef.current?.focus();
   }, [open]);
 
-  if (!open) return null;
+  if (!open || !mounted) return null;
 
-  return (
+  return createPortal(
     <div className="fixed inset-0 z-[60] flex items-center justify-center p-4">
       <button
         type="button"
@@ -105,6 +120,7 @@ export function ConfirmDialog({
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body,
   );
 }

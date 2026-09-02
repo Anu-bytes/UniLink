@@ -91,9 +91,14 @@ export async function GET(
       // The tab reads as one table per certificate system, university-wide
       // rows first. Postgres sorts NULLs last, so `nulls: "first"` is what
       // actually puts the facultyId-less rows at the top of each system.
+      // The id tiebreaker is what makes paging stable: several cut-offs can
+      // share a system and a faculty (one per year), and without it Postgres
+      // may order those ties differently per query, so a row repeats on one
+      // page and vanishes from the next.
       orderBy: [
         { system: "asc" },
         { facultyId: { sort: "asc", nulls: "first" } },
+        { id: "asc" },
       ],
       skip: listParams.skip,
       take: listParams.take,

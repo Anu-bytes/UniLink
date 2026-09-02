@@ -80,7 +80,12 @@ export default async function AdminUserPage({
             },
           },
         },
-        _count: { select: { applications: true, savedFaculties: true } },
+        // savedPrograms is counted because the delete dialog quotes it back
+        // from the API's 409 — showing a figure there that appears nowhere on
+        // the page reads as a number the admin has no way to check.
+        _count: {
+          select: { applications: true, savedFaculties: true, savedPrograms: true },
+        },
       },
     }),
     prisma.user.count({ where: { role: "ADMIN" } }),
@@ -145,6 +150,7 @@ export default async function AdminUserPage({
             applications={applications}
             applicationCount={user._count.applications}
             savedFacultyCount={user._count.savedFaculties}
+            savedProgramCount={user._count.savedPrograms}
           />
         </div>
 
