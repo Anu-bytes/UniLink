@@ -1721,6 +1721,519 @@
         "title": "No faculties match",
         "description": "Try a different search, or pick another university."
       }
+    },
+    "programs": {
+      "title": "Programs",
+      "subtitle": "Every program across all universities.",
+      "new": "New program",
+      "newTitle": "New program",
+      "newSubtitle": "Where it sits and what it is called. Fees, intakes and English requirements come after it is saved.",
+      "searchPlaceholder": "Search by program, university or slug",
+      "viewPublic": "View public page",
+      "columns": {
+        "name": "Name",
+        "university": "University",
+        "faculty": "Faculty",
+        "level": "Level",
+        "fieldOfStudy": "Field",
+        "tuition": "Tuition",
+        "status": "Status"
+      },
+      "filters": {
+        "university": "Filter by university",
+        "allUniversities": "All universities",
+        "faculty": "Filter by faculty",
+        "allFaculties": "All faculties",
+        "facultyLocked": "Pick a university first",
+        "level": "Filter by level",
+        "allLevels": "All levels",
+        "status": "Filter by status",
+        "allStatuses": "All statuses"
+      },
+      "fields": {
+        "university": "University",
+        "universityPlaceholder": "Select a university",
+        "faculty": "Faculty",
+        "facultyPlaceholder": "Select a faculty",
+        "facultyLocked": "Pick a university first",
+        "name": "Name",
+        "slug": "Slug",
+        "studyLevel": "Study level",
+        "studyLevelPlaceholder": "Select a level",
+        "fieldOfStudy": "Field of study",
+        "fieldOfStudyPlaceholder": "Select a field",
+        "description": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "durationMonths": "Duration in months",
+        "durationLabel": "Duration label",
+        "minGradePercent": "Minimum grade",
+        "coopAvailable": "Co-op placement",
+        "published": "Published",
+        "tuitionFee": "Tuition fee",
+        "tuitionPeriod": "Charged per",
+        "currency": "Currency",
+        "applicationFee": "Application fee",
+        "applicationFeeWaived": "Application fee waived"
+      },
+      "hints": {
+        "university": "A program cannot move to another university after it is created.",
+        "faculty": "It has to be a faculty of the same university. Leave it empty to file the program under the university itself.",
+        "slug": "Used in the public URL. It only has to be unique within this university. Leave it empty to build it from the name.",
+        "slugEdit": "Used in the public URL. Changing it breaks every existing link to this program.",
+        "fieldOfStudy": "Drives program matching and the field filter on the public site.",
+        "durationMonths": "Whole months, e.g. 48 for a four-year degree.",
+        "durationLabel": "Shown instead of the months, e.g. “4 years”. Leave it empty to show the months.",
+        "minGradePercent": "The lowest secondary-school percentage this program accepts.",
+        "coopAvailable": "Adds a co-op line to the program page, and the co-op filter picks the program up.",
+        "published": "An unpublished program stays hidden from the public site and from search.",
+        "currency": "Three-letter code, e.g. EGP or USD.",
+        "applicationFee": "Paid once, when the student applies. Leave it empty if there is none.",
+        "applicationFeeWaived": "Shows “Waived” on the program page whatever the amount says."
+      },
+      "sections": {
+        "placement": "Placement",
+        "placementHint": "The university and the faculty this program is filed under.",
+        "identity": "Identity",
+        "identityHint": "The name and the URL this program is known by across the site.",
+        "description": "Description",
+        "descriptionHint": "Shown on the program page. Arabic falls back to English when left empty.",
+        "study": "Study",
+        "studyHint": "How long the program runs, and what it takes to get in.",
+        "tags": "Tags",
+        "tagsHint": "Badges on the program card, and filters students can search by.",
+        "visibility": "Visibility",
+        "visibilityHint": "Whether the program appears on the public site."
+      },
+      "tabs": {
+        "label": "Editor sections",
+        "details": "Details",
+        "fees": "Fees",
+        "intakes": "Intakes",
+        "english": "English"
+      },
+      "fees": {
+        "title": "Tuition and fees",
+        "description": "What the program costs, in its own currency.",
+        "previewTitle": "Preview",
+        "previewDescription": "How the fees read on the program page.",
+        "tuitionLabel": "Tuition",
+        "applicationLabel": "Application fee",
+        "waived": "Waived"
+      },
+      "intakes": {
+        "title": "Intakes",
+        "description": "The terms students can start in, and the deadline to apply for each.",
+        "add": "Add intake",
+        "addTitle": "New intake",
+        "added": "Intake added",
+        "removed": "Intake removed",
+        "season": "Season",
+        "year": "Year",
+        "deadline": "Application deadline",
+        "deadlineHint": "Leave it empty if applications stay open.",
+        "duplicate": "This program already has an intake for that season and year.",
+        "emptyTitle": "No intakes yet",
+        "emptyDescription": "Add the terms students can apply to start in.",
+        "deleteTitle": "Delete this intake?",
+        "deleteDescription": "The term stops showing on the program page and nobody can apply for it. This cannot be undone."
+      },
+      "english": {
+        "title": "English requirements",
+        "description": "The minimum score per test. A student who meets any one of them qualifies.",
+        "add": "Add requirement",
+        "addTitle": "New requirement",
+        "added": "Requirement added",
+        "removed": "Requirement removed",
+        "test": "Test",
+        "minScore": "Minimum score",
+        "minScoreHint": "On the test's own scale, e.g. 6.5 for IELTS or 90 for TOEFL.",
+        "duplicate": "This program already has a requirement for that test.",
+        "allTestsUsed": "Every test already has a requirement.",
+        "emptyTitle": "No English requirements",
+        "emptyDescription": "Without one, the program accepts any level of English.",
+        "deleteTitle": "Delete this requirement?",
+        "deleteDescription": "The program stops asking for this test. This cannot be undone."
+      },
+      "delete": {
+        "title": "Delete this program?",
+        "description": "{name} and everything filed under it will be deleted permanently.",
+        "counts": {
+          "applications": "Applications",
+          "savedBy": "Saved by students",
+          "intakes": "Intakes",
+          "englishRequirements": "English requirements"
+        },
+        "note": "This cannot be undone.",
+        "applicationsWarning": "The students' applications to this program go with it and cannot be recovered.",
+        "confirm": "Delete program"
+      },
+      "toasts": {
+        "created": "Program created",
+        "saved": "Changes saved",
+        "deleted": "Program deleted"
+      },
+      "empty": {
+        "title": "No programs yet",
+        "description": "Add the first program to start filling the catalogue."
+      },
+      "noResults": {
+        "title": "No programs match",
+        "description": "Try a different search, or loosen the filters."
+      }
+    },
+    "users": {
+      "title": "Users",
+      "subtitle": "Every account on UniLink. New ones arrive by signing up, not from here.",
+      "searchPlaceholder": "Search by name, email or phone",
+      "columns": {
+        "user": "User",
+        "role": "Role",
+        "phone": "Phone",
+        "applications": "Applications",
+        "saved": "Saved",
+        "joined": "Joined"
+      },
+      "filters": {
+        "role": "Role",
+        "allRoles": "All roles",
+        "profile": "Onboarding",
+        "anyProfile": "All accounts",
+        "withProfile": "Onboarding complete",
+        "withoutProfile": "Onboarding incomplete"
+      },
+      "locks": {
+        "self": "This is your own account, so you cannot change its role or delete it.",
+        "lastAdmin": "This is the last admin account. Changing its role or deleting it would leave nobody able to open the admin console."
+      },
+      "account": {
+        "title": "Account",
+        "phone": "Phone",
+        "signIn": "Sign-in",
+        "password": "Password",
+        "google": "Google",
+        "joined": "Joined",
+        "role": "Role",
+        "roleHint": "An admin sees and can edit everything in this console.",
+        "roleFailed": "Could not change the role"
+      },
+      "profile": {
+        "title": "Student profile",
+        "readOnlyNote": "These are the student's own onboarding answers, shown read-only: editing them here would quietly change the matches and scores the student sees.",
+        "studyLevel": "Study level",
+        "system": "Certificate",
+        "graduationYear": "Graduation year",
+        "grade": "Grade",
+        "englishTest": "English test",
+        "englishScore": "Test score",
+        "nationality": "Nationality",
+        "intake": "Intake",
+        "intakeValue": "{season} {year}",
+        "budget": "Budget",
+        "fields": "Fields of study",
+        "empty": {
+          "title": "No profile yet",
+          "description": "This account never finished onboarding, so there are no answers to show."
+        }
+      },
+      "activity": {
+        "title": "Activity",
+        "viewAll": "View all applications",
+        "applications": "Applications",
+        "savedFaculties": "Saved faculties",
+        "submittedOn": "Submitted {date}",
+        "createdOn": "Started {date}",
+        "empty": {
+          "title": "No applications yet",
+          "description": "Applications from this account will be listed here."
+        },
+        "savedPrograms": "Saved programs"
+      },
+      "delete": {
+        "title": "Delete this account?",
+        "description": "Deleting {name} also deletes their student profile, their applications and everything they saved.",
+        "counts": {
+          "applications": "Applications",
+          "savedFaculties": "Saved faculties",
+          "savedPrograms": "Saved programs"
+        },
+        "note": "This cannot be undone.",
+        "confirm": "Delete account"
+      },
+      "toasts": {
+        "deleted": "Account deleted",
+        "roleChanged": "Role updated"
+      },
+      "empty": {
+        "title": "No users yet",
+        "description": "Accounts appear here as soon as people sign up."
+      },
+      "noResults": {
+        "title": "No matches",
+        "description": "No account matches this search and these filters."
+      }
+    },
+    "applications": {
+      "title": "Applications",
+      "description": "Every application students have started, at any stage.",
+      "searchPlaceholder": "Search by student, program or university",
+      "notSubmitted": "Not submitted",
+      "statusFor": "Status for {name}",
+      "statusFilter": {
+        "label": "Filter by status",
+        "all": "All"
+      },
+      "columns": {
+        "student": "Student",
+        "program": "Program",
+        "status": "Status",
+        "submitted": "Submitted",
+        "updated": "Updated"
+      },
+      "filters": {
+        "university": "Filter by university",
+        "allUniversities": "All universities"
+      },
+      "detail": {
+        "applicant": "Applicant",
+        "email": "Email",
+        "phone": "Phone",
+        "viewProfile": "View profile",
+        "program": "Program",
+        "university": "University",
+        "level": "Level",
+        "viewProgram": "View program"
+      },
+      "timeline": {
+        "title": "Timeline",
+        "description": "When it was started, when the student submitted it, and when it last changed.",
+        "created": "Started",
+        "submitted": "Submitted",
+        "updated": "Last updated",
+        "notSubmitted": "Not submitted yet"
+      },
+      "review": {
+        "title": "Review",
+        "description": "The status and the notes are saved together.",
+        "status": "Status",
+        "statusHint": "The student sees this status on their applications page.",
+        "notes": "Internal notes",
+        "notesHint": "Visible to admins only, never to the student.",
+        "notesPlaceholder": "Why this status, and anything worth following up on"
+      },
+      "toasts": {
+        "saved": "Changes saved",
+        "statusChanged": "Status updated to {status}"
+      },
+      "empty": {
+        "title": "No applications yet",
+        "description": "They will appear here as soon as students start applying."
+      },
+      "noResults": {
+        "title": "No applications match",
+        "description": "Try a different search, or clear the status and university filters."
+      }
+    },
+    "leads": {
+      "title": "Partnership leads",
+      "subtitle": "Enquiries sent through the partnership form on the contact page.",
+      "searchPlaceholder": "Search by university, city or contact",
+      "notice": {
+        "title": "Read-only inbox",
+        "description": "A lead can only be read or deleted. There is no status to set and no way to mark one as handled, so follow up by email or phone."
+      },
+      "columns": {
+        "university": "University",
+        "city": "City",
+        "contact": "Contact",
+        "email": "Email",
+        "phone": "Phone",
+        "received": "Received"
+      },
+      "actions": {
+        "email": "Send email",
+        "call": "Call"
+      },
+      "sections": {
+        "message": "Message",
+        "contact": "Contact",
+        "enquiry": "Enquiry"
+      },
+      "message": {
+        "empty": "No message was sent with this lead."
+      },
+      "fields": {
+        "contactName": "Name",
+        "contactTitle": "Job title",
+        "email": "Email",
+        "phone": "Phone",
+        "university": "University",
+        "city": "City",
+        "received": "Received"
+      },
+      "delete": {
+        "title": "Delete lead",
+        "description": "The enquiry from {name}, with its contact details and message, will be deleted permanently.",
+        "note": "This cannot be undone.",
+        "confirm": "Delete lead"
+      },
+      "toasts": {
+        "deleted": "Lead deleted"
+      },
+      "empty": {
+        "title": "No leads yet",
+        "description": "Partnership requests sent from the contact page land here."
+      },
+      "noResults": {
+        "title": "No leads match",
+        "description": "Try a different name, city or email address."
+      }
+    },
+    "testimonials": {
+      "title": "Testimonials",
+      "subtitle": "Student quotes shown in the carousel on the home page.",
+      "new": "New testimonial",
+      "newTitle": "New testimonial",
+      "newSubtitle": "A name and a quote are enough; everything else is optional.",
+      "editSubtitle": "Changes reach the home page as soon as you save.",
+      "searchPlaceholder": "Search by name, quote or location",
+      "columns": {
+        "student": "Student",
+        "quote": "Quote",
+        "location": "Location",
+        "sortOrder": "Order",
+        "status": "Status"
+      },
+      "filters": {
+        "status": "Status",
+        "allStatuses": "All statuses"
+      },
+      "reorder": {
+        "up": "Move up",
+        "down": "Move down"
+      },
+      "fields": {
+        "studentName": "Student name",
+        "location": "Location",
+        "avatar": "Photo",
+        "quote": "Quote (English)",
+        "quoteAr": "Quote (Arabic)",
+        "sortOrder": "Sort order",
+        "published": "Published"
+      },
+      "hints": {
+        "studentName": "Shown on the card exactly as typed.",
+        "location": "A city, a university, or both. Sits in small text under the name.",
+        "avatar": "Square portrait. A placeholder icon shows when there is none.",
+        "quoteAr": "Shown to Arabic visitors. They see the English quote when this is empty.",
+        "sortOrder": "Lower numbers come first in the home-page carousel. Leave it empty to add the testimonial last.",
+        "published": "An unpublished testimonial stays off the public site entirely."
+      },
+      "sections": {
+        "student": "Student",
+        "studentHint": "Who is speaking, and how they appear on the card.",
+        "quote": "Quote",
+        "quoteHint": "One quote per language. Line breaks are not kept on the home page.",
+        "display": "Display"
+      },
+      "preview": {
+        "title": "Preview",
+        "hint": "The card as the home page will render it.",
+        "placeholderName": "Student name",
+        "placeholderQuote": "The quote appears here."
+      },
+      "delete": {
+        "title": "Delete testimonial",
+        "description": "The testimonial from {name} will be deleted permanently and leaves the home-page carousel.",
+        "note": "This cannot be undone.",
+        "confirm": "Delete testimonial"
+      },
+      "toasts": {
+        "created": "Testimonial created",
+        "saved": "Changes saved",
+        "deleted": "Testimonial deleted",
+        "reordered": "Order updated"
+      },
+      "empty": {
+        "title": "No testimonials yet",
+        "description": "Add the first quote to fill the carousel on the home page."
+      },
+      "noResults": {
+        "title": "No testimonials match",
+        "description": "Try a different search, or another status."
+      }
+    },
+    "scholarships": {
+      "title": "Scholarships",
+      "subtitle": "Every scholarship on the platform, published or still a draft.",
+      "new": "New scholarship",
+      "newTitle": "New scholarship",
+      "newSubtitle": "Name it, then add the funding and the deadline.",
+      "editSubtitle": "The details, funding and visibility of this scholarship.",
+      "searchPlaceholder": "Search by title or slug",
+      "platformWide": "Platform-wide",
+      "expired": "Expired",
+      "columns": {
+        "title": "Title",
+        "university": "University",
+        "funding": "Funding",
+        "deadline": "Deadline",
+        "status": "Status"
+      },
+      "filters": {
+        "university": "Filter by university",
+        "allUniversities": "All universities",
+        "platformWide": "Platform-wide",
+        "status": "Status",
+        "allStatuses": "All statuses"
+      },
+      "fields": {
+        "title": "Title",
+        "slug": "Slug",
+        "university": "University",
+        "noUniversity": "Not tied to a university",
+        "description": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "fundingAmount": "Funding amount",
+        "currency": "Currency",
+        "deadline": "Application deadline",
+        "published": "Published"
+      },
+      "hints": {
+        "slug": "Used in the public URL. It has to be unique across every scholarship on the platform.",
+        "university": "Leave it empty for a government or sponsor scholarship that no single university owns.",
+        "fundingAmount": "The total award. Leave it empty when the amount varies.",
+        "currency": "Three-letter code, e.g. EGP or USD",
+        "deadline": "The last day to apply. A deadline in the past is flagged in the list.",
+        "published": "An unpublished scholarship stays hidden from the public site and from search."
+      },
+      "sections": {
+        "identity": "Identity",
+        "identityHint": "What the scholarship is called, how it is linked, and who offers it.",
+        "description": "Description",
+        "descriptionHint": "Shown on the scholarship's page. Optional in both languages.",
+        "funding": "Funding and deadline",
+        "fundingHint": "How much it covers and the last day students can apply.",
+        "visibility": "Visibility"
+      },
+      "delete": {
+        "title": "Delete scholarship",
+        "description": "{name} will be deleted permanently and will disappear from the public site.",
+        "note": "This cannot be undone.",
+        "confirm": "Delete scholarship"
+      },
+      "toasts": {
+        "created": "Scholarship created",
+        "saved": "Changes saved",
+        "deleted": "Scholarship deleted"
+      },
+      "empty": {
+        "title": "No scholarships yet",
+        "description": "Add the first scholarship to start showing it on the public site."
+      },
+      "noResults": {
+        "title": "No scholarships match",
+        "description": "Try a different search, or change the university and status filters."
+      }
     }
   }
 }
