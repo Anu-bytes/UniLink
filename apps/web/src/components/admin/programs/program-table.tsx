@@ -32,16 +32,16 @@ export function ProgramTable({
         <div className="min-w-0">
           <Link
             href={`/admin/programs/${row.id}`}
-            className="block max-w-[20rem] truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="block max-w-[15rem] truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
             {row.name}
           </Link>
           {row.nameAr ? (
-            <span className="block max-w-[20rem] truncate text-[12.5px] text-[#64748B]" dir="rtl">
+            <span className="block max-w-[15rem] truncate text-[12.5px] text-[#64748B]" dir="rtl">
               {row.nameAr}
             </span>
           ) : null}
-          <span className="block max-w-[20rem] truncate text-[12px] text-slate-400" dir="ltr">
+          <span className="block max-w-[15rem] truncate text-[12px] text-slate-400" dir="ltr">
             {row.slug}
           </span>
         </div>
@@ -53,7 +53,7 @@ export function ProgramTable({
       cell: (row) => (
         <Link
           href={`/admin/universities/${row.university.id}`}
-          className="block max-w-[13rem] truncate transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+          className="block max-w-[9.5rem] truncate transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
         >
           {locale === "ar"
             ? (row.university.nameAr ?? row.university.name)
@@ -68,7 +68,7 @@ export function ProgramTable({
         row.faculty ? (
           <Link
             href={`/admin/faculties/${row.faculty.id}`}
-            className="block max-w-[13rem] truncate transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="block max-w-[9.5rem] truncate transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
             {locale === "ar"
               ? (row.faculty.nameAr ?? row.faculty.name)

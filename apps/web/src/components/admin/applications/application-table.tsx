@@ -79,7 +79,7 @@ export function ApplicationTable({
       header: t("applications.columns.program"),
       // Capped: programme names run long, and an uncapped cell widens the
       // table until the status select falls off the screen.
-      className: "max-w-[340px]",
+      className: "max-w-[240px]",
       cell: (row) => (
         <span className="block min-w-0">
           <span className="block truncate font-medium text-[#0F172A]">
