@@ -11,16 +11,16 @@ import { SecondaryStats } from "@/components/admin/overview/secondary-stats";
 import { formatNumber } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
-const THIRTY_DAYS_MS = 30 * 24 * 60 * 60 * 1000;
-
 export default async function AdminOverviewPage() {
   const t = await getTranslations("Admin.overview");
   const locale = await getLocale();
 
   // One instant for every "last 30 days" figure, so the two trends are
   // measured against the same cut rather than drifting apart as the queries
-  // run.
-  const since = new Date(Date.now() - THIRTY_DAYS_MS);
+  // run. Stepped in UTC to match /api/admin/stats, which measures the same
+  // window from the same wall clock.
+  const since = new Date();
+  since.setUTCDate(since.getUTCDate() - 30);
 
   // Hoisted out of the array below on purpose: inside a $transaction literal
   // Prisma stops narrowing groupBy's return type and `_count._all` disappears.

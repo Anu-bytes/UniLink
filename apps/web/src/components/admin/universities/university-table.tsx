@@ -284,6 +284,10 @@ export function UniversityTable({
     },
   ];
 
+  // Pulled out of the JSX so the narrowing survives into the map callback;
+  // the kit's dialog takes a node, not a render prop.
+  const deleteCounts = target?.counts ?? null;
+
   return (
     <>
       <DataTable
@@ -327,13 +331,13 @@ export function UniversityTable({
           target ? (
             <>
               <p>{t("universities.delete.description", { name: target.row.name })}</p>
-              {target.counts ? (
+              {deleteCounts ? (
                 <ul className="mt-3 space-y-1">
-                  {COUNT_KEYS.filter((key) => target.counts![key] > 0).map((key) => (
+                  {COUNT_KEYS.filter((key) => deleteCounts[key] > 0).map((key) => (
                     <li key={key} className="flex items-center justify-between gap-4">
                       <span>{t(`universities.delete.counts.${key}`)}</span>
                       <span className="font-semibold tabular-nums text-[#0F172A]">
-                        {formatNumber(locale, target.counts![key])}
+                        {formatNumber(locale, deleteCounts[key])}
                       </span>
                     </li>
                   ))}
