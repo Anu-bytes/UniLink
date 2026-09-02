@@ -70,9 +70,12 @@ export function TestimonialPreview({
         </div>
       </div>
 
+      {/* No `whitespace-pre-line`: the carousel does not keep the editor's
+          line breaks, so honouring them here would promise a shape the home
+          page never renders. */}
       <blockquote
         dir="auto"
-        className="mt-4 flex-1 whitespace-pre-line text-sm leading-6 text-[#4A5568]"
+        className="mt-4 flex-1 text-sm leading-6 text-[#4A5568]"
       >
         {text}
       </blockquote>

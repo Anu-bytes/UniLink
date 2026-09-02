@@ -40,6 +40,35 @@ export function DeleteAction({
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
 
+  // Spelled out per section instead of assembled from `section`. The pass that
+  // harvests copy into messages/*.json reads literal `t("…")` calls, and a
+  // template-literal key would hide all fifteen of these from it — leaving the
+  // dialog rendering raw key paths on the three screens that matter most.
+  const copy =
+    section === "leads"
+      ? {
+          title: t("leads.delete.title"),
+          confirm: t("leads.delete.confirm"),
+          description: t("leads.delete.description", { name }),
+          note: t("leads.delete.note"),
+          deleted: t("leads.toasts.deleted"),
+        }
+      : section === "testimonials"
+        ? {
+            title: t("testimonials.delete.title"),
+            confirm: t("testimonials.delete.confirm"),
+            description: t("testimonials.delete.description", { name }),
+            note: t("testimonials.delete.note"),
+            deleted: t("testimonials.toasts.deleted"),
+          }
+        : {
+            title: t("scholarships.delete.title"),
+            confirm: t("scholarships.delete.confirm"),
+            description: t("scholarships.delete.description", { name }),
+            note: t("scholarships.delete.note"),
+            deleted: t("scholarships.toasts.deleted"),
+          };
+
   async function confirmDelete() {
     setPending(true);
     const result = await adminWrite(`/api/admin/${section}/${id}`, "DELETE");
@@ -55,7 +84,7 @@ export function DeleteAction({
     }
 
     setOpen(false);
-    toast({ title: t(`${section}.toasts.deleted`) });
+    toast({ title: copy.deleted });
 
     if (after === "list") {
       router.push(`/admin/${section}`);
@@ -85,13 +114,13 @@ export function DeleteAction({
         onOpenChange={setOpen}
         destructive
         pending={pending}
-        title={t(`${section}.delete.title`)}
-        confirmLabel={t(`${section}.delete.confirm`)}
+        title={copy.title}
+        confirmLabel={copy.confirm}
         onConfirm={() => void confirmDelete()}
         description={
           <>
-            <p>{t(`${section}.delete.description`, { name })}</p>
-            <p className="mt-3">{t(`${section}.delete.note`)}</p>
+            <p>{copy.description}</p>
+            <p className="mt-3">{copy.note}</p>
           </>
         }
       />
