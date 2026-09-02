@@ -8,10 +8,16 @@ import { RecentApplications } from "@/components/admin/overview/recent-applicati
 import { RecentLeads } from "@/components/admin/overview/recent-leads";
 import { RecentUsers } from "@/components/admin/overview/recent-users";
 import { SecondaryStats } from "@/components/admin/overview/secondary-stats";
+import { requireAdminPage } from "@/lib/admin";
 import { formatNumber } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
 export default async function AdminOverviewPage() {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.overview");
   const locale = await getLocale();
 

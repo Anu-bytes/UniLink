@@ -3,6 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/admin";
 import { ProgramCreateForm } from "@/components/admin/programs/program-create-form";
 import { PAGE_WRAPPER } from "@/components/admin/programs/styles";
+import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 /** A repeated query key arrives as an array; the first value wins. */
@@ -16,6 +17,11 @@ export default async function NewProgramPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.programs");
   const sp = await searchParams;
 

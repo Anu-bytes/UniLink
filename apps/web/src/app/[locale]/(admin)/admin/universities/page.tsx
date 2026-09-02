@@ -10,6 +10,7 @@ import { UNIVERSITY_TYPES } from "@/components/admin/universities/types";
 import { UniversityFilters } from "@/components/admin/universities/university-filters";
 import { UniversityTable } from "@/components/admin/universities/university-table";
 import { Link } from "@/i18n/navigation";
+import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import type { Prisma, UniversityType } from "@prisma/client";
 
@@ -38,6 +39,11 @@ export default async function AdminUniversitiesPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const sp = await searchParams;
   const t = await getTranslations("Admin");
 

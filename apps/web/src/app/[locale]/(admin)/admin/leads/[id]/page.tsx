@@ -10,6 +10,7 @@ import {
   PRIMARY_BUTTON,
   SECONDARY_BUTTON,
 } from "@/components/admin/growth/styles";
+import { requireAdminPage } from "@/lib/admin";
 import { formatDate } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -24,6 +25,11 @@ export default async function LeadDetailPage({
 }: {
   params: Promise<{ locale: string; id: string }>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.leads");
   const locale = await getLocale();
   const { id } = await params;

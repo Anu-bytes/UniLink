@@ -11,6 +11,7 @@ import {
   APPLICATION_STATUS_TONES,
   applicantLabel,
 } from "@/components/admin/applications/types";
+import { requireAdminPage } from "@/lib/admin";
 import { localized } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
 
@@ -19,6 +20,11 @@ export default async function AdminApplicationPage({
 }: {
   params: Promise<{ locale: string; id: string }>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const { id } = await params;
   const t = await getTranslations("Admin");
   const tStatus = await getTranslations("Applications.status");

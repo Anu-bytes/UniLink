@@ -3,9 +3,15 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { PageHeader, type SelectOption } from "@/components/admin";
 import { ScholarshipForm } from "@/components/admin/growth/scholarship-form";
 import { PAGE_WRAPPER } from "@/components/admin/growth/styles";
+import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 export default async function NewScholarshipPage() {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.scholarships");
   const locale = await getLocale();
 

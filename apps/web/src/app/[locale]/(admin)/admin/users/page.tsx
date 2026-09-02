@@ -7,7 +7,7 @@ import { USER_ROLES } from "@/components/admin/users/tones";
 import { lockFor, type UserRow } from "@/components/admin/users/types";
 import { UserFilters } from "@/components/admin/users/user-filters";
 import { UserTable } from "@/components/admin/users/user-table";
-import { getAdminActor } from "@/lib/admin";
+import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
@@ -74,9 +74,11 @@ export default async function AdminUsersPage({
       : {}),
   };
 
-  // The layout has already 404'd anyone who is not an admin; this call is only
-  // here to learn which row is the reader's own.
-  const actor = await getAdminActor();
+  // Both the gate and the reader's identity in one call: a client-side
+  // navigation skips the layout, so this is where authorization actually
+  // happens (see src/lib/admin.ts). The actor's own row is the one that
+  // cannot be demoted or deleted from this table.
+  const actor = await requireAdminPage();
 
   const [items, total, adminCount] = await prisma.$transaction([
     prisma.user.findMany({
@@ -116,7 +118,7 @@ export default async function AdminUsersPage({
     createdAt: user.createdAt,
     applicationCount: user._count.applications,
     savedCount: user._count.savedFaculties,
-    lock: lockFor(user, actor?.id ?? "", adminCount),
+    lock: lockFor(user, actor.id, adminCount),
   }));
 
   const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PER_PAGE));

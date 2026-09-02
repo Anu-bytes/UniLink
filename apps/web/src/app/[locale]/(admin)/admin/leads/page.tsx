@@ -6,6 +6,7 @@ import { PageHeader, Pagination, TableToolbar } from "@/components/admin";
 import { LeadTable } from "@/components/admin/growth/lead-table";
 import { PAGE_WRAPPER } from "@/components/admin/growth/styles";
 import type { LeadRow } from "@/components/admin/growth/types";
+import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
@@ -27,6 +28,11 @@ export default async function AdminLeadsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.leads");
   const sp = await searchParams;
 

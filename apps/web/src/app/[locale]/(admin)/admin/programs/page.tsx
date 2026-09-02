@@ -9,6 +9,7 @@ import { PAGE_WRAPPER, PRIMARY_BUTTON } from "@/components/admin/programs/styles
 import { STUDY_LEVELS } from "@/components/admin/programs/types";
 import type { ProgramRow } from "@/components/admin/programs/types";
 import { Link } from "@/i18n/navigation";
+import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
@@ -30,6 +31,11 @@ export default async function AdminProgramsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.programs");
   const sp = await searchParams;
 

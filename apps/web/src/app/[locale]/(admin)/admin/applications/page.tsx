@@ -11,6 +11,7 @@ import {
   parseStatus,
   type ApplicationRow,
 } from "@/components/admin/applications/types";
+import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { localized } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
@@ -24,6 +25,11 @@ export default async function AdminApplicationsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const sp = await searchParams;
   const t = await getTranslations("Admin");
   const locale = await getLocale();

@@ -8,6 +8,7 @@ import { FacultyTable } from "@/components/admin/faculties/faculty-table";
 import { PAGE_WRAPPER, PRIMARY_BUTTON } from "@/components/admin/faculties/styles";
 import type { FacultyRow } from "@/components/admin/faculties/types";
 import { Link } from "@/i18n/navigation";
+import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
@@ -29,6 +30,11 @@ export default async function AdminFacultiesPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.faculties");
   const locale = await getLocale();
   const sp = await searchParams;

@@ -14,6 +14,7 @@ import { PAGE_WRAPPER, PRIMARY_BUTTON } from "@/components/admin/growth/styles";
 import { PLATFORM_WIDE } from "@/components/admin/growth/types";
 import type { ScholarshipRow } from "@/components/admin/growth/types";
 import { Link } from "@/i18n/navigation";
+import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE, decimalToNumber } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
@@ -35,6 +36,11 @@ export default async function AdminScholarshipsPage({
 }: {
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const t = await getTranslations("Admin.scholarships");
   const locale = await getLocale();
   const sp = await searchParams;

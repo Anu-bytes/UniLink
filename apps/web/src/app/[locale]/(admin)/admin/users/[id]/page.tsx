@@ -11,7 +11,7 @@ import {
   type UserApplicationRow,
 } from "@/components/admin/users/types";
 import { UserDeleteAction } from "@/components/admin/users/user-delete-action";
-import { getAdminActor } from "@/lib/admin";
+import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -28,9 +28,11 @@ export default async function AdminUserPage({
   const t = await getTranslations("Admin.users");
   const { id } = await params;
 
-  // The layout has already 404'd anyone who is not an admin; this call is only
-  // here to recognise the reader's own account.
-  const actor = await getAdminActor();
+  // Both the gate and the reader's identity in one call: a client-side
+  // navigation skips the layout, so this is where authorization actually
+  // happens (see src/lib/admin.ts). Recognising the reader's own account is
+  // what stops them demoting or deleting themselves.
+  const actor = await requireAdminPage();
 
   const [user, adminCount, withPassword] = await prisma.$transaction([
     prisma.user.findUnique({
@@ -123,7 +125,7 @@ export default async function AdminUserPage({
   };
 
   const label = displayName(account) ?? user.email;
-  const lock = lockFor(user, actor?.id ?? "", adminCount);
+  const lock = lockFor(user, actor.id, adminCount);
 
   return (
     <div className={PAGE_WRAPPER}>

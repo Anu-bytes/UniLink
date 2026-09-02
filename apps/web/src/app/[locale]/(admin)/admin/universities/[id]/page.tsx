@@ -17,6 +17,7 @@ import {
   SECONDARY_BUTTON,
 } from "@/components/admin/universities/styles";
 import { Link } from "@/i18n/navigation";
+import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 function firstParam(value: string | string[] | undefined) {
@@ -30,6 +31,11 @@ export default async function EditUniversityPage({
   params: Promise<{ locale: string; id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const { id } = await params;
   const sp = await searchParams;
   const t = await getTranslations("Admin");

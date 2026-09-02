@@ -17,6 +17,12 @@ export default async function AdminLayout({
 }) {
   const locale = await getLocale();
 
+  // This check is NOT the gate — it cannot be. Next.js skips a layout whose
+  // segment the incoming router state already matches, so on every
+  // sidebar-to-sidebar navigation only the page below re-renders. Each page
+  // therefore calls requireAdminPage() itself; this runs on the first request
+  // so the shell is never built for someone who should not see it.
+  //
   // Three outcomes, deliberately distinct:
   //
   //   anonymous       -> the login page, with a callback back to here. The

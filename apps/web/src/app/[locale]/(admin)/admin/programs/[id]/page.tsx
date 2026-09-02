@@ -14,6 +14,7 @@ import { ProgramIntakesPanel } from "@/components/admin/programs/intakes-panel";
 import { ProgramDeleteAction } from "@/components/admin/programs/program-delete-action";
 import { PAGE_WRAPPER, SECONDARY_BUTTON } from "@/components/admin/programs/styles";
 import { Link } from "@/i18n/navigation";
+import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 /** A repeated query key arrives as an array; the first value wins. */
@@ -28,6 +29,11 @@ export default async function EditProgramPage({
   params: Promise<{ locale: string; id: string }>;
   searchParams: Promise<Record<string, string | string[] | undefined>>;
 }) {
+  // Authorization lives here, not only in the layout: a client-side
+  // navigation between two admin pages skips the layout entirely.
+  // See the note at the top of src/lib/admin.ts.
+  await requireAdminPage();
+
   const { id } = await params;
   const sp = await searchParams;
   const t = await getTranslations("Admin");
