@@ -15,7 +15,7 @@ import {
 } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
 
-import { adminWrite } from "./request";
+import { adminWrite, moveRow } from "./request";
 import { DANGER_BUTTON, ICON_BUTTON, PRIMARY_BUTTON, SECONDARY_BUTTON } from "./styles";
 import type { FeatureRow } from "./types";
 
@@ -43,32 +43,29 @@ export function FeaturesPanel({
     });
   }
 
-  // Positions are rewritten from the rendered order rather than swapped between
-  // the two rows: a list seeded with every sortOrder at 0 is ordered by id
-  // alone, and swapping two identical values would move nothing.
+  // The whole list is renumbered from the rendered order, not swapped between
+  // the two rows: swapping is a no-op on rows that share a sortOrder, and
+  // writing indices into the pair alone misplaces the row whenever the rest of
+  // the list is not already numbered 0..n-1.
   async function move(index: number, direction: -1 | 1) {
-    const target = index + direction;
     const moved = features[index];
-    const displaced = features[target];
-    if (!moved || !displaced) return;
+    if (!moved || !features[index + direction]) return;
 
     setMovingId(moved.id);
-    const base = `/api/admin/universities/${universityId}/features`;
-    let result = await adminWrite(`${base}/${moved.id}`, "PATCH", {
-      sortOrder: target,
-    });
-    if (result.ok) {
-      result = await adminWrite(`${base}/${displaced.id}`, "PATCH", {
-        sortOrder: index,
-      });
-    }
+    const result = await moveRow(
+      `/api/admin/universities/${universityId}/features`,
+      features,
+      index,
+      direction,
+    );
     setMovingId(null);
 
     if (!result.ok) {
       reportFailure(result.message, "common.saveFailed");
-      return;
     }
 
+    // Reloaded either way: the renumbering is several requests, so a failure
+    // halfway through leaves an order only the server knows.
     router.refresh();
   }
 

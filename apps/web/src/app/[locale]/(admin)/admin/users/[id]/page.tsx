@@ -141,7 +141,7 @@ export default async function AdminUserPage({
           <ProfileCard profile={user.studentProfile} />
 
           <ActivityCard
-            userId={user.id}
+            email={user.email}
             applications={applications}
             applicationCount={user._count.applications}
             savedFacultyCount={user._count.savedFaculties}

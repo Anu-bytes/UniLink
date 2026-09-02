@@ -5,7 +5,6 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { Badge, DataTable, EmptyState, type Column } from "@/components/admin";
 import { Link } from "@/i18n/navigation";
-import { localized } from "@/lib/catalog";
 import { formatDate, initialsAvatar } from "@/lib/format";
 
 import { ApplicationStatusSelect } from "./application-status-select";
@@ -13,6 +12,7 @@ import { ICON_BUTTON } from "./styles";
 import {
   APPLICATION_STATUS_TONES,
   applicantLabel,
+  localizedName,
   type ApplicationRow,
 } from "./types";
 
@@ -94,7 +94,7 @@ export function ApplicationTable({
             </span>
           ) : null}
           <span className="block truncate text-[12px] text-slate-400">
-            {localized(
+            {localizedName(
               locale,
               row.program.university.name,
               row.program.university.nameAr,

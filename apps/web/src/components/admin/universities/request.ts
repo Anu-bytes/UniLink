@@ -53,3 +53,39 @@ export async function adminWrite<T>(
 
   return { ok: true, data: payload as T };
 }
+
+/**
+ * Move one row of a hand-ordered collection up or down by a place.
+ *
+ * Every row whose stored sortOrder no longer matches its index is rewritten,
+ * not only the pair that trades places. Stored positions are not guaranteed to
+ * be 0..n-1: deleting the first image and adding another leaves 1, 2, 3 under
+ * indices 0, 1, 2, because the API hands a new row `max + 1`. Writing indices
+ * into two rows alone would then land one of them on a value a third row still
+ * holds, and a tie is broken by id — so the row an admin nudged one place ends
+ * up somewhere nobody asked for.
+ */
+export async function moveRow(
+  baseUrl: string,
+  rows: readonly { id: string; sortOrder: number }[],
+  index: number,
+  direction: -1 | 1,
+): Promise<WriteResult<null>> {
+  const moved = rows[index];
+  const target = index + direction;
+  if (!moved || !rows[target]) return { ok: true, data: null };
+
+  const ordered = [...rows];
+  ordered.splice(index, 1);
+  ordered.splice(target, 0, moved);
+
+  for (const [position, row] of ordered.entries()) {
+    if (row.sortOrder === position) continue;
+    const result = await adminWrite<unknown>(`${baseUrl}/${row.id}`, "PATCH", {
+      sortOrder: position,
+    });
+    if (!result.ok) return result;
+  }
+
+  return { ok: true, data: null };
+}

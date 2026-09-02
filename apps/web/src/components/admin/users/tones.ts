@@ -13,10 +13,15 @@ export const USER_ROLES = [
 // ADMIN takes the one solid pill the kit reserves for a state that has to
 // out-shout everything else: on a page of two hundred students, the accounts
 // that can delete the catalogue are the only ones worth spotting at a glance.
+//
+// The remaining three are kept byte-for-byte in step with
+// components/admin/overview/tones.ts. The overview lists recent sign-ups with
+// the same pills, so a PARENT that is blue there and amber here would read as
+// two different things about the same account.
 export const USER_ROLE_TONES: Record<UserRole, BadgeTone> = {
   STUDENT: "neutral",
-  PARENT: "amber",
-  PARTNER: "blue",
+  PARENT: "blue",
+  PARTNER: "amber",
   ADMIN: "slate",
 };
 

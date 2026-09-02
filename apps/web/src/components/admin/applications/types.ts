@@ -77,6 +77,20 @@ export type ApplicationProgram = {
 };
 
 /**
+ * `localized` in lib/catalog answers the same question, but that module builds
+ * the Prisma client at import time, so importing it from the board's table
+ * would ship Prisma to the browser. The other sections inline the same check
+ * in their client files for the same reason.
+ */
+export function localizedName(
+  locale: string,
+  english: string,
+  arabic: string | null,
+) {
+  return locale.startsWith("ar") && arabic ? arabic : english;
+}
+
+/**
  * An account can exist before it has a name — the address is then the only
  * thing that identifies the applicant, and it is what the overview's recent
  * list falls back to as well.

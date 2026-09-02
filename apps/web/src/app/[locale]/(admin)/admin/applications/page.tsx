@@ -11,12 +11,9 @@ import {
   parseStatus,
   type ApplicationRow,
 } from "@/components/admin/applications/types";
+import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { localized } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
-
-// Mirrors DEFAULT_PER_PAGE in lib/admin-api, so ?page=3 addresses the same
-// slice here as it does through the API.
-const PER_PAGE = 20;
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -85,8 +82,8 @@ export default async function AdminApplicationsPage({
       // between the query for page one and the query for page two — so one
       // application repeats and another is never seen.
       orderBy: [{ createdAt: "desc" }, { id: "asc" }],
-      skip: (page - 1) * PER_PAGE,
-      take: PER_PAGE,
+      skip: (page - 1) * DEFAULT_PER_PAGE,
+      take: DEFAULT_PER_PAGE,
       select: {
         id: true,
         status: true,
@@ -128,7 +125,7 @@ export default async function AdminApplicationsPage({
   );
 
   const rows: ApplicationRow[] = items;
-  const totalPages = Math.max(1, Math.ceil(total / PER_PAGE));
+  const totalPages = Math.max(1, Math.ceil(total / DEFAULT_PER_PAGE));
 
   return (
     <div className={PAGE_WRAPPER}>
@@ -162,7 +159,7 @@ export default async function AdminApplicationsPage({
             page={page}
             totalPages={totalPages}
             total={total}
-            perPage={PER_PAGE}
+            perPage={DEFAULT_PER_PAGE}
           />
         ) : null}
       </div>

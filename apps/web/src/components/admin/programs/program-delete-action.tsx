@@ -79,7 +79,8 @@ export function ProgramDeleteAction({
     }
 
     if (result.ok) {
-      // Nothing hangs off the program, so the API deleted it outright.
+      // The route answers 409 for every unconfirmed delete, childless rows
+      // included, so this only fires if that contract ever softens.
       done();
       return;
     }

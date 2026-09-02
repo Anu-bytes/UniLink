@@ -121,7 +121,11 @@ export function FacultyForm({
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
   const complete = form.universityId !== "" && form.name.trim() !== "";
-  const slugPreview = previewSlug(form.slug || form.name);
+  // Only create falls back to the name: POST derives the slug from it when the
+  // box is empty, while PATCH answers an empty slug with a 400 rather than
+  // re-deriving one, so offering a name-shaped preview there promises a save
+  // that cannot happen.
+  const slugPreview = previewSlug(faculty ? form.slug : form.slug || form.name);
   const moving = faculty !== null && form.universityId !== faculty.universityId;
 
   async function submit(event: React.FormEvent) {
@@ -256,7 +260,7 @@ export function FacultyForm({
             dir="ltr"
             value={form.slug}
             onChange={(event) => set("slug", event.target.value)}
-            placeholder={previewSlug(form.name)}
+            placeholder={faculty ? undefined : previewSlug(form.name)}
             aria-invalid={errorFor("slug") ? true : undefined}
           />
         </Field>

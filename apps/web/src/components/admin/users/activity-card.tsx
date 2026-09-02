@@ -10,12 +10,19 @@ import { APPLICATION_STATUS_TONES } from "./tones";
 import type { UserApplicationRow } from "./types";
 
 export async function ActivityCard({
-  userId,
+  email,
   applications,
   applicationCount,
   savedFacultyCount,
 }: {
-  userId: string;
+  /**
+   * The applications board filters on free text, not on an account id: its
+   * `?userId` is an API-only parameter the page itself never reads. An address
+   * is unique and is one of the columns that search covers, so it is what
+   * narrows the board to this account — and it arrives visible in the search
+   * box, where the admin can see and clear it.
+   */
+  email: string;
   /** One screenful; the header links out to the filtered board for the rest. */
   applications: UserApplicationRow[];
   applicationCount: number;
@@ -33,7 +40,7 @@ export async function ActivityCard({
       action={
         applicationCount > 0 ? (
           <Link
-            href={`/admin/applications?userId=${userId}`}
+            href={`/admin/applications?q=${encodeURIComponent(email)}`}
             className="inline-flex items-center gap-1.5 rounded text-[13px] font-semibold text-[#1E6DEB] transition-colors hover:text-[#1557C0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
             {t("viewAll")}

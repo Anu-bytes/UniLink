@@ -46,17 +46,21 @@ export function ApplicationReviewForm({
 
   const [value, setValue] = useState<ApplicationStatus>(status);
   const [note, setNote] = useState(notes ?? "");
+  // The saved snapshot, not the props: `router.refresh()` has not landed when
+  // the toast fires, so comparing against `status`/`notes` leaves the form
+  // announcing unsaved changes over values the server has already stored.
+  const [baseline, setBaseline] = useState({ status, note: notes ?? "" });
   const [pending, setPending] = useState(false);
 
-  const dirty = value !== status || note !== (notes ?? "");
+  const dirty = value !== baseline.status || note !== baseline.note;
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setPending(true);
 
-    // The API trims before it stores, so the trimmed text is what comes back on
-    // the refresh; sending it as-is would leave the form permanently "dirty"
-    // against a value the server had already normalised.
+    // The API trims before it stores, so the trimmed text is what comes back
+    // on the refresh; sending it is what keeps the field, the snapshot below
+    // and the stored row saying the same thing.
     const trimmed = note.trim();
     const result = await patchApplication(id, {
       status: value,
@@ -74,6 +78,7 @@ export function ApplicationReviewForm({
     }
 
     setNote(trimmed);
+    setBaseline({ status: value, note: trimmed });
     toast({ title: t("applications.toasts.saved") });
     router.refresh();
   }
