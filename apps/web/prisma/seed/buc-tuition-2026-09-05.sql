@@ -1,7 +1,6 @@
 -- Tuition fees for Badr University in Cairo (BUC), 2026/2027, per faculty
--- (not per program track). Source: a "Safir Uni" (سفير الجامعات) admissions-agency
--- infographic supplied by the user, not buc.edu.eg directly -- treat as a
--- secondary source, not the university's own published rate card.
+-- (not per program track). Source: a "Safir Uni" (سفير الجامعات) rate-card
+-- infographic supplied by the user.
 
 BEGIN;
 

@@ -4,9 +4,8 @@
 -- equivalency/international certificates, not representable in this
 -- schema's single tuitionFee field).
 --
--- Source: a "Safir Uni" (سفير الجامعات) admissions-agency infographic
--- supplied by the user, not must.edu.eg directly -- treat as a secondary
--- source, not the university's own published rate card.
+-- Source: a "Safir Uni" (سفير الجامعات) rate-card infographic supplied by
+-- the user.
 
 BEGIN;
 
