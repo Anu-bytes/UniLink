@@ -74,18 +74,18 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
       {/* Colored banner carrying the title straight down into the search
           card, so the page opens with one dense block instead of a tall
           empty hero followed by a thin filter strip. */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1E6DEB] to-[#12224A] pb-20 pt-12 md:pb-24 md:pt-16">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#1E6DEB] to-[#12224A] pb-11 pt-7 md:pb-14 md:pt-9">
         <div
           aria-hidden
           className="ul-dots pointer-events-none absolute -inset-8 opacity-20"
         />
         <div className="relative mx-auto max-w-3xl px-4 text-center md:px-6">
-          <h1 className="text-3xl font-bold text-white md:text-4xl">
+          <h1 className="text-2xl font-bold text-white md:text-3xl">
             {t("title")}
           </h1>
-          <p className="mt-3 text-white/80">{t("subtitle")}</p>
+          <p className="mt-1.5 text-sm text-white/80 md:text-base">{t("subtitle")}</p>
 
-          <div className="mt-6 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm font-semibold text-white/90">
+          <div className="mt-3 flex flex-wrap items-center justify-center gap-x-6 gap-y-1 text-sm font-semibold text-white/90">
             <span className="flex items-center gap-1.5">
               <Building2 className="size-4" aria-hidden />
               {tDirectory("resultCount", { count: directory.total })}
@@ -99,7 +99,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
       </section>
 
       <section className="mx-auto max-w-7xl px-4 pb-14 md:px-6 md:pb-20">
-        <div className="-mt-12 md:-mt-16">
+        <div className="-mt-6 md:-mt-7">
           <UniversityDirectoryFiltersBar
             cities={cities}
             initial={{ q: q ?? "", type: type ?? "", city: city ?? "" }}
@@ -107,20 +107,20 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
         </div>
 
         {!session ? (
-          <div className="mt-6">
+          <div className="mt-3">
             <AdvancedSearchPromo />
           </div>
         ) : null}
 
         {hasActiveFilters ? (
-          <p className="mt-6 text-sm font-semibold text-[#5a6072]">
+          <p className="mt-4 text-sm font-semibold text-[#5a6072]">
             {tDirectory("resultCount", { count: directory.total })}
           </p>
         ) : null}
 
         {universities.length > 0 ? (
           <>
-            <div className="mt-6 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
               {universities.map((university) => (
                 <UniversityCard key={university.id} university={university} />
               ))}
