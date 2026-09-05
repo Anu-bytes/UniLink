@@ -560,6 +560,11 @@
       "PUBLIC": "Public university",
       "PRIVATE": "Private university",
       "SPECIALIZED": "Specialized university"
+    },
+    "promoBanner": {
+      "title": "Register free to search in plain language with AI",
+      "registerCta": "Register free",
+      "loginCta": "Log in"
     }
   },
   "About": {
