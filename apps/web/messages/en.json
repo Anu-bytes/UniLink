@@ -560,6 +560,13 @@
       "PUBLIC": "Public university",
       "PRIVATE": "Private university",
       "SPECIALIZED": "Specialized university"
+    },
+    "promoBanner": {
+      "badge": "AI-powered",
+      "title": "Stop scrolling. Just tell us what you want.",
+      "body": "Register for free and search in plain language, like \"engineering under 150k in Cairo with scholarships\", and get matched instantly. No account needed to browse, but the smart search is a free account away.",
+      "registerCta": "Register free",
+      "loginCta": "Log in"
     }
   },
   "About": {

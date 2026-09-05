@@ -11,8 +11,10 @@ import {
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { UniversityLogo } from "@/components/university-logo";
+import { AdvancedSearchPromo } from "@/components/university/advanced-search-promo";
 import { UniversityDirectoryFiltersBar } from "@/components/university/directory-filters";
 import {
   getPublishedUniversities,
@@ -38,7 +40,8 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
 
   const { q, type, city, page } = await searchParams;
   const requested = Number.parseInt(page ?? "1", 10);
-  const [directory, cities] = await Promise.all([
+  const [session, directory, cities] = await Promise.all([
+    auth(),
     getPublishedUniversities(
       locale,
       {
@@ -102,6 +105,12 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
             initial={{ q: q ?? "", type: type ?? "", city: city ?? "" }}
           />
         </div>
+
+        {!session ? (
+          <div className="mt-6">
+            <AdvancedSearchPromo />
+          </div>
+        ) : null}
 
         {hasActiveFilters ? (
           <p className="mt-6 text-sm font-semibold text-[#5a6072]">
