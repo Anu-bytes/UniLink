@@ -162,68 +162,105 @@ export const getLandingCatalog = unstable_cache(
   { revalidate: 120 },
 );
 
+// Each query below is independent (a broken Scholarship query has nothing to
+// do with whether the University count works), so they're settled rather
+// than awaited as one unit: one failing query used to zero out every stat on
+// the page, including the ones that had nothing wrong with them. Labelled so
+// a failure is traceable to the actual query in server logs instead of a
+// single opaque "landing catalogue" error.
+async function settled<T>(label: string, fallback: T, query: Promise<T>): Promise<T> {
+  const result = await Promise.allSettled([query]);
+  const [outcome] = result;
+  if (outcome.status === "fulfilled") return outcome.value;
+  console.error(`Landing catalogue query failed: ${label}`, outcome.reason);
+  return fallback;
+}
+
 async function getLandingCatalogUncached(
   locale: string,
 ): Promise<LandingCatalogData> {
-  try {
-    const [
-      universities,
-      testimonials,
-      universityCount,
-      programCount,
-      studentCount,
-      cities,
-      scholarshipCount,
-    ] = await Promise.all([
+  const [
+    universities,
+    testimonials,
+    universityCount,
+    programCount,
+    studentCount,
+    cities,
+    scholarshipCount,
+  ] = await Promise.all([
+    settled(
+      "featured universities",
+      [],
       prisma.university.findMany({
         where: { ...publishedUniversityWhere, isFeatured: true },
         orderBy: [{ name: "asc" }],
         take: 9,
         select: universityCardSelect,
       }),
+    ),
+    settled(
+      "testimonials",
+      [],
       prisma.testimonial.findMany({
         where: { isPublished: true },
         orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
         take: 6,
       }),
+    ),
+    settled(
+      "university count",
+      0,
       prisma.university.count({ where: publishedUniversityWhere }),
+    ),
+    settled(
+      "program count",
+      0,
       prisma.program.count({ where: { isPublished: true } }),
+    ),
+    settled(
+      "student count",
+      0,
       prisma.user.count({ where: { role: "STUDENT" } }),
+    ),
+    settled(
+      "cities",
+      [],
       prisma.university.findMany({
         where: publishedUniversityWhere,
         distinct: ["city"],
         select: { city: true },
       }),
+    ),
+    settled(
+      "scholarship count",
+      0,
       prisma.scholarship.count({ where: { isPublished: true } }),
-    ]);
+    ),
+  ]);
 
-    return {
-      universities: universities.map((university) =>
-        mapUniversity(locale, university),
+  return {
+    universities: universities.map((university) =>
+      mapUniversity(locale, university),
+    ),
+    testimonials: testimonials.map((testimonial) => ({
+      id: testimonial.id,
+      studentName: testimonial.studentName,
+      quote: localized(locale, testimonial.quote, testimonial.quoteAr),
+      location: localizedOrNull(
+        locale,
+        testimonial.location,
+        testimonial.locationAr,
       ),
-      testimonials: testimonials.map((testimonial) => ({
-        id: testimonial.id,
-        studentName: testimonial.studentName,
-        quote: localized(locale, testimonial.quote, testimonial.quoteAr),
-        location: localizedOrNull(
-          locale,
-          testimonial.location,
-          testimonial.locationAr,
-        ),
-        avatarUrl: testimonial.avatarUrl,
-      })),
-      stats: [
-        universityCount,
-        programCount,
-        studentCount,
-        cities.length,
-        scholarshipCount,
-      ],
-    };
-  } catch (error) {
-    console.error("Unable to load landing catalogue data", error);
-    return { universities: [], testimonials: [], stats: [0, 0, 0, 0, 0] };
-  }
+      avatarUrl: testimonial.avatarUrl,
+    })),
+    stats: [
+      universityCount,
+      programCount,
+      studentCount,
+      cities.length,
+      scholarshipCount,
+    ],
+  };
 }
 
 export type UniversityDirectoryFilters = {
