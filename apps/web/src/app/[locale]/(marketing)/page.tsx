@@ -44,7 +44,7 @@ const representIcons: LucideIcon[] = [
 // [universities(0), programs(1), students(2), scholarships(4)]
 const heroStatOrder = [0, 1, 2, 4];
 
-function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
+function buildHeroPhotos(searchBadge: string, mapBadge: string): HeroPhoto[] {
   return [
     {
       src: "/images/hero-search-illustration-v2.png",
@@ -53,8 +53,10 @@ function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
     },
     { src: "/images/hero-booth-v2.png", alt: "UniLink" },
     {
-      src: "/images/hero-map-egypt-v3.png",
+      src: "/images/hero-map-egypt-v4.png",
       alt: "UniLink universities across Egypt",
+      badge: mapBadge,
+      badgePosition: "bottom",
     },
   ];
 }
@@ -87,7 +89,7 @@ export default async function HomePage() {
   const catalog = await getLandingCatalog(locale);
   const primaryCta = await getPrimaryCta(t("hero.cta"));
 
-  const heroPhotos = buildHeroPhotos(t("hero.searchBadge"));
+  const heroPhotos = buildHeroPhotos(t("hero.searchBadge"), t("hero.mapBadge"));
   const counterLabels = tc.raw("items") as string[];
   const displayStats = withDisplayOffsets(catalog.stats);
   const heroValues = heroStatOrder.map((i) => displayStats[i] ?? 0);

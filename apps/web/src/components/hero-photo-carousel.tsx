@@ -9,8 +9,16 @@ import { cn } from "@/lib/utils";
 /** `src: null` renders a branded placeholder tile instead of a photo, for a
  * slot that doesn't have a real photo yet. `badge` overlays a short pill of
  * copy on that slide only, for a photo worth calling out specifically (e.g.
- * a product screenshot) rather than every slide getting the same caption. */
-export type HeroPhoto = { src: string | null; alt: string; badge?: string };
+ * a product screenshot) rather than every slide getting the same caption.
+ * `badgePosition` defaults to the top-start corner; some photos already have
+ * their own content up there, so a slide can move its badge to bottom-start
+ * instead rather than sitting on top of that content. */
+export type HeroPhoto = {
+  src: string | null;
+  alt: string;
+  badge?: string;
+  badgePosition?: "top" | "bottom";
+};
 
 // How long each photo stays up before crossfading to the next.
 const ROTATE_INTERVAL_MS = 4500;
@@ -93,7 +101,8 @@ export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
             key={`badge-${i}`}
             aria-hidden={i !== index}
             className={cn(
-              "pointer-events-none absolute start-3 top-4 flex max-w-[calc(100%-1.5rem)] items-start gap-1.5 rounded-2xl bg-white px-3 py-1.5 text-[11px] font-bold leading-snug text-[#1E3A8A] shadow-lg transition-opacity duration-1000 ease-in-out motion-reduce:transition-none sm:items-center sm:rounded-full sm:text-xs",
+              "pointer-events-none absolute start-3 flex max-w-[calc(100%-1.5rem)] items-start gap-1.5 rounded-2xl bg-white px-3 py-1.5 text-[11px] font-bold leading-snug text-[#1E3A8A] shadow-lg transition-opacity duration-1000 ease-in-out motion-reduce:transition-none sm:items-center sm:rounded-full sm:text-xs",
+              photo.badgePosition === "bottom" ? "bottom-11" : "top-4",
               i === index ? "opacity-100" : "opacity-0",
             )}
           >
