@@ -103,6 +103,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
           <UniversityDirectoryFiltersBar
             cities={cities}
             initial={{ q: q ?? "", type: type ?? "", city: city ?? "" }}
+            isAuthenticated={Boolean(session)}
           />
         </div>
 

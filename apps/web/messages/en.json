@@ -76,7 +76,8 @@
         "programsLabel": "Programs",
         "viewDetails": "View details",
         "empty": "Published universities will appear here once they are added to the catalogue.",
-        "exploreMore": "Explore More Universities"
+        "exploreMore": "Explore More Universities",
+        "knowMore": "Browse All Universities"
       },
       "howItWorks": {
         "title": "How It Works",
@@ -995,7 +996,10 @@
     "facultyCount": "{count, plural, one {# faculty} other {# faculties}}",
     "previous": "Previous",
     "next": "Next",
-    "pageOf": "Page {page} of {total}"
+    "pageOf": "Page {page} of {total}",
+    "searchLimitReached": "You've used your {count} free searches. Register free or log in to keep searching.",
+    "searchLimitRegister": "Register free",
+    "searchLimitLogin": "Log in"
   },
   "ProgramDetail": {
     "breadcrumbHome": "Home",

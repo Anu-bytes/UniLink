@@ -271,13 +271,17 @@ export default async function HomePage() {
             )}
           </div>
 
-          {isAuthenticated ? null : (
-            <div className="mt-12 flex justify-center">
+          <div className="mt-12 flex justify-center">
+            {isAuthenticated ? (
+              <PrimaryButton href="/universities">
+                {t("partners.knowMore")}
+              </PrimaryButton>
+            ) : (
               <PrimaryButton href="/universities">
                 {t("partners.exploreMore")}
               </PrimaryButton>
-            </div>
-          )}
+            )}
+          </div>
         </div>
       </section>
 
