@@ -44,10 +44,6 @@ const representIcons: LucideIcon[] = [
 // [universities(0), programs(1), students(2), scholarships(4)]
 const heroStatOrder = [0, 1, 2, 4];
 
-// TODO: replace the remaining placeholder slot with a real photo once one is
-// supplied — `src: null` renders a branded placeholder tile instead of
-// reusing/duplicating an existing photo. Swap in `src` only; the carousel
-// logic doesn't otherwise change.
 function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
   return [
     {
@@ -56,7 +52,10 @@ function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
       badge: searchBadge,
     },
     { src: "/images/hero-booth-v2.png", alt: "UniLink" },
-    { src: null, alt: "UniLink" },
+    {
+      src: "/images/hero-map-egypt-v3.png",
+      alt: "UniLink universities across Egypt",
+    },
   ];
 }
 
