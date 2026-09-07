@@ -1,14 +1,16 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
 /** `src: null` renders a branded placeholder tile instead of a photo, for a
- * slot that doesn't have a real photo yet. */
-export type HeroPhoto = { src: string | null; alt: string };
+ * slot that doesn't have a real photo yet. `badge` overlays a short pill of
+ * copy on that slide only, for a photo worth calling out specifically (e.g.
+ * a product screenshot) rather than every slide getting the same caption. */
+export type HeroPhoto = { src: string | null; alt: string; badge?: string };
 
 // How long each photo stays up before crossfading to the next.
 const ROTATE_INTERVAL_MS = 4500;
@@ -84,6 +86,22 @@ export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
           />
         );
       })}
+
+      {photos.map((photo, i) =>
+        photo.badge ? (
+          <div
+            key={`badge-${i}`}
+            aria-hidden={i !== index}
+            className={cn(
+              "pointer-events-none absolute inset-x-3 top-3 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-[#1E3A8A] shadow-lg backdrop-blur-sm transition-opacity duration-1000 ease-in-out motion-reduce:transition-none",
+              i === index ? "opacity-100" : "opacity-0",
+            )}
+          >
+            <Sparkles className="size-3.5 shrink-0 text-[#F5A623]" aria-hidden />
+            <span className="truncate">{photo.badge}</span>
+          </div>
+        ) : null,
+      )}
 
       {photos.length > 1 ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
