@@ -51,7 +51,7 @@ const heroStatOrder = [0, 1, 2, 4];
 function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
   return [
     {
-      src: "/images/hero-search-preview.png",
+      src: "/images/hero-search-illustration-v2.png",
       alt: "UniLink advanced search",
       badge: searchBadge,
     },
