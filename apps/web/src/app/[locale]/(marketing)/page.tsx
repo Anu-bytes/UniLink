@@ -44,15 +44,21 @@ const representIcons: LucideIcon[] = [
 // [universities(0), programs(1), students(2), scholarships(4)]
 const heroStatOrder = [0, 1, 2, 4];
 
-// TODO: replace the two placeholder slots with real photos once they're
+// TODO: replace the remaining placeholder slot with a real photo once one is
 // supplied — `src: null` renders a branded placeholder tile instead of
-// reusing/duplicating the one real photo. Swap in `src` values only; the
-// carousel logic doesn't otherwise change.
-const heroPhotos: HeroPhoto[] = [
-  { src: "/images/hero-booth-v2.png", alt: "UniLink" },
-  { src: null, alt: "UniLink" },
-  { src: null, alt: "UniLink" },
-];
+// reusing/duplicating an existing photo. Swap in `src` only; the carousel
+// logic doesn't otherwise change.
+function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
+  return [
+    { src: "/images/hero-booth-v2.png", alt: "UniLink" },
+    {
+      src: "/images/hero-search-preview.png",
+      alt: "UniLink advanced search",
+      badge: searchBadge,
+    },
+    { src: null, alt: "UniLink" },
+  ];
+}
 
 function PrimaryButton({
   href,
@@ -82,6 +88,7 @@ export default async function HomePage() {
   const catalog = await getLandingCatalog(locale);
   const primaryCta = await getPrimaryCta(t("hero.cta"));
 
+  const heroPhotos = buildHeroPhotos(t("hero.searchBadge"));
   const counterLabels = tc.raw("items") as string[];
   const displayStats = withDisplayOffsets(catalog.stats);
   const heroValues = heroStatOrder.map((i) => displayStats[i] ?? 0);
