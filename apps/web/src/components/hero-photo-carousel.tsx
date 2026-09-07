@@ -93,12 +93,12 @@ export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
             key={`badge-${i}`}
             aria-hidden={i !== index}
             className={cn(
-              "pointer-events-none absolute start-3 top-4 flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#1E3A8A] shadow-lg transition-opacity duration-1000 ease-in-out motion-reduce:transition-none",
+              "pointer-events-none absolute start-3 top-4 flex max-w-[calc(100%-1.5rem)] items-start gap-1.5 rounded-2xl bg-white px-3 py-1.5 text-[11px] font-bold leading-snug text-[#1E3A8A] shadow-lg transition-opacity duration-1000 ease-in-out motion-reduce:transition-none sm:items-center sm:rounded-full sm:text-xs",
               i === index ? "opacity-100" : "opacity-0",
             )}
           >
-            <Sparkles className="size-3.5 shrink-0 text-[#F5A623]" aria-hidden />
-            <span className="truncate">{photo.badge}</span>
+            <Sparkles className="mt-0.5 size-3.5 shrink-0 text-[#F5A623] sm:mt-0" aria-hidden />
+            <span className="sm:truncate">{photo.badge}</span>
           </div>
         ) : null,
       )}
