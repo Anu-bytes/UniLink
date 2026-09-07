@@ -996,7 +996,10 @@
     "facultyCount": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}",
     "previous": "السابق",
     "next": "التالي",
-    "pageOf": "صفحة {page} من {total}"
+    "pageOf": "صفحة {page} من {total}",
+    "searchLimitReached": "لقد استخدمت عمليات البحث المجانية الـ{count}. سجّل مجانًا أو سجّل الدخول لمتابعة البحث.",
+    "searchLimitRegister": "سجّل مجانًا",
+    "searchLimitLogin": "تسجيل الدخول"
   },
   "ProgramDetail": {
     "breadcrumbHome": "الرئيسية",
