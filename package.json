@@ -18,6 +18,7 @@
   },
   "overrides": {
     "browserslist": "^4.28.7",
-    "qs": "^6.16.0"
+    "qs": "^6.16.0",
+    "deepmerge-ts": "^8.0.0"
   }
 }
