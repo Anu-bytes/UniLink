@@ -53,8 +53,8 @@ function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
     },
     { src: "/images/hero-booth-v2.png", alt: "UniLink" },
     {
-      src: "/images/hero-map-illustration.png",
-      alt: "UniLink universities across Greater Cairo",
+      src: "/images/hero-map-egypt-v3.png",
+      alt: "UniLink universities across Egypt",
     },
   ];
 }
