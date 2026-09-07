@@ -24,30 +24,27 @@ export type HeroPhoto = {
 const ROTATE_INTERVAL_MS = 4500;
 
 /**
- * The hero's photo, crossfading between `photos` on a timer. Pauses (shows
- * only the first photo) under prefers-reduced-motion. The dots double as
- * manual controls — clicking one also restarts the timer, so a manual pick
- * doesn't get immediately overridden by the next scheduled tick.
+ * The hero's photo, crossfading between `photos` on a timer. Still advances
+ * under prefers-reduced-motion — the fade itself is skipped there (see
+ * `motion-reduce:transition-none` on the fade class below, an instant cut
+ * instead of a smooth crossfade), but the slides keep rotating. Freezing on
+ * the first photo forever isn't what reduced-motion is for (it exists to
+ * drop *animation*, not to keep users from ever seeing the other slides),
+ * and iOS Safari's Private Browsing has been observed reporting reduced
+ * motion as on when the user never asked for it. The dots double as manual
+ * controls — clicking one also restarts the timer, so a manual pick doesn't
+ * get immediately overridden by the next scheduled tick.
  */
 export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
   const [index, setIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(query.matches);
-    const onChange = () => setReducedMotion(query.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion || photos.length <= 1) return;
+    if (photos.length <= 1) return;
     const timeout = setTimeout(() => {
       setIndex((i) => (i + 1) % photos.length);
     }, ROTATE_INTERVAL_MS);
     return () => clearTimeout(timeout);
-  }, [reducedMotion, photos.length, index]);
+  }, [photos.length, index]);
 
   return (
     <>
