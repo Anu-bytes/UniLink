@@ -93,7 +93,7 @@ export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
             key={`badge-${i}`}
             aria-hidden={i !== index}
             className={cn(
-              "pointer-events-none absolute inset-x-3 top-3 flex items-center gap-1.5 rounded-full bg-white/95 px-3 py-1.5 text-xs font-bold text-[#1E3A8A] shadow-lg backdrop-blur-sm transition-opacity duration-1000 ease-in-out motion-reduce:transition-none",
+              "pointer-events-none absolute start-3 top-4 flex max-w-[calc(100%-1.5rem)] items-center gap-1.5 rounded-full bg-white px-3 py-1.5 text-xs font-bold text-[#1E3A8A] shadow-lg transition-opacity duration-1000 ease-in-out motion-reduce:transition-none",
               i === index ? "opacity-100" : "opacity-0",
             )}
           >

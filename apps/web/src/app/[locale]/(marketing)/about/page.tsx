@@ -13,10 +13,11 @@ import {
   UserRound,
   type LucideIcon,
 } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { Reveal } from "@/components/reveal";
+import { getLandingCatalog, withDisplayOffsets } from "@/lib/catalog";
 
 /** Icon per value card, in the order the translated items are listed. */
 const VALUE_ICONS: LucideIcon[] = [Search, Lightbulb, ShieldCheck, UserRound];
@@ -29,10 +30,23 @@ type StatItem = { value: string; label: string };
 
 export default async function AboutPage() {
   const t = await getTranslations("About");
+  const locale = await getLocale();
   const studentItems = t.raw("offer.students.items") as string[];
   const universityItems = t.raw("offer.universities.items") as string[];
   const values = t.raw("values.items") as ValueItem[];
-  const stats = t.raw("stats.items") as StatItem[];
+
+  // The first two figures were static marketing copy ("60+", "500+") that
+  // drifted out of sync with the real catalogue the moment it changed size.
+  // Pulled from the same source (and same display offset) as the homepage
+  // hero stats now, so the two surfaces can never disagree with each other.
+  const catalog = await getLandingCatalog(locale);
+  const [universityCount, programCount] = withDisplayOffsets(catalog.stats);
+  const staticStats = t.raw("stats.items") as StatItem[];
+  const stats: StatItem[] = staticStats.map((stat, i) => {
+    if (i === 0) return { ...stat, value: `${universityCount}+` };
+    if (i === 1) return { ...stat, value: `${programCount}+` };
+    return stat;
+  });
 
   return (
     <div className="font-[family-name:var(--font-open-sans)] text-[#292E3E]">
@@ -284,9 +298,10 @@ export default async function AboutPage() {
           <div className="mt-14 grid gap-x-8 gap-y-12 sm:grid-cols-2 lg:grid-cols-4">
             {stats.map((stat, i) => {
               const Icon = STAT_ICONS[i] ?? Landmark;
-              // The last stat is a statement rather than a figure, so its
-              // value sits a size down from the numeric ones.
-              const isFigure = i < stats.length - 1;
+              // Only the first two are actual figures (real, live counts);
+              // the rest are statements, so their value sits a size down
+              // from the numeric ones.
+              const isFigure = i < 2;
               return (
                 <Reveal
                   key={stat.label}

@@ -50,12 +50,12 @@ const heroStatOrder = [0, 1, 2, 4];
 // logic doesn't otherwise change.
 function buildHeroPhotos(searchBadge: string): HeroPhoto[] {
   return [
-    { src: "/images/hero-booth-v2.png", alt: "UniLink" },
     {
-      src: "/images/hero-search-preview.png",
+      src: "/images/hero-search-illustration-v2.png",
       alt: "UniLink advanced search",
       badge: searchBadge,
     },
+    { src: "/images/hero-booth-v2.png", alt: "UniLink" },
     { src: null, alt: "UniLink" },
   ];
 }
