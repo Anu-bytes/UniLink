@@ -150,22 +150,6 @@
         "Governorates covered",
         "Scholarships"
       ]
-    },
-    "stats": {
-      "items": [
-        {
-          "value": "60+",
-          "label": "Universities in Egypt"
-        },
-        {
-          "value": "20,000+",
-          "label": "Students guided"
-        },
-        {
-          "value": "500+",
-          "label": "Programs listed"
-        }
-      ]
     }
   },
   "Auth": {
@@ -651,8 +635,8 @@
           "label": "Academic programs"
         },
         {
-          "value": "10,000+",
-          "label": "Searches and comparisons"
+          "value": "AI-Powered",
+          "label": "Natural-language search across every listed program"
         },
         {
           "value": "An Egyptian platform",
