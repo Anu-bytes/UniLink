@@ -127,10 +127,19 @@ so there is never a doubt about which side of the product you are on.
 
 1. `src/proxy.ts` sends anonymous visitors to `/login`. It only sees the session
    cookie, so it cannot tell an admin from a student.
-2. The admin layout calls `getAdminActor()`, which re-reads the row. A signed-in
-   non-admin gets a 404 rather than a "forbidden" page — nothing links here, so
-   confirming the route exists would only help someone guessing.
+2. Every page under `[locale]/(admin)/admin` calls `requireAdminPage()` as its
+   first statement, which re-reads the row. A signed-in non-admin gets a 404
+   rather than a "forbidden" page — nothing links here, so confirming the route
+   exists would only help someone guessing.
 3. Every `/api/admin/*` handler independently calls `requireAdmin()`.
+
+The admin layout checks too, so the shell is never built for the wrong person,
+but it is deliberately not what the gate rests on. Next.js re-executes a layout
+only when the incoming router state does not already match that segment, so on a
+client-side navigation between two admin pages the layout is skipped and only the
+page renders — and the router state arrives in a request header, so it can be
+forged. Authorization has to sit with the code that reads the data. Do not move
+these checks back up into the layout.
 
 The role is also mirrored onto the session token for the navigation to read, but
 that copy is refreshed at most once a minute and is never the authority. Layers 2
