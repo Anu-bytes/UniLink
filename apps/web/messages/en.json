@@ -156,6 +156,11 @@
   },
   "Auth": {
     "login": {
+      "statLabels": [
+        "Universities in Egypt",
+        "Students guided",
+        "Programs listed"
+      ],
       "title": "Welcome back",
       "badge": "Welcome back",
       "headline": "Continue your study abroad journey",
