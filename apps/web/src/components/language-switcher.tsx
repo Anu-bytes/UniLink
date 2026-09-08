@@ -12,7 +12,7 @@ const options = [
   { locale: "ar", short: "العربية", label: "العربية" },
 ] as const;
 
-export function LanguageSwitcher() {
+export function LanguageSwitcher({ onBeforeChange }: { onBeforeChange?: (navigate: () => void) => void } = {}) {
   const locale = useLocale();
   const router = useRouter();
   const pathname = usePathname();
@@ -25,9 +25,11 @@ export function LanguageSwitcher() {
 
   const switchTo = (next: string) => {
     if (next === locale || isPending) return;
-    startTransition(() => {
-      router.replace(pathname, { locale: next });
+    const navigate = () => startTransition(() => {
+      router.replace(`${pathname}${window.location.search}`, { locale: next });
     });
+    if (onBeforeChange) onBeforeChange(navigate);
+    else navigate();
   };
 
   return (

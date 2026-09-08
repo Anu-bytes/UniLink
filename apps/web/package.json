@@ -4,9 +4,13 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
-    "build": "prisma generate && next build",
+    "build": "prisma generate && next build --webpack",
+    "build:turbo": "prisma generate && next build --turbopack",
     "start": "next start",
     "lint": "eslint",
+    "lint:admin": "eslint src/components/admin src/app/api/admin 'src/app/[locale]/(admin)' src/lib/admin*.ts src/lib/supabase-storage.ts src/lib/image-upload.ts",
+    "test:admin": "node --import tsx --test src/lib/admin-validation.test.ts src/lib/admin-ordering.test.ts src/lib/admin-catalogue.test.ts src/lib/image-upload.test.ts src/lib/storage-path.test.ts",
+    "test:admin:smoke": "node scripts/admin-smoke.mjs",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",
     "db:migrate": "prisma migrate dev",
@@ -14,6 +18,7 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:seed:user": "tsx prisma/seed/dev-user.ts",
+    "db:seed:admin": "tsx prisma/seed/admin.ts",
     "db:studio": "prisma studio"
   },
   "prisma": {

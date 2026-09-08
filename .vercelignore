@@ -1,0 +1,23 @@
+# Never upload local credentials or generated artifacts from any workspace.
+**/.env
+**/.env.*
+**/node_modules/**
+**/.next/**
+**/.vercel/**
+**/*.tsbuildinfo
+**/*.log
+**/next-env.d.ts
+**/.DS_Store
+.git/**
+.claude/**
+.codex/**
+.agents/**
+
+# Local development and handover material are not deployment inputs.
+ADMIN_AUDIT.md
+HANDOVER.md
+compose.yaml
+docker-compose.dev.yml
+dockercompose.dev.yml
+**/AGENTS.md
+**/CLAUDE.md

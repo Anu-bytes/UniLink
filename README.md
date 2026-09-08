@@ -62,10 +62,15 @@ For hosted Supabase, use the two connection strings shown by **Supabase Dashboar
 
 Keeping these separate prevents schema migrations from running through transaction pooling. Use placeholders in committed files and keep real credentials only in `apps/web/.env`.
 
+For the default local Compose database, replace **both** database URLs in
+`apps/web/.env` with `postgresql://postgres:postgres@localhost:5432/unilink?schema=public`.
+These are local development credentials only. If you customize root `.env`
+credentials or `POSTGRES_PORT`, make the app URLs match those values.
+
 ### 4. Start the database
 
 ```bash
-docker compose up -d db
+npm run db:up
 ```
 
 Skip this step when using Supabase.
@@ -73,12 +78,16 @@ Skip this step when using Supabase.
 ### 5. Set up the schema
 
 ```bash
-npm run db:migrate     # apply migrations
+npm run db:deploy      # apply existing migrations without generating new ones
 npm run db:seed        # load the Egyptian university catalogue
 ```
 
 The seed is idempotent and only touches the universities it owns (matched by
 slug), so it is safe to re-run after editing `apps/web/prisma/seed/data.ts`.
+
+Use `db:migrate` only when intentionally authoring a schema change. Prisma does
+not model the raw-SQL trigram search indexes; do not accept generated migrations
+that drop them during routine setup.
 
 ### 6. Run the app
 
@@ -87,6 +96,10 @@ npm run dev
 ```
 
 Open http://localhost:3000
+
+`npm run build` uses Next's supported Webpack production builder. The optional
+`npm run build:turbo --workspace=apps/web` retains Turbopack for environments that
+support its worker-port requirements. Development still uses Turbopack.
 
 ## Main surfaces
 
@@ -98,9 +111,115 @@ Open http://localhost:3000
 | `/{locale}/app/search` | Signed-in program search: natural-language search bar, filters, match-scored result cards |
 | `/{locale}/app/compare` | Side-by-side comparison of up to four programs |
 | `/{locale}/app/applications`, `/app/saved`, `/app/profile` | Student workspace |
+| `/{locale}/admin` | Admin dashboard: catalogue, people, growth (see below) |
 
 Everything under `/{locale}/app` requires a session; `src/proxy.ts` redirects
 anonymous visitors to `/login`.
+
+## Admin dashboard
+
+`/{locale}/admin` is the back office. It is bilingual and RTL-aware like the
+rest of the site, but styled as its own surface — dark sidebar, light content —
+so there is never a doubt about which side of the product you are on.
+
+| Section | Route | What it manages |
+|---|---|---|
+| Overview | `/admin` | Counts across the catalogue, people and leads, plus the newest applications, sign-ups and partnership leads |
+| Universities | `/admin/universities` | The university record and its gallery images, feature bullets, tab content blocks and minimum scores |
+| Faculties | `/admin/faculties` | Faculties under each university |
+| Programs | `/admin/programs` | Programs, their intakes and their English requirements |
+| Users | `/admin/users` | Accounts, roles and the onboarding profile behind each one |
+| Applications | `/admin/applications` | Every student application and its status |
+| Leads | `/admin/leads` | Partnership requests submitted from `/contact` |
+| Testimonials | `/admin/testimonials` | Home-page testimonials |
+| Scholarships | `/admin/scholarships` | Scholarship listings |
+
+### Access
+
+`User.role` decides. Three layers guard the surface, because one is not enough:
+
+1. `src/proxy.ts` sends anonymous visitors to `/login`. It only sees the session
+   cookie, so it cannot tell an admin from a student.
+2. Every page under `[locale]/(admin)/admin` calls `requireAdminPage()` as its
+   first statement, which re-reads the row. A signed-in non-admin gets a 404
+   rather than a "forbidden" page — nothing links here, so confirming the route
+   exists would only help someone guessing.
+3. Every `/api/admin/*` handler independently calls `requireAdmin()`.
+
+The admin layout checks too, so the shell is never built for the wrong person,
+but it is deliberately not what the gate rests on. Next.js re-executes a layout
+only when the incoming router state does not already match that segment, so on a
+client-side navigation between two admin pages the layout is skipped and only the
+page renders — and the router state arrives in a request header, so it can be
+forged. Authorization has to sit with the code that reads the data. Do not move
+these checks back up into the layout.
+
+The role is also mirrored onto the session token for the navigation to read, but
+that copy is refreshed at most once a minute and is never the authority. Layers 2
+and 3 read the database, so removing someone's access takes effect on their very
+next click.
+
+### Creating the first administrator
+
+Nobody can be promoted from inside the dashboard until somebody is already in it,
+so the first admin is made from the command line:
+
+```bash
+npm run db:seed:admin -- you@example.com                    # promote or create
+npm run db:seed:admin -- you@example.com 'a-strong-password'
+```
+
+An existing account is promoted and its password left alone. A missing account is
+created, and a generated password is printed once. There is deliberately no
+default email or password baked into the repository.
+
+### Endpoints
+
+`src/app/api/admin/*` follows the same shape as the existing routes
+(`api/saved`, `api/applications`): a `route.ts` per resource exporting named HTTP
+methods, zod for the body, `NextResponse.json` for the reply. The shared pieces
+live in `src/lib/admin.ts` (the guard) and `src/lib/admin-api.ts` (pagination,
+`{ error, field }` responses, Prisma error mapping).
+
+Lists accept `?page`, `?perPage`, `?q`, `?sort`, `?order` plus per-resource
+filters, and answer with `{ items, page, perPage, total, totalPages }`. Deletes
+that cascade — a university, a faculty, a program, a user — require an explicit
+`?confirm=true`, and answer 409 with the row counts at stake when it is missing.
+
+Image uploads go to `POST /api/admin/media` (multipart, `file` + `folder`), which
+validates the bytes by signature exactly as the avatar route does and stores them
+in the `media` bucket. With Supabase unset, the image fields fall back to pasting
+a URL.
+
+### Local release checks
+
+```bash
+npm run lint:admin
+npm run test:admin
+ADMIN_SMOKE_LOCAL=1 npm run test:admin:smoke
+npm run build
+```
+
+The smoke probe requires a running local server and refuses remote app/database
+targets. It creates disposable users, an academic profile, an application, and
+catalogue/growth records, exercises role transitions and every admin API method,
+checks all admin pages in English/Arabic as HTML and matching-layout RSC requests,
+then deletes only its own exact fixture IDs. No existing account is promoted or
+demoted. For interactive QA, run
+`ADMIN_SMOKE_LOCAL=1 npm run test:admin:smoke --workspace=apps/web -- --hold`;
+press Enter in that terminal after browser checks to clean up.
+
+Real Supabase uploads still require valid `SUPABASE_URL` and
+`SUPABASE_SERVICE_ROLE_KEY`, with the `media` and `avatars` buckets configured.
+Missing configuration returns 503; no remote test is silently counted as passed.
+Storage deletion only accepts canonical URLs from the configured project's own
+bucket. Explicit media deletion surfaces upstream failures; cleanup after a
+record update remains best effort.
+
+Reordering currently uses multiple requests: failures stop the remaining writes
+and refresh the server order, but do not roll back earlier writes. Same-field
+concurrent edits remain last-write-wins. Atomic ordering and version-based edit
+conflicts are separate future hardening work, not guarantees of these tests.
 
 ## Scripts (run from repo root)
 
@@ -110,7 +229,13 @@ anonymous visitors to `/login`.
 | `npm run build` | Production build |
 | `npm run start` | Start the production server |
 | `npm run lint` | Lint the web app |
+| `npm run lint:admin` | Lint the admin release scope |
+| `npm run test:admin` | Run admin validation, ordering, and media unit tests |
+| `ADMIN_SMOKE_LOCAL=1 npm run test:admin:smoke` | Run disposable local integration checks |
+| `npm run db:up` | Start and health-check the local Compose database |
+| `npm run db:deploy` | Apply existing migrations without generating new ones |
 | `npm run db:generate` | Generate the Prisma client |
 | `npm run db:migrate` | Create & apply a dev migration |
 | `npm run db:seed` | Seed the university / faculty / program catalogue |
+| `npm run db:seed:admin -- <email> [password]` | Promote or create an administrator |
 | `npm run db:studio` | Open Prisma Studio |

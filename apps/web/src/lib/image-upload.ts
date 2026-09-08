@@ -7,6 +7,13 @@
 /** Hard ceiling on an avatar upload. Enforced before the bytes are read. */
 export const MAX_AVATAR_BYTES = 2 * 1024 * 1024; // 2 MB
 
+/**
+ * Ceiling for admin-uploaded catalogue media (logos, cover photos, gallery
+ * shots). Larger than an avatar because these render full-bleed behind a
+ * university hero, where 2 MB shows visible compression artefacts.
+ */
+export const MAX_MEDIA_BYTES = 8 * 1024 * 1024; // 8 MB
+
 export type ImageFormat = {
   mime: "image/jpeg" | "image/png" | "image/webp";
   extension: "jpg" | "png" | "webp";
@@ -55,9 +62,16 @@ export function sniffImageFormat(bytes: Uint8Array): ImageFormat | null {
   return null;
 }
 
-/** Size check, then signature check, on the actual bytes received. */
+/**
+ * Size check, then signature check, on the actual bytes received.
+ *
+ * `maxBytes` defaults to the avatar ceiling so the existing call in
+ * api/profile/avatar keeps its old behaviour unchanged; the admin media
+ * route passes MAX_MEDIA_BYTES instead.
+ */
 export async function validateImageUpload(
   file: File,
+  maxBytes: number = MAX_AVATAR_BYTES,
 ): Promise<ValidationResult> {
   if (file.size === 0) {
     return { ok: false, reason: "EMPTY" };
@@ -65,14 +79,14 @@ export async function validateImageUpload(
 
   // Checked against the declared size first so an oversized body is rejected
   // before it is buffered into memory.
-  if (file.size > MAX_AVATAR_BYTES) {
+  if (file.size > maxBytes) {
     return { ok: false, reason: "TOO_LARGE" };
   }
 
   const bytes = new Uint8Array(await file.arrayBuffer());
 
   // The declared size can lie; re-check what actually arrived.
-  if (bytes.byteLength > MAX_AVATAR_BYTES) {
+  if (bytes.byteLength > maxBytes) {
     return { ok: false, reason: "TOO_LARGE" };
   }
 

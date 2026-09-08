@@ -11,9 +11,15 @@
     "start": "npm run start --workspace=apps/web",
     "lint": "npm run lint --workspace=apps/web",
     "db:generate": "npm run db:generate --workspace=apps/web",
+    "db:up": "docker compose -f compose.yaml up -d --wait db",
+    "db:deploy": "npm run db:deploy --workspace=apps/web",
+    "test:admin": "npm run test:admin --workspace=apps/web",
+    "test:admin:smoke": "npm run test:admin:smoke --workspace=apps/web",
+    "lint:admin": "npm run lint:admin --workspace=apps/web",
     "db:migrate": "npm run db:migrate --workspace=apps/web",
     "db:seed": "npm run db:seed --workspace=apps/web",
     "db:seed:user": "npm run db:seed:user --workspace=apps/web",
+    "db:seed:admin": "npm run db:seed:admin --workspace=apps/web",
     "db:studio": "npm run db:studio --workspace=apps/web"
   },
   "overrides": {
