@@ -2,7 +2,8 @@
 
 import { Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { RowDeleteMenu } from "@/components/admin/row-delete-menu";
 
 import { ConfirmDialog, useToast } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
@@ -32,7 +33,7 @@ export function FacultyDeleteAction({
 }: {
   faculty: { id: string; name: string };
   /** The table row has no space for a label; the editor header does. */
-  variant: "icon" | "button";
+  variant: "icon" | "button" | "menu";
   /** Where the admin ends up once the row is gone. */
   after: "refresh" | "list";
 }) {
@@ -43,6 +44,7 @@ export function FacultyDeleteAction({
 
   const [counts, setCounts] = useState<FacultyCounts | null>(null);
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [pending, setPending] = useState(false);
 
   function failed(message: string | null) {
@@ -101,7 +103,12 @@ export function FacultyDeleteAction({
 
   return (
     <>
+      {variant === "menu" ? (
+        <RowDeleteMenu name={faculty.name} pending={pending} triggerRef={triggerRef} onDelete={() => void requestDelete()} />
+      ) : (
+        <>
       <button
+          ref={triggerRef}
         type="button"
         onClick={() => void requestDelete()}
         disabled={pending}
@@ -115,8 +122,11 @@ export function FacultyDeleteAction({
         <Trash2 className="size-4" aria-hidden />
         {variant === "button" ? t("common.delete") : null}
       </button>
+        </>
+      )}
 
       <ConfirmDialog
+        returnFocusRef={triggerRef}
         open={open}
         onOpenChange={(next) => {
           if (!next) setOpen(false);

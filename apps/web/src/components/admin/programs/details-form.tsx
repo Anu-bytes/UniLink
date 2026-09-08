@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -105,6 +107,7 @@ export function ProgramDetailsForm({
   } | null>(null);
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  useUnsavedChanges(dirty);
   const slugPreview = previewSlug(form.slug);
   const complete =
     form.name.trim() !== "" && form.studyLevel !== "" && form.fieldOfStudy !== "";

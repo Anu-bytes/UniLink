@@ -32,20 +32,17 @@ export function LeadTable({
     {
       key: "university",
       header: t("leads.columns.university"),
+      className: "w-[36%]",
       cell: (row) => (
+        <div>
         <Link
           href={`/admin/leads/${row.id}`}
-          className="block max-w-[18rem] truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+          className="block whitespace-normal leading-5 [overflow-wrap:anywhere] font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
         >
-          {row.universityName}
+          <bdi>{row.universityName}</bdi>
         </Link>
-      ),
-    },
-    {
-      key: "city",
-      header: t("leads.columns.city"),
-      cell: (row) => (
-        <span className="block max-w-[10rem] truncate">{row.city}</span>
+        <span className="mt-1 block text-[12px] text-[#64748B] [overflow-wrap:anywhere]"><bdi>{row.city}</bdi></span>
+        </div>
       ),
     },
     {
@@ -53,44 +50,21 @@ export function LeadTable({
       header: t("leads.columns.contact"),
       cell: (row) => (
         <span className="block min-w-0">
-          <span className="block truncate text-[#0F172A]">
-            {row.contactFirstName} {row.contactLastName}
+          <span className="block whitespace-normal font-medium leading-5 text-[#0F172A] [overflow-wrap:anywhere]">
+            <bdi>{row.contactFirstName} {row.contactLastName}</bdi>
           </span>
-          <span className="block truncate text-[12.5px] text-[#64748B]">
-            {row.contactTitle}
+          <span className="mt-1 block whitespace-normal leading-5 [overflow-wrap:anywhere] text-[12px] text-[#64748B]">
+            <bdi>{row.contactTitle}</bdi>
           </span>
+          <a href={`mailto:${row.contactEmail}`} className="mt-2 block text-[12px] text-[#1E6DEB] [overflow-wrap:anywhere] hover:underline focus-visible:outline-2"><bdi dir="ltr">{row.contactEmail}</bdi></a>
+          <a href={`tel:${row.phone}`} className="mt-1 block text-[12px] text-[#1E6DEB] [overflow-wrap:anywhere] hover:underline focus-visible:outline-2"><bdi dir="ltr">{row.phone}</bdi></a>
         </span>
-      ),
-    },
-    {
-      key: "email",
-      header: t("leads.columns.email"),
-      cell: (row) => (
-        <a
-          href={`mailto:${row.contactEmail}`}
-          dir="ltr"
-          className="block max-w-[16rem] truncate text-[#1E6DEB] transition-colors hover:text-[#1557C0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-        >
-          {row.contactEmail}
-        </a>
-      ),
-    },
-    {
-      key: "phone",
-      header: t("leads.columns.phone"),
-      cell: (row) => (
-        <a
-          href={`tel:${row.phone}`}
-          dir="ltr"
-          className="block whitespace-nowrap text-[#1E6DEB] transition-colors hover:text-[#1557C0] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-        >
-          {row.phone}
-        </a>
       ),
     },
     {
       key: "createdAt",
       header: t("leads.columns.received"),
+      className: "w-[156px]",
       cell: (row) => (
         <span className="whitespace-nowrap text-[#64748B]">
           {formatDate(locale, row.createdAt)}
@@ -102,11 +76,12 @@ export function LeadTable({
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
       sticky: "end",
+      className: "w-[108px]",
       cell: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link
             href={`/admin/leads/${row.id}`}
-            aria-label={t("common.view")}
+            aria-label={`${t("common.view")}: ${row.universityName}`}
             title={t("common.view")}
             className={ICON_BUTTON}
           >
@@ -117,7 +92,7 @@ export function LeadTable({
             section="leads"
             id={row.id}
             name={row.universityName}
-            variant="icon"
+            variant="menu"
             after="refresh"
           />
         </div>
@@ -127,6 +102,7 @@ export function LeadTable({
 
   return (
     <DataTable
+      tableClassName="min-w-[760px] table-fixed [&_tbody_td]:py-4"
       columns={columns}
       rows={rows}
       getRowKey={(row) => row.id}

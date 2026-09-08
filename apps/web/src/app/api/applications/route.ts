@@ -76,13 +76,21 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
   }
 
-  const { count } = await prisma.application.updateMany({
-    // Scoped by userId so one student cannot touch another's application.
-    where: { id: parsed.data.applicationId, userId: session.user.id },
-    data: {
-      status: parsed.data.status,
-      submittedAt: parsed.data.status === "SUBMITTED" ? new Date() : undefined,
-    },
+  const where = { id: parsed.data.applicationId, userId: session.user.id };
+  const { count } = await prisma.$transaction(async (tx) => {
+    // Stamp the first submission only. The conditional write also makes
+    // concurrent retries safe without reading a stale timestamp first.
+    if (parsed.data.status === "SUBMITTED") {
+      await tx.application.updateMany({
+        where: { ...where, submittedAt: null },
+        data: { submittedAt: new Date() },
+      });
+    }
+    return tx.application.updateMany({
+      // Scoped by userId so one student cannot touch another's application.
+      where,
+      data: { status: parsed.data.status },
+    });
   });
 
   if (count === 0) {

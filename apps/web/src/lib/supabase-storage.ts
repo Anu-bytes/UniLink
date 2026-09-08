@@ -7,6 +7,7 @@
 // NEXT_PUBLIC_*, or anyone could read and write every bucket.
 
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
+import { storageObjectPath } from "./storage-path";
 
 export const AVATAR_BUCKET = "avatars";
 
@@ -109,7 +110,8 @@ export async function deleteAvatarByUrl(url: string | null | undefined) {
   if (!path) return;
 
   try {
-    await getClient().storage.from(AVATAR_BUCKET).remove([path]);
+    const { error } = await getClient().storage.from(AVATAR_BUCKET).remove([path]);
+    if (error) throw error;
   } catch (error) {
     console.error("Unable to delete the previous avatar", error);
   }
@@ -121,13 +123,7 @@ export async function deleteAvatarByUrl(url: string | null | undefined) {
  * `User.image` value from making us delete an arbitrary path.
  */
 export function avatarPathFromUrl(url: string): string | null {
-  const marker = `/storage/v1/object/public/${AVATAR_BUCKET}/`;
-  const index = url.indexOf(marker);
-  if (index === -1) return null;
-
-  const path = url.slice(index + marker.length);
-  // Expect exactly "<userId>/<uuid>.<ext>" with no traversal.
-  return /^[\w-]+\/[\w-]+\.(jpg|png|webp)$/.test(path) ? path : null;
+  return storageObjectPath(url, process.env.SUPABASE_URL, AVATAR_BUCKET);
 }
 
 /**
@@ -174,11 +170,8 @@ export async function uploadMedia({
  * arbitrary object.
  */
 export function mediaPathFromUrl(url: string): string | null {
-  const marker = `/storage/v1/object/public/${MEDIA_BUCKET}/`;
-  const index = url.indexOf(marker);
-  if (index === -1) return null;
-
-  const path = url.slice(index + marker.length);
+  const path = storageObjectPath(url, process.env.SUPABASE_URL, MEDIA_BUCKET);
+  if (!path) return null;
   const pattern = new RegExp(
     `^(?:${MEDIA_FOLDERS.join("|")})/[\\w-]+\\.(jpg|png|webp)$`,
   );
@@ -190,15 +183,17 @@ export function mediaPathFromUrl(url: string): string | null {
  * deleteAvatarByUrl: an orphaned object must never fail the request that
  * replaced or unset it.
  */
-export async function deleteMediaByUrl(url: string | null | undefined) {
+export async function deleteMediaByUrl(url: string | null | undefined, { strict = false }: { strict?: boolean } = {}) {
   if (!url) return;
 
   const path = mediaPathFromUrl(url);
   if (!path) return;
 
   try {
-    await getClient().storage.from(MEDIA_BUCKET).remove([path]);
+    const { error } = await getClient().storage.from(MEDIA_BUCKET).remove([path]);
+    if (error) throw error;
   } catch (error) {
+    if (strict) throw error;
     console.error("Unable to delete the media object", error);
   }
 }

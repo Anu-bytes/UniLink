@@ -4,6 +4,7 @@ import { getLocale } from "next-intl/server";
 import { auth } from "@/auth";
 import { AdminShell } from "@/components/admin/admin-shell";
 import { ToastProvider } from "@/components/admin/toast";
+import { UnsavedChangesProvider } from "@/components/admin/unsaved-changes";
 import { getAdminActor } from "@/lib/admin";
 
 // Every page under here reads live counts and rows that a colleague may have
@@ -49,11 +50,13 @@ export default async function AdminLayout({
 
   return (
     <ToastProvider>
-      <AdminShell
-        user={{ name: actor.name, email: actor.email, image: actor.image }}
-      >
-        {children}
-      </AdminShell>
+      <UnsavedChangesProvider>
+        <AdminShell
+          user={{ name: actor.name, email: actor.email, image: actor.image }}
+        >
+          {children}
+        </AdminShell>
+      </UnsavedChangesProvider>
     </ToastProvider>
   );
 }

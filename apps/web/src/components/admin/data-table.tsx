@@ -1,4 +1,5 @@
 import { cn } from "@/lib/utils";
+import { Fragment } from "react";
 
 export type Column<T> = {
   key: string;
@@ -39,6 +40,9 @@ export function DataTable<T>({
   empty,
   loading,
   onRowClick,
+  tableClassName,
+  expandedRowIds,
+  renderExpandedRow,
 }: {
   columns: Column<T>[];
   rows: T[];
@@ -46,12 +50,16 @@ export function DataTable<T>({
   empty: React.ReactNode;
   loading?: boolean;
   onRowClick?: (row: T) => void;
+  /** Optional sizing for tables whose columns have an explicit layout. */
+  tableClassName?: string;
+  expandedRowIds?: ReadonlySet<string>;
+  renderExpandedRow?: (row: T) => React.ReactNode;
 }) {
   const clickable = Boolean(onRowClick);
 
   return (
     <div className="overflow-x-auto rounded-xl border border-slate-200/80 bg-white shadow-[0_1px_2px_rgba(16,24,40,0.05)]">
-      <table className="w-full min-w-[680px] border-collapse">
+      <table className={cn("w-full min-w-[680px] border-collapse", tableClassName)}>
         <thead>
           <tr>
             {columns.map((column) => (
@@ -102,6 +110,7 @@ export function DataTable<T>({
 
           {!loading
             ? rows.map((row) => (
+              <Fragment key={getRowKey(row)}>
                 <tr
                   key={getRowKey(row)}
                   role={clickable ? "button" : undefined}
@@ -143,6 +152,14 @@ export function DataTable<T>({
                     </td>
                   ))}
                 </tr>
+                {renderExpandedRow && expandedRowIds?.has(getRowKey(row)) ? (
+                  <tr className="border-b border-slate-100 bg-[#F8FAFC]">
+                    <td colSpan={columns.length} className="p-4 text-start">
+                      {renderExpandedRow(row)}
+                    </td>
+                  </tr>
+                ) : null}
+              </Fragment>
               ))
             : null}
         </tbody>

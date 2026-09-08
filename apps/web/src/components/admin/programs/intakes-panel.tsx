@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges, useUnsavedDraft } from "@/components/admin/unsaved-changes";
+
 import { CalendarDays, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -262,6 +264,7 @@ function IntakeCard({
   const [error, setError] = useState<string | null>(null);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(toDraft(intake));
+  useUnsavedChanges(dirty);
 
   function change<K extends keyof IntakeDraft>(key: K, value: IntakeDraft[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -346,6 +349,7 @@ function IntakeCreateCard({
     year: String(new Date().getFullYear()),
     applicationDeadline: "",
   }));
+  useUnsavedDraft(draft);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

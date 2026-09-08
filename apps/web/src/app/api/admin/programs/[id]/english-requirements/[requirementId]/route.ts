@@ -3,8 +3,9 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
-import { badRequest, prismaErrorResponse, readJson } from "@/lib/admin-api";
+import { badRequest, notFound, prismaErrorResponse, readJson } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
+import { validEnglishScore } from "@/lib/admin-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -38,6 +39,12 @@ export async function PATCH(
   const body = await readJson(request, updateSchema);
   if (!body.ok) return body.response;
   const input = body.data;
+
+  const current = await prisma.programEnglishRequirement.findUnique({ where: { id: requirementId, programId } });
+  if (!current) return notFound("English requirement");
+  if (!validEnglishScore(input.test ?? current.test, input.minScore ?? current.minScore)) {
+    return badRequest("Score is out of range for this test", "minScore", "SCORE_RANGE");
+  }
 
   // EnglishTest.NONE exists so a student can say they hold no certificate. As
   // a program requirement it would read "this program requires no English",

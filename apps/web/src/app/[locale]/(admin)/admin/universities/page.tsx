@@ -12,6 +12,8 @@ import { UniversityTable } from "@/components/admin/universities/university-tabl
 import { Link } from "@/i18n/navigation";
 import { requireAdminPage } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
+import { adminPage } from "@/lib/admin-validation";
+import { catalogueChecks } from "@/lib/admin-catalogue";
 import type { Prisma, UniversityType } from "@prisma/client";
 
 // Mirrors DEFAULT_PER_PAGE in lib/admin-api, so ?page=3 addresses the same
@@ -51,7 +53,7 @@ export default async function AdminUniversitiesPage({
   const type = typeParam(firstParam(sp.type));
   const published = booleanParam(firstParam(sp.published));
   const featured = booleanParam(firstParam(sp.featured));
-  const page = Math.max(1, Number.parseInt(firstParam(sp.page) ?? "1", 10) || 1);
+  const page = adminPage(firstParam(sp.page));
 
   // The same where the list endpoint builds, so the table and the API never
   // disagree about what a filter means.
@@ -98,14 +100,30 @@ export default async function AdminUniversitiesPage({
         cityAr: true,
         logoUrl: true,
         publishedAt: true,
+        description: true,
+        descriptionAr: true,
+        coverImageUrl: true,
+        isFeatured: true,
+        isRecommended: true,
+        isTrending: true,
+        updatedAt: true,
         _count: { select: { faculties: true, programs: true } },
       },
     }),
     prisma.university.count({ where }),
   ]);
 
-  const rows = items.map(({ _count, ...university }) => ({
+  // One grouped query for the displayed universities, not a count per row.
+  const publishedCounts = items.length ? await prisma.program.groupBy({
+    by: ["universityId"],
+    where: { universityId: { in: items.map((item) => item.id) }, isPublished: true },
+    _count: { _all: true },
+  }) : [];
+  const publishedByUniversity = new Map(publishedCounts.map((entry) => [entry.universityId, entry._count._all]));
+  const rows = items.map(({ _count, description, descriptionAr, coverImageUrl, ...university }) => ({
     ...university,
+    contentChecks: catalogueChecks({ nameAr: university.nameAr, description, descriptionAr, logoUrl: university.logoUrl, coverImageUrl }),
+    publishedProgramCount: publishedByUniversity.get(university.id) ?? 0,
     facultyCount: _count.faculties,
     programCount: _count.programs,
   }));

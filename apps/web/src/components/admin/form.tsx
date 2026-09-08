@@ -2,7 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useId } from "react";
+import { cloneElement, isValidElement, useId, type ReactElement } from "react";
 
 import { cn } from "@/lib/utils";
 
@@ -32,10 +32,24 @@ export function Field({
   htmlFor?: string;
   children: React.ReactNode;
 }) {
+  const generatedId = useId();
+  const inputId = htmlFor ?? generatedId;
+  const descriptionId = `${inputId}-description`;
+  const control = isValidElement(children)
+    ? cloneElement(children as ReactElement<React.ComponentProps<"input">>, {
+        id: inputId,
+        "aria-describedby": [
+          (children.props as React.ComponentProps<"input">)["aria-describedby"],
+          error || hint ? descriptionId : undefined,
+        ].filter(Boolean).join(" ") || undefined,
+        ...(error ? { "aria-invalid": true } : {}),
+        ...(required ? { "aria-required": true } : {}),
+      })
+    : children;
   return (
     <div className="space-y-1.5">
       <label
-        htmlFor={htmlFor}
+        htmlFor={inputId}
         className="flex items-center gap-1 text-[13px] font-semibold text-[#334155]"
       >
         {label}
@@ -45,11 +59,11 @@ export function Field({
           </span>
         ) : null}
       </label>
-      {children}
+      {control}
       {error ? (
-        <p className="text-[12.5px] font-medium text-[#C81F15]">{error}</p>
+        <p id={descriptionId} role="alert" className="text-[12.5px] font-medium text-[#C81F15]">{error}</p>
       ) : hint ? (
-        <p className="text-[12.5px] text-[#64748B]">{hint}</p>
+        <p id={descriptionId} className="text-[12.5px] text-[#64748B]">{hint}</p>
       ) : null}
     </div>
   );
@@ -92,7 +106,7 @@ export function SelectInput({
   placeholder?: string;
 }) {
   return (
-    <div className="relative">
+    <div className="relative min-w-0 max-w-full">
       <select
         className={cn(
           CONTROL,
@@ -220,7 +234,7 @@ export function BilingualField({
 
   return (
     <div className="space-y-1.5">
-      <p className="flex items-center gap-1 text-[13px] font-semibold text-[#334155]">
+      <p id={`${generatedId}-label`} className="flex items-center gap-1 text-[13px] font-semibold text-[#334155]">
         {label}
         {required ? (
           <span aria-hidden className="text-[#F82C1F]">
@@ -233,24 +247,26 @@ export function BilingualField({
         <div className="space-y-1">
           <label
             htmlFor={enId}
+            id={`${enId}-label`}
             className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-[#64748B]"
           >
             {t("common.english")}
           </label>
-          <TextInput dir="ltr" {...en} id={enId} />
+          <TextInput dir="ltr" {...en} id={enId} aria-labelledby={`${generatedId}-label ${enId}-label`} aria-describedby={hint ? `${generatedId}-hint` : undefined} />
         </div>
         <div className="space-y-1">
           <label
             htmlFor={arId}
+            id={`${arId}-label`}
             className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-[#64748B]"
           >
             {t("common.arabic")}
           </label>
-          <TextInput dir="rtl" {...ar} id={arId} />
+          <TextInput dir="rtl" {...ar} id={arId} aria-labelledby={`${generatedId}-label ${arId}-label`} aria-describedby={hint ? `${generatedId}-hint` : undefined} />
         </div>
       </div>
 
-      {hint ? <p className="text-[12.5px] text-[#64748B]">{hint}</p> : null}
+      {hint ? <p id={`${generatedId}-hint`} className="text-[12.5px] text-[#64748B]">{hint}</p> : null}
     </div>
   );
 }

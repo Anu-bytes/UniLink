@@ -144,7 +144,7 @@ export default async function AdminUserPage({
       />
 
       <div className="mt-6 grid items-start gap-5 xl:grid-cols-3">
-        <div className="space-y-5 xl:col-span-2">
+        <div className="min-w-0 space-y-5 xl:col-span-2">
           <ProfileCard profile={user.studentProfile} />
 
           <ActivityCard

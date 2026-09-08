@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -84,6 +86,7 @@ export function ProgramFeesPanel({
   } | null>(null);
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  useUnsavedChanges(dirty);
 
   function set<K extends keyof FeesState>(key: K, value: FeesState[K]) {
     setForm((current) => ({ ...current, [key]: value }));

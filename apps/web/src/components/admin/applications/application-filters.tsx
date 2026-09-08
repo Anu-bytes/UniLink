@@ -36,7 +36,7 @@ export function ApplicationFilters({
   return (
     <SelectInput
       aria-label={t("filters.university")}
-      className="h-10 w-auto min-w-[12rem]"
+      className="h-10 w-auto min-w-[12rem] max-w-full"
       value={searchParams.get("universityId") ?? ""}
       onChange={(event) => setFilter("universityId", event.target.value)}
       options={universities}

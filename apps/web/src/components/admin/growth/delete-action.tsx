@@ -2,7 +2,8 @@
 
 import { Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { RowDeleteMenu } from "@/components/admin/row-delete-menu";
 
 import { ConfirmDialog, useToast } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
@@ -29,7 +30,7 @@ export function DeleteAction({
   /** Quoted in the dialog so the admin can see which row they are about to lose. */
   name: string;
   /** The table row has no space for a label; the detail header does. */
-  variant: "icon" | "button";
+  variant: "icon" | "button" | "menu";
   /** Where the admin ends up once the row is gone. */
   after: "refresh" | "list";
 }) {
@@ -38,6 +39,7 @@ export function DeleteAction({
   const { toast } = useToast();
 
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [pending, setPending] = useState(false);
 
   // Spelled out per section instead of assembled from `section`. The pass that
@@ -95,7 +97,12 @@ export function DeleteAction({
 
   return (
     <>
+      {variant === "menu" ? (
+        <RowDeleteMenu name={name} pending={pending} triggerRef={triggerRef} onDelete={() => setOpen(true)} />
+      ) : (
+        <>
       <button
+          ref={triggerRef}
         type="button"
         onClick={() => setOpen(true)}
         aria-label={variant === "icon" ? t("common.delete") : undefined}
@@ -108,8 +115,11 @@ export function DeleteAction({
         <Trash2 className="size-4" aria-hidden />
         {variant === "button" ? t("common.delete") : null}
       </button>
+        </>
+      )}
 
       <ConfirmDialog
+        returnFocusRef={triggerRef}
         open={open}
         onOpenChange={setOpen}
         destructive

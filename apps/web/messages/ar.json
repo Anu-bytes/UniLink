@@ -1312,6 +1312,51 @@
     "saved": "محفوظة"
   },
   "Admin": {
+    "catalogue": {
+      "enabled": "مفعّل",
+      "disabled": "غير مفعّل",
+      "showDetails": "عرض تفاصيل الدليل",
+      "hideDetails": "إخفاء تفاصيل الدليل",
+      "missingCount": "المحتوى: {count, plural, zero {لا نقص} one {عنصر ناقص} two {عنصران ناقصان} few {# عناصر ناقصة} many {# عنصراً ناقصاً} other {# عنصر ناقص}}",
+      "contentComplete": "المحتوى مكتمل",
+      "contentChecklist": "قائمة مراجعة المحتوى",
+      "present": "متوفر",
+      "missing": "غير متوفر",
+      "editContent": "تعديل المحتوى",
+      "updated": "آخر تحديث",
+      "catalogue": "الدليل",
+      "admissions": "درجات القبول",
+      "facultyRules": "درجات الكلية مسجّلة",
+      "universityRules": "درجات عامة للجامعة فقط",
+      "noRules": "لا توجد درجات مسجّلة",
+      "facultyRuleCount": "قواعد خاصة بالكلية: {count}",
+      "universityRuleCount": "قواعد عامة للجامعة: {count}",
+      "scoreNote": "قد تختلف القواعد حسب نظام الشهادة والسنة ووحدة القياس. افتح محرر الدرجات لمراجعتها.",
+      "reviewScores": "مراجعة درجات القبول",
+      "technical": "تفاصيل السجل",
+      "slug": "المعرّف",
+      "order": "ترتيب العرض",
+      "programs": "{count, plural, zero {لا توجد برامج} one {برنامج واحد} two {برنامجان} few {# برامج} many {# برنامجاً} other {# برنامج}}",
+      "faculties": "{count, plural, zero {لا توجد كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}",
+      "publishedPrograms": "{count} منشور",
+      "draftPrograms": "{count} مسودة",
+      "morePrograms": "عرض كل البرامج ({count})",
+      "noPrograms": "لا توجد برامج بعد",
+      "programPreview": "نماذج من البرامج",
+      "featured": "مميزة",
+      "recommended": "موصى بها",
+      "trending": "رائجة",
+      "promotion": "الترويج",
+      "noPromotion": "لا توجد علامات ترويج",
+      "checks": {
+        "nameAr": "الاسم بالعربية",
+        "description": "الوصف بالإنجليزية",
+        "descriptionAr": "الوصف بالعربية",
+        "image": "صورة الكلية",
+        "logo": "شعار الجامعة",
+        "cover": "صورة الغلاف"
+      }
+    },
     "nav": {
       "tag": "الإدارة",
       "overview": "نظرة عامة",
@@ -1376,6 +1421,9 @@
       "saveFailed": "تعذّر حفظ التغييرات",
       "deleteFailed": "تعذّر الحذف",
       "unsavedChanges": "لديك تغييرات غير محفوظة",
+      "discardChanges": "لديك تغييرات غير محفوظة. هل تريد مغادرة الصفحة وتجاهلها؟",
+      "keepEditing": "متابعة التعديل",
+      "discardAndLeave": "تجاهل ومغادرة",
       "upload": "رفع صورة",
       "uploadHint": "JPG أو PNG أو WebP، حتى 8 ميجابايت",
       "uploadFailed": "فشل الرفع. حاول مرة أخرى.",
@@ -1406,6 +1454,14 @@
       }
     },
     "overview": {
+      "attention": {
+        "title": "يحتاج إلى متابعة",
+        "description": "ابدأ بالطلبات التي تحتاج إلى قرار أو مراجعة أخيرة.",
+        "clear": "لا توجد طلبات قيد المراجعة أو مسودات جامعات تحتاج إلى إكمال.",
+        "submitted": "بانتظار المراجعة",
+        "reviewing": "مراجعات جارية",
+        "drafts": "مسودات الجامعات"
+      },
       "title": "نظرة عامة",
       "subtitle": "كل ما يجري في يوني لينك الآن.",
       "viewAll": "عرض الكل",
@@ -1726,6 +1782,8 @@
       "searchPlaceholder": "ابحث باسم البرنامج أو الجامعة أو المعرّف",
       "viewPublic": "عرض الصفحة العامة",
       "columns": {
+        "program": "البرنامج",
+        "institution": "الجامعة / الكلية",
         "name": "الاسم",
         "university": "الجامعة",
         "faculty": "الكلية",
@@ -1733,6 +1791,11 @@
         "fieldOfStudy": "المجال",
         "tuition": "المصروفات",
         "status": "الحالة"
+      },
+      "tuitionPeriods": {
+        "YEAR": "سنوياً",
+        "TERM": "لكل فصل دراسي",
+        "TOTAL": "إجمالي المصروفات"
       },
       "filters": {
         "university": "تصفية حسب الجامعة",
@@ -1842,6 +1905,7 @@
         "test": "الاختبار",
         "minScore": "الحد الأدنى للدرجة",
         "minScoreHint": "بمقياس الاختبار نفسه، مثل 6.5 في الآيلتس أو 90 في التوفل.",
+        "scoreRange": "أدخل درجة أكبر من ٠ ولا تتجاوز {max} لهذا الاختبار.",
         "duplicate": "لهذا البرنامج متطلب بالفعل لهذا الاختبار.",
         "allTestsUsed": "كل الاختبارات لها متطلب بالفعل.",
         "emptyTitle": "لا توجد متطلبات للغة الإنجليزية",

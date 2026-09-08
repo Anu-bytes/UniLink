@@ -6,6 +6,8 @@
  * highlight the offending input and nothing is swallowed into a generic
  * "something went wrong".
  */
+import { adminErrorMessage } from "@/lib/admin-errors";
+
 export type WriteResult<T> =
   | { ok: true; data: T }
   | {
@@ -44,7 +46,7 @@ export async function adminWrite<T>(
     return {
       ok: false,
       status: response.status,
-      message: typeof detail?.error === "string" ? detail.error : null,
+      message: adminErrorMessage(payload, response.status),
       field: typeof detail?.field === "string" ? detail.field : null,
     };
   }

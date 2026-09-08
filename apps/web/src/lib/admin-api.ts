@@ -10,14 +10,16 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import type { z } from "zod";
+import { adminErrorCode, type AdminErrorCode } from "./admin-errors";
+import { adminPage } from "./admin-validation";
 
 // ---------------------------------------------------------------------------
 // Responses
 // ---------------------------------------------------------------------------
 
-export function badRequest(message: string, field?: string | number | null) {
+export function badRequest(message: string, field?: string | number | null, code: AdminErrorCode = adminErrorCode(message)) {
   return NextResponse.json(
-    { error: message, field: field ?? null },
+    { error: message, field: field ?? null, code },
     { status: 400 },
   );
 }
@@ -95,7 +97,7 @@ export type ListParams = {
 export function parseListParams(request: Request): ListParams {
   const { searchParams } = new URL(request.url);
 
-  const page = Math.max(1, toInt(searchParams.get("page"), 1));
+  const page = adminPage(searchParams.get("page"));
   const perPage = Math.min(
     MAX_PER_PAGE,
     Math.max(1, toInt(searchParams.get("perPage"), DEFAULT_PER_PAGE)),

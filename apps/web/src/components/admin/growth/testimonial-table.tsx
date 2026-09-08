@@ -103,6 +103,7 @@ export function TestimonialTable({
     {
       key: "student",
       header: t("testimonials.columns.student"),
+      className: "w-[28%]",
       cell: (row) => (
         <div className="flex items-center gap-3">
           <span
@@ -119,13 +120,15 @@ export function TestimonialTable({
             )}
           </span>
 
+          <span className="min-w-0">
           <Link
             href={`/admin/testimonials/${row.id}`}
-            dir="auto"
-            className="block max-w-[12rem] truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="block whitespace-normal leading-5 [overflow-wrap:anywhere] font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
-            {row.studentName}
+            <bdi>{row.studentName}</bdi>
           </Link>
+          {row.location ? <span className="mt-1 block text-[12px] text-[#64748B] [overflow-wrap:anywhere]"><bdi>{row.location}</bdi></span> : null}
+          </span>
         </div>
       ),
     },
@@ -133,26 +136,15 @@ export function TestimonialTable({
       key: "quote",
       header: t("testimonials.columns.quote"),
       cell: (row) => (
-        <span dir="auto" className="block max-w-[28rem] truncate text-[#64748B]">
-          {row.quote}
+        <span title={row.quote} className="line-clamp-3 whitespace-normal leading-5 text-[#64748B] [overflow-wrap:anywhere]">
+          <bdi>{row.quote}</bdi>
         </span>
       ),
     },
     {
-      key: "location",
-      header: t("testimonials.columns.location"),
-      cell: (row) =>
-        row.location ? (
-          <span dir="auto" className="block max-w-[10rem] truncate">
-            {row.location}
-          </span>
-        ) : (
-          <span className="text-slate-400">{t("common.notSet")}</span>
-        ),
-    },
-    {
       key: "sortOrder",
       header: t("testimonials.columns.sortOrder"),
+      className: "w-[132px]",
       align: "end",
       cell: (row) => {
         const index = rows.indexOf(row);
@@ -192,6 +184,7 @@ export function TestimonialTable({
     {
       key: "status",
       header: t("testimonials.columns.status"),
+      className: "w-[112px]",
       cell: (row) => (
         <Badge tone={row.isPublished ? "green" : "neutral"} dot>
           {row.isPublished ? t("common.published") : t("common.draft")}
@@ -203,11 +196,12 @@ export function TestimonialTable({
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
       sticky: "end",
+      className: "w-[108px]",
       cell: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link
             href={`/admin/testimonials/${row.id}`}
-            aria-label={t("common.edit")}
+            aria-label={`${t("common.edit")}: ${row.studentName}`}
             title={t("common.edit")}
             className={ICON_BUTTON}
           >
@@ -218,7 +212,7 @@ export function TestimonialTable({
             section="testimonials"
             id={row.id}
             name={row.studentName}
-            variant="icon"
+            variant="menu"
             after="refresh"
           />
         </div>
@@ -228,6 +222,7 @@ export function TestimonialTable({
 
   return (
     <DataTable
+      tableClassName="min-w-[860px] table-fixed [&_tbody_td]:py-4"
       columns={columns}
       rows={rows}
       getRowKey={(row) => row.id}

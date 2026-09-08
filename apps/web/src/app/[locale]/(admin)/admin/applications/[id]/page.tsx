@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Badge, PageHeader } from "@/components/admin";
 import { ApplicantPanel } from "@/components/admin/applications/applicant-panel";
 import { ApplicationReviewForm } from "@/components/admin/applications/application-review-form";
+import { ProfileCard } from "@/components/admin/users/profile-card";
 import { ProgramPanel } from "@/components/admin/applications/program-panel";
 import { PAGE_WRAPPER } from "@/components/admin/applications/styles";
 import { TimelinePanel } from "@/components/admin/applications/timeline-panel";
@@ -50,6 +51,7 @@ export default async function AdminApplicationPage({
           email: true,
           phone: true,
           image: true,
+          studentProfile: true,
         },
       },
       program: {
@@ -93,8 +95,9 @@ export default async function AdminApplicationPage({
       />
 
       <div className="mt-6 grid items-start gap-5 xl:grid-cols-3">
-        <div className="space-y-5 xl:col-span-2">
+        <div className="min-w-0 space-y-5 xl:col-span-2">
           <ApplicantPanel user={application.user} />
+          <ProfileCard profile={application.user.studentProfile} />
           <ProgramPanel program={application.program} />
           <TimelinePanel
             createdAt={application.createdAt}

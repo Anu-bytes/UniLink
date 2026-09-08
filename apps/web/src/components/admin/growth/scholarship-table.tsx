@@ -35,26 +35,20 @@ export function ScholarshipTable({
         <span className="block min-w-0">
           <Link
             href={`/admin/scholarships/${row.id}`}
-            className="block max-w-[20rem] truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="block whitespace-normal leading-5 [overflow-wrap:anywhere] font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
-            {row.title}
+            <bdi>{locale === "ar" ? row.titleAr ?? row.title : row.title}</bdi>
           </Link>
           {row.titleAr ? (
-            <span className="block max-w-[20rem] truncate text-[12.5px] text-[#64748B]" dir="rtl">
-              {row.titleAr}
+            <span className="mt-1 block whitespace-normal leading-5 text-[12px] text-[#64748B] [overflow-wrap:anywhere]">
+              <bdi>{locale === "ar" ? row.title : row.titleAr}</bdi>
             </span>
           ) : null}
-        </span>
-      ),
-    },
-    {
-      key: "university",
-      header: t("scholarships.columns.university"),
-      cell: (row) =>
-        row.university ? (
+          <span className="mt-2 block text-[12px] text-[#64748B]">
+          {row.university ? (
           <Link
             href={`/admin/universities/${row.university.id}`}
-            className="block max-w-[16rem] truncate transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="block whitespace-normal leading-5 [overflow-wrap:anywhere] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
             {locale === "ar"
               ? (row.university.nameAr ?? row.university.name)
@@ -62,13 +56,16 @@ export function ScholarshipTable({
           </Link>
         ) : (
           <Badge tone="blue">{t("scholarships.platformWide")}</Badge>
-        ),
+        )}
+          </span>
+        </span>
+      ),
     },
     {
       key: "funding",
       header: t("scholarships.columns.funding"),
       align: "end",
-      className: "tabular-nums whitespace-nowrap",
+      className: "w-[150px] tabular-nums whitespace-nowrap font-semibold",
       cell: (row) =>
         formatMoney(locale, row.fundingAmount, row.currency) ?? (
           <span className="text-slate-400">{t("common.notSet")}</span>
@@ -77,6 +74,7 @@ export function ScholarshipTable({
     {
       key: "deadline",
       header: t("scholarships.columns.deadline"),
+      className: "w-[156px]",
       cell: (row) => {
         if (!row.applicationDeadline) {
           return <span className="text-slate-400">{t("common.notSet")}</span>;
@@ -105,6 +103,7 @@ export function ScholarshipTable({
     {
       key: "status",
       header: t("scholarships.columns.status"),
+      className: "w-[112px]",
       cell: (row) => (
         <Badge tone={row.isPublished ? "green" : "neutral"} dot>
           {row.isPublished ? t("common.published") : t("common.draft")}
@@ -116,11 +115,12 @@ export function ScholarshipTable({
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
       sticky: "end",
+      className: "w-[108px]",
       cell: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link
             href={`/admin/scholarships/${row.id}`}
-            aria-label={t("common.edit")}
+            aria-label={`${t("common.edit")}: ${locale === "ar" ? row.titleAr ?? row.title : row.title}`}
             title={t("common.edit")}
             className={ICON_BUTTON}
           >
@@ -130,8 +130,8 @@ export function ScholarshipTable({
           <DeleteAction
             section="scholarships"
             id={row.id}
-            name={row.title}
-            variant="icon"
+            name={locale === "ar" ? row.titleAr ?? row.title : row.title}
+            variant="menu"
             after="refresh"
           />
         </div>
@@ -141,6 +141,7 @@ export function ScholarshipTable({
 
   return (
     <DataTable
+      tableClassName="min-w-[800px] table-fixed [&_tbody_td]:py-4"
       columns={columns}
       rows={rows}
       getRowKey={(row) => row.id}

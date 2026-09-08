@@ -2,7 +2,8 @@
 
 import { Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
+import { RowDeleteMenu } from "@/components/admin/row-delete-menu";
 
 import { ConfirmDialog, useToast } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
@@ -46,7 +47,7 @@ export function UserDeleteAction({
   user: { id: string; name: string | null; email: string };
   lock: UserLock;
   /** The table row has no space for a label; the detail header does. */
-  variant: "icon" | "button";
+  variant: "icon" | "button" | "menu";
   /** Where the admin ends up once the account is gone. */
   after: "refresh" | "list";
 }) {
@@ -57,6 +58,7 @@ export function UserDeleteAction({
 
   const [counts, setCounts] = useState<UserCounts | null>(null);
   const [open, setOpen] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
   const [pending, setPending] = useState(false);
 
   const label = user.name ?? user.email;
@@ -121,11 +123,16 @@ export function UserDeleteAction({
 
   return (
     <>
+      {variant === "menu" ? (
+        <RowDeleteMenu name={label} pending={pending} triggerRef={triggerRef} lockHint={lockHint} onDelete={() => void requestDelete()} />
+      ) : (
+        <>
       {/* The lock explanation sits on a wrapper, not on the button: a disabled
           control fires none of the hover events a `title` needs, so a locked
           row would otherwise refuse the click and explain nothing. */}
       <span title={lockHint ?? undefined} className="inline-flex">
         <button
+          ref={triggerRef}
           type="button"
           onClick={() => void requestDelete()}
           disabled={pending || lock !== null}
@@ -142,8 +149,11 @@ export function UserDeleteAction({
           {variant === "button" ? t("common.delete") : null}
         </button>
       </span>
+        </>
+      )}
 
       <ConfirmDialog
+        returnFocusRef={triggerRef}
         open={open}
         onOpenChange={(next) => {
           if (!next) setOpen(false);

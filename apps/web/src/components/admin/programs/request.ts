@@ -9,6 +9,8 @@
  * intake and requirement panels swap the 409 for wording an admin can act on,
  * and nothing is swallowed.
  */
+import { adminErrorMessage } from "@/lib/admin-errors";
+
 export type WriteResult<T> =
   | { ok: true; data: T }
   | {
@@ -48,7 +50,7 @@ export async function adminWrite<T>(
     return {
       ok: false,
       status: response.status,
-      message: typeof detail?.error === "string" ? detail.error : null,
+      message: adminErrorMessage(payload, response.status),
       field: typeof detail?.field === "string" ? detail.field : null,
       body: payload,
     };

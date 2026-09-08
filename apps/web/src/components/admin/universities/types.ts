@@ -4,6 +4,7 @@ import type {
   ScoreUnit,
   UniversityType,
 } from "@prisma/client";
+import type { ContentCheck } from "@/lib/admin-catalogue";
 
 // The enum members are written out rather than imported as values: importing
 // them from "@prisma/client" is a runtime import, and these lists feed selects
@@ -53,6 +54,12 @@ export type UniversityRow = {
   publishedAt: Date | null;
   facultyCount: number;
   programCount: number;
+  publishedProgramCount: number;
+  isFeatured: boolean;
+  isRecommended: boolean;
+  isTrending: boolean;
+  updatedAt: Date;
+  contentChecks: ContentCheck[];
 };
 
 /** Everything the Details tab edits, plus the two media columns. */

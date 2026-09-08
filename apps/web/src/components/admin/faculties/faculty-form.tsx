@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { Loader2, TriangleAlert } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -120,6 +122,7 @@ export function FacultyForm({
   }
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  useUnsavedChanges(dirty);
   const complete = form.universityId !== "" && form.name.trim() !== "";
   // Only create falls back to the name: POST derives the slug from it when the
   // box is empty, while PATCH answers an empty slug with a 400 rather than

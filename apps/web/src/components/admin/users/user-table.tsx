@@ -55,16 +55,17 @@ export function UserTable({
             <span className="min-w-0">
               <Link
                 href={`/admin/users/${row.id}`}
-                className="block truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+                className="block whitespace-normal leading-5 [overflow-wrap:anywhere] font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
               >
-                {row.name ?? row.email}
+                <bdi>{row.name ?? row.email}</bdi>
               </Link>
               {/* An address stays Latin on the Arabic side, so it carries its
                   own direction while the block keeps the page direction and the
                   name above it stays on the same edge. */}
-              <span className="block max-w-[18rem] truncate text-[12.5px] text-[#64748B]">
-                <span dir="ltr">{row.email}</span>
+              <span className="mt-1 block whitespace-normal leading-5 [overflow-wrap:anywhere] text-[12px] text-[#64748B]">
+                <bdi dir="ltr">{row.email}</bdi>
               </span>
+              {row.phone ? <span className="mt-1 block text-[12px] text-[#64748B] [overflow-wrap:anywhere]"><bdi dir="ltr">{row.phone}</bdi></span> : null}
             </span>
           </div>
         );
@@ -73,39 +74,29 @@ export function UserTable({
     {
       key: "role",
       header: t("users.columns.role"),
+      className: "w-[116px]",
       cell: (row) => (
         <Badge tone={USER_ROLE_TONES[row.role]}>{tRole(row.role)}</Badge>
       ),
     },
     {
-      key: "phone",
-      header: t("users.columns.phone"),
-      cell: (row) =>
-        row.phone ? (
-          <span dir="ltr" className="whitespace-nowrap">
-            {row.phone}
-          </span>
-        ) : (
-          <span className="text-slate-400">{t("common.notSet")}</span>
-        ),
-    },
-    {
       key: "applications",
       header: t("users.columns.applications"),
       align: "end",
-      className: "tabular-nums",
+      className: "w-[110px] tabular-nums",
       cell: (row) => formatNumber(locale, row.applicationCount),
     },
     {
       key: "saved",
       header: t("users.columns.saved"),
       align: "end",
-      className: "tabular-nums",
+      className: "w-[90px] tabular-nums",
       cell: (row) => formatNumber(locale, row.savedCount),
     },
     {
       key: "joined",
       header: t("users.columns.joined"),
+      className: "w-[156px]",
       cell: (row) => (
         <span className="whitespace-nowrap">{formatDate(locale, row.createdAt)}</span>
       ),
@@ -115,11 +106,12 @@ export function UserTable({
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
       sticky: "end",
+      className: "w-[108px]",
       cell: (row) => (
         <div className="flex items-center justify-end gap-1.5">
           <Link
             href={`/admin/users/${row.id}`}
-            aria-label={t("common.view")}
+            aria-label={`${t("common.view")}: ${row.name ?? row.email}`}
             title={t("common.view")}
             className={ICON_BUTTON}
           >
@@ -129,7 +121,7 @@ export function UserTable({
           <UserDeleteAction
             user={row}
             lock={row.lock}
-            variant="icon"
+            variant="menu"
             after="refresh"
           />
         </div>
@@ -139,6 +131,7 @@ export function UserTable({
 
   return (
     <DataTable
+      tableClassName="min-w-[860px] table-fixed [&_tbody_td]:py-4"
       columns={columns}
       rows={rows}
       getRowKey={(row) => row.id}

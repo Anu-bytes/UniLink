@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { PageHeader, StatCard, StatCardGrid } from "@/components/admin";
 import { PipelineStrip } from "@/components/admin/overview/pipeline-strip";
+import { AttentionPanel } from "@/components/admin/overview/attention-panel";
 import { RecentApplications } from "@/components/admin/overview/recent-applications";
 import { RecentLeads } from "@/components/admin/overview/recent-leads";
 import { RecentUsers } from "@/components/admin/overview/recent-users";
@@ -141,6 +142,7 @@ export default async function AdminOverviewPage() {
       <PageHeader title={t("title")} description={t("subtitle")} />
 
       <div className="mt-6 flex flex-col gap-6">
+        <AttentionPanel submitted={byStatus.SUBMITTED} reviewing={byStatus.IN_REVIEW} drafts={universitiesTotal - universitiesPublished} />
         <StatCardGrid>
           <StatCard
             label={t("stats.universities")}

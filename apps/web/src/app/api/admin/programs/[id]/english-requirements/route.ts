@@ -13,6 +13,7 @@ import {
   readJson,
 } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
+import { validEnglishScore } from "@/lib/admin-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -79,6 +80,10 @@ export async function POST(
   const body = await readJson(request, createSchema);
   if (!body.ok) return body.response;
   const input = body.data;
+
+  if (!validEnglishScore(input.test, input.minScore)) {
+    return badRequest("Score is out of range for this test", "minScore", "SCORE_RANGE");
+  }
 
   // EnglishTest.NONE exists so a student can say they hold no certificate. As
   // a program requirement it would read "this program requires no English",

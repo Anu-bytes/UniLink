@@ -1,6 +1,6 @@
 import { ExternalLink } from "lucide-react";
 import { notFound } from "next/navigation";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { Badge, PageHeader } from "@/components/admin";
 import { ContentPanel } from "@/components/admin/universities/content-panel";
@@ -35,6 +35,7 @@ export default async function EditUniversityPage({
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
   await requireAdminPage();
+  const locale = await getLocale();
 
   const { id } = await params;
   const sp = await searchParams;
@@ -132,10 +133,10 @@ export default async function EditUniversityPage({
       <PageHeader
         breadcrumb={[
           { href: "/admin/universities", label: t("universities.title") },
-          { label: university.name },
+          { label: locale === "ar" ? university.nameAr ?? university.name : university.name },
         ]}
-        title={university.name}
-        description={university.nameAr ?? undefined}
+        title={locale === "ar" ? university.nameAr ?? university.name : university.name}
+        description={locale === "ar" ? university.name : university.nameAr ?? undefined}
         actions={
           <>
             {university.publishedAt ? (
