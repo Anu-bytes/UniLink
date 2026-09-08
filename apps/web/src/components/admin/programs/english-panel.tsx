@@ -1,5 +1,8 @@
 "use client";
 
+import { useUnsavedChanges, useUnsavedDraft } from "@/components/admin/unsaved-changes";
+import { ENGLISH_SCORE_MAX } from "@/lib/admin-validation";
+
 import type { EnglishTest } from "@prisma/client";
 import { Languages, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -216,13 +219,13 @@ function RequirementControls({
         label={t("programs.english.minScore")}
         htmlFor={`${idPrefix}-minScore`}
         required
-        hint={t("programs.english.minScoreHint")}
+        hint={t("programs.english.scoreRange", { max: ENGLISH_SCORE_MAX[draft.test as keyof typeof ENGLISH_SCORE_MAX] ?? 0 })}
       >
         <NumberInput
           id={`${idPrefix}-minScore`}
           dir="ltr"
           min={0}
-          max={200}
+          max={ENGLISH_SCORE_MAX[draft.test as keyof typeof ENGLISH_SCORE_MAX] ?? 0}
           step="0.5"
           className="max-w-[10rem]"
           value={draft.minScore}
@@ -252,6 +255,7 @@ function RequirementCard({
   const [error, setError] = useState<string | null>(null);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(toDraft(requirement));
+  useUnsavedChanges(dirty);
 
   // A stored row can only hold NONE if it predates the API's rejection of it;
   // keeping it in this row's list stops the select from silently rewriting the
@@ -347,6 +351,7 @@ function RequirementCreateCard({
     test: available[0] ?? REQUIREMENT_TESTS[0],
     minScore: "",
   }));
+  useUnsavedDraft(draft);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState<string | null>(null);
 

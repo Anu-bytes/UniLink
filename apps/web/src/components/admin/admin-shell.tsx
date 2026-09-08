@@ -12,6 +12,7 @@ import {
   Library,
   LogOut,
   Menu,
+  X,
   Quote,
   Users,
 } from "lucide-react";
@@ -21,10 +22,11 @@ import { useEffect, useRef, useState, type ComponentType } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { useConfirmNavigation } from "./unsaved-changes";
+import { useSidebarPreference } from "./sidebar-preference";
 import { cn } from "@/lib/utils";
 import { initialsAvatar } from "@/lib/format";
 
-const STORAGE_KEY = "unilink.admin.sidebar.collapsed";
 
 type NavItem = {
   href: string;
@@ -75,18 +77,15 @@ export function AdminShell({
   user: { name: string | null; email: string | null; image: string | null };
 }) {
   const t = useTranslations("Admin");
+  const confirmNavigation = useConfirmNavigation();
   const pathname = usePathname();
 
-  const [collapsed, setCollapsed] = useState(false);
+  const { collapsed, toggleCollapsed } = useSidebarPreference();
   const [drawerOpen, setDrawerOpen] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
-
-  // Read the stored preference after mount so the server and client agree on
-  // the first render.
-  useEffect(() => {
-    setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
-  }, []);
+  const drawerRef = useRef<HTMLDivElement>(null);
+  const drawerCloseRef = useRef<HTMLButtonElement>(null);
 
   // Covers navigation to a different route. Tapping the link for the route you
   // are already on does not change the pathname, so the links close it directly
@@ -101,11 +100,22 @@ export function AdminShell({
 
   useEffect(() => {
     if (!drawerOpen) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    drawerCloseRef.current?.focus();
+    const breakpoint = window.matchMedia("(min-width: 1024px)");
+    const onResize = () => { if (breakpoint.matches) setDrawerOpen(false); };
+    breakpoint.addEventListener("change", onResize);
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setDrawerOpen(false);
+      // A discard-confirmation portal may be above the drawer. Let that
+      // dialog handle Escape without closing the navigation behind it.
+      if (event.key === "Escape" && drawerRef.current?.contains(event.target as Node)) setDrawerOpen(false);
     }
     document.addEventListener("keydown", onKeyDown);
-    return () => document.removeEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("keydown", onKeyDown);
+      breakpoint.removeEventListener("change", onResize);
+      if (previous?.isConnected) previous.focus();
+    };
   }, [drawerOpen]);
 
   // The account menu is held in React rather than in a <details>, which is the
@@ -127,14 +137,6 @@ export function AdminShell({
       document.removeEventListener("keydown", onKeyDown);
     };
   }, [menuOpen]);
-
-  function toggleCollapsed() {
-    setCollapsed((previous) => {
-      const next = !previous;
-      window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
-      return next;
-    });
-  }
 
   function isActive(href: string) {
     if (href === "/admin") return pathname === "/admin";
@@ -266,20 +268,42 @@ export function AdminShell({
 
       {/* Mobile drawer */}
       {drawerOpen ? (
-        <div className="fixed inset-0 z-50 lg:hidden">
+        <div
+          ref={drawerRef}
+          role="dialog"
+          aria-modal="true"
+          aria-label={t("nav.tag")}
+          onKeyDown={(event) => {
+            if (event.key !== "Tab") return;
+            const controls = Array.from(drawerRef.current?.querySelectorAll<HTMLElement>('a[href], button:not([disabled]):not([tabindex="-1"])') ?? []).filter((element) => element.getClientRects().length > 0);
+            if (!controls?.length) return;
+            const first = controls[0], last = controls[controls.length - 1];
+            if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+            else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+          }}
+          className="fixed inset-0 z-50 lg:hidden"
+        >
           <button
             type="button"
-            aria-label={t("nav.closeMenu")}
+            tabIndex={-1}
+            aria-hidden="true"
             onClick={() => setDrawerOpen(false)}
             className="absolute inset-0 bg-slate-900/50"
           />
           <div className="absolute inset-y-0 start-0 w-[248px] shadow-xl">
+            <button
+              ref={drawerCloseRef}
+              type="button"
+              aria-label={t("nav.closeMenu")}
+              onClick={() => setDrawerOpen(false)}
+              className="absolute end-3 top-3 z-10 flex size-10 items-center justify-center rounded-lg bg-[#0B1220] text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-white"
+            ><X className="size-5" aria-hidden /></button>
             {renderSidebar(false)}
           </div>
         </div>
       ) : null}
 
-      <div className="flex min-w-0 flex-1 flex-col">
+      <div inert={drawerOpen} className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-[#E2E8F0] bg-white px-4 md:px-6">
           <button
             type="button"
@@ -293,7 +317,7 @@ export function AdminShell({
           <div className="ms-auto flex items-center gap-2 sm:gap-3">
             {/* Same control as the rest of the site, so switching language keeps
                 you on the admin page you were reading. */}
-            <LanguageSwitcher />
+            <LanguageSwitcher onBeforeChange={confirmNavigation} />
 
             <Link
               href="/"
@@ -366,7 +390,7 @@ export function AdminShell({
                   </Link>
                   <button
                     type="button"
-                    onClick={() => signOut({ callbackUrl: "/" })}
+                    onClick={() => confirmNavigation(() => { void signOut({ callbackUrl: "/" }); })}
                     className="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-[13.5px] font-semibold text-[#C81F15] transition-colors hover:bg-[#FFF0EE] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F82C1F]"
                   >
                     <LogOut className="size-4" aria-hidden />

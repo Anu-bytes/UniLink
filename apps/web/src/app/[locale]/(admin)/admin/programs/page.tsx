@@ -12,6 +12,7 @@ import { Link } from "@/i18n/navigation";
 import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
+import { adminPage } from "@/lib/admin-validation";
 
 /**
  * The columns /api/admin/programs will sort by. The value arrives as a raw
@@ -50,8 +51,7 @@ export default async function AdminProgramsPage({
   const published =
     publishedParam === "true" ? true : publishedParam === "false" ? false : null;
 
-  const requestedPage = Number.parseInt(single(sp.page), 10);
-  const page = Number.isFinite(requestedPage) ? Math.max(1, requestedPage) : 1;
+  const page = adminPage(single(sp.page));
 
   const sortParam = single(sp.sort);
   const sort = (SORT_COLUMNS as readonly string[]).includes(sortParam)

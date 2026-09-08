@@ -97,7 +97,7 @@ export function TableToolbar({
       </div>
 
       {total != null ? (
-        <p className="text-[13px] text-[#64748B]">
+        <p className="shrink-0 whitespace-nowrap text-[13px] text-[#64748B]">
           {formatNumber(locale, total)} {totalLabel ?? t("common.results")}
         </p>
       ) : null}

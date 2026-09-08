@@ -83,10 +83,10 @@ export default async function EditFacultyPage({
   return (
     <div className={PAGE_WRAPPER}>
       <PageHeader
-        title={faculty.name}
+        title={locale === "ar" ? faculty.nameAr ?? faculty.name : faculty.name}
         breadcrumb={[
           { href: "/admin/faculties", label: t("title") },
-          { label: faculty.name },
+          { label: locale === "ar" ? faculty.nameAr ?? faculty.name : faculty.name },
         ]}
         description={
           <Link

@@ -1317,6 +1317,51 @@
     "saved": "Saved"
   },
   "Admin": {
+    "catalogue": {
+      "enabled": "On",
+      "disabled": "Off",
+      "showDetails": "Show catalogue details",
+      "hideDetails": "Hide catalogue details",
+      "missingCount": "Content: {count} missing",
+      "contentComplete": "Content complete",
+      "contentChecklist": "Content checklist",
+      "present": "Present",
+      "missing": "Missing",
+      "editContent": "Edit content",
+      "updated": "Last updated",
+      "catalogue": "Catalogue",
+      "admissions": "Admission scores",
+      "facultyRules": "Faculty scores configured",
+      "universityRules": "University-wide scores only",
+      "noRules": "No scores configured",
+      "facultyRuleCount": "Faculty-specific rules: {count}",
+      "universityRuleCount": "University-wide rules: {count}",
+      "scoreNote": "Rules may use different certificate systems, years and units. Open the scores editor to review them.",
+      "reviewScores": "Review admission scores",
+      "technical": "Record details",
+      "slug": "Slug",
+      "order": "Display order",
+      "programs": "{count, plural, one {# program} other {# programs}}",
+      "faculties": "{count, plural, one {# faculty} other {# faculties}}",
+      "publishedPrograms": "{count} published",
+      "draftPrograms": "{count} draft",
+      "morePrograms": "View all {count} programs",
+      "noPrograms": "No programs yet",
+      "programPreview": "Program preview",
+      "featured": "Featured",
+      "recommended": "Recommended",
+      "trending": "Trending",
+      "promotion": "Promotion",
+      "noPromotion": "No promotion flags",
+      "checks": {
+        "nameAr": "Arabic name",
+        "description": "English description",
+        "descriptionAr": "Arabic description",
+        "image": "Faculty image",
+        "logo": "University logo",
+        "cover": "Cover image"
+      }
+    },
     "nav": {
       "tag": "Admin",
       "overview": "Overview",
@@ -1381,6 +1426,9 @@
       "saveFailed": "Could not save your changes",
       "deleteFailed": "Could not delete that",
       "unsavedChanges": "You have unsaved changes",
+      "discardChanges": "You have unsaved changes. Leave this page and discard them?",
+      "keepEditing": "Keep editing",
+      "discardAndLeave": "Discard and leave",
       "upload": "Upload an image",
       "uploadHint": "JPG, PNG or WebP, up to 8 MB",
       "uploadFailed": "The upload failed. Try again.",
@@ -1411,6 +1459,14 @@
       }
     },
     "overview": {
+      "attention": {
+        "title": "Needs attention",
+        "description": "Start with the work that needs a decision or a final check.",
+        "clear": "No applications waiting and no university drafts to finish.",
+        "submitted": "Awaiting review",
+        "reviewing": "Reviews in progress",
+        "drafts": "University drafts"
+      },
       "title": "Overview",
       "subtitle": "Everything happening across UniLink right now.",
       "viewAll": "View all",
@@ -1731,6 +1787,8 @@
       "searchPlaceholder": "Search by program, university or slug",
       "viewPublic": "View public page",
       "columns": {
+        "program": "Program",
+        "institution": "University / Faculty",
         "name": "Name",
         "university": "University",
         "faculty": "Faculty",
@@ -1738,6 +1796,11 @@
         "fieldOfStudy": "Field",
         "tuition": "Tuition",
         "status": "Status"
+      },
+      "tuitionPeriods": {
+        "YEAR": "per year",
+        "TERM": "per term",
+        "TOTAL": "total tuition"
       },
       "filters": {
         "university": "Filter by university",
@@ -1847,6 +1910,7 @@
         "test": "Test",
         "minScore": "Minimum score",
         "minScoreHint": "On the test's own scale, e.g. 6.5 for IELTS or 90 for TOEFL.",
+        "scoreRange": "Enter a score greater than 0 and no higher than {max} for this test.",
         "duplicate": "This program already has a requirement for that test.",
         "allTestsUsed": "Every test already has a requirement.",
         "emptyTitle": "No English requirements",

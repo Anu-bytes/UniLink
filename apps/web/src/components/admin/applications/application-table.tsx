@@ -3,14 +3,13 @@
 import { Eye, FileText } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
-import { Badge, DataTable, EmptyState, type Column } from "@/components/admin";
+import { DataTable, EmptyState, type Column } from "@/components/admin";
 import { Link } from "@/i18n/navigation";
 import { formatDate, initialsAvatar } from "@/lib/format";
 
 import { ApplicationStatusSelect } from "./application-status-select";
 import { ICON_BUTTON } from "./styles";
 import {
-  APPLICATION_STATUS_TONES,
   applicantLabel,
   localizedName,
   type ApplicationRow,
@@ -25,13 +24,13 @@ export function ApplicationTable({
   filtered: boolean;
 }) {
   const t = useTranslations("Admin");
-  const tStatus = useTranslations("Applications.status");
   const locale = useLocale();
 
   const columns: Column<ApplicationRow>[] = [
     {
       key: "student",
       header: t("applications.columns.student"),
+      className: "w-[30%]",
       cell: (row) => {
         const label = applicantLabel(row.user);
         const avatar = initialsAvatar(label);
@@ -60,14 +59,14 @@ export function ApplicationTable({
             <span className="min-w-0">
               <Link
                 href={`/admin/applications/${row.id}`}
-                className="block truncate font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+                className="block whitespace-normal leading-5 [overflow-wrap:anywhere] font-semibold text-[#0F172A] transition-colors hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
               >
-                {label}
+                <bdi>{label}</bdi>
               </Link>
               {/* An address stays Latin on the Arabic side, so it carries its
                   own direction while the block keeps the page direction. */}
-              <span className="block max-w-[16rem] truncate text-[12.5px] text-[#64748B]">
-                <span dir="ltr">{row.user.email}</span>
+              <span className="mt-1 block whitespace-normal leading-5 [overflow-wrap:anywhere] text-[12px] text-[#64748B]">
+                <bdi dir="ltr">{row.user.email}</bdi>
               </span>
             </span>
           </div>
@@ -79,21 +78,19 @@ export function ApplicationTable({
       header: t("applications.columns.program"),
       // Capped: programme names run long, and an uncapped cell widens the
       // table until the status select falls off the screen.
-      className: "max-w-[240px]",
       cell: (row) => (
         <span className="block min-w-0">
-          <span className="block truncate font-medium text-[#0F172A]">
-            {row.program.name}
+          <span className="block whitespace-normal leading-5 [overflow-wrap:anywhere] font-medium text-[#0F172A]">
+            <bdi>{localizedName(locale, row.program.name, row.program.nameAr)}</bdi>
           </span>
           {row.program.nameAr ? (
             <span
-              dir="rtl"
-              className="block truncate text-[12.5px] text-[#64748B]"
+              className="mt-1 block whitespace-normal leading-5 [overflow-wrap:anywhere] text-[12px] text-[#64748B]"
             >
-              {row.program.nameAr}
+              <bdi>{locale === "ar" ? row.program.name : row.program.nameAr}</bdi>
             </span>
           ) : null}
-          <span className="block truncate text-[12px] text-slate-400">
+          <span className="mt-2 block whitespace-normal leading-5 [overflow-wrap:anywhere] text-[12px] text-[#64748B]">
             {localizedName(
               locale,
               row.program.university.name,
@@ -106,17 +103,22 @@ export function ApplicationTable({
     {
       key: "status",
       header: t("applications.columns.status"),
+      className: "w-[190px]",
       cell: (row) => (
-        <Badge tone={APPLICATION_STATUS_TONES[row.status]} dot>
-          {tStatus(row.status)}
-        </Badge>
+        <ApplicationStatusSelect
+            id={row.id}
+            status={row.status}
+            applicant={applicantLabel(row.user)}
+          />
       ),
     },
     {
       key: "submitted",
       header: t("applications.columns.submitted"),
-      cell: (row) =>
-        row.submittedAt ? (
+      className: "w-[154px]",
+      cell: (row) => (
+        <div className="space-y-1.5">
+        {row.submittedAt ? (
           <span className="whitespace-nowrap">
             {formatDate(locale, row.submittedAt)}
           </span>
@@ -124,15 +126,9 @@ export function ApplicationTable({
           <span className="text-slate-400">
             {t("applications.notSubmitted")}
           </span>
-        ),
-    },
-    {
-      key: "updated",
-      header: t("applications.columns.updated"),
-      cell: (row) => (
-        <span className="whitespace-nowrap">
-          {formatDate(locale, row.updatedAt)}
-        </span>
+        )}
+        <span className="block text-[11.5px] leading-4 text-[#64748B]">{t("applications.columns.updated")}<br />{formatDate(locale, row.updatedAt)}</span>
+        </div>
       ),
     },
     {
@@ -140,16 +136,13 @@ export function ApplicationTable({
       header: <span className="sr-only">{t("common.actions")}</span>,
       align: "end",
       sticky: "end",
+      className: "w-[68px]",
       cell: (row) => (
         <div className="flex items-center justify-end gap-1.5">
-          <ApplicationStatusSelect
-            id={row.id}
-            status={row.status}
-            applicant={applicantLabel(row.user)}
-          />
+
           <Link
             href={`/admin/applications/${row.id}`}
-            aria-label={t("common.view")}
+            aria-label={`${t("common.view")}: ${applicantLabel(row.user)}`}
             title={t("common.view")}
             className={ICON_BUTTON}
           >
@@ -162,6 +155,7 @@ export function ApplicationTable({
 
   return (
     <DataTable
+      tableClassName="min-w-[920px] table-fixed [&_tbody_td]:py-4"
       columns={columns}
       rows={rows}
       getRowKey={(row) => row.id}

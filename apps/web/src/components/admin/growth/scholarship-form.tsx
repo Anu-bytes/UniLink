@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -127,6 +129,7 @@ export function ScholarshipForm({
   }
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  useUnsavedChanges(dirty);
   const complete = form.title.trim() !== "";
   const slugPreview = previewSlug(form.slug || form.title);
 

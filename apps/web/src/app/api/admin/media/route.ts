@@ -116,13 +116,22 @@ export async function DELETE(request: Request) {
   const guard = await requireAdmin();
   if (!guard.ok) return guard.response;
 
+  if (!isStorageConfigured()) {
+    return NextResponse.json({ error: "Media storage is not configured on this server" }, { status: 503 });
+  }
+
   const body = await readJson(request, deleteSchema);
   if (!body.ok) return body.response;
 
   // A URL that is not one of our own media objects — an externally hosted
   // logo, say — is a no-op rather than a 404: mediaPathFromUrl already refuses
   // to resolve it, and the caller only wants the picture gone either way.
-  await deleteMediaByUrl(body.data.url);
+  try {
+    await deleteMediaByUrl(body.data.url, { strict: true });
+  } catch (error) {
+    console.error("Media deletion failed", error);
+    return NextResponse.json({ error: "Media deletion failed" }, { status: 502 });
+  }
 
   return NextResponse.json({ ok: true });
 }

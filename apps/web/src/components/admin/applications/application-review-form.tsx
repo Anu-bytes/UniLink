@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import type { ApplicationStatus } from "@prisma/client";
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
@@ -53,6 +55,7 @@ export function ApplicationReviewForm({
   const [pending, setPending] = useState(false);
 
   const dirty = value !== baseline.status || note !== baseline.note;
+  useUnsavedChanges(dirty);
 
   async function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();

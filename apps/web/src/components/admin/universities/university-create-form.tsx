@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedDraft } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -62,6 +64,7 @@ export function UniversityCreateForm() {
   const fieldId = useId();
 
   const [form, setForm] = useState<CreateState>(EMPTY);
+  useUnsavedDraft(form);
   const [pending, setPending] = useState(false);
   const [failure, setFailure] = useState<{
     field: string | null;

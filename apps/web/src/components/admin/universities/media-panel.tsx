@@ -1,5 +1,8 @@
 "use client";
 
+
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { ChevronDown, ChevronUp, ImageIcon, Loader2, Plus, Trash2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useState } from "react";
@@ -47,6 +50,7 @@ export function MediaPanel({
   const [deleting, setDeleting] = useState(false);
 
   const mediaDirty = logo !== logoUrl || cover !== coverImageUrl;
+  useUnsavedChanges(mediaDirty || Boolean(newUrl || newAlt || newAltAr));
 
   function reportFailure(message: string | null, fallbackKey: string) {
     toast({
@@ -337,6 +341,7 @@ function GalleryAltFields({
   const [pending, setPending] = useState(false);
 
   const dirty = alt !== (image.alt ?? "") || altAr !== (image.altAr ?? "");
+  useUnsavedChanges(dirty);
 
   async function save() {
     setPending(true);

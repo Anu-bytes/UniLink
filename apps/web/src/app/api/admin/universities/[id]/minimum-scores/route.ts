@@ -16,6 +16,7 @@ import {
   readJson,
 } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
+import { validMinimumScore } from "@/lib/admin-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -122,6 +123,10 @@ export async function POST(
   const body = await readJson(request, createSchema);
   if (!body.ok) return body.response;
   const input = body.data;
+
+  if (!validMinimumScore(input.unit ?? "PERCENT", input.minScore)) {
+    return badRequest("Percentage must be between 0 and 100", "minScore", "PERCENT_RANGE");
+  }
 
   const university = await prisma.university.findUnique({
     where: { id: universityId },

@@ -15,6 +15,7 @@ import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { localized } from "@/lib/catalog";
 import { prisma } from "@/lib/prisma";
+import { adminPage } from "@/lib/admin-validation";
 
 function firstParam(value: string | string[] | undefined) {
   return Array.isArray(value) ? value[0] : value;
@@ -37,7 +38,7 @@ export default async function AdminApplicationsPage({
   const q = firstParam(sp.q)?.trim().slice(0, 120) ?? "";
   const status = parseStatus(firstParam(sp.status));
   const universityId = firstParam(sp.universityId)?.trim() || null;
-  const page = Math.max(1, Number.parseInt(firstParam(sp.page) ?? "1", 10) || 1);
+  const page = adminPage(firstParam(sp.page));
 
   // Everything except the status filter, exactly as the list endpoint splits
   // it: the chips have to keep counting the statuses the admin filtered out,

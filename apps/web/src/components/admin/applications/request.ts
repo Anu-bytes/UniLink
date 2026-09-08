@@ -1,4 +1,5 @@
 import type { ApplicationStatus } from "@prisma/client";
+import { adminErrorMessage } from "@/lib/admin-errors";
 
 export type ApplicationPatch = {
   status?: ApplicationStatus;
@@ -34,10 +35,9 @@ export async function patchApplication(
   if (response.ok) return { ok: true };
 
   const payload: unknown = await response.json().catch(() => null);
-  const detail = payload as { error?: unknown } | null;
 
   return {
     ok: false,
-    message: typeof detail?.error === "string" ? detail.error : null,
+    message: adminErrorMessage(payload, response.status),
   };
 }

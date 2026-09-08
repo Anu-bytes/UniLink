@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges, useUnsavedDraft } from "@/components/admin/unsaved-changes";
+
 import { GaugeCircle, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -220,6 +222,7 @@ function ScoreControls({
           dir="ltr"
           step="0.01"
           min={0}
+          max={draft.unit === "PERCENT" ? 100 : 9999.99}
           value={draft.minScore}
           onChange={(event) => onChange("minScore", event.target.value)}
         />
@@ -272,6 +275,7 @@ function ScoreFields({
   const [pending, setPending] = useState(false);
 
   const dirty = JSON.stringify(draft) !== JSON.stringify(toDraft(score));
+  useUnsavedChanges(dirty);
 
   function change<K extends keyof ScoreDraft>(key: K, value: ScoreDraft[K]) {
     setDraft((current) => ({ ...current, [key]: value }));
@@ -357,6 +361,7 @@ function ScoreCreateCard({
     unit: SCORE_UNITS[0],
     year: "",
   });
+  useUnsavedDraft(draft);
   const [pending, setPending] = useState(false);
 
   function change<K extends keyof ScoreDraft>(key: K, value: ScoreDraft[K]) {

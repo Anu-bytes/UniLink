@@ -2,10 +2,14 @@
 
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useSyncExternalStore } from "react";
 import { createPortal } from "react-dom";
 
 import { cn } from "@/lib/utils";
+
+const subscribeToMount = () => () => {};
+const clientSnapshot = () => true;
+const serverSnapshot = () => false;
 
 /**
  * Hand-rolled rather than pulled from a dialog library: the admin needs one
@@ -30,6 +34,7 @@ export function ConfirmDialog({
   onConfirm,
   destructive,
   pending,
+  returnFocusRef,
 }: {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -40,17 +45,17 @@ export function ConfirmDialog({
   onConfirm: () => void;
   destructive?: boolean;
   pending?: boolean;
+  /** Use when the action that opened the dialog lives in a dismissed menu. */
+  returnFocusRef?: React.RefObject<HTMLElement | null>;
 }) {
   const t = useTranslations("Admin");
   const titleId = useId();
+  const descriptionId = useId();
   const cancelRef = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDivElement>(null);
   // document does not exist while this renders on the server, and the portal
   // target has to be the same on the client's first paint, so mount first.
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, []);
+  const mounted = useSyncExternalStore(subscribeToMount, clientSnapshot, serverSnapshot);
 
   useEffect(() => {
     if (!open) return;
@@ -64,8 +69,14 @@ export function ConfirmDialog({
   // Cancel takes focus, not confirm: a stray Enter on a destructive dialog
   // must not delete anything.
   useEffect(() => {
-    if (open) cancelRef.current?.focus();
-  }, [open]);
+    if (!open || !mounted) return;
+    const previous = document.activeElement instanceof HTMLElement ? document.activeElement : null;
+    const returnTarget = returnFocusRef?.current ?? previous;
+    cancelRef.current?.focus();
+    return () => {
+      if (returnTarget?.isConnected) returnTarget.focus();
+    };
+  }, [open, mounted, returnFocusRef]);
 
   if (!open || !mounted) return null;
 
@@ -80,16 +91,27 @@ export function ConfirmDialog({
       />
 
       <div
+        ref={dialogRef}
         role="dialog"
         aria-modal="true"
         aria-labelledby={titleId}
+        aria-describedby={description ? descriptionId : undefined}
+        onKeyDown={(event) => {
+          if (event.key !== "Tab") return;
+          const controls = dialogRef.current?.querySelectorAll<HTMLElement>('button:not([disabled]), a[href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex="0"]');
+          if (!controls?.length) { event.preventDefault(); return; }
+          const first = controls[0];
+          const last = controls[controls.length - 1];
+          if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+          else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+        }}
         className="relative w-full max-w-md rounded-xl border border-slate-200/80 bg-white p-6 shadow-xl"
       >
         <h2 id={titleId} className="text-[15px] font-semibold text-[#0F172A]">
           {title}
         </h2>
         {description ? (
-          <div className="mt-2 text-[13px] leading-relaxed text-[#64748B]">
+          <div id={descriptionId} className="mt-2 text-[13px] leading-relaxed text-[#64748B]">
             {description}
           </div>
         ) : null}

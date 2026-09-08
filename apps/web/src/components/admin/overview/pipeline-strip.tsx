@@ -52,9 +52,10 @@ export async function PipelineStrip({
 
       <div className="mt-3 grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-6">
         {APPLICATION_STATUS_ORDER.map((status) => (
-          <div
+          <Link
             key={status}
-            className="rounded-xl border border-slate-200/80 bg-white p-4 shadow-[0_1px_2px_rgba(16,24,40,0.05)]"
+            href={`/admin/applications?status=${status}`}
+            className="rounded-xl border border-slate-200/80 bg-white p-4 transition-colors hover:border-blue-300 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-blue-600"
           >
             <Badge tone={APPLICATION_STATUS_TONES[status]} dot>
               {tStatus(status)}
@@ -62,7 +63,7 @@ export async function PipelineStrip({
             <p className="mt-3 text-[22px] font-semibold tabular-nums tracking-[-0.02em] text-[#0F172A]">
               {formatNumber(locale, counts[status])}
             </p>
-          </div>
+          </Link>
         ))}
       </div>
     </section>

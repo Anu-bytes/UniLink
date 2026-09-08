@@ -64,11 +64,11 @@ export default async function EditScholarshipPage({
   return (
     <div className={PAGE_WRAPPER}>
       <PageHeader
-        title={detail.title}
+        title={locale === "ar" ? detail.titleAr ?? detail.title : detail.title}
         description={t("editSubtitle")}
         breadcrumb={[
           { href: "/admin/scholarships", label: t("title") },
-          { label: detail.title },
+          { label: locale === "ar" ? detail.titleAr ?? detail.title : detail.title },
         ]}
         actions={
           <DeleteAction

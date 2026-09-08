@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges, useUnsavedDraft } from "@/components/admin/unsaved-changes";
+
 import { ChevronDown, ChevronUp, FileText, Loader2, Plus, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -229,6 +231,7 @@ function ContentBlockFields({
     titleAr !== (block.titleAr ?? "") ||
     body !== block.body ||
     bodyAr !== (block.bodyAr ?? "");
+  useUnsavedChanges(dirty);
 
   async function save() {
     setPending(true);
@@ -320,6 +323,7 @@ function ContentCreateCard({
   const [titleAr, setTitleAr] = useState("");
   const [body, setBody] = useState("");
   const [bodyAr, setBodyAr] = useState("");
+  useUnsavedDraft({ title, titleAr, body, bodyAr });
   const [pending, setPending] = useState(false);
 
   async function create() {

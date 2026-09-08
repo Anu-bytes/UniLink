@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedDraft } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -76,6 +78,7 @@ export function ProgramCreateForm({
     descriptionAr: "",
   });
   const [pending, setPending] = useState(false);
+  useUnsavedDraft(form);
   const [failure, setFailure] = useState<{
     field: string | null;
     message: string;

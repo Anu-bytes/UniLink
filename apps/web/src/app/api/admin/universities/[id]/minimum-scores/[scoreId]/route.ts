@@ -7,10 +7,12 @@ import {
   badRequest,
   decimalToNumber,
   emptyToNull,
+  notFound,
   prismaErrorResponse,
   readJson,
 } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
+import { validMinimumScore } from "@/lib/admin-validation";
 
 export const dynamic = "force-dynamic";
 
@@ -67,6 +69,12 @@ export async function PATCH(
   const body = await readJson(request, updateSchema);
   if (!body.ok) return body.response;
   const input = body.data;
+
+  const current = await prisma.minimumScore.findUnique({ where: { id: scoreId, universityId } });
+  if (!current) return notFound("Minimum score");
+  if (!validMinimumScore(input.unit ?? current.unit, input.minScore ?? Number(current.minScore))) {
+    return badRequest("Percentage must be between 0 and 100", "minScore", "PERCENT_RANGE");
+  }
 
   const data: Prisma.MinimumScoreUpdateInput = {};
   if (input.system !== undefined) data.system = input.system;

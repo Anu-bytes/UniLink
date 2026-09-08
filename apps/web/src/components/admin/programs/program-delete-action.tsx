@@ -1,16 +1,17 @@
 "use client";
 
-import { Trash2 } from "lucide-react";
+import { Loader2, MoreHorizontal, Trash2 } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useState } from "react";
+import { useRef, useState } from "react";
 
 import { ConfirmDialog, useToast } from "@/components/admin";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useRouter } from "@/i18n/navigation";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 import { adminWrite } from "./request";
-import { DANGER_BUTTON } from "./styles";
+import { DANGER_BUTTON, ICON_BUTTON } from "./styles";
 import type { ProgramCounts } from "./types";
 
 /** Rendered in the dialog in the order an admin reads them. */
@@ -43,8 +44,8 @@ export function ProgramDeleteAction({
   after,
 }: {
   program: { id: string; name: string };
-  /** The table row has no space for a label; the editor header does. */
-  variant: "icon" | "button";
+  /** Keep destructive row actions in a menu; the editor keeps its button. */
+  variant: "icon" | "button" | "menu";
   /** Where the admin ends up once the row is gone. */
   after: "refresh" | "list";
 }) {
@@ -56,6 +57,7 @@ export function ProgramDeleteAction({
   const [counts, setCounts] = useState<ProgramCounts | null>(null);
   const [open, setOpen] = useState(false);
   const [pending, setPending] = useState(false);
+  const triggerRef = useRef<HTMLButtonElement>(null);
 
   function failed(message: string | null) {
     toast({
@@ -118,7 +120,26 @@ export function ProgramDeleteAction({
 
   return (
     <>
-      <button
+      {variant === "menu" ? (
+        <DropdownMenu>
+          <DropdownMenuTrigger
+            ref={triggerRef}
+            disabled={pending}
+            aria-label={`${t("common.actions")}: ${program.name}`}
+            title={t("common.actions")}
+            className={ICON_BUTTON}
+          >
+            {pending ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <MoreHorizontal className="size-4" aria-hidden />}
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="min-w-40" dir={locale === "ar" ? "rtl" : "ltr"}>
+            <DropdownMenuItem variant="destructive" onClick={() => void requestDelete()}>
+              <Trash2 aria-hidden />
+              {t("common.delete")}
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      ) : <button
+        ref={triggerRef}
         type="button"
         onClick={() => void requestDelete()}
         disabled={pending}
@@ -128,9 +149,10 @@ export function ProgramDeleteAction({
       >
         <Trash2 className="size-4" aria-hidden />
         {variant === "button" ? t("common.delete") : null}
-      </button>
+      </button>}
 
       <ConfirmDialog
+        returnFocusRef={triggerRef}
         open={open}
         onOpenChange={(next) => {
           if (!next) setOpen(false);

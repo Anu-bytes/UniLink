@@ -36,7 +36,7 @@ export function PageHeader({
                       <ChevronRight className="size-3.5 rtl:rotate-180" />
                     </li>
                   ) : null}
-                  <li>
+                  <li className="min-w-0 [overflow-wrap:anywhere]">
                     {crumb.href ? (
                       <Link
                         href={crumb.href}
@@ -54,11 +54,11 @@ export function PageHeader({
           </nav>
         ) : null}
 
-        <h1 className="text-[22px] font-semibold tracking-[-0.01em] text-[#0F172A]">
+        <h1 className="text-[22px] font-semibold tracking-[-0.01em] text-[#0F172A] [overflow-wrap:anywhere]">
           {title}
         </h1>
         {description ? (
-          <p className="mt-1 max-w-2xl text-[13px] text-[#64748B]">{description}</p>
+          <p className="mt-1 max-w-2xl text-[13px] text-[#64748B] [overflow-wrap:anywhere]">{description}</p>
         ) : null}
       </div>
 

@@ -115,9 +115,9 @@ export default async function EditProgramPage({
       <PageHeader
         breadcrumb={[
           { href: "/admin/programs", label: t("programs.title") },
-          { label: program.name },
+          { label: locale === "ar" ? program.nameAr ?? program.name : program.name },
         ]}
-        title={program.name}
+        title={locale === "ar" ? program.nameAr ?? program.name : program.name}
         description={
           <Link
             href={`/admin/universities/${program.universityId}`}

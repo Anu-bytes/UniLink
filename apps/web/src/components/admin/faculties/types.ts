@@ -1,4 +1,5 @@
 import type { StudyLevel } from "@prisma/client";
+import type { ContentCheck } from "@/lib/admin-catalogue";
 
 /** One row of the list table; mirrors the `select` in the list page. */
 export type FacultyRow = {
@@ -14,6 +15,11 @@ export type FacultyRow = {
     nameAr: string | null;
   };
   programCount: number;
+  programPreview: { id: string; name: string; nameAr: string | null }[];
+  scoreCount: number;
+  universityScoreCount: number;
+  contentChecks: ContentCheck[];
+  updatedAt: Date;
 };
 
 /** Every column the editor writes back through PATCH. */

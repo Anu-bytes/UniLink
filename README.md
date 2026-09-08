@@ -62,10 +62,15 @@ For hosted Supabase, use the two connection strings shown by **Supabase Dashboar
 
 Keeping these separate prevents schema migrations from running through transaction pooling. Use placeholders in committed files and keep real credentials only in `apps/web/.env`.
 
+For the default local Compose database, replace **both** database URLs in
+`apps/web/.env` with `postgresql://postgres:postgres@localhost:5432/unilink?schema=public`.
+These are local development credentials only. If you customize root `.env`
+credentials or `POSTGRES_PORT`, make the app URLs match those values.
+
 ### 4. Start the database
 
 ```bash
-docker compose up -d db
+npm run db:up
 ```
 
 Skip this step when using Supabase.
@@ -73,12 +78,16 @@ Skip this step when using Supabase.
 ### 5. Set up the schema
 
 ```bash
-npm run db:migrate     # apply migrations
+npm run db:deploy      # apply existing migrations without generating new ones
 npm run db:seed        # load the Egyptian university catalogue
 ```
 
 The seed is idempotent and only touches the universities it owns (matched by
 slug), so it is safe to re-run after editing `apps/web/prisma/seed/data.ts`.
+
+Use `db:migrate` only when intentionally authoring a schema change. Prisma does
+not model the raw-SQL trigram search indexes; do not accept generated migrations
+that drop them during routine setup.
 
 ### 6. Run the app
 
@@ -87,6 +96,10 @@ npm run dev
 ```
 
 Open http://localhost:3000
+
+`npm run build` uses Next's supported Webpack production builder. The optional
+`npm run build:turbo --workspace=apps/web` retains Turbopack for environments that
+support its worker-port requirements. Development still uses Turbopack.
 
 ## Main surfaces
 
@@ -178,6 +191,36 @@ validates the bytes by signature exactly as the avatar route does and stores the
 in the `media` bucket. With Supabase unset, the image fields fall back to pasting
 a URL.
 
+### Local release checks
+
+```bash
+npm run lint:admin
+npm run test:admin
+ADMIN_SMOKE_LOCAL=1 npm run test:admin:smoke
+npm run build
+```
+
+The smoke probe requires a running local server and refuses remote app/database
+targets. It creates disposable users, an academic profile, an application, and
+catalogue/growth records, exercises role transitions and every admin API method,
+checks all admin pages in English/Arabic as HTML and matching-layout RSC requests,
+then deletes only its own exact fixture IDs. No existing account is promoted or
+demoted. For interactive QA, run
+`ADMIN_SMOKE_LOCAL=1 npm run test:admin:smoke --workspace=apps/web -- --hold`;
+press Enter in that terminal after browser checks to clean up.
+
+Real Supabase uploads still require valid `SUPABASE_URL` and
+`SUPABASE_SERVICE_ROLE_KEY`, with the `media` and `avatars` buckets configured.
+Missing configuration returns 503; no remote test is silently counted as passed.
+Storage deletion only accepts canonical URLs from the configured project's own
+bucket. Explicit media deletion surfaces upstream failures; cleanup after a
+record update remains best effort.
+
+Reordering currently uses multiple requests: failures stop the remaining writes
+and refresh the server order, but do not roll back earlier writes. Same-field
+concurrent edits remain last-write-wins. Atomic ordering and version-based edit
+conflicts are separate future hardening work, not guarantees of these tests.
+
 ## Scripts (run from repo root)
 
 | Command | Description |
@@ -186,6 +229,11 @@ a URL.
 | `npm run build` | Production build |
 | `npm run start` | Start the production server |
 | `npm run lint` | Lint the web app |
+| `npm run lint:admin` | Lint the admin release scope |
+| `npm run test:admin` | Run admin validation, ordering, and media unit tests |
+| `ADMIN_SMOKE_LOCAL=1 npm run test:admin:smoke` | Run disposable local integration checks |
+| `npm run db:up` | Start and health-check the local Compose database |
+| `npm run db:deploy` | Apply existing migrations without generating new ones |
 | `npm run db:generate` | Generate the Prisma client |
 | `npm run db:migrate` | Create & apply a dev migration |
 | `npm run db:seed` | Seed the university / faculty / program catalogue |

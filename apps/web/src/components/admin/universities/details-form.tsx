@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -113,6 +115,7 @@ export function UniversityDetailsForm({
   } | null>(null);
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  useUnsavedChanges(dirty);
 
   function set<K extends keyof DetailsState>(key: K, value: DetailsState[K]) {
     setForm((current) => ({ ...current, [key]: value }));
@@ -205,7 +208,7 @@ export function UniversityDetailsForm({
             htmlFor={`${fieldId}-slug`}
             required
             error={errorFor("slug")}
-            hint={`/universities/${previewSlug(form.slug) || form.slug}`}
+            hint={<bdi dir="ltr">{`/universities/${previewSlug(form.slug) || form.slug}`}</bdi>}
           >
             <TextInput
               id={`${fieldId}-slug`}

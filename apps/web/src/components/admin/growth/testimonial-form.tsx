@@ -1,5 +1,7 @@
 "use client";
 
+import { useUnsavedChanges } from "@/components/admin/unsaved-changes";
+
 import { Loader2 } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useId, useState } from "react";
@@ -105,6 +107,7 @@ export function TestimonialForm({
   }
 
   const dirty = JSON.stringify(form) !== JSON.stringify(baseline);
+  useUnsavedChanges(dirty);
   const complete = form.studentName.trim() !== "" && form.quote.trim() !== "";
 
   async function submit(event: React.FormEvent) {

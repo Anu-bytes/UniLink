@@ -11,6 +11,8 @@ import { Link } from "@/i18n/navigation";
 import { requireAdminPage } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
+import { adminPage } from "@/lib/admin-validation";
+import { catalogueChecks } from "@/lib/admin-catalogue";
 
 /**
  * The columns /api/admin/faculties will sort by. The value arrives as a raw
@@ -41,8 +43,7 @@ export default async function AdminFacultiesPage({
 
   const q = single(sp.q).slice(0, 120);
   const universityId = single(sp.universityId);
-  const requestedPage = Number.parseInt(single(sp.page), 10);
-  const page = Number.isFinite(requestedPage) ? Math.max(1, requestedPage) : 1;
+  const page = adminPage(single(sp.page));
 
   const sortParam = single(sp.sort);
   const sort = (SORT_COLUMNS as readonly string[]).includes(sortParam)
@@ -94,8 +95,16 @@ export default async function AdminFacultiesPage({
         slug: true,
         imageUrl: true,
         sortOrder: true,
-        university: { select: { id: true, name: true, nameAr: true } },
-        _count: { select: { programs: true } },
+        description: true,
+        descriptionAr: true,
+        updatedAt: true,
+        programs: {
+          take: 2,
+          orderBy: [{ name: "asc" }, { id: "asc" }],
+          select: { id: true, name: true, nameAr: true },
+        },
+        university: { select: { id: true, name: true, nameAr: true, _count: { select: { minimumScores: { where: { facultyId: null } } } } } },
+        _count: { select: { programs: true, minimumScores: true } },
       },
     }),
     prisma.faculty.count({ where }),
@@ -112,8 +121,13 @@ export default async function AdminFacultiesPage({
     slug: faculty.slug,
     imageUrl: faculty.imageUrl,
     sortOrder: faculty.sortOrder,
-    university: faculty.university,
+    university: { id: faculty.university.id, name: faculty.university.name, nameAr: faculty.university.nameAr },
     programCount: faculty._count.programs,
+    programPreview: faculty.programs,
+    scoreCount: faculty._count.minimumScores,
+    universityScoreCount: faculty.university._count.minimumScores,
+    contentChecks: catalogueChecks(faculty),
+    updatedAt: faculty.updatedAt,
   }));
 
   const universityOptions: SelectOption[] = universities.map((university) => ({
