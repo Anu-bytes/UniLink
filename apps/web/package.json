@@ -14,6 +14,7 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:seed:user": "tsx prisma/seed/dev-user.ts",
+    "db:seed:admin": "tsx prisma/seed/admin.ts",
     "db:studio": "prisma studio"
   },
   "prisma": {
