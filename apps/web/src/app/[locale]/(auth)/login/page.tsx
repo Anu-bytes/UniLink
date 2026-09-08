@@ -60,7 +60,7 @@ export default async function LoginPage({
         <p className="mt-1 text-sm text-muted-foreground">{t("subtitle")}</p>
 
         <div className="mt-6 space-y-5">
-          <SocialAuthButtons googleLabel={t("google")} />
+          <SocialAuthButtons googleLabel={t("google")} callbackUrl={callbackUrl} />
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />

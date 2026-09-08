@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
+import { useLocale } from "next-intl";
 import { Eye, EyeOff, Loader2 } from "lucide-react";
 
 import { Link } from "@/i18n/navigation";
@@ -29,6 +30,7 @@ export function LoginForm({
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const locale = useLocale();
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -57,11 +59,15 @@ export function LoginForm({
     }
 
     // Only follow same-origin relative paths, so a crafted ?callbackUrl=
-    // cannot bounce a freshly signed-in user to another site.
+    // cannot bounce a freshly signed-in user to another site. The fallback
+    // is the current locale's home, not bare "/" — that route negotiates
+    // its own locale from scratch (defaulting to Arabic), which used to
+    // silently switch an English session to Arabic right after signing in,
+    // reading as "login broke the site" rather than what it actually was.
     const target =
       callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
         ? callbackUrl
-        : "/";
+        : `/${locale}`;
 
     // `target` already carries its locale prefix, so use the plain router
     // rather than the locale-aware one, which would prefix it twice.
