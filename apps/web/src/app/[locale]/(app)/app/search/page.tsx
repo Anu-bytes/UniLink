@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { AiSearchBar } from "@/components/app/ai-search-bar";
 import { FacultyCard } from "@/components/app/faculty-card";
 import { FilterBar } from "@/components/app/filter-bar";
+import { RecentSearches, RecentSearchRecorder } from "@/components/app/recent-searches";
 import { SearchModeSwitch, type SearchMode } from "@/components/app/search-mode-switch";
 import { SearchPagination } from "@/components/app/search-pagination";
 import { SortSelect } from "@/components/app/sort-select";
@@ -14,9 +15,27 @@ import { UniversitySearchBar } from "@/components/app/university-search-bar";
 import { Link } from "@/i18n/navigation";
 import { getPublishedUniversities, getUniversityCities } from "@/lib/catalog";
 import { searchFaculties, type FacultySearchPage } from "@/lib/faculty-search";
-import { MAX_CITIES, parseSearchFilters, type SearchFilters } from "@/lib/program-filters";
+import {
+  filtersToSearchParams,
+  MAX_CITIES,
+  parseSearchFilters,
+  type SearchFilters,
+} from "@/lib/program-filters";
 import { getSearchVocabulary } from "@/lib/program-search";
 import { parseSearchQuery, type MatchedTerm } from "@/lib/search-query";
+
+/** Shown as one-click starting points on the empty search state, so a first
+ * search doesn't require typing anything. Raw fieldOfStudy values (matches
+ * `filters.fields`), not translated: the catalogue only stores these in
+ * English right now, same as everywhere else they're displayed. */
+const POPULAR_FIELDS = [
+  "Medicine",
+  "Engineering",
+  "Computer Science",
+  "Business & Economics",
+  "Pharmacy",
+  "Dentistry",
+];
 
 /** No query text and no filter picked: nothing has actually been asked for
  * yet, so there's nothing to run `searchFaculties` against. Used both to
@@ -138,8 +157,15 @@ async function FacultiesSearchView({
   return (
     <>
       <div className="mt-5">
-        <AiSearchBar initialQuery={filters.q ?? ""} matched={matched} />
+        <AiSearchBar initialQuery={filters.q ?? ""} matched={matched} filters={filters} />
       </div>
+
+      {searched && filters.q ? (
+        <RecentSearchRecorder
+          query={filters.q}
+          href={`/app/search?${filtersToSearchParams(filters).toString()}`}
+        />
+      ) : null}
 
       <div className="mt-5">
         <FilterBar
@@ -225,6 +251,24 @@ async function FacultiesSearchView({
           <p className="mx-auto mt-2 max-w-md text-sm text-[#5a6072]">
             {t("promptBody")}
           </p>
+
+          {/* A blank search box is the biggest drop-off point on any search
+              page: nobody wants to be the one to type the first query. These
+              give people something to click instead of requiring a cold
+              start, using fields the catalogue actually has results for. */}
+          <div className="mx-auto mt-6 flex max-w-lg flex-wrap items-center justify-center gap-2">
+            {POPULAR_FIELDS.map((field) => (
+              <Link
+                key={field}
+                href={`/app/search?fields=${encodeURIComponent(field)}`}
+                className="rounded-full border border-[#1E6DEB]/25 bg-white px-3.5 py-1.5 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF]"
+              >
+                {field}
+              </Link>
+            ))}
+          </div>
+
+          <RecentSearches />
         </div>
       )}
     </>
