@@ -15,17 +15,18 @@ export default async function LoginPage({
 }) {
   const { callbackUrl } = await searchParams;
   const t = await getTranslations("Auth.login");
-  const statsT = await getTranslations("Home.stats");
   const locale = await getLocale();
   const catalog = await getLandingCatalog(locale);
   const [universityCount, programCount, studentCount] = withDisplayOffsets(
     catalog.stats,
   );
-  const statLabels = (
-    statsT.raw("items") as { value: string; label: string }[]
-  )
-    .slice(0, 3)
-    .map((item) => item.label);
+  // raw() yields the key name rather than an array when a message is missing.
+  // Guard the shape so a translation gap blanks the labels instead of 500ing
+  // the whole sign-in page; next-intl still logs MISSING_MESSAGE either way.
+  const rawStatLabels = t.raw("statLabels");
+  const statLabels = Array.isArray(rawStatLabels)
+    ? (rawStatLabels as string[])
+    : [];
   const statValues = [universityCount, studentCount, programCount];
 
   return (
