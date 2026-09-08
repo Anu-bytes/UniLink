@@ -6,7 +6,33 @@ import { useState, useTransition } from "react";
 
 import { SplashLoader } from "@/components/splash-loader";
 import { useRouter } from "@/i18n/navigation";
+import { filtersToSearchParams, type SearchFilters } from "@/lib/program-filters";
 import type { MatchedTerm } from "@/lib/search-query";
+
+/** Which SearchFilters array (or pair, for budget) a matched term's kind
+ * lives in, so a chip's X button can remove just that one criterion. */
+const FILTER_KEY_BY_KIND: Record<MatchedTerm["kind"], keyof SearchFilters | null> = {
+  field: "fields",
+  level: "levels",
+  city: "cities",
+  university: "universities",
+  faculty: "faculties",
+  type: "universityTypes",
+  tag: "tags",
+  budget: null,
+};
+
+function removeMatchedTerm(filters: SearchFilters, term: MatchedTerm): SearchFilters {
+  if (term.kind === "budget") {
+    return { ...filters, budgetBand: undefined, minTuition: undefined, maxTuition: undefined };
+  }
+  const key = FILTER_KEY_BY_KIND[term.kind];
+  if (!key) return filters;
+  const current = filters[key];
+  if (!Array.isArray(current)) return filters;
+  const next = current.filter((value) => value !== term.value);
+  return { ...filters, [key]: next.length > 0 ? next : undefined };
+}
 
 /**
  * The natural-language search field. Submitting posts the raw text to the parse
@@ -16,9 +42,11 @@ import type { MatchedTerm } from "@/lib/search-query";
 export function AiSearchBar({
   initialQuery,
   matched,
+  filters,
 }: {
   initialQuery: string;
   matched: MatchedTerm[];
+  filters: SearchFilters;
 }) {
   const t = useTranslations("Search");
   const locale = useLocale();
@@ -61,6 +89,16 @@ export function AiSearchBar({
   function clear() {
     setValue("");
     startTransition(() => router.replace("/app/search"));
+  }
+
+  /** Removing a resolved chip edits the filters directly rather than
+   * re-parsing the text (the text field keeps whatever was typed), so a chip
+   * doubles as an editable view of what the AI understood, not just a
+   * read-only receipt. */
+  function removeTerm(term: MatchedTerm) {
+    const next = removeMatchedTerm(filters, term);
+    const query = filtersToSearchParams({ ...next, page: 1 }).toString();
+    startTransition(() => router.replace(`/app/search${query ? `?${query}` : ""}`));
   }
 
   const busy = isPending || isParsing;
@@ -156,12 +194,19 @@ export function AiSearchBar({
             {t("resolvedLabel")}
           </span>
           {matched.map((term) => (
-            <span
+            <button
               key={`${term.kind}-${term.value}`}
-              className="rounded-md bg-[#EEF3FF] px-2 py-1 font-semibold text-[#1E3A8A]"
+              type="button"
+              onClick={() => removeTerm(term)}
+              className="group inline-flex items-center gap-1 rounded-md bg-[#EEF3FF] py-1 ps-2 pe-1.5 font-semibold text-[#1E3A8A] transition-colors hover:bg-[#DCE7FE]"
             >
               {term.label}
-            </span>
+              <X
+                className="size-3 shrink-0 text-[#1E3A8A]/50 transition-colors group-hover:text-[#1E3A8A]"
+                aria-hidden
+              />
+              <span className="sr-only">{t("removeFilter", { label: term.label })}</span>
+            </button>
           ))}
         </div>
       ) : null}

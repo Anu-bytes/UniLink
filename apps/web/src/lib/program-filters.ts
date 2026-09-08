@@ -26,11 +26,7 @@ export const UNIVERSITY_TYPES = ["PUBLIC", "PRIVATE", "SPECIALIZED"] as const;
 export const MAX_CITIES = 5;
 
 /** Quick toggles rendered as chips above the results, in display order. */
-export const QUICK_TAGS: readonly ProgramTagValue[] = [
-  "SCHOLARSHIPS_AVAILABLE",
-  "FAST_ACCEPTANCE",
-  "HIGH_JOB_DEMAND",
-];
+export const QUICK_TAGS: readonly ProgramTagValue[] = ["HIGH_JOB_DEMAND"];
 
 /** Accepts either an array or a comma-separated string from the URL. */
 const csv = <T extends z.ZodTypeAny>(schema: T) =>
