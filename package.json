@@ -21,5 +21,10 @@
     "db:seed:user": "npm run db:seed:user --workspace=apps/web",
     "db:seed:admin": "npm run db:seed:admin --workspace=apps/web",
     "db:studio": "npm run db:studio --workspace=apps/web"
+  },
+  "overrides": {
+    "browserslist": "^4.28.7",
+    "qs": "^6.16.0",
+    "deepmerge-ts": "^8.0.0"
   }
 }

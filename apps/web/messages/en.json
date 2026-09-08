@@ -45,7 +45,9 @@
         "titleLead": "Your Future Starts",
         "titleHighlight": "Right Here in Egypt",
         "subtitle": "Explore and compare private and national universities in Egypt. Colleges, majors, fees, admission requirements, and scholarships, all in one place.",
-        "cta": "Start your university search"
+        "cta": "Start searching now!",
+        "searchBadge": "Egypt's first advanced faculty & university search",
+        "mapBadge": "Every university, one search away"
       },
       "quickSearch": {
         "title": "Find your university in seconds",
@@ -74,7 +76,8 @@
         "programsLabel": "Programs",
         "viewDetails": "View details",
         "empty": "Published universities will appear here once they are added to the catalogue.",
-        "exploreMore": "Explore More Universities"
+        "exploreMore": "Explore More Universities",
+        "knowMore": "Browse All Universities"
       },
       "howItWorks": {
         "title": "How It Works",
@@ -148,22 +151,6 @@
         "Students",
         "Governorates covered",
         "Scholarships"
-      ]
-    },
-    "stats": {
-      "items": [
-        {
-          "value": "60+",
-          "label": "Universities in Egypt"
-        },
-        {
-          "value": "20,000+",
-          "label": "Students guided"
-        },
-        {
-          "value": "500+",
-          "label": "Programs listed"
-        }
       ]
     }
   },
@@ -560,6 +547,11 @@
       "PUBLIC": "Public university",
       "PRIVATE": "Private university",
       "SPECIALIZED": "Specialized university"
+    },
+    "promoBanner": {
+      "title": "Register free to search in plain language with AI",
+      "registerCta": "Register free",
+      "loginCta": "Log in"
     }
   },
   "About": {
@@ -645,8 +637,8 @@
           "label": "Academic programs"
         },
         {
-          "value": "10,000+",
-          "label": "Searches and comparisons"
+          "value": "AI-Powered",
+          "label": "Natural-language search across every listed program"
         },
         {
           "value": "An Egyptian platform",
@@ -1004,7 +996,10 @@
     "facultyCount": "{count, plural, one {# faculty} other {# faculties}}",
     "previous": "Previous",
     "next": "Next",
-    "pageOf": "Page {page} of {total}"
+    "pageOf": "Page {page} of {total}",
+    "searchLimitReached": "You've used your {count} free searches. Register free or log in to keep searching.",
+    "searchLimitRegister": "Register free",
+    "searchLimitLogin": "Log in"
   },
   "ProgramDetail": {
     "breadcrumbHome": "Home",

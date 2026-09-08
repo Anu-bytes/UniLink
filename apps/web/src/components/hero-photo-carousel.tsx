@@ -1,43 +1,50 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { ImageIcon } from "lucide-react";
+import { ImageIcon, Sparkles } from "lucide-react";
 import Image from "next/image";
 
 import { cn } from "@/lib/utils";
 
 /** `src: null` renders a branded placeholder tile instead of a photo, for a
- * slot that doesn't have a real photo yet. */
-export type HeroPhoto = { src: string | null; alt: string };
+ * slot that doesn't have a real photo yet. `badge` overlays a short pill of
+ * copy on that slide only, for a photo worth calling out specifically (e.g.
+ * a product screenshot) rather than every slide getting the same caption.
+ * `badgePosition` defaults to the top-start corner; some photos already have
+ * their own content up there, so a slide can move its badge to bottom-start
+ * instead rather than sitting on top of that content. */
+export type HeroPhoto = {
+  src: string | null;
+  alt: string;
+  badge?: string;
+  badgePosition?: "top" | "bottom";
+};
 
 // How long each photo stays up before crossfading to the next.
 const ROTATE_INTERVAL_MS = 4500;
 
 /**
- * The hero's photo, crossfading between `photos` on a timer. Pauses (shows
- * only the first photo) under prefers-reduced-motion. The dots double as
- * manual controls — clicking one also restarts the timer, so a manual pick
- * doesn't get immediately overridden by the next scheduled tick.
+ * The hero's photo, crossfading between `photos` on a timer. Still advances
+ * under prefers-reduced-motion — the fade itself is skipped there (see
+ * `motion-reduce:transition-none` on the fade class below, an instant cut
+ * instead of a smooth crossfade), but the slides keep rotating. Freezing on
+ * the first photo forever isn't what reduced-motion is for (it exists to
+ * drop *animation*, not to keep users from ever seeing the other slides),
+ * and iOS Safari's Private Browsing has been observed reporting reduced
+ * motion as on when the user never asked for it. The dots double as manual
+ * controls — clicking one also restarts the timer, so a manual pick doesn't
+ * get immediately overridden by the next scheduled tick.
  */
 export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
   const [index, setIndex] = useState(0);
-  const [reducedMotion, setReducedMotion] = useState(false);
 
   useEffect(() => {
-    const query = window.matchMedia("(prefers-reduced-motion: reduce)");
-    setReducedMotion(query.matches);
-    const onChange = () => setReducedMotion(query.matches);
-    query.addEventListener("change", onChange);
-    return () => query.removeEventListener("change", onChange);
-  }, []);
-
-  useEffect(() => {
-    if (reducedMotion || photos.length <= 1) return;
+    if (photos.length <= 1) return;
     const timeout = setTimeout(() => {
       setIndex((i) => (i + 1) % photos.length);
     }, ROTATE_INTERVAL_MS);
     return () => clearTimeout(timeout);
-  }, [reducedMotion, photos.length, index]);
+  }, [photos.length, index]);
 
   return (
     <>
@@ -84,6 +91,23 @@ export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
           />
         );
       })}
+
+      {photos.map((photo, i) =>
+        photo.badge ? (
+          <div
+            key={`badge-${i}`}
+            aria-hidden={i !== index}
+            className={cn(
+              "pointer-events-none absolute start-3 flex max-w-[calc(100%-1.5rem)] items-start gap-1.5 rounded-2xl bg-white px-3 py-1.5 text-[11px] font-bold leading-snug text-[#1E3A8A] shadow-lg transition-opacity duration-1000 ease-in-out motion-reduce:transition-none sm:items-center sm:rounded-full sm:text-xs",
+              photo.badgePosition === "bottom" ? "bottom-11" : "top-4",
+              i === index ? "opacity-100" : "opacity-0",
+            )}
+          >
+            <Sparkles className="mt-0.5 size-3.5 shrink-0 text-[#F5A623] sm:mt-0" aria-hidden />
+            <span className="sm:truncate">{photo.badge}</span>
+          </div>
+        ) : null,
+      )}
 
       {photos.length > 1 ? (
         <div className="pointer-events-none absolute inset-x-0 bottom-3 flex justify-center gap-1.5">
