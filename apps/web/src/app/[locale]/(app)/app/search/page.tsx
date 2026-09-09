@@ -21,20 +21,21 @@ import {
   parseSearchFilters,
   type SearchFilters,
 } from "@/lib/program-filters";
+import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { getSearchVocabulary } from "@/lib/program-search";
 import { parseSearchQuery, type MatchedTerm } from "@/lib/search-query";
 
 /** Shown as one-click starting points on the empty search state, so a first
- * search doesn't require typing anything. Raw fieldOfStudy values (matches
- * `filters.fields`), not translated: the catalogue only stores these in
- * English right now, same as everywhere else they're displayed. */
-const POPULAR_FIELDS = [
-  "Medicine",
-  "Engineering",
-  "Computer Science",
-  "Business & Economics",
-  "Pharmacy",
-  "Dentistry",
+ * search doesn't require typing anything. Slugs from the canonical
+ * fieldOfStudy taxonomy (`filters.fields` matches `Program.fieldOfStudy`
+ * exactly, both stored as these slugs), with the label picked per-locale. */
+const POPULAR_FIELD_VALUES = [
+  "medicine",
+  "engineering",
+  "computer_science",
+  "business_administration",
+  "pharmacy",
+  "dentistry",
 ];
 
 /** No query text and no filter picked: nothing has actually been asked for
@@ -257,15 +258,19 @@ async function FacultiesSearchView({
               give people something to click instead of requiring a cold
               start, using fields the catalogue actually has results for. */}
           <div className="mx-auto mt-6 flex max-w-lg flex-wrap items-center justify-center gap-2">
-            {POPULAR_FIELDS.map((field) => (
-              <Link
-                key={field}
-                href={`/app/search?fields=${encodeURIComponent(field)}`}
-                className="rounded-full border border-[#1E6DEB]/25 bg-white px-3.5 py-1.5 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF]"
-              >
-                {field}
-              </Link>
-            ))}
+            {POPULAR_FIELD_VALUES.map((value) => {
+              const field = FIELDS_OF_STUDY.find((f) => f.value === value);
+              if (!field) return null;
+              return (
+                <Link
+                  key={value}
+                  href={`/app/search?fields=${encodeURIComponent(value)}`}
+                  className="rounded-full border border-[#1E6DEB]/25 bg-white px-3.5 py-1.5 text-sm font-semibold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF]"
+                >
+                  {locale === "ar" ? field.ar : field.en}
+                </Link>
+              );
+            })}
           </div>
 
           <RecentSearches />
