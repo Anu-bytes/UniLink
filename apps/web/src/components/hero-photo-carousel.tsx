@@ -37,6 +37,20 @@ const ROTATE_INTERVAL_MS = 4500;
  */
 export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
   const [index, setIndex] = useState(0);
+  // Every slide's `fill` <Image> sits absolutely inside the (visible) hero
+  // frame from the start, just at opacity-0 — geometrically "in viewport",
+  // so the browser's native lazy-loading never defers it, and all photos
+  // were fetching immediately on page load regardless of which one is
+  // actually shown. Only the first mounts up front now; the rest mount
+  // after, well before the rotation timer would reach them, so they don't
+  // compete with the critical first paint for bandwidth.
+  const [laterSlidesReady, setLaterSlidesReady] = useState(false);
+
+  useEffect(() => {
+    if (photos.length <= 1) return;
+    const timeout = setTimeout(() => setLaterSlidesReady(true), 1200);
+    return () => clearTimeout(timeout);
+  }, [photos.length]);
 
   useEffect(() => {
     if (photos.length <= 1) return;
@@ -70,6 +84,14 @@ export function HeroPhotoCarousel({ photos }: { photos: HeroPhoto[] }) {
               />
             </div>
           );
+        }
+
+        // Not the first slide, and its deferred mount window hasn't opened
+        // yet: render an empty (still invisible — opacity-0 either way) slot
+        // instead of the real <Image>, so its network request doesn't fire
+        // until after the critical first paint.
+        if (i !== 0 && !laterSlidesReady) {
+          return <div key={i} aria-hidden className={fadeClass} />;
         }
 
         return (
