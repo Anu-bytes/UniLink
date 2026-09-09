@@ -10,6 +10,12 @@ export const FIELDS_OF_STUDY: readonly FieldOption[] = [
   { value: "nursing", en: "Nursing", ar: "التمريض" },
   { value: "physical_therapy", en: "Physical Therapy", ar: "العلاج الطبيعي" },
   { value: "veterinary", en: "Veterinary Medicine", ar: "الطب البيطري" },
+  { value: "biotechnology", en: "Biotechnology", ar: "التكنولوجيا الحيوية" },
+  {
+    value: "health_sciences",
+    en: "Health Sciences",
+    ar: "العلوم الصحية",
+  },
   { value: "engineering", en: "Engineering", ar: "الهندسة" },
   { value: "computer_science", en: "Computer Science", ar: "علوم الحاسب" },
   {
@@ -52,6 +58,11 @@ export const FIELDS_OF_STUDY: readonly FieldOption[] = [
   { value: "science", en: "Science", ar: "العلوم" },
   { value: "agriculture", en: "Agriculture", ar: "الزراعة" },
   { value: "tourism_hotels", en: "Tourism & Hotels", ar: "السياحة والفنادق" },
+  {
+    value: "archaeology_tourism",
+    en: "Archaeology & Tourism",
+    ar: "الآثار والسياحة",
+  },
   { value: "fine_arts", en: "Fine Arts", ar: "الفنون الجميلة" },
   { value: "applied_arts", en: "Applied Arts", ar: "الفنون التطبيقية" },
   { value: "social_work", en: "Social Work", ar: "الخدمة الاجتماعية" },
