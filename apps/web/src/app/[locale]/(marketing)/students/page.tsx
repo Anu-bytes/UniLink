@@ -9,6 +9,15 @@ import { getLandingCatalog } from "@/lib/catalog";
 import { formatNumber } from "@/lib/format";
 import { getPrimaryCta } from "@/lib/primary-cta";
 
+// Real screenshots for the 3 steps, in order: Sign Up, Search Programs,
+// Apply. Dimensions are the actual cropped file sizes (see the images in
+// public/images) — next/image needs them to reserve layout space.
+const STEP_IMAGES: ({ src: string; width: number; height: number } | null)[] = [
+  { src: "/images/signup-step-preview.png", width: 1040, height: 801 },
+  { src: "/images/search-step-preview.png", width: 1040, height: 561 },
+  { src: "/images/applications-step-preview.png", width: 1040, height: 454 },
+];
+
 export default async function StudentsPage() {
   const t = await getTranslations("Students.landing");
   const locale = await getLocale();
@@ -48,10 +57,9 @@ export default async function StudentsPage() {
     bullets: s.bullets,
     cta: { label: s.cta, href: stepHrefs[i] ?? "/onboarding" },
     comingSoon: i === 2,
-    image:
-      i === 0
-        ? { src: "/images/signup-step-preview.png", alt: s.heading }
-        : undefined,
+    image: STEP_IMAGES[i]
+      ? { ...STEP_IMAGES[i]!, alt: s.heading }
+      : undefined,
   }));
 
   return (

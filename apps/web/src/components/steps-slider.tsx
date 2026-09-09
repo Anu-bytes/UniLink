@@ -20,8 +20,10 @@ export type Step = {
    * still belongs in the story of how the product will work. */
   comingSoon?: boolean;
   /** Real product screenshot for this step, shown instead of the gray
-   * placeholder box when available. */
-  image?: { src: string; alt: string };
+   * placeholder box when available. width/height are the file's actual
+   * pixel dimensions, so each screenshot renders at its own aspect ratio
+   * instead of being force-fit into one shape. */
+  image?: { src: string; alt: string; width: number; height: number };
 };
 
 /**
@@ -126,8 +128,8 @@ export function StepsSlider({
                 <Image
                   src={step.image.src}
                   alt={step.image.alt}
-                  width={1040}
-                  height={801}
+                  width={step.image.width}
+                  height={step.image.height}
                   className="h-auto w-full"
                   sizes="(max-width: 1024px) 100vw, 520px"
                 />
