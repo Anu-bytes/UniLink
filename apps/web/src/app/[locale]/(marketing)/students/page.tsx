@@ -48,6 +48,10 @@ export default async function StudentsPage() {
     bullets: s.bullets,
     cta: { label: s.cta, href: stepHrefs[i] ?? "/onboarding" },
     comingSoon: i === 2,
+    image:
+      i === 0
+        ? { src: "/images/signup-step-preview.png", alt: s.heading }
+        : undefined,
   }));
 
   return (

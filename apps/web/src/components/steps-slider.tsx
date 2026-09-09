@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Check } from "lucide-react";
+import Image from "next/image";
 
 import { Link } from "@/i18n/navigation";
 import { ImagePlaceholder } from "@/components/image-placeholder";
@@ -18,6 +19,9 @@ export type Step = {
    * applications) — shown as a badge rather than hidden, since the step
    * still belongs in the story of how the product will work. */
   comingSoon?: boolean;
+  /** Real product screenshot for this step, shown instead of the gray
+   * placeholder box when available. */
+  image?: { src: string; alt: string };
 };
 
 /**
@@ -117,12 +121,25 @@ export function StepsSlider({
           </div>
 
           <div className="order-1 flex justify-center lg:order-2 lg:justify-end">
-            <ImagePlaceholder
-              w={520}
-              h={420}
-              className="w-full bg-slate-200"
-              label={`Step ${active + 1} image 520×420`}
-            />
+            {step.image ? (
+              <div className="relative w-full max-w-[520px] overflow-hidden rounded-2xl shadow-[0_20px_50px_-20px_rgba(30,109,235,0.35)]">
+                <Image
+                  src={step.image.src}
+                  alt={step.image.alt}
+                  width={1040}
+                  height={801}
+                  className="h-auto w-full"
+                  sizes="(max-width: 1024px) 100vw, 520px"
+                />
+              </div>
+            ) : (
+              <ImagePlaceholder
+                w={520}
+                h={420}
+                className="w-full bg-slate-200"
+                label={`Step ${active + 1} image 520×420`}
+              />
+            )}
           </div>
         </div>
       </div>
