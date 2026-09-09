@@ -14,6 +14,10 @@ export type Step = {
   description: string;
   bullets: string[];
   cta: { label: string; href: string };
+  /** Marks a step whose feature isn't built yet (e.g. tracking
+   * applications) — shown as a badge rather than hidden, since the step
+   * still belongs in the story of how the product will work. */
+  comingSoon?: boolean;
 };
 
 /**
@@ -25,23 +29,25 @@ export function StepsSlider({
   title,
   steps,
   stepLabel = "Step",
+  comingSoonLabel = "Soon",
 }: {
   title: string;
   steps: Step[];
   stepLabel?: string;
+  comingSoonLabel?: string;
 }) {
   const [active, setActive] = useState(0);
   const step = steps[active];
 
   return (
     <section className="bg-white">
-      <div className="mx-auto max-w-7xl px-6 py-20">
+      <div className="mx-auto max-w-7xl px-6 py-12 md:py-16">
         <h2 className="text-center text-[32px] font-bold text-[#363B51] sm:text-[40px]">
           {title}
         </h2>
 
         {/* Pill slider */}
-        <div className="mt-10 flex justify-center">
+        <div className="mt-8 flex justify-center">
           <div
             role="tablist"
             aria-label={title}
@@ -55,13 +61,18 @@ export function StepsSlider({
                   role="tab"
                   aria-selected={selected}
                   onClick={() => setActive(i)}
-                  className={`rounded-full px-6 py-2.5 text-[14px] font-bold uppercase tracking-wide transition-colors ${
+                  className={`flex items-center gap-1.5 rounded-full px-6 py-2.5 text-[14px] font-bold uppercase tracking-wide transition-colors ${
                     selected
                       ? "bg-[#E8EEFB] text-[#1E6DEB]"
                       : "text-[#363B51] hover:text-[#1E6DEB]"
                   }`}
                 >
                   {s.tab}
+                  {s.comingSoon ? (
+                    <span className="rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[10px] font-bold normal-case tracking-normal text-[#B77714]">
+                      {comingSoonLabel}
+                    </span>
+                  ) : null}
                 </button>
               );
             })}
@@ -69,10 +80,15 @@ export function StepsSlider({
         </div>
 
         {/* Active step panel */}
-        <div className="mt-14 grid items-center gap-10 lg:grid-cols-2">
+        <div className="mt-10 grid items-center gap-10 lg:grid-cols-2">
           <div className="order-2 lg:order-1">
-            <span className="text-[14px] font-bold uppercase tracking-widest text-[#1E6DEB]">
+            <span className="flex items-center gap-2 text-[14px] font-bold uppercase tracking-widest text-[#1E6DEB]">
               {stepLabel} {active + 1}
+              {step.comingSoon ? (
+                <span className="rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[11px] font-bold normal-case tracking-normal text-[#B77714]">
+                  {comingSoonLabel}
+                </span>
+              ) : null}
             </span>
             <h3 className="mt-3 text-[28px] font-bold leading-tight text-[#363B51] sm:text-[34px]">
               {step.heading}

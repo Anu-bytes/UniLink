@@ -31,6 +31,10 @@ export default async function StudentsPage() {
     cta: string;
   }[];
   const stepHrefs = ["/onboarding", "/programs", "/onboarding"];
+  // Applications aren't built yet (same "Coming Soon" the in-app sidebar
+  // already shows for that nav item) — the step still belongs in the story
+  // of how the product works, just badged rather than hidden or, worse,
+  // promising something that isn't there yet.
   const steps: Step[] = rawSteps.map((s, i) => ({
     tab: s.tab,
     heading: s.heading,
@@ -43,14 +47,15 @@ export default async function StudentsPage() {
         : s.description,
     bullets: s.bullets,
     cta: { label: s.cta, href: stepHrefs[i] ?? "/onboarding" },
+    comingSoon: i === 2,
   }));
 
   return (
     <div className="font-[family-name:var(--font-open-sans)] text-[#292E3E]">
       {/* HERO */}
       <section className="relative overflow-hidden bg-white">
-        <div className="mx-auto max-w-6xl px-4 pb-10 pt-6 sm:px-6">
-          <div className="relative isolate grid items-center gap-10 overflow-hidden rounded-[40px] bg-[#EEF3FF] px-6 py-12 sm:px-12 lg:grid-cols-2 lg:px-16 lg:py-16">
+        <div className="mx-auto max-w-6xl px-4 pb-6 pt-6 sm:px-6">
+          <div className="relative isolate grid items-center gap-10 overflow-hidden rounded-[40px] bg-[#EEF3FF] px-6 py-10 sm:px-12 lg:grid-cols-2 lg:px-16 lg:py-12">
             <div
               aria-hidden
               className="ul-dots pointer-events-none absolute -inset-8 -z-10 opacity-30"
@@ -94,7 +99,12 @@ export default async function StudentsPage() {
       </section>
 
       {/* 3 STEPS SLIDER */}
-      <StepsSlider title={t("stepsTitle")} steps={steps} stepLabel={t("stepLabel")} />
+      <StepsSlider
+        title={t("stepsTitle")}
+        steps={steps}
+        stepLabel={t("stepLabel")}
+        comingSoonLabel={t("comingSoon")}
+      />
 
       {/* CTA BAND */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#1E6DEB] to-[#12224A]">
@@ -104,7 +114,7 @@ export default async function StudentsPage() {
         />
         <Reveal
           as="div"
-          className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-16 text-center sm:px-6 md:py-20"
+          className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 px-4 py-12 text-center sm:px-6 md:py-14"
         >
           <h2 className="text-[clamp(1.5rem,4vw,2.25rem)] font-bold text-white">
             {t("band.title")}
