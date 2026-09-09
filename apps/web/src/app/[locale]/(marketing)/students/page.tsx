@@ -1,8 +1,8 @@
 import { ArrowRight } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
+import Image from "next/image";
 
 import { Link } from "@/i18n/navigation";
-import { ImagePlaceholder } from "@/components/image-placeholder";
 import { Reveal } from "@/components/reveal";
 import { StepsSlider, type Step } from "@/components/steps-slider";
 import { getLandingCatalog } from "@/lib/catalog";
@@ -98,13 +98,19 @@ export default async function StudentsPage() {
               </div>
             </Reveal>
             <Reveal delay={120} className="flex items-center justify-center lg:justify-end">
-              <ImagePlaceholder
-                w={482}
-                h={471}
-                className="bg-slate-300/50"
-                rounded="rounded-none rounded-bl-[100px]"
-                label="Hero image 482×471"
-              />
+              <div
+                style={{ maxWidth: 482, aspectRatio: "482 / 471" }}
+                className="relative w-full min-w-0 shrink self-center overflow-hidden rounded-none rounded-bl-[100px] shadow-[0_20px_50px_-20px_rgba(30,109,235,0.35)]"
+              >
+                <Image
+                  src="/images/students-hero-app-mockup.png"
+                  alt={t("hero.titleLead")}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 482px"
+                  className="object-cover"
+                  priority
+                />
+              </div>
             </Reveal>
           </div>
         </div>
