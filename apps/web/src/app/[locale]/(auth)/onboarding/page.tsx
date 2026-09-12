@@ -2,12 +2,19 @@ import { ArrowLeft } from "lucide-react";
 import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
+import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { WizardProvider } from "@/components/onboarding/wizard-context";
 import { Wizard } from "@/components/onboarding/wizard";
 
 export default async function OnboardingPage() {
   const t = await getTranslations("Onboarding");
+  // Set only when the visitor already has a session — e.g. they clicked
+  // "Continue with Google" mid-wizard and are back from the OAuth redirect.
+  // The account step uses this to skip asking for an email/password it no
+  // longer needs.
+  const session = await auth();
+  const signedInEmail = session?.user?.email ?? null;
 
   return (
     <>
@@ -41,7 +48,7 @@ export default async function OnboardingPage() {
 
         <div className="relative rounded-3xl bg-card p-6 shadow-xl ring-1 ring-border/50 duration-500 animate-in fade-in-0 zoom-in-95 slide-in-from-bottom-2 motion-reduce:animate-none sm:p-10">
           <WizardProvider>
-            <Wizard />
+            <Wizard signedInEmail={signedInEmail} />
           </WizardProvider>
         </div>
       </div>

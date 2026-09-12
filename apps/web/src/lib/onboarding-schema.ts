@@ -198,6 +198,21 @@ export const profileSchema = z.object({
   budgetBand: financialsSchema.shape.budgetBand,
 });
 
+// Submitted by the wizard's account step when the visitor already has a
+// session (they signed up with Google mid-wizard instead of typing a
+// password). Google supplies the email; there is no password to collect, so
+// this is `accountSchema` minus `email`/`password`, plus the profile.
+export const googleWizardAccountSchema = z.object({
+  phone: accountSchema.shape.phone,
+  firstName: personalInfoSchema.shape.firstName,
+  lastName: personalInfoSchema.shape.lastName,
+  accountRole: z.enum(ACCOUNT_ROLES),
+  acceptTerms: accountSchema.shape.acceptTerms,
+  profile: profileSchema,
+});
+
+export type GoogleWizardAccountData = z.infer<typeof googleWizardAccountSchema>;
+
 export const registerPayloadSchema = z.object({
   email: accountSchema.shape.email,
   phone: accountSchema.shape.phone,

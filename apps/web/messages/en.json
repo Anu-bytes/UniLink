@@ -374,6 +374,8 @@
       "orContinueWith": "Or continue with",
       "google": "Continue with Google",
       "facebook": "Continue with Facebook",
+      "continuingAs": "Continuing as {email}",
+      "notYou": "Not you?",
       "requirements": {
         "minLength": "At least 10 characters",
         "lowercase": "A lowercase letter",

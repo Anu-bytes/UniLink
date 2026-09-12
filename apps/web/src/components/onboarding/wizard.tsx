@@ -13,7 +13,7 @@ import { STEP_COMPONENTS, AccountStep } from "./steps";
 
 type Phase = "form" | "submitting" | "done";
 
-export function Wizard() {
+export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
   const t = useTranslations("Onboarding");
   const locale = useLocale();
   const { step, data, hydrated, back, goTo, reset } = useWizard();
@@ -112,6 +112,63 @@ export function Wizard() {
     }
   }
 
+  // Signing in with Google mid-wizard already created the User (via the
+  // Prisma adapter) and left the visitor with a live session, so there is no
+  // credential pair left to collect or a fresh signIn to run — this only
+  // fills in what Google never asked for (phone, name, role) and creates the
+  // StudentProfile.
+  async function handleGoogleFinish(account: {
+    phone: string;
+    acceptTerms: boolean;
+  }) {
+    setError(null);
+    setPhase("submitting");
+
+    const {
+      email: _email,
+      password: _password,
+      acceptTerms: _acceptTerms,
+      phone: _phone,
+      firstName,
+      lastName,
+      accountRole,
+      ...profile
+    } = data;
+    void _email;
+    void _password;
+    void _acceptTerms;
+    void _phone;
+
+    try {
+      const res = await fetch("/api/onboarding/complete", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          phone: account.phone,
+          firstName,
+          lastName,
+          accountRole,
+          acceptTerms: account.acceptTerms,
+          profile,
+        }),
+      });
+
+      if (!res.ok) {
+        const body = (await res.json().catch(() => ({}))) as {
+          error?: string;
+        };
+        setError(body.error ?? t("account.genericError"));
+        setPhase("form");
+        return;
+      }
+
+      setPhase("done");
+    } catch {
+      setError(t("account.genericError"));
+      setPhase("form");
+    }
+  }
+
   function handleView() {
     reset();
     // The button offers to show the matched programs, so send the student to
@@ -154,7 +211,12 @@ export function Wizard() {
         )}
       >
         {isAccount ? (
-          <AccountStep onFinish={handleFinish} error={error} />
+          <AccountStep
+            onFinish={handleFinish}
+            onGoogleFinish={handleGoogleFinish}
+            signedInEmail={signedInEmail}
+            error={error}
+          />
         ) : (
           <StepBody />
         )}

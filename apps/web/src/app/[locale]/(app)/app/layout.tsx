@@ -24,9 +24,26 @@ export default async function AppLayout({
     redirect(`/${locale}/login?callbackUrl=/${locale}/app`);
   }
 
-  const savedCount = await prisma.savedFaculty.count({
-    where: { userId: session.user.id },
-  });
+  // A student or parent can reach here with no StudentProfile at all: signing
+  // up with Google mid-wizard used to create the bare User (via the adapter)
+  // and then land straight on the app with no profile ever collected, since
+  // nothing forced them back through onboarding. PARTNER/ADMIN accounts never
+  // get a StudentProfile in the first place, so they're excluded here.
+  const [account, savedCount] = await Promise.all([
+    prisma.user.findUnique({
+      where: { id: session.user.id },
+      select: { role: true, studentProfile: { select: { id: true } } },
+    }),
+    prisma.savedFaculty.count({ where: { userId: session.user.id } }),
+  ]);
+
+  if (
+    account &&
+    (account.role === "STUDENT" || account.role === "PARENT") &&
+    !account.studentProfile
+  ) {
+    redirect(`/${locale}/onboarding`);
+  }
 
   return (
     <SavedProvider initialCount={savedCount}>

@@ -374,6 +374,8 @@
       "orContinueWith": "أو تابع باستخدام",
       "google": "المتابعة باستخدام Google",
       "facebook": "المتابعة باستخدام Facebook",
+      "continuingAs": "متابعة باسم {email}",
+      "notYou": "ليس أنت؟",
       "requirements": {
         "minLength": "10 أحرف على الأقل",
         "lowercase": "حرف صغير",
