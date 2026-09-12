@@ -1,3 +1,4 @@
+import { Lock } from "lucide-react";
 import type { ComponentType } from "react";
 
 import { cn } from "@/lib/utils";
@@ -62,6 +63,8 @@ export function ProfileField({
   value,
   emptyLabel,
   ltr,
+  locked,
+  lockedLabel,
   className,
 }: {
   label: string;
@@ -69,14 +72,24 @@ export function ProfileField({
   emptyLabel: string;
   /** Forces LTR for emails and phone numbers inside an RTL page. */
   ltr?: boolean;
+  /** Marks a field that can't be edited from this page (e.g. it also acts
+   * as a sign-in identifier), shown with a small lock icon. */
+  locked?: boolean;
+  lockedLabel?: string;
   className?: string;
 }) {
   const filled = Boolean(value && value.trim());
 
   return (
     <div className={cn("min-w-0", className)}>
-      <dt className="text-xs font-semibold uppercase tracking-wide text-[#98A0B4]">
+      <dt className="flex items-center gap-1 text-xs font-semibold uppercase tracking-wide text-[#98A0B4]">
         {label}
+        {locked ? (
+          <span title={lockedLabel} className="inline-flex">
+            <Lock className="size-3" aria-hidden={!lockedLabel} />
+            {lockedLabel ? <span className="sr-only">{lockedLabel}</span> : null}
+          </span>
+        ) : null}
       </dt>
       <dd
         dir={ltr ? "ltr" : undefined}
