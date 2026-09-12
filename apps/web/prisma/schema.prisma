@@ -147,6 +147,9 @@ model StudentProfile {
   intakeSeason  IntakeSeason
   intakeYear    Int
   budgetBand    BudgetBand // bucketed tuition budget in EGP
+  // Short free-text "About Me" shown on the profile page. Purely
+  // presentational — the match scorer in lib/matching.ts never reads it.
+  bio           String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

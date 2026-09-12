@@ -283,6 +283,55 @@ export const preferencesSchema = z
 export type PreferencesData = z.infer<typeof preferencesSchema>;
 
 // ---------------------------------------------------------------------------
+// Account editing (the "Account" card on /app/profile). Deliberately excludes
+// email and phone: those double as sign-in identifiers, so they're read-only
+// on the profile page and can only change through their own dedicated flows.
+// ---------------------------------------------------------------------------
+
+export const accountEditSchema = z.object({
+  firstName: personalInfoSchema.shape.firstName,
+  lastName: personalInfoSchema.shape.lastName,
+});
+
+export type AccountEditData = z.infer<typeof accountEditSchema>;
+
+// ---------------------------------------------------------------------------
+// Academics editing (the "Academics" card on /app/profile). Same fields as
+// the onboarding wizard's academics + studyLevel steps, plus nationality
+// (moved here since, like these, it only exists once a StudentProfile does)
+// and bio, which onboarding never asks for. graduationYear is bounded loosely
+// rather than to the wizard's rolling 3-year window, so editing an
+// already-graduated student's profile years later doesn't reject their own
+// existing value.
+// ---------------------------------------------------------------------------
+
+export const academicsEditSchema = z
+  .object({
+    studyLevel: z.enum(STUDY_LEVELS),
+    highSchoolSystem: z.enum(HIGH_SCHOOL_SYSTEMS),
+    highSchoolSystemOther: z.string().trim().max(80).nullable().optional(),
+    graduationYear: z.coerce
+      .number()
+      .int()
+      .min(2015)
+      .max(currentYear + 6),
+    gradeValue: z.string().trim().min(1, "Enter your expected grade"),
+    nationality: z.string().length(2, "Select your nationality"),
+    bio: z.string().trim().max(500).nullable().optional(),
+  })
+  .superRefine((data, ctx) => {
+    if (data.highSchoolSystem === "OTHER" && !data.highSchoolSystemOther) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ["highSchoolSystemOther"],
+        message: "Please specify your high school system",
+      });
+    }
+  });
+
+export type AcademicsEditData = z.infer<typeof academicsEditSchema>;
+
+// ---------------------------------------------------------------------------
 // Types
 // ---------------------------------------------------------------------------
 
