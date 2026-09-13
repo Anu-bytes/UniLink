@@ -69,8 +69,19 @@ export function FilterBar({
 
   const activeCount = countActiveFilters(filters);
   const activeTags = new Set(filters.tags ?? []);
-  const activeCities = filters.cities ?? [];
   const activeRange = tuitionRangeKeyOf(filters);
+
+  // Checkboxes need to flip the instant they're clicked. `filters.cities`
+  // only updates once the URL push above finishes its full server round
+  // trip (a fresh searchFaculties/getPublishedUniversities run), which read
+  // as the picker itself being slow — the click wasn't reflected until the
+  // whole results list had already reloaded. This local copy updates
+  // immediately in toggleCity, then re-syncs from the prop so back/forward
+  // navigation and "Clear all" still land on the real value.
+  const [activeCities, setActiveCities] = useState(filters.cities ?? []);
+  useEffect(() => {
+    setActiveCities(filters.cities ?? []);
+  }, [filters.cities]);
 
   function push(next: SearchFilters) {
     const query = filtersToSearchParams({ ...next, page: 1 }).toString();
@@ -101,7 +112,9 @@ export function FilterBar({
       if (cities.size >= MAX_CITIES) return;
       cities.add(city);
     }
-    push({ ...filters, cities: cities.size > 0 ? [...cities] : undefined });
+    const next = cities.size > 0 ? [...cities] : [];
+    setActiveCities(next);
+    push({ ...filters, cities: next.length > 0 ? next : undefined });
   }
 
   function selectTuition(key: string) {
@@ -190,7 +203,10 @@ export function FilterBar({
         {activeCount > 0 ? (
           <button
             type="button"
-            onClick={() => push({ ...filters, ...EMPTY_FILTERS })}
+            onClick={() => {
+              setActiveCities([]);
+              push({ ...filters, ...EMPTY_FILTERS });
+            }}
             className="min-h-10 px-2 text-sm font-semibold text-[#5a6072] underline-offset-2 hover:text-[#1E6DEB] hover:underline"
           >
             {t("clearAll")}

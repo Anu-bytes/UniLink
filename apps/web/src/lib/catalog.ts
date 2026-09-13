@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+import { expandCityFilter } from "@/lib/program-filters";
 import { prisma } from "@/lib/prisma";
 
 export type UniversityCardData = {
@@ -313,7 +314,7 @@ async function findUniversityIdsByTrigram(
     ? Prisma.sql`AND type IN (${Prisma.join(filters.types)})`
     : Prisma.empty;
   const cityFilter = filters.cities?.length
-    ? Prisma.sql`AND city IN (${Prisma.join(filters.cities)})`
+    ? Prisma.sql`AND city IN (${Prisma.join(expandCityFilter(filters.cities))})`
     : Prisma.empty;
 
   const rows = await prisma.$queryRaw<{ id: string }[]>(Prisma.sql`
@@ -365,7 +366,9 @@ export async function getPublishedUniversities(
     ...(filters.types?.length
       ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
       : {}),
-    ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+    ...(filters.cities?.length
+      ? { city: { in: expandCityFilter(filters.cities) } }
+      : {}),
     ...(filters.q ? universitySearchWhere(filters.q) : {}),
   };
 
@@ -407,7 +410,9 @@ export async function getPublishedUniversities(
         ...(filters.types?.length
           ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
           : {}),
-        ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+        ...(filters.cities?.length
+      ? { city: { in: expandCityFilter(filters.cities) } }
+      : {}),
         id: { in: trigramIds },
       };
       [total, rows] = await Promise.all([

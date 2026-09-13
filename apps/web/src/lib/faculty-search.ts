@@ -5,6 +5,7 @@ import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matchin
 import { prisma } from "@/lib/prisma";
 import {
   BUDGET_BAND_CEILING,
+  expandCityFilter,
   PAGE_SIZE,
   type SearchFilters,
 } from "@/lib/program-filters";
@@ -221,7 +222,9 @@ function buildFacultyWhere(
       {
         university: {
           publishedAt: { not: null },
-          ...(filters.cities?.length ? { city: { in: filters.cities } } : {}),
+          ...(filters.cities?.length
+            ? { city: { in: expandCityFilter(filters.cities) } }
+            : {}),
           ...(filters.universities?.length
             ? { slug: { in: filters.universities } }
             : {}),

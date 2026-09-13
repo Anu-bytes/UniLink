@@ -32,6 +32,17 @@ export function UniversityFilterBar({
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
+  // The `cities` prop only updates once the URL push below finishes its full
+  // server round trip (a fresh getPublishedUniversities run), which read as
+  // the picker itself being slow to respond — the checkbox wouldn't flip
+  // until the whole results list had already reloaded. This local copy
+  // updates immediately in toggleCity, then re-syncs from the prop so
+  // back/forward navigation and "Clear all" still land on the real value.
+  const [activeCities, setActiveCities] = useState(cities);
+  useEffect(() => {
+    setActiveCities(cities);
+  }, [cities]);
+
   function push(next: { type?: string; cities?: string[] }) {
     const params = new URLSearchParams();
     params.set("mode", "universities");
@@ -47,14 +58,16 @@ export function UniversityFilterBar({
   }
 
   function toggleCity(city: string) {
-    const next = new Set(cities);
+    const next = new Set(activeCities);
     if (next.has(city)) {
       next.delete(city);
     } else {
       if (next.size >= MAX_CITIES) return;
       next.add(city);
     }
-    push({ cities: [...next] });
+    const nextCities = [...next];
+    setActiveCities(nextCities);
+    push({ cities: nextCities });
   }
 
   const hasFilters = Boolean(type || cities.length > 0);
@@ -77,19 +90,25 @@ export function UniversityFilterBar({
       />
 
       <CityMultiSelect
-        selected={cities}
+        selected={activeCities}
         onToggle={toggleCity}
         options={cityOptions}
         label={tDir("cityLabel")}
         placeholder={tDir("allCities")}
         moreLabel={(count) => t("filters.moreCities", { count })}
-        limitLabel={t("filters.cityLimit", { count: cities.length, max: MAX_CITIES })}
+        limitLabel={t("filters.cityLimit", {
+          count: activeCities.length,
+          max: MAX_CITIES,
+        })}
       />
 
       {hasFilters ? (
         <button
           type="button"
-          onClick={() => push({ type: "", cities: [] })}
+          onClick={() => {
+            setActiveCities([]);
+            push({ type: "", cities: [] });
+          }}
           className="inline-flex min-h-10 items-center gap-1 px-2 text-sm font-semibold text-[#5a6072] hover:text-[#F82C1F]"
         >
           <X className="size-4" aria-hidden />

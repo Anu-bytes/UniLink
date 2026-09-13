@@ -25,6 +25,29 @@ export const UNIVERSITY_TYPES = ["PUBLIC", "PRIVATE", "SPECIALIZED"] as const;
  */
 export const MAX_CITIES = 5;
 
+/**
+ * Satellite cities that administratively sit inside Cairo Governorate (New
+ * Cairo/Fifth Settlement, El Shorouk City, Badr City), distinct from cities
+ * like 6th of October or Sheikh Zayed which are in Giza Governorate. Each is
+ * still its own selectable city in the picker — a search for "New Cairo"
+ * stays exact — but a plain "Cairo" pick reads to most students as "Cairo
+ * and its satellite cities", not the literal city-proper string stored on
+ * `University.city`. Without this, picking "Cairo" silently excludes real
+ * Cairo-area universities (e.g. BUE, in El Shorouk City) that most people
+ * would call "in Cairo".
+ */
+const CAIRO_GOVERNORATE_ALIASES = ["New Cairo", "El Shorouk City", "Badr City"];
+
+/**
+ * Widens a city filter so "Cairo" also matches its Cairo-Governorate
+ * satellite cities. Used everywhere `cities` becomes a `city IN (...)`
+ * clause; leaves the list untouched when "Cairo" isn't selected.
+ */
+export function expandCityFilter(cities: string[]): string[] {
+  if (!cities.includes("Cairo")) return cities;
+  return [...new Set([...cities, ...CAIRO_GOVERNORATE_ALIASES])];
+}
+
 /** Quick toggles rendered as chips above the results, in display order. */
 export const QUICK_TAGS: readonly ProgramTagValue[] = ["HIGH_JOB_DEMAND"];
 
