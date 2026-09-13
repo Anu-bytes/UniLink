@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+import { arabicAlifVariants } from "@/lib/arabic-text";
 import { expandCityFilter } from "@/lib/program-filters";
 import { prisma } from "@/lib/prisma";
 
@@ -282,18 +283,25 @@ function universitySearchWhere(q: string): Prisma.UniversityWhereInput {
   if (words.length === 0) return {};
 
   return {
-    AND: words.map((word) => ({
-      OR: [
-        { name: { contains: word, mode: "insensitive" as const } },
-        { nameAr: { contains: word } },
-        { city: { contains: word, mode: "insensitive" as const } },
-        { cityAr: { contains: word } },
-        { country: { contains: word, mode: "insensitive" as const } },
-        { countryAr: { contains: word } },
-        { description: { contains: word, mode: "insensitive" as const } },
-        { descriptionAr: { contains: word } },
-      ],
-    })),
+    AND: words.map((word) => {
+      // "اكتوبر" (plain alif) has to find text stored as "أكتوبر"
+      // (hamza-above) and vice versa — most keyboards/IMEs don't reliably
+      // autocomplete the hamza, so a plain `contains` on the Arabic columns
+      // alone silently missed real matches (e.g. "6th of October City").
+      const arVariants = arabicAlifVariants(word);
+      return {
+        OR: [
+          { name: { contains: word, mode: "insensitive" as const } },
+          ...arVariants.map((v) => ({ nameAr: { contains: v } })),
+          { city: { contains: word, mode: "insensitive" as const } },
+          ...arVariants.map((v) => ({ cityAr: { contains: v } })),
+          { country: { contains: word, mode: "insensitive" as const } },
+          ...arVariants.map((v) => ({ countryAr: { contains: v } })),
+          { description: { contains: word, mode: "insensitive" as const } },
+          ...arVariants.map((v) => ({ descriptionAr: { contains: v } })),
+        ],
+      };
+    }),
   };
 }
 
@@ -326,12 +334,18 @@ async function findUniversityIdsByTrigram(
       AND GREATEST(
         similarity(name, ${phrase}),
         similarity(city, ${phrase}),
-        similarity(country, ${phrase})
+        similarity(country, ${phrase}),
+        COALESCE(similarity("nameAr", ${phrase}), 0),
+        COALESCE(similarity("cityAr", ${phrase}), 0),
+        COALESCE(similarity("countryAr", ${phrase}), 0)
       ) > 0.25
     ORDER BY GREATEST(
       similarity(name, ${phrase}),
       similarity(city, ${phrase}),
-      similarity(country, ${phrase})
+      similarity(country, ${phrase}),
+      COALESCE(similarity("nameAr", ${phrase}), 0),
+      COALESCE(similarity("cityAr", ${phrase}), 0),
+      COALESCE(similarity("countryAr", ${phrase}), 0)
     ) DESC
     LIMIT ${SEARCH_RANK_WINDOW}
   `);

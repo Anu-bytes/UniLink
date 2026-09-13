@@ -1,5 +1,6 @@
 import { Prisma } from "@prisma/client";
 
+import { arabicAlifVariants } from "@/lib/arabic-text";
 import { localized, localizedOrNull } from "@/lib/catalog";
 import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
@@ -147,20 +148,30 @@ function programConstraints(filters: SearchFilters): Prisma.ProgramWhereInput {
  * silently dropped because it didn't exactly match a vocabulary entry.
  */
 function facultyTextWhere(words: string[]): Prisma.FacultyWhereInput[] {
-  return words.map((word) => ({
-    OR: [
-      { name: { contains: word, mode: "insensitive" as const } },
-      { nameAr: { contains: word } },
-      { university: { name: { contains: word, mode: "insensitive" as const } } },
-      { university: { nameAr: { contains: word } } },
-      {
-        programs: {
-          some: { name: { contains: word, mode: "insensitive" as const } },
+  return words.map((word) => {
+    // "اكتوبر" (plain alif) has to find text stored as "أكتوبر"
+    // (hamza-above) and vice versa — most keyboards/IMEs don't reliably
+    // autocomplete the hamza, so a plain `contains` on the Arabic columns
+    // alone silently missed real matches (e.g. "Cairo University" written
+    // as "جامعة القاهرة").
+    const arVariants = arabicAlifVariants(word);
+    return {
+      OR: [
+        { name: { contains: word, mode: "insensitive" as const } },
+        ...arVariants.map((v) => ({ nameAr: { contains: v } })),
+        { university: { name: { contains: word, mode: "insensitive" as const } } },
+        ...arVariants.map((v) => ({ university: { nameAr: { contains: v } } })),
+        {
+          programs: {
+            some: { name: { contains: word, mode: "insensitive" as const } },
+          },
         },
-      },
-      { programs: { some: { nameAr: { contains: word } } } },
-    ],
-  }));
+        ...arVariants.map((v) => ({
+          programs: { some: { nameAr: { contains: v } } },
+        })),
+      ],
+    };
+  });
 }
 
 /**
@@ -183,9 +194,19 @@ async function findFacultyIdsByTrigram(words: string[]): Promise<string[]> {
     WHERE GREATEST(
       similarity(f.name, ${phrase}),
       similarity(u.name, ${phrase}),
+      COALESCE(similarity(f."nameAr", ${phrase}), 0),
+      COALESCE(similarity(u."nameAr", ${phrase}), 0),
       COALESCE(
         (
           SELECT MAX(similarity(p.name, ${phrase}))
+          FROM "Program" p
+          WHERE p."facultyId" = f.id AND p."isPublished" = true
+        ),
+        0
+      ),
+      COALESCE(
+        (
+          SELECT MAX(similarity(p."nameAr", ${phrase}))
           FROM "Program" p
           WHERE p."facultyId" = f.id AND p."isPublished" = true
         ),
@@ -195,9 +216,19 @@ async function findFacultyIdsByTrigram(words: string[]): Promise<string[]> {
     ORDER BY GREATEST(
       similarity(f.name, ${phrase}),
       similarity(u.name, ${phrase}),
+      COALESCE(similarity(f."nameAr", ${phrase}), 0),
+      COALESCE(similarity(u."nameAr", ${phrase}), 0),
       COALESCE(
         (
           SELECT MAX(similarity(p.name, ${phrase}))
+          FROM "Program" p
+          WHERE p."facultyId" = f.id AND p."isPublished" = true
+        ),
+        0
+      ),
+      COALESCE(
+        (
+          SELECT MAX(similarity(p."nameAr", ${phrase}))
           FROM "Program" p
           WHERE p."facultyId" = f.id AND p."isPublished" = true
         ),
