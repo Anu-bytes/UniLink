@@ -1,13 +1,75 @@
 "use client";
 
 import { useTranslations } from "next-intl";
-import { UserRound } from "lucide-react";
+import { UserRound, Users } from "lucide-react";
 
+import { cn } from "@/lib/utils";
 import { ACCOUNT_ROLES, personalInfoSchema } from "@/lib/onboarding-schema";
 import { Input } from "@/components/ui/input";
 import { useWizard } from "../wizard-context";
-import { StepShell, Field, OptionCards, useStepForm } from "./step-primitives";
+import { StepShell, Field, useStepForm } from "./step-primitives";
 import { CountryCombobox } from "./country-select";
+
+const ROLE_ICONS: Record<(typeof ACCOUNT_ROLES)[number], typeof UserRound> = {
+  STUDENT: UserRound,
+  PARENT: Users,
+};
+
+/**
+ * Compact sliding-pill toggle for the 2-way student/parent pick — the
+ * generic OptionCards grid (built for several options with a hint line each)
+ * rendered these as two oversized cards for what is really a single binary
+ * switch, out of proportion with the rest of the step.
+ */
+function RoleToggle({
+  value,
+  onChange,
+}: {
+  value: (typeof ACCOUNT_ROLES)[number] | undefined;
+  onChange: (role: (typeof ACCOUNT_ROLES)[number]) => void;
+}) {
+  const t = useTranslations("Onboarding.personalInfo.accountRole");
+  // Second option selected: same grid + sliding-pill technique as
+  // SearchModeSwitch (see that component for why grid, not flex).
+  const isSecond = value === ACCOUNT_ROLES[1];
+
+  return (
+    <div
+      role="radiogroup"
+      className="relative grid grid-cols-2 rounded-full border border-input bg-muted/40 p-1"
+    >
+      {value ? (
+        <span
+          aria-hidden
+          className={cn(
+            "absolute inset-y-1 start-1 w-[calc(50%-4px)] rounded-full bg-brand-blue shadow-sm transition-transform duration-300 ease-out",
+            isSecond && "translate-x-full rtl:-translate-x-full",
+          )}
+        />
+      ) : null}
+      {ACCOUNT_ROLES.map((role) => {
+        const Icon = ROLE_ICONS[role];
+        const selected = value === role;
+        return (
+          <button
+            key={role}
+            type="button"
+            role="radio"
+            aria-checked={selected}
+            onClick={() => onChange(role)}
+            className={cn(
+              "relative z-10 flex h-10 items-center justify-center gap-1.5 rounded-full text-sm font-medium transition-colors duration-300",
+              selected ? "text-white" : "text-muted-foreground hover:text-foreground",
+            )}
+          >
+            <Icon className="size-4 shrink-0" aria-hidden />
+            {t(role)}
+          </button>
+        );
+      })}
+    </div>
+  );
+}
 
 export function StepPersonalInfo() {
   const t = useTranslations("Onboarding");
@@ -39,12 +101,7 @@ export function StepPersonalInfo() {
         label={t("personalInfo.accountRoleLabel")}
         error={form.errors.accountRole}
       >
-        <OptionCards
-          columns={2}
-          options={ACCOUNT_ROLES.map((role) => ({
-            value: role,
-            label: t(`personalInfo.accountRole.${role}`),
-          }))}
+        <RoleToggle
           value={form.values.accountRole as (typeof ACCOUNT_ROLES)[number] | undefined}
           onChange={(role) => form.setValue("accountRole", role)}
         />
