@@ -128,7 +128,7 @@ export default async function PartnersPage() {
           <div className="mt-6 flex justify-center">
             <Link
               href="/contact"
-              className="inline-flex h-14 items-center justify-center rounded-full bg-[#1E6DEB] px-8 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-[#F82C1F] px-8 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(248,44,31,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#C81F15]"
             >
               {t("whyChoose.cta")}
             </Link>
@@ -252,7 +252,7 @@ export default async function PartnersPage() {
                 <div className="mt-6 flex justify-center sm:justify-start">
                   <Link
                     href="/contact"
-                    className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-6 text-base font-bold text-[#1E6DEB] shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/90"
+                    className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-6 text-base font-bold text-[#F82C1F] shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/90"
                   >
                     {t("band.cta")}
                   </Link>
