@@ -2,7 +2,6 @@ import {
   BadgePercent,
   Banknote,
   Building2,
-  CheckCircle2,
   GraduationCap,
   Lock,
   Target,
@@ -180,7 +179,6 @@ function ProgramCard({
 }) {
   const years = yearsFromMonths(program.durationMonths);
   const tuition = formatMoney(locale, program.tuitionFee, program.currency);
-  const applicationFee = formatMoney(locale, program.applicationFee, program.currency);
   const field = FIELDS_OF_STUDY.find((entry) => entry.value === program.fieldOfStudy);
   const fieldLabel = field
     ? locale.startsWith("ar")
@@ -228,8 +226,11 @@ function ProgramCard({
         <h3 className="mt-3 text-base font-bold leading-snug text-[#1F2A44] transition-colors group-hover:text-[#1E6DEB]">
           {program.name}
         </h3>
+        <p className="mt-1 text-xs font-bold uppercase tracking-wide text-[#1E6DEB]">
+          {fieldLabel}
+        </p>
         <p className="mt-1 text-sm text-[#5a6072]">
-          {fieldLabel} · {tCatalog(`levels.${program.studyLevel}`)}
+          {tCatalog(`levels.${program.studyLevel}`)}
           {years
             ? ` · ${tCatalog("durationYears", {
                 count: years,
@@ -239,50 +240,38 @@ function ProgramCard({
         </p>
       </div>
 
-      <dl className="grid grid-cols-2 gap-3 border-t border-slate-100 pt-4">
+      {/* Tuition is what actually drives a family's decision, so it's the
+          one number that gets real visual weight; minimum grade is useful
+          context but secondary, so it's a small badge rather than an equal
+          stat — clearer at a glance than a grid of same-size figures. */}
+      <div className="flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
         <div>
-          <dt className="text-xs font-semibold text-[#98A0B4]">
+          <p className="text-xs font-semibold text-[#98A0B4]">
             {t("tuition.fee")}
-          </dt>
-          <dd className="mt-0.5 text-sm font-bold text-[#1F2A44]">
+          </p>
+          <p className="mt-0.5 text-lg font-bold leading-none text-[#1F2A44]">
             {tuition ?? "—"}
-            {tuition ? (
-              <span className="ms-1 text-xs font-normal text-[#5a6072]">
-                {tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}
-              </span>
-            ) : null}
-          </dd>
-        </div>
-
-        <div>
-          <dt className="text-xs font-semibold text-[#98A0B4]">
-            {t("tuition.applicationFee")}
-          </dt>
-          <dd className="mt-0.5 text-sm font-bold text-[#1F2A44]">
-            {program.applicationFeeWaived ? (
-              <span className="inline-flex items-center gap-1 text-[#1F7A4D]">
-                <CheckCircle2 className="size-3.5" aria-hidden />
-                {t("tuition.waived")}
-              </span>
-            ) : (
-              applicationFee ?? "—"
-            )}
-          </dd>
+          </p>
+          {tuition ? (
+            <p className="mt-1 text-xs text-[#5a6072]">
+              {tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}
+            </p>
+          ) : null}
         </div>
 
         {program.minGradePercent != null ? (
-          <div className="col-span-2">
-            <dt className="flex items-center gap-1 text-xs font-semibold text-[#98A0B4]">
-              <Target className="size-3.5" aria-hidden />
+          <div className="shrink-0 rounded-xl bg-[#F7F9FE] px-3 py-2 text-end">
+            <p className="flex items-center justify-end gap-1 text-[11px] font-semibold text-[#98A0B4]">
+              <Target className="size-3" aria-hidden />
               {t("scores.minimum")}
-            </dt>
-            <dd className="mt-0.5 text-sm font-bold text-[#1F2A44]">
+            </p>
+            <p className="mt-0.5 text-sm font-bold text-[#1F2A44]">
               {formatNumber(locale, program.minGradePercent)}
               {tCatalog("units.PERCENT")}
-            </dd>
+            </p>
           </div>
         ) : null}
-      </dl>
+      </div>
     </Link>
   );
 }
