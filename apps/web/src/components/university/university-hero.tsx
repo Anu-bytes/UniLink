@@ -2,6 +2,7 @@ import {
   Building2,
   CalendarDays,
   Clock,
+  Compass,
   Eye,
   Flame,
   GraduationCap,
@@ -16,6 +17,15 @@ import { UniversityGallery } from "@/components/university/university-gallery";
 import { ShareButton } from "@/components/university/share-button";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { formatCompact, formatDate } from "@/lib/format";
+import { cn } from "@/lib/utils";
+
+// Same gradient set the Faculties tab cycles through, so the whole page
+// reads as one system rather than the hero being a flat-blue outlier.
+const STAT_ACCENTS = [
+  "bg-gradient-to-br from-[#0EA5A4] to-[#5EEAD4]",
+  "bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7]",
+  "bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]",
+];
 
 export async function UniversityHero({
   university,
@@ -141,29 +151,71 @@ export async function UniversityHero({
         </div>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 md:px-6 md:py-12 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:gap-10">
-        {/* Gallery card, with the stat strip and the primary CTA below it. */}
-        <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm md:p-5">
-          <UniversityGallery images={images} name={university.name} />
-
-          <dl className="mt-5 grid grid-cols-3 gap-2 border-t border-slate-100 pt-5 text-center">
-            {stats.map((stat) => (
-              <div key={stat.label} className="flex flex-col items-center gap-1">
-                <stat.icon className="size-5 text-[#1E6DEB]" aria-hidden />
-                <dt className="text-xs font-semibold text-[#5a6072]">
+      {/* Stat bar overlapping the banner's bottom edge, so the headline
+          facts (established, faculties, programs) are the first thing read
+          after the photo instead of hiding in the gallery card's footer as
+          small same-size text. */}
+      <div className="mx-auto max-w-7xl px-4 md:px-6">
+        <dl className="relative z-10 -mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_20px_45px_-20px_rgba(15,23,42,0.25)] sm:-mt-8 sm:grid-cols-3 sm:p-5">
+          {stats.map((stat, index) => (
+            <div key={stat.label} className="flex items-center gap-3">
+              <span
+                className={cn(
+                  "flex size-11 shrink-0 items-center justify-center rounded-xl text-white shadow-sm sm:size-12",
+                  STAT_ACCENTS[index % STAT_ACCENTS.length],
+                )}
+              >
+                <stat.icon className="size-5" aria-hidden />
+              </span>
+              <div className="min-w-0">
+                <dd className="truncate text-lg font-bold text-[#1F2A44] sm:text-xl">
+                  {stat.value}
+                </dd>
+                <dt className="truncate text-xs font-semibold text-[#5a6072] sm:text-sm">
                   {stat.label}
                 </dt>
-                <dd className="text-sm font-bold text-[#1F2A44]">{stat.value}</dd>
               </div>
-            ))}
-          </dl>
+            </div>
+          ))}
+        </dl>
+      </div>
 
-          <div className="mt-5 flex items-center gap-3">
+      <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-8 pt-8 md:px-6 md:pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-10">
+        {/* Description, meta and actions — the primary column now that
+            identity lives on the banner and the headline facts have their
+            own bar above. */}
+        <div className="min-w-0">
+          {university.description ? (
+            <p className="text-base leading-8 text-[#5a6072]">
+              {university.description}
+            </p>
+          ) : null}
+
+          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#5a6072]">
+            <span className="flex items-center gap-1.5">
+              <Clock className="size-4 text-[#1E6DEB]" aria-hidden />
+              {t("latestUpdate")}: {formatDate(locale, university.updatedAt)}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Eye className="size-4 text-[#1E6DEB]" aria-hidden />
+              {t("views", { count: formatCompact(locale, university.viewCount) })}
+            </span>
+          </div>
+
+          <div className="mt-6 flex flex-wrap items-center gap-3">
+            <Link
+              href={`/universities/${university.slug}?tab=faculties`}
+              className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
+            >
+              <Compass className="size-5" aria-hidden />
+              {t("exploreProgramsCta")}
+            </Link>
+
             <button
               type="button"
               aria-label={t("save")}
               title={t("save")}
-              className="flex min-h-12 flex-1 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
             >
               <Heart className="size-5" aria-hidden />
               {t("save")}
@@ -177,25 +229,14 @@ export async function UniversityHero({
           </div>
         </div>
 
-        {/* Description and lightweight meta — name/logo/address now live on
-            the cover banner above, so this column is just the story and a
-            couple of quiet footnotes rather than a second identity block. */}
+        {/* Photos, now its own labeled, secondary column instead of sharing
+            a card with the stats/actions that moved out above. */}
         <div className="min-w-0">
-          {university.description ? (
-            <p className="text-base leading-8 text-[#5a6072]">
-              {university.description}
-            </p>
-          ) : null}
-
-          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#5a6072]">
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4 text-[#1E6DEB]" aria-hidden />
-              {t("latestUpdate")}: {formatDate(locale, university.updatedAt)}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Eye className="size-4 text-[#1E6DEB]" aria-hidden />
-              {t("views", { count: formatCompact(locale, university.viewCount) })}
-            </span>
+          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#98A0B4]">
+            {t("campusPhotos")}
+          </p>
+          <div className="rounded-3xl border border-slate-200/80 bg-white p-3 shadow-sm">
+            <UniversityGallery images={images} name={university.name} />
           </div>
         </div>
       </div>
