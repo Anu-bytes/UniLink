@@ -111,8 +111,8 @@ export async function TabFaculties({
             </p>
           ) : null}
         </div>
-        <span className="shrink-0 rounded-full bg-[#EEF3FF] px-2.5 py-1 text-xs font-bold text-[#1E6DEB]">
-          {formatNumber(locale, faculty.programs.length)}
+        <span className="hidden shrink-0 rounded-full bg-[#EEF3FF] px-2.5 py-1 text-xs font-bold text-[#1E6DEB] sm:inline-block">
+          {t("facultyProgramCount", { count: faculty.programs.length })}
         </span>
       </Reveal>
     ),
