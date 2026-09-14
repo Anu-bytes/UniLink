@@ -158,7 +158,12 @@ async function FacultiesSearchView({
   return (
     <>
       <div className="mt-5">
-        <AiSearchBar initialQuery={filters.q ?? ""} matched={matched} filters={filters} />
+        <AiSearchBar
+          initialQuery={filters.q ?? ""}
+          matched={matched}
+          filters={filters}
+          hasResults={searched}
+        />
       </div>
 
       {searched && filters.q ? (
