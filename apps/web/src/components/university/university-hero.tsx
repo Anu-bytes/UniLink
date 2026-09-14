@@ -151,12 +151,14 @@ export async function UniversityHero({
         </div>
       </div>
 
-      {/* Stat bar overlapping the banner's bottom edge, so the headline
-          facts (established, faculties, programs) are the first thing read
-          after the photo instead of hiding in the gallery card's footer as
-          small same-size text. */}
-      <div className="mx-auto max-w-7xl px-4 md:px-6">
-        <dl className="relative z-10 -mt-6 grid grid-cols-1 gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-[0_20px_45px_-20px_rgba(15,23,42,0.25)] sm:-mt-8 sm:grid-cols-3 sm:p-5">
+      {/* Stat bar right below the banner, so the headline facts (established,
+          faculties, programs) are the first thing read after the photo
+          instead of hiding in the gallery card's footer as small same-size
+          text. Sits after the banner with normal spacing rather than
+          overlapping it — a negative margin here collided with the logo and
+          name/address text anchored to the banner's own bottom edge. */}
+      <div className="mx-auto max-w-7xl px-4 pt-4 md:px-6">
+        <dl className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-3 sm:p-5">
           {stats.map((stat, index) => (
             <div key={stat.label} className="flex items-center gap-3">
               <span
