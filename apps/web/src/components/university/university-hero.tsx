@@ -207,7 +207,7 @@ export async function UniversityHero({
 
           <div className="mt-6 flex flex-wrap items-center gap-3">
             <Link
-              href={`/universities/${university.slug}?tab=faculties`}
+              href={`/universities/${university.slug}?tab=faculties#tabs`}
               className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
             >
               <Compass className="size-5" aria-hidden />

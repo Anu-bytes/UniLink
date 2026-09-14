@@ -85,7 +85,10 @@ export default async function UniversityDetailPage({
     <>
       <UniversityHero university={university} />
 
-      <section className="mx-auto max-w-7xl px-4 pb-16 md:px-6">
+      {/* Anchored so links elsewhere on the page (the hero's "Explore
+          programs" CTA) can jump straight to the tab content instead of
+          just swapping it in off-screen below a tall hero. */}
+      <section id="tabs" className="mx-auto max-w-7xl scroll-mt-6 px-4 pb-16 md:px-6">
         <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
           <UniversityTabs slug={university.slug} active={active} />
 
