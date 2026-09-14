@@ -13,6 +13,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { EmptySection } from "@/components/university/prose";
+import { FacultyAccordion } from "@/components/university/faculty-accordion";
 import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
 import { Reveal } from "@/components/reveal";
 import type { UniversityDetailData } from "@/lib/catalog";
@@ -53,12 +54,15 @@ const ICON_ACCENTS = [
  * needs an account, same as admission requirements, criteria, scores and
  * tuition elsewhere on this page.
  *
- * No tab switcher and no click-to-reveal panel: both read as complicated for
- * a student/parent audience. Faculties are plain section headings (nothing
- * to operate) and every program is a complete card up front — tuition,
- * application fee, minimum grade, field, perks — with nothing gated behind
- * a click. Long faculties cap what's shown up front (ProgramGridReveal's
- * "Show more") so the tab is a short scroll rather than a wall of cards.
+ * No top-level tab switcher and no click-to-reveal detail panel — those read
+ * as complicated for a student/parent audience. Instead, faculties are a
+ * single-open accordion (FacultyAccordion): opening one closes whichever was
+ * open, so only one faculty's programs are ever on screen at a time and the
+ * page never turns into a long scroll. Every program is a complete card the
+ * moment its faculty opens — tuition, application fee, minimum grade, field,
+ * perks — with nothing gated behind a further click, and a faculty with a
+ * long catalogue caps what's shown up front (ProgramGridReveal's
+ * "Show more") so even one open faculty can't get too tall on its own.
  */
 export async function TabFaculties({
   university,
@@ -81,49 +85,60 @@ export async function TabFaculties({
     return <EmptySection message={t("emptySection")} />;
   }
 
-  const content = (
-    <div className="space-y-10">
-      {faculties.map((faculty, facultyIndex) => (
-        <Reveal key={faculty.id} as="section" delay={facultyIndex * 80}>
-          <div className="flex items-start gap-3">
-            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E3A8A] to-[#1E6DEB] text-white shadow-sm">
-              <Building2 className="size-4" aria-hidden />
-            </span>
-            <div className="min-w-0">
-              <h2 className="text-lg font-bold text-[#1F2A44] md:text-xl">
-                {faculty.name}
-              </h2>
-              {faculty.description ? (
-                <p className="mt-1 text-sm leading-6 text-[#5a6072]">
-                  {faculty.description}
-                </p>
-              ) : null}
-            </div>
-          </div>
+  const items = faculties.map((faculty, facultyIndex) => ({
+    id: faculty.id,
+    header: (
+      <Reveal
+        delay={facultyIndex * 80}
+        className="flex min-w-0 flex-1 items-center gap-3"
+      >
+        <span
+          className={cn(
+            "flex size-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm",
+            ICON_ACCENTS[facultyIndex % ICON_ACCENTS.length],
+          )}
+        >
+          <Building2 className="size-4" aria-hidden />
+        </span>
+        <div className="min-w-0 flex-1">
+          <h2 className="truncate text-base font-bold text-[#1F2A44] md:text-lg">
+            {faculty.name}
+          </h2>
+          {faculty.description ? (
+            <p className="mt-0.5 truncate text-xs text-[#5a6072] md:text-sm">
+              {faculty.description}
+            </p>
+          ) : null}
+        </div>
+        <span className="shrink-0 rounded-full bg-[#EEF3FF] px-2.5 py-1 text-xs font-bold text-[#1E6DEB]">
+          {formatNumber(locale, faculty.programs.length)}
+        </span>
+      </Reveal>
+    ),
+    body: (
+      <ProgramGridReveal
+        limit={VISIBLE_PER_FACULTY}
+        moreLabel={t("showMorePrograms", {
+          count: faculty.programs.length - VISIBLE_PER_FACULTY,
+        })}
+        lessLabel={t("showLessPrograms")}
+        items={faculty.programs.map((program, programIndex) => (
+          <ProgramCard
+            key={program.id}
+            program={program}
+            universitySlug={university.slug}
+            locale={locale}
+            t={t}
+            tCatalog={tCatalog}
+            accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
+          />
+        ))}
+      />
+    ),
+  }));
 
-          <div className="mt-4">
-            <ProgramGridReveal
-              limit={VISIBLE_PER_FACULTY}
-              moreLabel={t("showMorePrograms", {
-                count: faculty.programs.length - VISIBLE_PER_FACULTY,
-              })}
-              lessLabel={t("showLessPrograms")}
-              items={faculty.programs.map((program, programIndex) => (
-                <ProgramCard
-                  key={program.id}
-                  program={program}
-                  universitySlug={university.slug}
-                  locale={locale}
-                  t={t}
-                  tCatalog={tCatalog}
-                  accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
-                />
-              ))}
-            />
-          </div>
-        </Reveal>
-      ))}
-    </div>
+  const content = (
+    <FacultyAccordion items={items} defaultOpenId={faculties[0]?.id} />
   );
 
   if (isAuthenticated) {
