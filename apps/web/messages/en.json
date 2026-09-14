@@ -873,9 +873,8 @@
     },
     "levelWithYears": "{years}-Year {level}",
     "universityTypes": {
-      "PUBLIC": "Public University",
-      "PRIVATE": "Private University",
-      "SPECIALIZED": "Specialized University"
+      "NATIONAL": "National University",
+      "PRIVATE": "Private University"
     },
     "tags": {
       "HIGH_JOB_DEMAND": "High Job Demand",

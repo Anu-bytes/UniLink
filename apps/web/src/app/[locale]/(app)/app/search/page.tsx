@@ -309,7 +309,7 @@ async function UniversitiesSearchView({
           locale,
           {
             q: query || undefined,
-            types: type ? [type as "PUBLIC" | "PRIVATE" | "SPECIALIZED"] : undefined,
+            types: type ? [type as "NATIONAL" | "PRIVATE"] : undefined,
             cities: cities.length > 0 ? cities : undefined,
           },
           requestedPage,

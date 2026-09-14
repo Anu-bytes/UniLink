@@ -12,7 +12,7 @@ export type UniversityCardData = {
   name: string;
   city: string;
   country: string;
-  type: "PUBLIC" | "PRIVATE" | "SPECIALIZED";
+  type: "NATIONAL" | "PRIVATE";
   description: string | null;
   coverImageUrl: string | null;
   websiteUrl: string | null;
@@ -93,7 +93,7 @@ function mapUniversity(
     cityAr: string | null;
     country: string;
     countryAr: string | null;
-    type: "PUBLIC" | "PRIVATE" | "SPECIALIZED";
+    type: "NATIONAL" | "PRIVATE";
     description: string | null;
     descriptionAr: string | null;
     coverImageUrl: string | null;
@@ -378,7 +378,7 @@ export async function getPublishedUniversities(
   const where = {
     ...publishedUniversityWhere,
     ...(filters.types?.length
-      ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
+      ? { type: { in: filters.types as ("NATIONAL" | "PRIVATE")[] } }
       : {}),
     ...(filters.cities?.length
       ? { city: { in: expandCityFilter(filters.cities) } }
@@ -422,7 +422,7 @@ export async function getPublishedUniversities(
       const trigramWhere = {
         ...publishedUniversityWhere,
         ...(filters.types?.length
-          ? { type: { in: filters.types as ("PUBLIC" | "PRIVATE" | "SPECIALIZED")[] } }
+          ? { type: { in: filters.types as ("NATIONAL" | "PRIVATE")[] } }
           : {}),
         ...(filters.cities?.length
       ? { city: { in: expandCityFilter(filters.cities) } }
@@ -580,7 +580,7 @@ export type UniversityDetailData = {
   id: string;
   slug: string;
   name: string;
-  type: "PUBLIC" | "PRIVATE" | "SPECIALIZED";
+  type: "NATIONAL" | "PRIVATE";
   city: string;
   country: string;
   addressLine: string | null;

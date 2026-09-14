@@ -19,7 +19,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const UNIVERSITY_TYPES = ["PUBLIC", "PRIVATE", "SPECIALIZED"] as const;
+const UNIVERSITY_TYPES = ["NATIONAL", "PRIVATE"] as const;
 
 /**
  * Columns a client may sort by. Anything else falls back to `createdAt`: the

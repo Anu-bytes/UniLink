@@ -17,7 +17,7 @@ import { deleteMediaByUrl } from "@/lib/supabase-storage";
 
 export const dynamic = "force-dynamic";
 
-const UNIVERSITY_TYPES = ["PUBLIC", "PRIVATE", "SPECIALIZED"] as const;
+const UNIVERSITY_TYPES = ["NATIONAL", "PRIVATE"] as const;
 
 const CHILD_COUNTS = {
   faculties: true,
