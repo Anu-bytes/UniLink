@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-export const UNIVERSITY_TABS = ["about", "faculties", "location"] as const;
+export const UNIVERSITY_TABS = ["faculties", "gallery", "location"] as const;
 
 export type UniversityTab = (typeof UNIVERSITY_TABS)[number];
 
@@ -34,7 +34,7 @@ export async function UniversityTabs({
         return (
           <Link
             key={tab}
-            href={`/universities/${slug}${tab === "about" ? "" : `?tab=${tab}`}`}
+            href={`/universities/${slug}${tab === "faculties" ? "" : `?tab=${tab}`}`}
             scroll={false}
             aria-current={isActive ? "page" : undefined}
             className={cn(
