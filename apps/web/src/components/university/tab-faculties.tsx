@@ -2,10 +2,13 @@
 
 import {
   ArrowUpRight,
-  Banknote,
   BadgePercent,
+  Banknote,
+  CheckCircle2,
+  ChevronRight,
   GraduationCap,
   Lock,
+  Target,
   Zap,
   type LucideIcon,
 } from "lucide-react";
@@ -15,6 +18,7 @@ import { useState } from "react";
 import { Link } from "@/i18n/navigation";
 import { EmptySection } from "@/components/university/prose";
 import type { UniversityDetailData } from "@/lib/catalog";
+import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -40,8 +44,10 @@ const TAG_ICONS: Record<string, LucideIcon> = {
  * faculties each holding several programs, expanding one used to leave the
  * rest of the page as a wall of collapsed panels and made the tab feel huge
  * even before the gating overlay. Only the selected faculty's programs
- * render at a time, as a card grid instead of a plain divided list, so
- * browsing reads as picking a program rather than scanning a long table.
+ * render at a time, as a master-detail explorer (a program list beside a
+ * detail panel that updates on click) instead of a plain divided list or a
+ * grid of cards, so browsing a program's full picture — tuition, fees,
+ * minimum grade, perks — doesn't mean leaving the tab at all.
  */
 export function TabFaculties({
   university,
@@ -118,7 +124,8 @@ export function TabFaculties({
         {active.programs.length === 0 ? (
           <EmptySection message={t("emptySection")} />
         ) : isAuthenticated ? (
-          <ProgramGrid
+          <ProgramExplorer
+            key={active.id}
             programs={active.programs}
             universitySlug={university.slug}
             locale={locale}
@@ -128,7 +135,8 @@ export function TabFaculties({
         ) : (
           <div className="relative">
             <div aria-hidden className="pointer-events-none select-none blur-sm">
-              <ProgramGrid
+              <ProgramExplorer
+                key={active.id}
                 programs={active.programs}
                 universitySlug={university.slug}
                 locale={locale}
@@ -152,7 +160,14 @@ export function TabFaculties({
   );
 }
 
-function ProgramGrid({
+/**
+ * List of programs on one side, the selected one's full detail on the
+ * other — updates in place on click instead of the browser navigating away,
+ * so comparing a few programs back to back doesn't mean bouncing between
+ * pages. `key={active.id}` on the caller remounts this fresh (and resets
+ * the selection) whenever the faculty tab changes.
+ */
+function ProgramExplorer({
   programs,
   universitySlug,
   locale,
@@ -165,23 +180,72 @@ function ProgramGrid({
   t: T;
   tCatalog: T;
 }) {
+  const [selectedId, setSelectedId] = useState(programs[0]?.id);
+  const selected =
+    programs.find((program) => program.id === selectedId) ?? programs[0];
+
   return (
-    <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-      {programs.map((program) => (
-        <ProgramCard
-          key={program.id}
-          program={program}
-          universitySlug={universitySlug}
-          locale={locale}
-          t={t}
-          tCatalog={tCatalog}
-        />
-      ))}
+    <div className="grid gap-4 lg:grid-cols-[19rem_1fr] lg:items-start lg:gap-6">
+      <ul className="flex gap-2 overflow-x-auto pb-1 lg:sticky lg:top-20 lg:block lg:max-h-[32rem] lg:space-y-1.5 lg:overflow-y-auto lg:overflow-x-visible lg:pb-0 lg:pe-1">
+        {programs.map((program) => {
+          const isActive = program.id === selected.id;
+          const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+          return (
+            <li key={program.id} className="shrink-0 lg:shrink">
+              <button
+                type="button"
+                onClick={() => setSelectedId(program.id)}
+                aria-current={isActive}
+                className={cn(
+                  "flex min-h-14 w-56 items-center gap-3 rounded-xl border px-3 py-2.5 text-start transition-colors lg:w-full",
+                  isActive
+                    ? "border-[#1E6DEB] bg-[#EEF3FF] shadow-sm"
+                    : "border-slate-200 bg-white hover:border-[#1E6DEB]/40 hover:bg-[#F7F9FE]",
+                )}
+              >
+                <span
+                  className={cn(
+                    "flex size-9 shrink-0 items-center justify-center rounded-lg",
+                    isActive
+                      ? "bg-[#1E6DEB] text-white"
+                      : "bg-[#EEF3FF] text-[#1E6DEB]",
+                  )}
+                >
+                  <GraduationCap className="size-4" aria-hidden />
+                </span>
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-sm font-bold text-[#1F2A44]">
+                    {program.name}
+                  </span>
+                  <span className="block truncate text-xs text-[#5a6072]">
+                    {tuition ?? tCatalog(`levels.${program.studyLevel}`)}
+                  </span>
+                </span>
+                <ChevronRight
+                  className={cn(
+                    "size-4 shrink-0 text-[#1E6DEB] transition-opacity rtl:rotate-180",
+                    isActive ? "opacity-100" : "opacity-0",
+                  )}
+                  aria-hidden
+                />
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+
+      <ProgramDetail
+        program={selected}
+        universitySlug={universitySlug}
+        locale={locale}
+        t={t}
+        tCatalog={tCatalog}
+      />
     </div>
   );
 }
 
-function ProgramCard({
+function ProgramDetail({
   program,
   universitySlug,
   locale,
@@ -196,65 +260,110 @@ function ProgramCard({
 }) {
   const years = yearsFromMonths(program.durationMonths);
   const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+  const applicationFee = formatMoney(locale, program.applicationFee, program.currency);
+  const field = FIELDS_OF_STUDY.find((entry) => entry.value === program.fieldOfStudy);
+  const fieldLabel = field
+    ? locale.startsWith("ar")
+      ? field.ar
+      : field.en
+    : program.fieldOfStudy;
 
   return (
-    <Link
-      href={`/universities/${universitySlug}/programs/${program.slug}`}
-      className="group flex flex-col justify-between rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/40 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-    >
-      <div>
-        <div className="flex items-start justify-between gap-2">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#EEF3FF] text-[#1E6DEB]">
-            <GraduationCap className="size-5" aria-hidden />
+    <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm md:p-6">
+      <div className="flex flex-wrap items-start justify-between gap-3">
+        <div className="flex items-start gap-3">
+          <span className="flex size-12 shrink-0 items-center justify-center rounded-xl bg-[#EEF3FF] text-[#1E6DEB]">
+            <GraduationCap className="size-6" aria-hidden />
           </span>
-          {program.tags.length > 0 ? (
-            <div className="flex flex-wrap justify-end gap-1.5">
-              {program.tags.slice(0, 2).map((tag) => {
-                const TagIcon = TAG_ICONS[tag];
-                return (
-                  <span
-                    key={tag}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#FFF6E5] px-2 py-1 text-[11px] font-bold leading-none text-[#B77714]"
-                  >
-                    {TagIcon ? <TagIcon className="size-3" aria-hidden /> : null}
-                    {tCatalog(`tags.${tag}`)}
-                  </span>
-                );
-              })}
-            </div>
-          ) : null}
+          <div>
+            <h3 className="text-lg font-bold leading-snug text-[#1F2A44] md:text-xl">
+              {program.name}
+            </h3>
+            <p className="mt-1 text-sm text-[#5a6072]">
+              {fieldLabel} · {tCatalog(`levels.${program.studyLevel}`)}
+              {years
+                ? ` · ${tCatalog("durationYears", {
+                    count: years,
+                    value: formatNumber(locale, years),
+                  })}`
+                : null}
+            </p>
+          </div>
         </div>
 
-        <h3 className="mt-3 text-base font-bold leading-snug text-[#1F2A44]">
-          {program.name}
-        </h3>
-        <p className="mt-1 text-sm text-[#5a6072]">
-          {tCatalog(`levels.${program.studyLevel}`)}
-          {years
-            ? ` · ${tCatalog("durationYears", {
-                count: years,
-                value: formatNumber(locale, years),
-              })}`
-            : null}
-        </p>
+        {program.tags.length > 0 ? (
+          <div className="flex flex-wrap justify-end gap-1.5">
+            {program.tags.map((tag) => {
+              const TagIcon = TAG_ICONS[tag];
+              return (
+                <span
+                  key={tag}
+                  className="inline-flex items-center gap-1 rounded-full bg-[#FFF6E5] px-2 py-1 text-[11px] font-bold leading-none text-[#B77714]"
+                >
+                  {TagIcon ? <TagIcon className="size-3" aria-hidden /> : null}
+                  {tCatalog(`tags.${tag}`)}
+                </span>
+              );
+            })}
+          </div>
+        ) : null}
       </div>
 
-      <div className="mt-4 flex items-end justify-between gap-2 border-t border-slate-100 pt-4">
-        {tuition ? (
-          <p className="text-base font-bold text-[#1F2A44]">
-            {tuition}
-            <span className="ms-1 text-xs font-normal text-[#5a6072]">
-              {tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}
-            </span>
-          </p>
-        ) : (
-          <span />
-        )}
-        <span className="inline-flex shrink-0 items-center gap-1 text-sm font-bold text-[#1E6DEB] transition-transform duration-300 group-hover:translate-x-0.5 rtl:group-hover:-translate-x-0.5">
-          {t("viewProgram")}
-          <ArrowUpRight className="size-4 rtl:-scale-x-100" aria-hidden />
-        </span>
-      </div>
-    </Link>
+      <dl className="mt-5 grid grid-cols-2 gap-3 border-t border-slate-100 pt-5 sm:grid-cols-3">
+        <div className="rounded-xl bg-[#F7F9FE] p-3">
+          <dt className="text-xs font-semibold text-[#5a6072]">
+            {t("tuition.fee")}
+          </dt>
+          <dd className="mt-1 text-base font-bold text-[#1F2A44]">
+            {tuition ?? "—"}
+            {tuition ? (
+              <span className="ms-1 text-xs font-normal text-[#5a6072]">
+                {tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}
+              </span>
+            ) : null}
+          </dd>
+        </div>
+
+        <div className="rounded-xl bg-[#F7F9FE] p-3">
+          <dt className="text-xs font-semibold text-[#5a6072]">
+            {t("tuition.applicationFee")}
+          </dt>
+          <dd className="mt-1 text-base font-bold text-[#1F2A44]">
+            {program.applicationFeeWaived ? (
+              <span className="inline-flex items-center gap-1 text-[#1F7A4D]">
+                <CheckCircle2 className="size-4" aria-hidden />
+                {t("tuition.waived")}
+              </span>
+            ) : (
+              applicationFee ?? "—"
+            )}
+          </dd>
+        </div>
+
+        {program.minGradePercent != null ? (
+          <div className="rounded-xl bg-[#F7F9FE] p-3">
+            <dt className="flex items-center gap-1 text-xs font-semibold text-[#5a6072]">
+              <Target className="size-3.5" aria-hidden />
+              {t("scores.minimum")}
+            </dt>
+            <dd className="mt-1 text-base font-bold text-[#1F2A44]">
+              {formatNumber(locale, program.minGradePercent)}
+              {tCatalog("units.PERCENT")}
+            </dd>
+          </div>
+        ) : null}
+      </dl>
+
+      <Link
+        href={`/universities/${universitySlug}/programs/${program.slug}`}
+        className="group mt-5 inline-flex min-h-11 items-center gap-1.5 rounded-full bg-[#1E6DEB] px-5 text-sm font-bold text-white shadow-sm transition-colors hover:bg-[#1859c4]"
+      >
+        {t("viewProgram")}
+        <ArrowUpRight
+          className="size-4 transition-transform duration-300 group-hover:translate-x-0.5 rtl:-scale-x-100 rtl:group-hover:-translate-x-0.5"
+          aria-hidden
+        />
+      </Link>
+    </div>
   );
 }

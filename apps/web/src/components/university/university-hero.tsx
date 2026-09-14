@@ -53,6 +53,94 @@ export async function UniversityHero({
 
   return (
     <section className="bg-gradient-to-b from-[#F4F7FE] via-[#F9FAFF] to-white">
+      <div className="mx-auto max-w-7xl px-4 pt-6 md:px-6">
+        <nav aria-label="Breadcrumb">
+          <ol className="flex flex-wrap items-center gap-2 text-sm text-[#5a6072]">
+            <li>
+              <Link href="/" className="hover:text-[#1E6DEB]">
+                {t("breadcrumbHome")}
+              </Link>
+            </li>
+            <li aria-hidden className="text-slate-300">
+              /
+            </li>
+            <li>
+              <Link href="/universities" className="hover:text-[#1E6DEB]">
+                {t("breadcrumbUniversities")}
+              </Link>
+            </li>
+            <li aria-hidden className="text-slate-300">
+              /
+            </li>
+            <li className="truncate font-semibold text-[#1F2A44]">
+              {university.name}
+            </li>
+          </ol>
+        </nav>
+      </div>
+
+      {/* Cover banner: the university's own cover photo (falling back to a
+          brand-gradient wash) with its logo, name and address overlaid at the
+          bottom, and its status badges at the top — the "who is this" story
+          told in one glance instead of split across a plain gradient strip
+          and a separate text column below it. */}
+      <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6">
+        <div className="relative isolate h-48 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
+          {university.coverImageUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element -- cover
+            // photos come from arbitrary partner hosts, same as the gallery.
+            <img
+              src={university.coverImageUrl}
+              alt=""
+              className="absolute inset-0 size-full object-cover"
+            />
+          ) : (
+            <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A] via-[#1E6DEB] to-[#3B86F7]" />
+          )}
+          <div
+            aria-hidden
+            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/0"
+          />
+
+          <div className="absolute inset-x-4 top-4 flex flex-wrap justify-end gap-2 sm:inset-x-6 sm:top-5">
+            {university.isRecommended ? (
+              <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#1E3A8A] shadow-sm backdrop-blur-sm sm:text-sm">
+                <Heart className="size-3.5 text-[#1E6DEB]" aria-hidden />
+                {t("recommended")}
+              </span>
+            ) : null}
+            {university.isTrending ? (
+              <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#C81F15] shadow-sm backdrop-blur-sm sm:text-sm">
+                <Flame className="size-3.5 text-[#F82C1F]" aria-hidden />
+                {t("trending")}
+              </span>
+            ) : null}
+            <span className="inline-flex min-h-8 items-center rounded-full bg-white/90 px-3 text-xs font-bold text-[#1F2A44] shadow-sm backdrop-blur-sm sm:text-sm">
+              {tCatalog(`universityTypes.${university.type}`)}
+            </span>
+          </div>
+
+          <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 sm:inset-x-6 sm:bottom-5 sm:gap-4">
+            <UniversityLogo
+              name={university.name}
+              logoUrl={university.logoUrl}
+              className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
+            />
+            <div className="min-w-0">
+              <h1 className="truncate text-xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl">
+                {university.name}
+              </h1>
+              {university.addressLine ? (
+                <p className="mt-1 flex items-center gap-1.5 text-sm text-white/90">
+                  <MapPin className="size-4 shrink-0" aria-hidden />
+                  <span className="truncate">{university.addressLine}</span>
+                </p>
+              ) : null}
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div className="mx-auto grid max-w-7xl gap-8 px-4 py-8 md:px-6 md:py-12 lg:grid-cols-[minmax(0,32rem)_minmax(0,1fr)] lg:gap-10">
         {/* Gallery card, with the stat strip and the primary CTA below it. */}
         <div className="rounded-3xl border border-slate-200/80 bg-white p-4 shadow-sm md:p-5">
@@ -89,103 +177,26 @@ export async function UniversityHero({
           </div>
         </div>
 
-        {/* Identity column. */}
+        {/* Description and lightweight meta — name/logo/address now live on
+            the cover banner above, so this column is just the story and a
+            couple of quiet footnotes rather than a second identity block. */}
         <div className="min-w-0">
-          <nav aria-label="Breadcrumb">
-            <ol className="flex flex-wrap items-center gap-2 text-sm text-[#5a6072]">
-              <li>
-                <Link href="/" className="hover:text-[#1E6DEB]">
-                  {t("breadcrumbHome")}
-                </Link>
-              </li>
-              <li aria-hidden className="text-slate-300">
-                /
-              </li>
-              <li>
-                <Link href="/universities" className="hover:text-[#1E6DEB]">
-                  {t("breadcrumbUniversities")}
-                </Link>
-              </li>
-              <li aria-hidden className="text-slate-300">
-                /
-              </li>
-              <li className="font-semibold text-[#1F2A44]">{university.name}</li>
-            </ol>
-          </nav>
-
-          <div className="mt-5 flex items-start gap-4">
-            <UniversityLogo
-              name={university.name}
-              logoUrl={university.logoUrl}
-              className="size-16 md:size-20"
-              textClassName="text-xl"
-            />
-            <div className="min-w-0">
-              <h1 className="text-2xl font-bold leading-tight text-[#1F2A44] md:text-3xl lg:text-4xl">
-                {university.name}
-              </h1>
-              {university.addressLine ? (
-                <p className="mt-2 flex items-center gap-2 text-sm text-[#5a6072] md:text-base">
-                  <MapPin className="size-4 shrink-0 text-[#1E6DEB]" aria-hidden />
-                  {university.addressLine}
-                </p>
-              ) : null}
-            </div>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            {university.isRecommended ? (
-              <span className="inline-flex min-h-9 items-center gap-2 rounded-full bg-[#EEF3FF] px-4 text-sm font-semibold text-[#1E3A8A]">
-                <Heart className="size-4 text-[#1E6DEB]" aria-hidden />
-                {t("recommended")}
-              </span>
-            ) : null}
-            {university.isTrending ? (
-              <span className="inline-flex min-h-9 items-center gap-2 rounded-full bg-[#FFF0EE] px-4 text-sm font-semibold text-[#C81F15]">
-                <Flame className="size-4 text-[#F82C1F]" aria-hidden />
-                {t("trending")}
-              </span>
-            ) : null}
-            <span className="inline-flex min-h-9 items-center rounded-full border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] lg:ms-auto">
-              {tCatalog(`universityTypes.${university.type}`)}
-            </span>
-          </div>
-
           {university.description ? (
-            <p className="mt-6 text-base leading-8 text-[#5a6072]">
+            <p className="text-base leading-8 text-[#5a6072]">
               {university.description}
             </p>
           ) : null}
 
-          <dl className="mt-8 flex flex-wrap items-center gap-x-8 gap-y-4 text-sm">
-            <div className="flex items-center gap-2">
-              <Clock className="size-5 text-[#1E6DEB]" aria-hidden />
-              <div>
-                <dt className="font-semibold text-[#1F2A44]">
-                  {t("creationDate")}
-                </dt>
-                <dd className="text-[#5a6072]">
-                  {formatDate(locale, university.createdAt)}
-                </dd>
-              </div>
-            </div>
-            <div className="flex items-center gap-2">
-              <Clock className="size-5 text-[#1E6DEB]" aria-hidden />
-              <div>
-                <dt className="font-semibold text-[#1F2A44]">
-                  {t("latestUpdate")}
-                </dt>
-                <dd className="text-[#5a6072]">
-                  {formatDate(locale, university.updatedAt)}
-                </dd>
-              </div>
-            </div>
-          </dl>
-
-          <p className="mt-4 flex items-center gap-2 text-sm text-[#5a6072]">
-            <Eye className="size-5" aria-hidden />
-            {t("views", { count: formatCompact(locale, university.viewCount) })}
-          </p>
+          <div className="mt-6 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#5a6072]">
+            <span className="flex items-center gap-1.5">
+              <Clock className="size-4 text-[#1E6DEB]" aria-hidden />
+              {t("latestUpdate")}: {formatDate(locale, university.updatedAt)}
+            </span>
+            <span className="flex items-center gap-1.5">
+              <Eye className="size-4 text-[#1E6DEB]" aria-hidden />
+              {t("views", { count: formatCompact(locale, university.viewCount) })}
+            </span>
+          </div>
         </div>
       </div>
     </section>
