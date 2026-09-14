@@ -47,18 +47,21 @@ export function FacultyAccordion({
               onClick={() => setOpenId(isOpen ? undefined : item.id)}
               aria-expanded={isOpen}
               className={cn(
-                "flex w-full items-center gap-3 px-5 py-4 text-start transition-colors duration-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#1E6DEB] md:px-6",
+                "group flex w-full items-center gap-3 px-5 py-4 text-start transition-colors duration-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#1E6DEB] md:px-6",
                 isOpen ? "bg-[#F5F8FF]" : "hover:bg-[#F7F9FE]",
               )}
             >
               {item.header}
-              <ChevronDown
+              <span
                 className={cn(
-                  "size-5 shrink-0 text-[#1E6DEB] transition-transform duration-300 ease-out",
-                  isOpen && "rotate-180",
+                  "flex size-8 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out",
+                  isOpen
+                    ? "rotate-180 bg-[#1E6DEB] text-white"
+                    : "bg-[#EEF3FF] text-[#1E6DEB] group-hover:translate-y-0.5",
                 )}
-                aria-hidden
-              />
+              >
+                <ChevronDown className="size-4" aria-hidden />
+              </span>
             </button>
 
             <div

@@ -89,6 +89,7 @@ export async function TabFaculties({
     id: faculty.id,
     header: (
       <Reveal
+        key={faculty.id}
         delay={facultyIndex * 80}
         className="flex min-w-0 flex-1 items-center gap-3"
       >
@@ -116,7 +117,7 @@ export async function TabFaculties({
       </Reveal>
     ),
     body: (
-      <div>
+      <div key={faculty.id}>
         {/* A grid of cards reads as "info about this faculty" unless it's
             named — spelling out that these are the actual programs/majors
             offered, not just facts about the faculty itself, since that
