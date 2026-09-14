@@ -250,10 +250,14 @@ model University {
   @@index([isFeatured, publishedAt])
 }
 
+// The two categories this catalog actually covers: Egypt's "national"
+// (أهلية) universities — government-established but self-funded, distinct
+// from free government/حكومية universities — and fully private (خاصة) ones.
+// Free government universities aren't in scope for this platform, so there
+// is deliberately no PUBLIC value here.
 enum UniversityType {
-  PUBLIC
+  NATIONAL
   PRIVATE
-  SPECIALIZED
 }
 
 // Gallery strip beside the university hero. The first image doubles as the

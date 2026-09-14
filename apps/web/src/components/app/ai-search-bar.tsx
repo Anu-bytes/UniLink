@@ -43,10 +43,18 @@ export function AiSearchBar({
   initialQuery,
   matched,
   filters,
+  hasResults,
 }: {
   initialQuery: string;
   matched: MatchedTerm[];
   filters: SearchFilters;
+  /** Whether the page already has a results grid below the search bar. The
+   * big splash reads fine for a first search (nothing else on screen yet),
+   * but re-appearing above an already-visible, still-stale results grid on
+   * every later search looked like a jarring flash of duplicate content —
+   * the button's own small spinner is enough busy feedback once there's
+   * something real already on screen. */
+  hasResults?: boolean;
 }) {
   const t = useTranslations("Search");
   const locale = useLocale();
@@ -167,8 +175,11 @@ export function AiSearchBar({
           splash mark stands in for the answer that is on its way. Bigger and
           more deliberate than a spinner: results don't show at all until a
           search actually happens, so for a first search this splash is the
-          main thing on screen, not a small aside next to a stale grid. */}
-      {busy ? (
+          main thing on screen, not a small aside next to a stale grid. Once
+          a results grid already exists below, though, this same splash would
+          just flash above it on every later search — the button's spinner
+          alone covers that case. */}
+      {busy && !hasResults ? (
         <div className="relative mt-4 overflow-hidden rounded-2xl bg-gradient-to-br from-[#F5F8FF] to-[#EEF3FF] px-6 py-12 shadow-[0_20px_45px_-24px_rgba(30,109,235,0.35)] ring-1 ring-[#1E6DEB]/10 duration-300 animate-in fade-in-0 zoom-in-95 motion-reduce:animate-none">
           <span
             aria-hidden

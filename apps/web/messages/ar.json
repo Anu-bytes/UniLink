@@ -873,9 +873,8 @@
     },
     "levelWithYears": "{level} مدته {years} سنوات",
     "universityTypes": {
-      "PUBLIC": "جامعة حكومية",
-      "PRIVATE": "جامعة خاصة",
-      "SPECIALIZED": "جامعة متخصصة"
+      "NATIONAL": "جامعة أهلية",
+      "PRIVATE": "جامعة خاصة"
     },
     "tags": {
       "HIGH_JOB_DEMAND": "مطلوب في سوق العمل",

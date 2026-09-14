@@ -11,9 +11,8 @@ import type { ContentCheck } from "@/lib/admin-catalogue";
 // inside client components. `satisfies` still fails the build if the schema
 // gains a member that is missing here.
 export const UNIVERSITY_TYPES = [
-  "PUBLIC",
+  "NATIONAL",
   "PRIVATE",
-  "SPECIALIZED",
 ] as const satisfies readonly UniversityType[];
 
 export const CONTENT_SECTIONS = [

@@ -92,10 +92,9 @@ const LEVEL_TERMS: { value: (typeof STUDY_LEVELS)[number]; terms: string[] }[] =
   { value: "CERTIFICATE", terms: ["certificate", "شهاده"] },
 ];
 
-const TYPE_TERMS: { value: "PUBLIC" | "PRIVATE" | "SPECIALIZED"; terms: string[] }[] = [
-  { value: "PUBLIC", terms: ["public university", "public", "government", "حكوميه", "حكومي", "حكوميه"] },
+const TYPE_TERMS: { value: "NATIONAL" | "PRIVATE"; terms: string[] }[] = [
+  { value: "NATIONAL", terms: ["national university", "national", "اهليه", "جامعه اهليه"] },
   { value: "PRIVATE", terms: ["private university", "private", "خاصه", "خاص"] },
-  { value: "SPECIALIZED", terms: ["specialized", "specialised", "technological", "متخصصه", "تكنولوجيه"] },
 ];
 
 const TAG_TERMS: { value: ProgramTagValue; terms: string[] }[] = [

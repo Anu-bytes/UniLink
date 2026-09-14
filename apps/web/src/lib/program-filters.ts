@@ -16,7 +16,7 @@ export const PROGRAM_TAGS = [
 
 export type ProgramTagValue = (typeof PROGRAM_TAGS)[number];
 
-export const UNIVERSITY_TYPES = ["PUBLIC", "PRIVATE", "SPECIALIZED"] as const;
+export const UNIVERSITY_TYPES = ["NATIONAL", "PRIVATE"] as const;
 
 /**
  * Most cities a search can filter on at once. Shared between the schema below
