@@ -19,12 +19,13 @@ import type { UniversityDetailData } from "@/lib/catalog";
 import { formatCompact, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
-// Same gradient set the Faculties tab cycles through, so the whole page
-// reads as one system rather than the hero being a flat-blue outlier.
+// The site's own two brand colors (blue/red), alternated, rather than a
+// wider palette borrowed from the Faculties tab — this is the hero, so it
+// should read as UniLink's own identity, not a generic multicolor accent.
 const STAT_ACCENTS = [
-  "bg-gradient-to-br from-[#0EA5A4] to-[#5EEAD4]",
   "bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7]",
-  "bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]",
+  "bg-gradient-to-br from-[#F82C1F] to-[#ff6b5b]",
+  "bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7]",
 ];
 
 export async function UniversityHero({
