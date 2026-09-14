@@ -12,6 +12,7 @@ import {
 } from "@/components/university/university-tabs";
 import { TabAbout } from "@/components/university/tab-about";
 import { TabFaculties } from "@/components/university/tab-faculties";
+import { TabGallery } from "@/components/university/tab-gallery";
 import { TabLocation } from "@/components/university/tab-location";
 import {
   getUniversityDetail,
@@ -119,6 +120,8 @@ function TabPanel({
           callbackUrl={callbackUrl}
         />
       );
+    case "gallery":
+      return <TabGallery university={university} />;
     case "location":
       return <TabLocation university={university} />;
     default:

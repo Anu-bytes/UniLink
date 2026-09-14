@@ -13,7 +13,6 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityLogo } from "@/components/university-logo";
-import { UniversityGallery } from "@/components/university/university-gallery";
 import { ShareButton } from "@/components/university/share-button";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { formatCompact, formatDate } from "@/lib/format";
@@ -36,13 +35,6 @@ export async function UniversityHero({
   const t = await getTranslations("UniversityDetail");
   const tCatalog = await getTranslations("Catalog");
   const locale = await getLocale();
-
-  const images =
-    university.images.length > 0
-      ? university.images
-      : university.coverImageUrl
-        ? [{ id: "cover", url: university.coverImageUrl, alt: university.name }]
-        : [];
 
   const stats = [
     {
@@ -183,64 +175,53 @@ export async function UniversityHero({
         </dl>
       </div>
 
-      <div className="mx-auto grid max-w-7xl gap-8 px-4 pb-8 pt-8 md:px-6 md:pb-12 lg:grid-cols-[minmax(0,1fr)_minmax(0,26rem)] lg:gap-10">
-        {/* Description, meta and actions — the primary column now that
-            identity lives on the banner and the headline facts have their
-            own bar above. */}
-        <div className="min-w-0">
-          {university.description ? (
-            <p className="text-base leading-8 text-[#5a6072]">
-              {university.description}
-            </p>
-          ) : null}
+      {/* Description, meta and actions — the only content column now that
+          identity lives on the banner, the headline facts have their own
+          bar above, and photos got a real tab of their own (a compact
+          thumbnail strip here didn't do the campus justice, and duplicated
+          the Photos tab). */}
+      <div className="mx-auto max-w-3xl px-4 pb-8 pt-8 md:px-6 md:pb-12">
+        {university.description ? (
+          <p className="text-base leading-8 text-[#5a6072]">
+            {university.description}
+          </p>
+        ) : null}
 
-          <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#5a6072]">
-            <span className="flex items-center gap-1.5">
-              <Clock className="size-4 text-[#1E6DEB]" aria-hidden />
-              {t("latestUpdate")}: {formatDate(locale, university.updatedAt)}
-            </span>
-            <span className="flex items-center gap-1.5">
-              <Eye className="size-4 text-[#1E6DEB]" aria-hidden />
-              {t("views", { count: formatCompact(locale, university.viewCount) })}
-            </span>
-          </div>
-
-          <div className="mt-6 flex flex-wrap items-center gap-3">
-            <Link
-              href={`/universities/${university.slug}?tab=faculties#tabs`}
-              className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
-            >
-              <Compass className="size-5" aria-hidden />
-              {t("exploreProgramsCta")}
-            </Link>
-
-            <button
-              type="button"
-              aria-label={t("save")}
-              title={t("save")}
-              className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-            >
-              <Heart className="size-5" aria-hidden />
-              {t("save")}
-            </button>
-
-            <ShareButton
-              title={university.name}
-              label={t("share")}
-              copiedLabel={t("shareCopied")}
-            />
-          </div>
+        <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#5a6072]">
+          <span className="flex items-center gap-1.5">
+            <Clock className="size-4 text-[#1E6DEB]" aria-hidden />
+            {t("latestUpdate")}: {formatDate(locale, university.updatedAt)}
+          </span>
+          <span className="flex items-center gap-1.5">
+            <Eye className="size-4 text-[#1E6DEB]" aria-hidden />
+            {t("views", { count: formatCompact(locale, university.viewCount) })}
+          </span>
         </div>
 
-        {/* Photos, now its own labeled, secondary column instead of sharing
-            a card with the stats/actions that moved out above. */}
-        <div className="min-w-0">
-          <p className="mb-3 text-xs font-bold uppercase tracking-wide text-[#98A0B4]">
-            {t("campusPhotos")}
-          </p>
-          <div className="rounded-3xl border border-slate-200/80 bg-white p-3 shadow-sm">
-            <UniversityGallery images={images} name={university.name} />
-          </div>
+        <div className="mt-6 flex flex-wrap items-center gap-3">
+          <Link
+            href={`/universities/${university.slug}?tab=faculties#tabs`}
+            className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
+          >
+            <Compass className="size-5" aria-hidden />
+            {t("exploreProgramsCta")}
+          </Link>
+
+          <button
+            type="button"
+            aria-label={t("save")}
+            title={t("save")}
+            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+          >
+            <Heart className="size-5" aria-hidden />
+            {t("save")}
+          </button>
+
+          <ShareButton
+            title={university.name}
+            label={t("share")}
+            copiedLabel={t("shareCopied")}
+          />
         </div>
       </div>
     </section>
