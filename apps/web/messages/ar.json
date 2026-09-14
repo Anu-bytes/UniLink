@@ -935,9 +935,8 @@
     "recommended": "موصى بها",
     "trending": "الأكثر رواجاً",
     "tabs": {
-      "about": "عن الجامعة",
       "faculties": "الكليات",
-      "gallery": "الصور",
+      "gallery": "الحرم الجامعي",
       "location": "الموقع",
       "requirements": "متطلبات القبول",
       "criteria": "معايير القبول",
@@ -956,6 +955,7 @@
     "hidePrograms": "إخفاء",
     "exploreProgramsCta": "استكشف البرامج",
     "campusPhotos": "صور الحرم الجامعي",
+    "galleryPhotoCount": "{count, plural, zero {لا توجد صور} one {صورة واحدة من الحرم الجامعي} two {صورتان من الحرم الجامعي} few {# صور من الحرم الجامعي} many {# صورة من الحرم الجامعي} other {# صورة من الحرم الجامعي}}",
     "location": {
       "heading": "موقع الحرم الجامعي",
       "address": "العنوان",

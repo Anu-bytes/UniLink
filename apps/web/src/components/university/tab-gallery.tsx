@@ -1,3 +1,4 @@
+import { Camera } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
 import { EmptySection } from "@/components/university/prose";
@@ -22,5 +23,13 @@ export async function TabGallery({
     return <EmptySection message={t("emptySection")} />;
   }
 
-  return <GalleryLightbox images={images} name={university.name} />;
+  return (
+    <div>
+      <p className="mb-4 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#98A0B4]">
+        <Camera className="size-3.5 text-[#1E6DEB]" aria-hidden />
+        {t("galleryPhotoCount", { count: images.length })}
+      </p>
+      <GalleryLightbox images={images} name={university.name} />
+    </div>
+  );
 }

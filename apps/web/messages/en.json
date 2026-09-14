@@ -935,9 +935,8 @@
     "recommended": "Recommended",
     "trending": "Trending Now",
     "tabs": {
-      "about": "About the University",
       "faculties": "Faculties",
-      "gallery": "Photos",
+      "gallery": "Campus",
       "location": "Location",
       "requirements": "Admission Requirements",
       "criteria": "Admission Criteria",
@@ -956,6 +955,7 @@
     "hidePrograms": "Hide",
     "exploreProgramsCta": "Explore programs",
     "campusPhotos": "Campus photos",
+    "galleryPhotoCount": "{count, plural, one {# photo of the campus} other {# photos of the campus}}",
     "location": {
       "heading": "Where the campus is",
       "address": "Our Address",

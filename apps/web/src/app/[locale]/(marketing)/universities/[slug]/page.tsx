@@ -10,7 +10,6 @@ import {
   isUniversityTab,
   type UniversityTab,
 } from "@/components/university/university-tabs";
-import { TabAbout } from "@/components/university/tab-about";
 import { TabFaculties } from "@/components/university/tab-faculties";
 import { TabGallery } from "@/components/university/tab-gallery";
 import { TabLocation } from "@/components/university/tab-location";
@@ -60,7 +59,7 @@ export default async function UniversityDetailPage({
   ]);
   if (!university) notFound();
 
-  const active: UniversityTab = isUniversityTab(tab) ? tab : "about";
+  const active: UniversityTab = isUniversityTab(tab) ? tab : "faculties";
   const isAuthenticated = Boolean(session?.user?.id);
 
   // Counts pages read, not tab switches, so only the default tab increments.
@@ -68,11 +67,11 @@ export default async function UniversityDetailPage({
   // Deferred with `after` so the write happens once the response has been sent.
   // As a floating promise it was both delaying nothing usefully and liable to
   // be cut short when the serverless invocation ended.
-  if (active === "about") {
+  if (active === "faculties") {
     after(() => incrementUniversityViews(university.id));
   }
 
-  const callbackUrl = `/universities/${university.slug}${active === "about" ? "" : `?tab=${active}`}`;
+  const callbackUrl = `/universities/${university.slug}${active === "faculties" ? "" : `?tab=${active}`}`;
   const panel = (
     <TabPanel
       tab={active}
@@ -112,7 +111,11 @@ function TabPanel({
   callbackUrl: string;
 }) {
   switch (tab) {
-    case "faculties":
+    case "gallery":
+      return <TabGallery university={university} />;
+    case "location":
+      return <TabLocation university={university} />;
+    default:
       return (
         <TabFaculties
           university={university}
@@ -120,11 +123,5 @@ function TabPanel({
           callbackUrl={callbackUrl}
         />
       );
-    case "gallery":
-      return <TabGallery university={university} />;
-    case "location":
-      return <TabLocation university={university} />;
-    default:
-      return <TabAbout university={university} />;
   }
 }
