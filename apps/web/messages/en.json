@@ -950,6 +950,7 @@
     "viewProgram": "View program",
     "showMorePrograms": "{count, plural, one {Show # more program} other {Show # more programs}}",
     "showLessPrograms": "Show less",
+    "programsAndMajors": "Programs & majors offered",
     "location": {
       "heading": "Where the campus is",
       "address": "Our Address",

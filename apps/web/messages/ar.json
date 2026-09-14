@@ -950,6 +950,7 @@
     "viewProgram": "عرض البرنامج",
     "showMorePrograms": "{count, plural, zero {عرض المزيد} one {عرض برنامج واحد آخر} two {عرض برنامجين آخرين} few {عرض # برامج أخرى} many {عرض # برنامجاً آخر} other {عرض # برنامج آخر}}",
     "showLessPrograms": "عرض أقل",
+    "programsAndMajors": "البرامج والتخصصات المتاحة",
     "location": {
       "heading": "موقع الحرم الجامعي",
       "address": "العنوان",

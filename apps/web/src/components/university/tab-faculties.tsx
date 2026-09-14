@@ -1,6 +1,7 @@
 import {
   BadgePercent,
   Banknote,
+  BookOpen,
   Building2,
   GraduationCap,
   Lock,
@@ -115,24 +116,35 @@ export async function TabFaculties({
       </Reveal>
     ),
     body: (
-      <ProgramGridReveal
-        limit={VISIBLE_PER_FACULTY}
-        moreLabel={t("showMorePrograms", {
-          count: faculty.programs.length - VISIBLE_PER_FACULTY,
-        })}
-        lessLabel={t("showLessPrograms")}
-        items={faculty.programs.map((program, programIndex) => (
-          <ProgramCard
-            key={program.id}
-            program={program}
-            universitySlug={university.slug}
-            locale={locale}
-            t={t}
-            tCatalog={tCatalog}
-            accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
-          />
-        ))}
-      />
+      <div>
+        {/* A grid of cards reads as "info about this faculty" unless it's
+            named — spelling out that these are the actual programs/majors
+            offered, not just facts about the faculty itself, since that
+            isn't obvious to a student or parent browsing this for the
+            first time. */}
+        <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#98A0B4]">
+          <BookOpen className="size-3.5 text-[#1E6DEB]" aria-hidden />
+          {t("programsAndMajors")}
+        </p>
+        <ProgramGridReveal
+          limit={VISIBLE_PER_FACULTY}
+          moreLabel={t("showMorePrograms", {
+            count: faculty.programs.length - VISIBLE_PER_FACULTY,
+          })}
+          lessLabel={t("showLessPrograms")}
+          items={faculty.programs.map((program, programIndex) => (
+            <ProgramCard
+              key={program.id}
+              program={program}
+              universitySlug={university.slug}
+              locale={locale}
+              t={t}
+              tCatalog={tCatalog}
+              accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
+            />
+          ))}
+        />
+      </div>
     ),
   }));
 
