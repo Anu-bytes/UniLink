@@ -150,7 +150,12 @@ export async function TabFaculties({
   }));
 
   const content = (
-    <FacultyAccordion items={items} defaultOpenId={faculties[0]?.id} />
+    <FacultyAccordion
+      items={items}
+      defaultOpenId={faculties[0]?.id}
+      expandLabel={t("viewPrograms")}
+      collapseLabel={t("hidePrograms")}
+    />
   );
 
   if (isAuthenticated) {

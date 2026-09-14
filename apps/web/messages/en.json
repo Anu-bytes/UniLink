@@ -951,6 +951,8 @@
     "showMorePrograms": "{count, plural, one {Show # more program} other {Show # more programs}}",
     "showLessPrograms": "Show less",
     "programsAndMajors": "Programs & majors offered",
+    "viewPrograms": "View programs",
+    "hidePrograms": "Hide",
     "location": {
       "heading": "Where the campus is",
       "address": "Our Address",

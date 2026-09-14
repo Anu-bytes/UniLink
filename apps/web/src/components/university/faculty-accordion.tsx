@@ -22,9 +22,16 @@ export type FacultyAccordionItem = {
 export function FacultyAccordion({
   items,
   defaultOpenId,
+  expandLabel,
+  collapseLabel,
 }: {
   items: FacultyAccordionItem[];
   defaultOpenId?: string;
+  /** Short verb next to the chevron ("View programs"/"Hide") — a circular
+   * arrow alone reads as decoration to a first-time visitor; spelling out
+   * what clicking it does makes the tile obviously interactive. */
+  expandLabel: string;
+  collapseLabel: string;
 }) {
   const [openId, setOpenId] = useState(defaultOpenId);
 
@@ -54,13 +61,22 @@ export function FacultyAccordion({
               {item.header}
               <span
                 className={cn(
-                  "flex size-8 shrink-0 items-center justify-center rounded-full transition-all duration-300 ease-out",
+                  "flex shrink-0 items-center gap-1.5 rounded-full px-3 py-1.5 text-xs font-bold transition-colors duration-300",
                   isOpen
-                    ? "rotate-180 bg-[#1E6DEB] text-white"
-                    : "bg-[#EEF3FF] text-[#1E6DEB] group-hover:translate-y-0.5",
+                    ? "bg-[#1E6DEB] text-white"
+                    : "bg-[#EEF3FF] text-[#1E6DEB] group-hover:bg-[#DCE7FE]",
                 )}
               >
-                <ChevronDown className="size-4" aria-hidden />
+                <span className="hidden sm:inline">
+                  {isOpen ? collapseLabel : expandLabel}
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "size-4 shrink-0 transition-transform duration-300 ease-out",
+                    isOpen ? "rotate-180" : "group-hover:translate-y-0.5",
+                  )}
+                  aria-hidden
+                />
               </span>
             </button>
 
