@@ -9,7 +9,7 @@ import { Link } from "@/i18n/navigation";
 export type RecentSearchEntry = { label: string; href: string };
 
 const STORAGE_KEY = "unilink.recentFacultySearches";
-const MAX_ENTRIES = 5;
+const MAX_ENTRIES = 2;
 
 function readEntries(): RecentSearchEntry[] {
   try {
