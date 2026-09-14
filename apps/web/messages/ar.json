@@ -948,6 +948,8 @@
     "facultiesHeading": "الكليات والبرامج",
     "facultyProgramCount": "{count, plural, zero {# برامج} one {برنامج واحد} two {برنامجان} few {# برامج} many {# برنامجاً} other {# برنامج}}",
     "viewProgram": "عرض البرنامج",
+    "showMorePrograms": "{count, plural, zero {عرض المزيد} one {عرض برنامج واحد آخر} two {عرض برنامجين آخرين} few {عرض # برامج أخرى} many {عرض # برنامجاً آخر} other {عرض # برنامج آخر}}",
+    "showLessPrograms": "عرض أقل",
     "location": {
       "heading": "موقع الحرم الجامعي",
       "address": "العنوان",

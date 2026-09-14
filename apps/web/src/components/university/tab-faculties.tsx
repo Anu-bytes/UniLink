@@ -1,6 +1,7 @@
 import {
   BadgePercent,
   Banknote,
+  Building2,
   CheckCircle2,
   GraduationCap,
   Lock,
@@ -12,21 +13,39 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { EmptySection } from "@/components/university/prose";
+import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
+import { Reveal } from "@/components/reveal";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { cn } from "@/lib/utils";
 
 type T = Awaited<ReturnType<typeof getTranslations>>;
 type Program = UniversityDetailData["faculties"][number]["programs"][number];
 
-const TAG_ICONS: Record<string, LucideIcon> = {
-  WAIVED_APPLICATION_FEE: Banknote,
-  SCHOLARSHIPS_AVAILABLE: BadgePercent,
-  FAST_ACCEPTANCE: Zap,
-  HIGH_JOB_DEMAND: GraduationCap,
-  FINANCIAL_AID_AVAILABLE: Banknote,
-  CREDIT_HOURS: GraduationCap,
+// A visible cap keeps a faculty with a long catalogue from turning the tab
+// into an endless scroll; ProgramGridReveal's "Show more" reveals the rest
+// in place instead of paginating to another view.
+const VISIBLE_PER_FACULTY = 6;
+
+const TAG_STYLES: Record<string, { icon: LucideIcon; badge: string }> = {
+  WAIVED_APPLICATION_FEE: { icon: Banknote, badge: "bg-[#E8F9EE] text-[#1F7A4D]" },
+  SCHOLARSHIPS_AVAILABLE: { icon: BadgePercent, badge: "bg-[#F3E8FF] text-[#7C3AED]" },
+  FAST_ACCEPTANCE: { icon: Zap, badge: "bg-[#FFF6E5] text-[#B77714]" },
+  HIGH_JOB_DEMAND: { icon: GraduationCap, badge: "bg-[#EEF3FF] text-[#1E6DEB]" },
+  FINANCIAL_AID_AVAILABLE: { icon: Banknote, badge: "bg-[#E8F9EE] text-[#1F7A4D]" },
+  CREDIT_HOURS: { icon: GraduationCap, badge: "bg-[#FFF0EE] text-[#C81F15]" },
 };
+
+// Cycled per card (not per tag) so a faculty's grid reads as a lively set of
+// programs rather than a wall of identical blue icon chips.
+const ICON_ACCENTS = [
+  "bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7]",
+  "bg-gradient-to-br from-[#F82C1F] to-[#ff6b5b]",
+  "bg-gradient-to-br from-[#7C3AED] to-[#A78BFA]",
+  "bg-gradient-to-br from-[#0EA5A4] to-[#5EEAD4]",
+  "bg-gradient-to-br from-[#D97706] to-[#FCD34D]",
+];
 
 /**
  * Faculty names, descriptions and program counts stay public (they're what
@@ -34,13 +53,12 @@ const TAG_ICONS: Record<string, LucideIcon> = {
  * needs an account, same as admission requirements, criteria, scores and
  * tuition elsewhere on this page.
  *
- * Deliberately no tab switcher and no click-to-reveal panel: both were
- * extra steps between a visitor and the answer they came for, and testing
- * this with a student/parent audience in mind, that indirection read as
- * complicated rather than tidy. Every program's full picture — tuition,
- * application fee, minimum grade, field, perks — is just there on its
- * card, grouped under its faculty's name as a plain heading (not a
- * control), so the page is something to scroll, not operate.
+ * No tab switcher and no click-to-reveal panel: both read as complicated for
+ * a student/parent audience. Faculties are plain section headings (nothing
+ * to operate) and every program is a complete card up front — tuition,
+ * application fee, minimum grade, field, perks — with nothing gated behind
+ * a click. Long faculties cap what's shown up front (ProgramGridReveal's
+ * "Show more") so the tab is a short scroll rather than a wall of cards.
  */
 export async function TabFaculties({
   university,
@@ -65,30 +83,45 @@ export async function TabFaculties({
 
   const content = (
     <div className="space-y-10">
-      {faculties.map((faculty) => (
-        <section key={faculty.id}>
-          <h2 className="text-lg font-bold text-[#1F2A44] md:text-xl">
-            {faculty.name}
-          </h2>
-          {faculty.description ? (
-            <p className="mt-1.5 text-sm leading-6 text-[#5a6072]">
-              {faculty.description}
-            </p>
-          ) : null}
-
-          <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {faculty.programs.map((program) => (
-              <ProgramCard
-                key={program.id}
-                program={program}
-                universitySlug={university.slug}
-                locale={locale}
-                t={t}
-                tCatalog={tCatalog}
-              />
-            ))}
+      {faculties.map((faculty, facultyIndex) => (
+        <Reveal key={faculty.id} as="section" delay={facultyIndex * 80}>
+          <div className="flex items-start gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E3A8A] to-[#1E6DEB] text-white shadow-sm">
+              <Building2 className="size-4" aria-hidden />
+            </span>
+            <div className="min-w-0">
+              <h2 className="text-lg font-bold text-[#1F2A44] md:text-xl">
+                {faculty.name}
+              </h2>
+              {faculty.description ? (
+                <p className="mt-1 text-sm leading-6 text-[#5a6072]">
+                  {faculty.description}
+                </p>
+              ) : null}
+            </div>
           </div>
-        </section>
+
+          <div className="mt-4">
+            <ProgramGridReveal
+              limit={VISIBLE_PER_FACULTY}
+              moreLabel={t("showMorePrograms", {
+                count: faculty.programs.length - VISIBLE_PER_FACULTY,
+              })}
+              lessLabel={t("showLessPrograms")}
+              items={faculty.programs.map((program, programIndex) => (
+                <ProgramCard
+                  key={program.id}
+                  program={program}
+                  universitySlug={university.slug}
+                  locale={locale}
+                  t={t}
+                  tCatalog={tCatalog}
+                  accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
+                />
+              ))}
+            />
+          </div>
+        </Reveal>
       ))}
     </div>
   );
@@ -121,12 +154,14 @@ function ProgramCard({
   locale,
   t,
   tCatalog,
+  accent,
 }: {
   program: Program;
   universitySlug: string;
   locale: string;
   t: T;
   tCatalog: T;
+  accent: string;
 }) {
   const years = yearsFromMonths(program.durationMonths);
   const tuition = formatMoney(locale, program.tuitionFee, program.currency);
@@ -141,21 +176,30 @@ function ProgramCard({
   return (
     <Link
       href={`/universities/${universitySlug}/programs/${program.slug}`}
-      className="flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/40 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+      className="group flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/30 hover:shadow-[0_20px_45px_-20px_rgba(30,109,235,0.35)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
     >
       <div>
         <div className="flex items-start justify-between gap-2">
-          <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#EEF3FF] text-[#1E6DEB]">
+          <span
+            className={cn(
+              "flex size-11 shrink-0 items-center justify-center rounded-xl text-white shadow-sm transition-transform duration-300 group-hover:scale-110 group-hover:rotate-3",
+              accent,
+            )}
+          >
             <GraduationCap className="size-5" aria-hidden />
           </span>
           {program.tags.length > 0 ? (
             <div className="flex flex-wrap justify-end gap-1.5">
               {program.tags.slice(0, 2).map((tag) => {
-                const TagIcon = TAG_ICONS[tag];
+                const style = TAG_STYLES[tag];
+                const TagIcon = style?.icon;
                 return (
                   <span
                     key={tag}
-                    className="inline-flex items-center gap-1 rounded-full bg-[#FFF6E5] px-2 py-1 text-[11px] font-bold leading-none text-[#B77714]"
+                    className={cn(
+                      "inline-flex items-center gap-1 rounded-full px-2 py-1 text-[11px] font-bold leading-none",
+                      style?.badge ?? "bg-slate-100 text-[#5a6072]",
+                    )}
                   >
                     {TagIcon ? <TagIcon className="size-3" aria-hidden /> : null}
                     {tCatalog(`tags.${tag}`)}
@@ -166,7 +210,7 @@ function ProgramCard({
           ) : null}
         </div>
 
-        <h3 className="mt-3 text-base font-bold leading-snug text-[#1F2A44]">
+        <h3 className="mt-3 text-base font-bold leading-snug text-[#1F2A44] transition-colors group-hover:text-[#1E6DEB]">
           {program.name}
         </h3>
         <p className="mt-1 text-sm text-[#5a6072]">

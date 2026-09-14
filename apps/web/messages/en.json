@@ -948,6 +948,8 @@
     "facultiesHeading": "Faculties and programs",
     "facultyProgramCount": "{count, plural, one {# program} other {# programs}}",
     "viewProgram": "View program",
+    "showMorePrograms": "{count, plural, one {Show # more program} other {Show # more programs}}",
+    "showLessPrograms": "Show less",
     "location": {
       "heading": "Where the campus is",
       "address": "Our Address",
