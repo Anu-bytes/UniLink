@@ -15,6 +15,12 @@ import {
 import { cn } from "@/lib/utils";
 import type { FilterOptions } from "@/components/app/filter-bar";
 
+// Every program in the catalog is a Bachelor's degree right now, so the
+// other study levels would just be dead options in this filter. Not
+// touched in onboarding-schema.ts itself: admin forms still offer the full
+// set for whenever a non-Bachelor program actually gets added.
+const AVAILABLE_STUDY_LEVELS = STUDY_LEVELS.filter((level) => level === "BACHELOR");
+
 /** Full filter drawer opened from "Filters & Eligibility". */
 export function FiltersPanel({
   filters,
@@ -100,7 +106,7 @@ export function FiltersPanel({
         <div className="flex-1 space-y-7 overflow-y-auto p-5">
           <Group title={t("level")}>
             <div className="flex flex-wrap gap-2">
-              {STUDY_LEVELS.map((level) => (
+              {AVAILABLE_STUDY_LEVELS.map((level) => (
                 <Chip
                   key={level}
                   active={isOn("levels", level)}
