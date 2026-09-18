@@ -552,9 +552,8 @@
     "programCount": "{count} برنامج منشور",
     "visitWebsite": "زيارة الموقع",
     "types": {
-      "PUBLIC": "جامعة حكومية",
-      "PRIVATE": "جامعة خاصة",
-      "SPECIALIZED": "جامعة متخصصة"
+      "NATIONAL": "جامعة أهلية",
+      "PRIVATE": "جامعة خاصة"
     },
     "promoBanner": {
       "title": "سجّل مجانًا وابحث بلغتك الطبيعية بالذكاء الاصطناعي",

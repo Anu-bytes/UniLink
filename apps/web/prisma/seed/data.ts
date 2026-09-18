@@ -335,7 +335,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
     slug: "cairo-university",
     name: "Cairo University",
     nameAr: "جامعة القاهرة",
-    type: "PUBLIC",
+    type: "NATIONAL",
     city: "Giza",
     cityAr: "الجيزة",
     establishedYear: 1908,
@@ -551,7 +551,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
     slug: "ain-shams-university",
     name: "Ain Shams University",
     nameAr: "جامعة عين شمس",
-    type: "PUBLIC",
+    type: "NATIONAL",
     city: "Cairo",
     cityAr: "القاهرة",
     establishedYear: 1950,
@@ -715,7 +715,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
     slug: "alexandria-university",
     name: "Alexandria University",
     nameAr: "جامعة الإسكندرية",
-    type: "PUBLIC",
+    type: "NATIONAL",
     city: "Alexandria",
     cityAr: "الإسكندرية",
     establishedYear: 1938,
@@ -1715,7 +1715,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
     slug: "egypt-university-of-informatics",
     name: "Egypt University of Informatics",
     nameAr: "جامعة مصر للمعلوماتية",
-    type: "SPECIALIZED",
+    type: "NATIONAL",
     city: "New Administrative Capital",
     cityAr: "العاصمة الإدارية الجديدة",
     establishedYear: 2021,
@@ -1855,7 +1855,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
     slug: "zewail-city-of-science-and-technology",
     name: "Zewail City of Science and Technology",
     nameAr: "مدينة زويل للعلوم والتكنولوجيا",
-    type: "SPECIALIZED",
+    type: "NATIONAL",
     city: "6th of October City",
     cityAr: "مدينة السادس من أكتوبر",
     establishedYear: 2011,
@@ -1959,7 +1959,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
     slug: "arab-academy-science-technology",
     name: "Arab Academy for Science, Technology and Maritime Transport",
     nameAr: "الأكاديمية العربية للعلوم والتكنولوجيا والنقل البحري",
-    type: "SPECIALIZED",
+    type: "NATIONAL",
     city: "Alexandria",
     cityAr: "الإسكندرية",
     establishedYear: 1972,
@@ -2225,8 +2225,7 @@ export const UNIVERSITIES: UniversitySeed[] = [
 
 /** Feature bullets for a university, chosen by sector. */
 export function featuresFor(type: UniversityType): FeatureSeed[] {
-  if (type === "PUBLIC") return commonFeatures("public");
-  if (type === "SPECIALIZED") return commonFeatures("specialized");
+  if (type === "NATIONAL") return commonFeatures("public");
   return commonFeatures("private");
 }
 
@@ -2236,7 +2235,7 @@ export function blocksFor(
   name: string,
   nameAr: string,
 ): ContentBlockSeed[] {
-  return type === "PUBLIC"
+  return type === "NATIONAL"
     ? publicSectorBlocks(name, nameAr)
     : privateSectorBlocks(name, nameAr);
 }
