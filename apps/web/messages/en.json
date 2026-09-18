@@ -552,9 +552,8 @@
     "programCount": "{count, plural, one {# published program} other {# published programs}}",
     "visitWebsite": "Visit website",
     "types": {
-      "PUBLIC": "Public university",
-      "PRIVATE": "Private university",
-      "SPECIALIZED": "Specialized university"
+      "NATIONAL": "National university",
+      "PRIVATE": "Private university"
     },
     "promoBanner": {
       "title": "Register free to search in plain language with AI",
