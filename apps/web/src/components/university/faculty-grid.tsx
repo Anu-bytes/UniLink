@@ -31,6 +31,8 @@ export function FacultyGrid({
   searchPlaceholder,
   emptyLabel,
   defaultOpenId,
+  locked = false,
+  banner,
 }: {
   items: FacultyGridItem[];
   heading: string;
@@ -39,6 +41,12 @@ export function FacultyGrid({
   searchPlaceholder: string;
   emptyLabel: string;
   defaultOpenId?: string;
+  /** Signed-out visitors: faculty names stay readable, but the summary line
+   * and program count become blurred placeholders (the real values are never
+   * sent to the browser in this mode). */
+  locked?: boolean;
+  /** Shown between the header and the grid (e.g. the sign-in prompt). */
+  banner?: React.ReactNode;
 }) {
   const [openId, setOpenId] = useState(defaultOpenId);
   const [query, setQuery] = useState("");
@@ -85,12 +93,14 @@ export function FacultyGrid({
         </label>
       </div>
 
+      {banner}
+
       {visible.length === 0 ? (
         <p className="rounded-2xl border border-dashed border-slate-200 bg-white p-8 text-center text-sm text-[#5a6072]">
           {emptyLabel}
         </p>
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
           {visible.map((item, index) => {
             const isOpen = item.id === openId;
             // A lone last tile fills the row, like the reference layout.
@@ -112,24 +122,40 @@ export function FacultyGrid({
                   onClick={() => setOpenId(isOpen ? undefined : item.id)}
                   aria-expanded={isOpen}
                   className={cn(
-                    "group flex w-full items-center gap-4 p-4 text-start transition-colors duration-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#1E6DEB]",
+                    "group flex w-full items-center gap-3 p-4 text-start sm:gap-4 transition-colors duration-300 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#1E6DEB]",
                     isOpen ? "bg-[#F5F8FF]" : "",
                   )}
                 >
                   {item.icon}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate text-base font-bold text-[#1F2A44]">
+                    {/* Names wrap instead of truncating: a clipped faculty
+                        name is the one thing a visitor can't recover from. */}
+                    <span className="block text-base font-bold leading-snug text-[#1F2A44] [overflow-wrap:anywhere]">
                       {item.name}
                     </span>
-                    {item.summary ? (
+                    {locked ? (
+                      <span
+                        aria-hidden
+                        className="mt-1.5 block h-3 w-3/4 rounded-full bg-slate-200 blur-[3px]"
+                      />
+                    ) : item.summary ? (
                       <span className="mt-1 block truncate text-xs text-[#5a6072]">
                         {item.summary}
                       </span>
                     ) : null}
+                    {/* On phones the count drops under the name so the name
+                        gets the full width beside the arrow. */}
+                    <CountBadge
+                      locked={locked}
+                      label={item.countLabel}
+                      className="mt-2 sm:hidden"
+                    />
                   </span>
-                  <span className="shrink-0 whitespace-nowrap rounded-full bg-[#EEF3FF] px-2.5 py-1 text-xs font-bold text-[#1E6DEB]">
-                    {item.countLabel}
-                  </span>
+                  <CountBadge
+                    locked={locked}
+                    label={item.countLabel}
+                    className="hidden sm:inline-block"
+                  />
                   <span
                     className={cn(
                       "flex size-8 shrink-0 items-center justify-center rounded-full transition-colors duration-300",
@@ -166,5 +192,37 @@ export function FacultyGrid({
         </div>
       )}
     </div>
+  );
+}
+
+function CountBadge({
+  locked,
+  label,
+  className,
+}: {
+  locked: boolean;
+  label: string;
+  className?: string;
+}) {
+  if (locked) {
+    return (
+      <span
+        aria-hidden
+        className={cn(
+          "h-6 w-16 shrink-0 rounded-full bg-[#EEF3FF] blur-[3px]",
+          className,
+        )}
+      />
+    );
+  }
+  return (
+    <span
+      className={cn(
+        "w-fit shrink-0 whitespace-nowrap rounded-full bg-[#EEF3FF] px-2.5 py-1 text-xs font-bold text-[#1E6DEB]",
+        className,
+      )}
+    >
+      {label}
+    </span>
   );
 }

@@ -136,31 +136,44 @@ export async function TabFaculties({
     return <EmptySection message={t("emptySection")} />;
   }
 
+  const locked = !isAuthenticated;
+  const loginHref = `/login?callbackUrl=${encodeURIComponent(callbackUrl)}`;
+
+  // Signed-out visitors get faculty names only. Program names, counts and
+  // details are swapped for placeholders here on the server, so the real
+  // values never reach the browser (a CSS blur alone would leave them in the
+  // page source).
   const items = faculties.map((faculty, facultyIndex) => {
     const { icon: FacultyIcon, color } = facultyStyle(faculty.name, facultyIndex);
     return {
     id: faculty.id,
     name: faculty.name,
-    countLabel: t("facultyProgramCount", { count: faculty.programs.length }),
+    countLabel: locked
+      ? ""
+      : t("facultyProgramCount", { count: faculty.programs.length }),
     // Program names double as the keyword line under the faculty name, so a
     // tile says what it contains without opening it.
-    summary: faculty.programs
-      .slice(0, 3)
-      .map((program) => program.name)
-      .join(" • "),
+    summary: locked
+      ? ""
+      : faculty.programs
+          .slice(0, 3)
+          .map((program) => program.name)
+          .join(" • "),
     icon: (
       <Reveal
         key={faculty.id}
         delay={facultyIndex * 60}
         className={cn(
-          "flex size-12 shrink-0 items-center justify-center rounded-xl",
+          "flex size-11 shrink-0 items-center justify-center rounded-xl sm:size-12",
           color,
         )}
       >
         <FacultyIcon className="size-6" aria-hidden />
       </Reveal>
     ),
-    body: (
+    body: locked ? (
+      <LockedPrograms key={faculty.id} href={loginHref} label={t("programsLocked")} />
+    ) : (
       <div key={faculty.id}>
         {/* Spell out that these cards are the programs/majors offered inside
             this faculty, which isn't obvious to a first-time visitor. */}
@@ -193,7 +206,7 @@ export async function TabFaculties({
     };
   });
 
-  const content = (
+  return (
     <FacultyGrid
       items={items}
       heading={t("facultiesHeading")}
@@ -201,25 +214,69 @@ export async function TabFaculties({
       countBadge={t("facultiesCountBadge", { count: faculties.length })}
       searchPlaceholder={t("searchFaculties")}
       emptyLabel={t("noFacultyMatch")}
+      locked={locked}
+      banner={
+        locked ? (
+          <div className="mb-5 flex flex-col gap-4 rounded-2xl border border-[#1E6DEB]/20 bg-[#F5F8FF] p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+            <div className="flex items-start gap-3">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-full bg-[#1E6DEB] text-white">
+                <Lock className="size-5" aria-hidden />
+              </span>
+              <div>
+                <p className="text-base font-bold text-[#1F2A44]">
+                  {t("lockedTitle")}
+                </p>
+                <p className="mt-0.5 text-sm text-[#5a6072]">{t("lockedBody")}</p>
+              </div>
+            </div>
+            <div className="flex shrink-0 flex-wrap gap-2">
+              <Link
+                href={loginHref}
+                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] sm:flex-none"
+              >
+                {t("logIn")}
+              </Link>
+              <Link
+                href="/onboarding"
+                className="inline-flex min-h-11 flex-1 items-center justify-center rounded-xl border border-[#1E6DEB] bg-white px-5 text-sm font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] sm:flex-none"
+              >
+                {t("registerFree")}
+              </Link>
+            </div>
+          </div>
+        ) : null
+      }
     />
   );
+}
 
-  if (isAuthenticated) {
-    return content;
-  }
-
+/** Blurred stand-in for a faculty's programs, with a sign-in prompt on top. */
+function LockedPrograms({ href, label }: { href: string; label: string }) {
   return (
     <div className="relative">
-      <div aria-hidden className="pointer-events-none select-none blur-sm">
-        {content}
+      <div
+        aria-hidden
+        className="pointer-events-none grid select-none gap-3 blur-[5px] sm:grid-cols-2 lg:grid-cols-3"
+      >
+        {[0, 1, 2].map((index) => (
+          <div
+            key={index}
+            className="space-y-3 rounded-2xl border border-slate-200 bg-white p-5"
+          >
+            <div className="size-11 rounded-xl bg-slate-200" />
+            <div className="h-4 w-3/4 rounded-full bg-slate-200" />
+            <div className="h-3 w-1/2 rounded-full bg-slate-100" />
+            <div className="h-6 w-1/3 rounded-full bg-slate-200" />
+          </div>
+        ))}
       </div>
-      <div className="absolute inset-0 flex items-center justify-center bg-white/70 p-4">
+      <div className="absolute inset-0 flex items-center justify-center p-4">
         <Link
-          href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+          href={href}
           className="inline-flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white px-5 text-sm font-semibold text-[#1E6DEB] shadow-md transition-colors hover:bg-[#F7F9FE] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
         >
           <Lock className="size-4 shrink-0" aria-hidden />
-          {t("programsLocked")}
+          {label}
         </Link>
       </div>
     </div>
