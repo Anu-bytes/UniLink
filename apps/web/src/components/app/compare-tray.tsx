@@ -1,11 +1,13 @@
 "use client";
 
-import { ArrowRight, X } from "lucide-react";
+import { ArrowRight, ChevronDown, X } from "lucide-react";
 import { useTranslations } from "next-intl";
+import { useEffect, useState } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { useCompare } from "@/components/app/compare-context";
 import { UniversityLogo } from "@/components/university-logo";
+import { cn } from "@/lib/utils";
 
 /**
  * Sticky bar that appears once anything is selected for comparison. Hidden on
@@ -15,13 +17,46 @@ export function CompareTray() {
   const t = useTranslations("Compare.tray");
   const { entries, ids, kind, clear, remove, ready } = useCompare();
   const pathname = usePathname();
+  const [collapsed, setCollapsed] = useState(false);
+  const count = entries.length;
 
-  if (!ready || entries.length === 0 || pathname.startsWith("/app/compare")) {
+  // Adding another program should bring the bar back if it was tucked away.
+  useEffect(() => {
+    setCollapsed(false);
+  }, [count]);
+
+  if (!ready || count === 0 || pathname.startsWith("/app/compare")) {
     return null;
   }
 
   return (
-    <div className="fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white shadow-[0_-4px_16px_rgba(15,23,42,0.08)]">
+    <div
+      className={cn(
+        "fixed inset-x-0 bottom-0 z-40 border-t border-slate-200 bg-white shadow-[0_-4px_16px_rgba(15,23,42,0.08)] transition-transform duration-300 ease-out",
+        collapsed && "translate-y-full",
+      )}
+    >
+      <button
+        type="button"
+        onClick={() => setCollapsed((value) => !value)}
+        aria-expanded={!collapsed}
+        aria-label={collapsed ? t("show") : t("hide")}
+        className="absolute inset-x-0 -top-10 mx-auto flex h-10 w-fit items-center gap-2 rounded-t-xl border border-b-0 border-slate-200 bg-white px-5 text-sm font-bold text-[#1E6DEB] shadow-[0_-4px_10px_rgba(15,23,42,0.06)] hover:bg-[#F7F9FE] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+      >
+        {collapsed ? (
+          <span className="flex size-5 items-center justify-center rounded-full bg-[#1E6DEB] text-[11px] text-white">
+            {count}
+          </span>
+        ) : null}
+        {collapsed ? t("show") : t("hide")}
+        <ChevronDown
+          className={cn(
+            "size-4 transition-transform duration-300",
+            collapsed && "rotate-180",
+          )}
+          aria-hidden
+        />
+      </button>
       <div className="mx-auto flex max-w-[86rem] flex-wrap items-center gap-4 px-4 py-3 md:px-6">
         <div className="flex items-center gap-3">
           <div className="flex -space-x-2 rtl:space-x-reverse">
