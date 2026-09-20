@@ -7,6 +7,7 @@ import {
   Flame,
   GraduationCap,
   Heart,
+  Lock,
   MapPin,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
@@ -29,8 +30,10 @@ const STAT_ACCENTS = [
 
 export async function UniversityHero({
   university,
+  isAuthenticated,
 }: {
   university: UniversityDetailData;
+  isAuthenticated: boolean;
 }) {
   const t = await getTranslations("UniversityDetail");
   const tCatalog = await getTranslations("Catalog");
@@ -182,9 +185,29 @@ export async function UniversityHero({
           the Photos tab). */}
       <div className="mx-auto max-w-3xl px-4 pb-8 pt-8 md:px-6 md:pb-12">
         {university.description ? (
-          <p className="text-base leading-8 text-[#5a6072]">
-            {university.description}
-          </p>
+          isAuthenticated ? (
+            <p className="text-base leading-8 text-[#5a6072]">
+              {university.description}
+            </p>
+          ) : (
+            // The real text is never rendered for signed-out visitors (a CSS
+            // blur would leave it in the page source): blurred placeholder
+            // lines stand in for it.
+            <div>
+              <div aria-hidden className="space-y-3 blur-[4px]">
+                <div className="h-4 w-full rounded-full bg-slate-200" />
+                <div className="h-4 w-11/12 rounded-full bg-slate-200" />
+                <div className="h-4 w-2/3 rounded-full bg-slate-200" />
+              </div>
+              <Link
+                href={`/login?callbackUrl=${encodeURIComponent(`/universities/${university.slug}`)}`}
+                className="mt-3 inline-flex items-center gap-1.5 text-sm font-semibold text-[#1E6DEB] hover:underline"
+              >
+                <Lock className="size-4" aria-hidden />
+                {t("lockedDescription")}
+              </Link>
+            </div>
+          )
         ) : null}
 
         <div className="mt-5 flex flex-wrap items-center gap-x-6 gap-y-3 text-sm text-[#5a6072]">

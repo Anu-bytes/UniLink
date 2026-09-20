@@ -994,6 +994,11 @@
       "login": "Log in",
       "register": "Register for free"
     },
+    "lockedTitle": "Sign in to unlock full university info",
+    "lockedBody": "Faculty names are open to everyone. Programs, tuition and descriptions are for signed-in students and parents.",
+    "logIn": "Log in",
+    "registerFree": "Register free",
+    "lockedDescription": "Sign in to read the full university description.",
     "programsLocked": "Sign in to view programs",
     "notFoundTitle": "University not found",
     "notFoundBody": "This university is not published, or the link is out of date.",

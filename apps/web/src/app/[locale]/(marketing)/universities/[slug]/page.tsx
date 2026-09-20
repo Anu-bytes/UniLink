@@ -83,7 +83,7 @@ export default async function UniversityDetailPage({
 
   return (
     <>
-      <UniversityHero university={university} />
+      <UniversityHero university={university} isAuthenticated={isAuthenticated} />
 
       {/* Anchored so links elsewhere on the page (the hero's "Explore
           programs" CTA) can jump straight to the tab content instead of
