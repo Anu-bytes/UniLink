@@ -565,6 +565,15 @@ export type UniversityDetailProgram = {
   applicationFeeWaived: boolean;
   minGradePercent: number | null;
   tags: string[];
+  description: string | null;
+  coopAvailable: boolean;
+  intakes: {
+    id: string;
+    season: string;
+    year: number;
+    applicationDeadline: Date | null;
+  }[];
+  englishRequirements: { id: string; test: string; minScore: number }[];
 };
 
 export type UniversityDetailFaculty = {
@@ -669,6 +678,10 @@ async function getUniversityDetailUncached(
           programs: {
             where: { isPublished: true },
             orderBy: { name: "asc" },
+            include: {
+              intakes: { orderBy: [{ year: "asc" }, { season: "asc" }] },
+              englishRequirements: true,
+            },
           },
         },
       },
@@ -771,6 +784,23 @@ async function getUniversityDetailUncached(
         applicationFeeWaived: program.applicationFeeWaived,
         minGradePercent: program.minGradePercent,
         tags: program.tags,
+        description: localizedOrNull(
+          locale,
+          program.description,
+          program.descriptionAr,
+        ),
+        coopAvailable: program.coopAvailable,
+        intakes: program.intakes.map((intake) => ({
+          id: intake.id,
+          season: intake.season as string,
+          year: intake.year,
+          applicationDeadline: intake.applicationDeadline,
+        })),
+        englishRequirements: program.englishRequirements.map((requirement) => ({
+          id: requirement.id,
+          test: requirement.test as string,
+          minScore: requirement.minScore,
+        })),
       })),
     })),
     programCount: university.faculties.reduce(

@@ -950,6 +950,11 @@
     "showMorePrograms": "{count, plural, zero {عرض المزيد} one {عرض برنامج واحد آخر} two {عرض برنامجين آخرين} few {عرض # برامج أخرى} many {عرض # برنامجاً آخر} other {عرض # برنامج آخر}}",
     "showLessPrograms": "عرض أقل",
     "programsAndMajors": "البرامج والتخصصات المتاحة",
+    "facultiesHeading": "كليات الجامعة",
+    "facultiesSubtitle": "اختر الكلية التي ترغب في استكشافها",
+    "facultiesCountBadge": "{count, plural, zero {# كلية} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}",
+    "searchFaculties": "ابحث عن كلية...",
+    "noFacultyMatch": "لا توجد كلية مطابقة لبحثك.",
     "viewPrograms": "عرض البرامج",
     "hidePrograms": "إخفاء",
     "exploreProgramsCta": "استكشف البرامج",
@@ -1035,6 +1040,9 @@
     "coopAvailable": "يتوفر تدريب تعاوني أو صيفي",
     "startApplication": "ابدأ التقديم",
     "compare": "أضف للمقارنة",
+    "close": "إغلاق",
+    "comingSoon": "قريباً",
+    "addedToCompare": "تمت الإضافة للمقارنة",
     "backToUniversity": "العودة إلى {name}",
     "notFoundTitle": "البرنامج غير موجود",
     "notFoundBody": "هذا البرنامج غير منشور أو أن الرابط قديم.",
@@ -1220,7 +1228,9 @@
       "clear": "مسح",
       "compare": "قارن",
       "limit": "يمكنك مقارنة {max} برامج كحد أقصى في المرة الواحدة.",
-      "remove": "إزالة {name}"
+      "remove": "إزالة {name}",
+      "hide": "إخفاء",
+      "show": "المقارنة"
     },
     "titleFaculties": "مقارنة الكليات",
     "subtitleFaculties": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}} جنباً إلى جنب"

@@ -950,6 +950,11 @@
     "showMorePrograms": "{count, plural, one {Show # more program} other {Show # more programs}}",
     "showLessPrograms": "Show less",
     "programsAndMajors": "Programs & majors offered",
+    "facultiesHeading": "University faculties",
+    "facultiesSubtitle": "Pick a faculty to explore its programs",
+    "facultiesCountBadge": "{count, plural, one {# faculty} other {# faculties}}",
+    "searchFaculties": "Search for a faculty...",
+    "noFacultyMatch": "No faculty matches your search.",
     "viewPrograms": "View programs",
     "hidePrograms": "Hide",
     "exploreProgramsCta": "Explore programs",
@@ -1035,6 +1040,9 @@
     "coopAvailable": "Co-op or internship available",
     "startApplication": "Start application",
     "compare": "Add to compare",
+    "close": "Close",
+    "comingSoon": "Soon",
+    "addedToCompare": "Added to compare",
     "backToUniversity": "Back to {name}",
     "notFoundTitle": "Program not found",
     "notFoundBody": "This program is not published, or the link is out of date.",
@@ -1220,7 +1228,9 @@
       "clear": "Clear",
       "compare": "Compare",
       "limit": "You can compare up to {max} programs at a time.",
-      "remove": "Remove {name}"
+      "remove": "Remove {name}",
+      "hide": "Hide",
+      "show": "Compare"
     },
     "titleFaculties": "Compare faculties",
     "subtitleFaculties": "{count, plural, one {# faculty} other {# faculties}} side by side"

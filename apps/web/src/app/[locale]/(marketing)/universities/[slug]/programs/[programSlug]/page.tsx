@@ -288,12 +288,16 @@ export default async function ProgramDetailPage({ params }: PageProps) {
       ) : null}
 
       <div className="mt-10 flex flex-wrap gap-3">
-        <Link
-          href={`/app/search?universities=${university.slug}`}
-          className="inline-flex min-h-12 items-center justify-center rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white transition-colors hover:bg-[#1859c4]"
+        <button
+          type="button"
+          disabled
+          className="inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-6 text-base font-bold text-[#98A0B4]"
         >
           {t("startApplication")}
-        </Link>
+          <span className="rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[11px] font-bold text-[#B77714]">
+            {t("comingSoon")}
+          </span>
+        </button>
         <Link
           href={`/app/compare?ids=${program.id}`}
           className="inline-flex min-h-12 items-center justify-center rounded-xl border border-[#1E6DEB] px-6 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF]"

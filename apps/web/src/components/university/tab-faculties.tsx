@@ -1,24 +1,42 @@
 import {
   BadgePercent,
+  BadgeCheck,
   Banknote,
   BookOpen,
   Building2,
+  CalendarDays,
+  Clock,
+  Code2,
+  FlaskConical,
   GraduationCap,
+  Landmark,
+  Languages,
+  Layers,
   Lock,
+  Percent,
+  Megaphone,
+  Palette,
+  Scale,
+  Settings,
+  Stethoscope,
   Target,
+  TrendingUp,
   Zap,
   type LucideIcon,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
-import { EmptySection } from "@/components/university/prose";
-import { FacultyAccordion } from "@/components/university/faculty-accordion";
+import { EmptySection, Paragraphs } from "@/components/university/prose";
+import { FacultyGrid } from "@/components/university/faculty-grid";
+import { ProgramCompareButton } from "@/components/university/program-compare-button";
+import { ProgramDialog } from "@/components/university/program-dialog";
+import { UniversityLogo } from "@/components/university-logo";
 import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
 import { Reveal } from "@/components/reveal";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
-import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { formatDate, formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 type T = Awaited<ReturnType<typeof getTranslations>>;
@@ -48,21 +66,53 @@ const ICON_ACCENTS = [
   "bg-gradient-to-br from-[#D97706] to-[#FCD34D]",
 ];
 
+const TILE_COLORS = {
+  blue: "bg-[#EEF3FF] text-[#1E6DEB]",
+  green: "bg-[#E8F9EE] text-[#1F7A4D]",
+  pink: "bg-[#FFE8F3] text-[#D6317F]",
+  purple: "bg-[#F3E8FF] text-[#7C3AED]",
+  orange: "bg-[#FFF3E0] text-[#D97706]",
+  teal: "bg-[#E0F7F5] text-[#0E9F9A]",
+  red: "bg-[#FFF0EE] text-[#F82C1F]",
+};
+
+// Faculties carry no icon of their own, so one is picked from the name
+// (English or Arabic). Order matters: the first match wins.
+const FACULTY_STYLES: { test: RegExp; icon: LucideIcon; color: string }[] = [
+  { test: /comput|informatic|software|\bIT\b|data|حاسب|معلومات|برمج/i, icon: Code2, color: TILE_COLORS.blue },
+  { test: /engineer|هندس/i, icon: Settings, color: TILE_COLORS.blue },
+  { test: /medic|pharm|dent|nurs|health|vet|طب|صيدل|أسنان|اسنان|تمريض|صح/i, icon: Stethoscope, color: TILE_COLORS.red },
+  { test: /business|manage|econom|commerce|financ|account|إدارة|ادارة|أعمال|اعمال|اقتصاد|تجارة|محاسب/i, icon: TrendingUp, color: TILE_COLORS.green },
+  { test: /communic|media|mass|journal|إعلام|اعلام|اتصال/i, icon: Megaphone, color: TILE_COLORS.pink },
+  { test: /art|design|architect|فنون|تصميم|عمارة|هندسة معمارية/i, icon: Palette, color: TILE_COLORS.purple },
+  { test: /law|legal|حقوق|قانون/i, icon: Scale, color: TILE_COLORS.teal },
+  { test: /human|literat|language|educat|آداب|اداب|لغات|إنسان|انسان|تربية/i, icon: BookOpen, color: TILE_COLORS.orange },
+  { test: /scien|علوم/i, icon: FlaskConical, color: TILE_COLORS.teal },
+];
+
+const FALLBACK_STYLES = [
+  { icon: Landmark, color: TILE_COLORS.blue },
+  { icon: Building2, color: TILE_COLORS.red },
+];
+
+function facultyStyle(name: string, index: number) {
+  return (
+    FACULTY_STYLES.find((style) => style.test.test(name)) ??
+    FALLBACK_STYLES[index % FALLBACK_STYLES.length]
+  );
+}
+
 /**
- * Faculty names, descriptions and program counts stay public (they're what
- * the directory and search results already show); the actual program list
- * needs an account, same as admission requirements, criteria, scores and
- * tuition elsewhere on this page.
+ * Faculty names and program counts stay public (they're what the directory
+ * and search results already show); the actual program list needs an
+ * account, same as admission requirements, scores and tuition elsewhere on
+ * this page.
  *
- * No top-level tab switcher and no click-to-reveal detail panel — those read
- * as complicated for a student/parent audience. Instead, faculties are a
- * single-open accordion (FacultyAccordion): opening one closes whichever was
- * open, so only one faculty's programs are ever on screen at a time and the
- * page never turns into a long scroll. Every program is a complete card the
- * moment its faculty opens — tuition, application fee, minimum grade, field,
- * perks — with nothing gated behind a further click, and a faculty with a
- * long catalogue caps what's shown up front (ProgramGridReveal's
- * "Show more") so even one open faculty can't get too tall on its own.
+ * Faculties are a compact searchable grid of tiles (FacultyGrid). Opening a
+ * tile expands it in place and closes the previous one, so only one
+ * faculty's programs are on screen at a time. Every program is a complete
+ * card the moment its faculty opens, and a long catalogue caps what's shown
+ * up front (ProgramGridReveal's "Show more").
  */
 export async function TabFaculties({
   university,
@@ -75,6 +125,7 @@ export async function TabFaculties({
 }) {
   const t = await getTranslations("UniversityDetail");
   const tCatalog = await getTranslations("Catalog");
+  const tProgram = await getTranslations("ProgramDetail");
   const locale = await getLocale();
 
   const faculties = university.faculties.filter(
@@ -85,44 +136,34 @@ export async function TabFaculties({
     return <EmptySection message={t("emptySection")} />;
   }
 
-  const items = faculties.map((faculty, facultyIndex) => ({
+  const items = faculties.map((faculty, facultyIndex) => {
+    const { icon: FacultyIcon, color } = facultyStyle(faculty.name, facultyIndex);
+    return {
     id: faculty.id,
-    header: (
+    name: faculty.name,
+    countLabel: t("facultyProgramCount", { count: faculty.programs.length }),
+    // Program names double as the keyword line under the faculty name, so a
+    // tile says what it contains without opening it.
+    summary: faculty.programs
+      .slice(0, 3)
+      .map((program) => program.name)
+      .join(" • "),
+    icon: (
       <Reveal
         key={faculty.id}
-        delay={facultyIndex * 80}
-        className="flex min-w-0 flex-1 items-center gap-3"
+        delay={facultyIndex * 60}
+        className={cn(
+          "flex size-12 shrink-0 items-center justify-center rounded-xl",
+          color,
+        )}
       >
-        <span
-          className={cn(
-            "flex size-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm",
-            ICON_ACCENTS[facultyIndex % ICON_ACCENTS.length],
-          )}
-        >
-          <Building2 className="size-4" aria-hidden />
-        </span>
-        <div className="min-w-0 flex-1">
-          <h2 className="truncate text-base font-bold text-[#1F2A44] md:text-lg">
-            {faculty.name}
-          </h2>
-          {faculty.description ? (
-            <p className="mt-0.5 truncate text-xs text-[#5a6072] md:text-sm">
-              {faculty.description}
-            </p>
-          ) : null}
-        </div>
-        <span className="hidden shrink-0 rounded-full bg-[#EEF3FF] px-2.5 py-1 text-xs font-bold text-[#1E6DEB] sm:inline-block">
-          {t("facultyProgramCount", { count: faculty.programs.length })}
-        </span>
+        <FacultyIcon className="size-6" aria-hidden />
       </Reveal>
     ),
     body: (
       <div key={faculty.id}>
-        {/* A grid of cards reads as "info about this faculty" unless it's
-            named — spelling out that these are the actual programs/majors
-            offered, not just facts about the faculty itself, since that
-            isn't obvious to a student or parent browsing this for the
-            first time. */}
+        {/* Spell out that these cards are the programs/majors offered inside
+            this faculty, which isn't obvious to a first-time visitor. */}
         <p className="mb-3 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#98A0B4]">
           <BookOpen className="size-3.5 text-[#1E6DEB]" aria-hidden />
           {t("programsAndMajors")}
@@ -137,9 +178,11 @@ export async function TabFaculties({
             <ProgramCard
               key={program.id}
               program={program}
-              universitySlug={university.slug}
+              university={university}
+              facultyName={faculty.name}
               locale={locale}
               t={t}
+              tProgram={tProgram}
               tCatalog={tCatalog}
               accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
             />
@@ -147,14 +190,17 @@ export async function TabFaculties({
         />
       </div>
     ),
-  }));
+    };
+  });
 
   const content = (
-    <FacultyAccordion
+    <FacultyGrid
       items={items}
-      defaultOpenId={faculties[0]?.id}
-      expandLabel={t("viewPrograms")}
-      collapseLabel={t("hidePrograms")}
+      heading={t("facultiesHeading")}
+      subtitle={t("facultiesSubtitle")}
+      countBadge={t("facultiesCountBadge", { count: faculties.length })}
+      searchPlaceholder={t("searchFaculties")}
+      emptyLabel={t("noFacultyMatch")}
     />
   );
 
@@ -182,14 +228,253 @@ export async function TabFaculties({
 
 function ProgramCard({
   program,
-  universitySlug,
+  university,
+  facultyName,
+  locale,
+  t,
+  tProgram,
+  tCatalog,
+  accent,
+}: {
+  program: Program;
+  university: UniversityDetailData;
+  facultyName: string;
+  locale: string;
+  t: T;
+  tProgram: T;
+  tCatalog: T;
+  accent: string;
+}) {
+  return (
+    <ProgramDialog
+      closeLabel={tProgram("close")}
+      card={
+        <ProgramCardFace
+          program={program}
+          locale={locale}
+          t={t}
+          tCatalog={tCatalog}
+          accent={accent}
+        />
+      }
+      detail={
+        <ProgramDetail
+          program={program}
+          university={university}
+          facultyName={facultyName}
+          locale={locale}
+          t={tProgram}
+          tCatalog={tCatalog}
+        />
+      }
+    />
+  );
+}
+
+function ProgramDetail({
+  program,
+  university,
+  facultyName,
+  locale,
+  t,
+  tCatalog,
+}: {
+  program: Program;
+  university: UniversityDetailData;
+  facultyName: string;
+  locale: string;
+  t: T;
+  tCatalog: T;
+}) {
+  const years = yearsFromMonths(program.durationMonths);
+  const duration =
+    program.durationLabel ??
+    (years
+      ? tCatalog("durationYears", {
+          count: years,
+          value: formatNumber(locale, years),
+        })
+      : program.durationMonths
+        ? tCatalog("durationMonths", { count: program.durationMonths })
+        : null);
+  const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+
+  const facts = [
+    { icon: GraduationCap, label: t("level"), value: tCatalog(`levels.${program.studyLevel}`) },
+    { icon: Layers, label: t("faculty"), value: facultyName },
+    duration ? { icon: Clock, label: t("duration"), value: duration } : null,
+    {
+      icon: Banknote,
+      label: t("tuition"),
+      value: tuition
+        ? `${tuition}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
+        : t("notSpecified"),
+    },
+    {
+      icon: BadgeCheck,
+      label: t("applicationFee"),
+      value: program.applicationFeeWaived
+        ? t("waived")
+        : (formatMoney(locale, program.applicationFee, program.currency) ??
+          t("notSpecified")),
+    },
+    program.minGradePercent != null
+      ? {
+          icon: Percent,
+          label: t("minimumGrade"),
+          value: `${formatNumber(locale, program.minGradePercent)}${tCatalog("units.PERCENT")}`,
+        }
+      : null,
+  ].filter((fact): fact is NonNullable<typeof fact> => fact != null);
+
+  return (
+    <div>
+      <header className="flex items-start gap-4">
+        <UniversityLogo
+          name={university.name}
+          logoUrl={university.logoUrl}
+          className="size-12"
+        />
+        <div className="min-w-0">
+          <h2 className="text-xl font-bold text-[#1F2A44] md:text-2xl">
+            {program.name}
+          </h2>
+          <p className="mt-1 text-sm text-[#5a6072]">
+            {university.name} · {university.city}
+          </p>
+        </div>
+      </header>
+
+      {program.tags.length > 0 || program.coopAvailable ? (
+        <ul className="mt-4 flex flex-wrap gap-2">
+          {program.tags.map((tag) => (
+            <li
+              key={tag}
+              className="rounded-full bg-[#EEF3FF] px-3 py-1 text-xs font-semibold text-[#1E3A8A]"
+            >
+              {tCatalog(`tags.${tag}`)}
+            </li>
+          ))}
+          {program.coopAvailable ? (
+            <li className="rounded-full bg-[#E9F7F0] px-3 py-1 text-xs font-semibold text-[#1F7A4D]">
+              {t("coopAvailable")}
+            </li>
+          ) : null}
+        </ul>
+      ) : null}
+
+      <dl className="mt-6 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        {facts.map((fact) => (
+          <div
+            key={fact.label}
+            className="rounded-2xl border border-slate-200 p-4"
+          >
+            <dt className="flex items-center gap-2 text-xs font-semibold text-[#5a6072]">
+              <fact.icon className="size-4 text-[#1E6DEB]" aria-hidden />
+              {fact.label}
+            </dt>
+            <dd className="mt-1.5 text-base font-bold text-[#1F2A44]">
+              {fact.value}
+            </dd>
+          </div>
+        ))}
+      </dl>
+
+      {program.description ? (
+        <section className="mt-6">
+          <h3 className="text-lg font-bold text-[#1F2A44]">
+            {t("aboutProgram")}
+          </h3>
+          <div className="mt-2">
+            <Paragraphs text={program.description} />
+          </div>
+        </section>
+      ) : null}
+
+      {program.englishRequirements.length > 0 ? (
+        <section className="mt-6">
+          <h3 className="flex items-center gap-2 text-lg font-bold text-[#1F2A44]">
+            <Languages className="size-5 text-[#1E6DEB]" aria-hidden />
+            {t("englishRequirements")}
+          </h3>
+          <ul className="mt-3 flex flex-wrap gap-2">
+            {program.englishRequirements.map((requirement) => (
+              <li
+                key={requirement.id}
+                className="rounded-xl border border-slate-200 px-4 py-2 text-sm"
+              >
+                <span className="font-semibold text-[#1F2A44]">
+                  {tCatalog(`englishTests.${requirement.test}`)}
+                </span>
+                <span className="ms-2 text-[#5a6072]">
+                  {formatNumber(locale, requirement.minScore)}
+                </span>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      {program.intakes.length > 0 ? (
+        <section className="mt-6">
+          <h3 className="flex items-center gap-2 text-lg font-bold text-[#1F2A44]">
+            <CalendarDays className="size-5 text-[#1E6DEB]" aria-hidden />
+            {t("intakes")}
+          </h3>
+          <ul className="mt-3 grid gap-3 sm:grid-cols-2">
+            {program.intakes.map((intake) => (
+              <li
+                key={intake.id}
+                className="rounded-2xl border border-slate-200 p-4"
+              >
+                <p className="font-semibold text-[#1F2A44]">
+                  {tCatalog(`seasons.${intake.season}`)}{" "}
+                  {formatNumber(locale, intake.year)}
+                </p>
+                <p className="mt-1 text-sm text-[#5a6072]">
+                  {intake.applicationDeadline
+                    ? t("deadline", {
+                        date: formatDate(locale, intake.applicationDeadline),
+                      })
+                    : t("noDeadline")}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
+      ) : null}
+
+      <div className="mt-8 flex flex-wrap gap-3">
+        {/* Disabled until applications leave preview. */}
+        <button
+          type="button"
+          disabled
+          className="inline-flex min-h-12 cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-50 px-6 text-base font-bold text-[#98A0B4]"
+        >
+          {t("startApplication")}
+          <span className="rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[11px] font-bold text-[#B77714]">
+            {t("comingSoon")}
+          </span>
+        </button>
+        <ProgramCompareButton
+          id={program.id}
+          name={program.name}
+          universityName={university.name}
+          logoUrl={university.logoUrl}
+        />
+      </div>
+    </div>
+  );
+}
+
+function ProgramCardFace({
+  program,
   locale,
   t,
   tCatalog,
   accent,
 }: {
   program: Program;
-  universitySlug: string;
   locale: string;
   t: T;
   tCatalog: T;
@@ -205,9 +490,8 @@ function ProgramCard({
     : program.fieldOfStudy;
 
   return (
-    <Link
-      href={`/universities/${universitySlug}/programs/${program.slug}`}
-      className="group flex flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/30 hover:shadow-[0_20px_45px_-20px_rgba(30,109,235,0.35)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+    <div
+      className="group flex h-full flex-col gap-4 rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/30 hover:shadow-[0_20px_45px_-20px_rgba(30,109,235,0.35)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
     >
       <div>
         <div className="flex items-start justify-between gap-2">
@@ -290,6 +574,6 @@ function ProgramCard({
           </div>
         ) : null}
       </div>
-    </Link>
+    </div>
   );
 }
