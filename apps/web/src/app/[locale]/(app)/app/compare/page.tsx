@@ -11,8 +11,9 @@ import {
   CompareSync,
   type CsvTable,
 } from "@/components/app/compare-actions";
-import type { CompareEntry } from "@/components/app/compare-context";
+import type { CompareEntry, CompareKind } from "@/components/app/compare-context";
 import { UniversityLogo } from "@/components/university-logo";
+import { getUniversitiesForCompare } from "@/lib/catalog";
 import { getFacultiesForCompare } from "@/lib/faculty-search";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
@@ -50,7 +51,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
   const userId = session?.user?.id ?? null;
 
   const { ids: raw, kind: rawKind } = await searchParams;
-  const kind = rawKind === "faculty" ? "faculty" : "program";
+  const kind: CompareKind =
+    rawKind === "faculty" || rawKind === "university" ? rawKind : "program";
   const ids = (raw ?? "")
     .split(",")
     .map((id) => id.trim())
@@ -61,6 +63,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
     kind === "faculty" ? await getFacultiesForCompare(locale, ids, userId) : [];
   const programs =
     kind === "program" ? await getProgramsForCompare(locale, ids, userId) : [];
+  const universities =
+    kind === "university" ? await getUniversitiesForCompare(locale, ids) : [];
 
   const columns: Column[] =
     kind === "faculty"
@@ -73,21 +77,31 @@ export default async function ComparePage({ searchParams }: PageProps) {
           band: faculty.match?.band ?? null,
           detailsHref: `/app/faculties/${faculty.id}`,
         }))
-      : programs.map((program) => ({
-          id: program.id,
-          title: program.name,
-          subtitle: program.university.name,
-          logoName: program.university.name,
-          logoUrl: program.university.logoUrl,
-          band: program.match?.band ?? null,
-          detailsHref: `/universities/${program.university.slug}/programs/${program.slug}`,
-        }));
+      : kind === "university"
+        ? universities.map((university) => ({
+            id: university.id,
+            title: university.name,
+            subtitle: `${university.city}, ${university.country}`,
+            logoName: university.name,
+            logoUrl: university.logoUrl,
+            band: null,
+            detailsHref: `/universities/${university.slug}`,
+          }))
+        : programs.map((program) => ({
+            id: program.id,
+            title: program.name,
+            subtitle: program.university.name,
+            logoName: program.university.name,
+            logoUrl: program.university.logoUrl,
+            band: program.match?.band ?? null,
+            detailsHref: `/universities/${program.university.slug}/programs/${program.slug}`,
+          }));
 
   const entries: CompareEntry[] = columns.map((column) => ({
     id: column.id,
     kind,
     name: column.title,
-    universityName: column.subtitle,
+    universityName: kind === "university" ? column.title : column.subtitle,
     logoUrl: column.logoUrl,
   }));
 
@@ -114,7 +128,40 @@ export default async function ComparePage({ searchParams }: PageProps) {
 
   const notSet = t("notSpecified");
 
-  const groups: Group[] = kind === "faculty"
+  const groups: Group[] = kind === "university"
+    ? (() => {
+        const value = (university: (typeof universities)[number]) => ({
+          type: tCatalog(`universityTypes.${university.type}`),
+          location: `${university.city}, ${university.country}`,
+          established: university.establishedYear
+            ? String(university.establishedYear)
+            : notSet,
+          facultyCount: formatNumber(locale, university.facultyCount),
+          programCount: formatNumber(locale, university.programCount),
+        });
+        const values = universities.map(value);
+        const column = <K extends keyof ReturnType<typeof value>>(key: K) =>
+          values.map((entry) => entry[key]);
+
+        return [
+          {
+            title: t("groups.overview"),
+            rows: [
+              { label: t("rows.type"), values: column("type") },
+              { label: t("rows.location"), values: column("location") },
+              { label: t("rows.established"), values: column("established") },
+            ],
+          },
+          {
+            title: t("groups.figures"),
+            rows: [
+              { label: t("rows.facultyCount"), values: column("facultyCount") },
+              { label: t("rows.programCount"), values: column("programCount") },
+            ],
+          },
+        ];
+      })()
+    : kind === "faculty"
     ? (() => {
         const value = (faculty: (typeof faculties)[number]) => {
           const from = formatMoney(locale, faculty.tuitionFrom, faculty.currency);
@@ -339,12 +386,18 @@ export default async function ComparePage({ searchParams }: PageProps) {
           </span>
           <div>
             <h1 className="text-2xl font-bold text-[#1F2A44]">
-              {kind === "faculty" ? t("titleFaculties") : t("title")}
+              {kind === "faculty"
+                ? t("titleFaculties")
+                : kind === "university"
+                  ? t("titleUniversities")
+                  : t("title")}
             </h1>
             <p className="text-sm text-[#5a6072]">
               {kind === "faculty"
                 ? t("subtitleFaculties", { count: columns.length })
-                : t("subtitle", { count: columns.length })}
+                : kind === "university"
+                  ? t("subtitleUniversities", { count: columns.length })
+                  : t("subtitle", { count: columns.length })}
             </p>
           </div>
         </div>

@@ -2,6 +2,7 @@ import { ArrowRight, BookOpen, Layers, MapPin } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { UniversityCompareButton } from "@/components/app/university-compare-button";
 import { UniversityLogo } from "@/components/university-logo";
 import type { UniversityCardData } from "@/lib/catalog";
 import { formatNumber } from "@/lib/format";
@@ -74,7 +75,7 @@ export async function UniversityResultCard({
           </div>
         </dl>
 
-        <div className="mt-auto pt-4">
+        <div className="mt-auto space-y-2 pt-4">
           <Link
             href={`/universities/${university.slug}`}
             className="group/cta inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#F82C1F] text-sm font-bold text-white transition-colors hover:bg-[#C81F15] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F82C1F]"
@@ -85,6 +86,12 @@ export async function UniversityResultCard({
               aria-hidden
             />
           </Link>
+          <UniversityCompareButton
+            id={university.id}
+            name={university.name}
+            logoUrl={university.logoUrl}
+            className="w-full"
+          />
         </div>
       </div>
     </article>

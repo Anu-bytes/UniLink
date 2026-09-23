@@ -370,6 +370,24 @@ export type UniversityDirectoryPage = {
   pageCount: number;
 };
 
+/** Universities for the compare table, in the order the student picked them. */
+export async function getUniversitiesForCompare(
+  locale: string,
+  ids: string[],
+): Promise<UniversityCardData[]> {
+  if (ids.length === 0) return [];
+
+  const rows = await prisma.university.findMany({
+    where: { id: { in: ids }, ...publishedUniversityWhere },
+    select: universityCardSelect,
+  });
+
+  const mapped = rows.map((row) => mapUniversity(locale, row));
+  return ids
+    .map((id) => mapped.find((university) => university.id === id))
+    .filter((university): university is UniversityCardData => university != null);
+}
+
 export async function getPublishedUniversities(
   locale: string,
   filters: UniversityDirectoryFilters = {},
