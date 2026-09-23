@@ -13,6 +13,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
+import { UniversityCompareToggle } from "@/components/app/university-compare-toggle";
 import { UniversityLogo } from "@/components/university-logo";
 import { AdvancedSearchPromo } from "@/components/university/advanced-search-promo";
 import { UniversityDirectoryFiltersBar } from "@/components/university/directory-filters";
@@ -190,12 +191,21 @@ async function UniversityCard({
   const tDetail = await getTranslations("UniversityDetail");
 
   return (
-    <Link
-      href={`/universities/${university.slug}`}
-      aria-label={`${university.name}, ${tDirectory("viewProfile")}`}
-      className="group flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#1E6DEB]/30 hover:shadow-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-    >
-      <div className="relative">
+    // A plain wrapper, not the link itself: the compare toggle is a real
+    // <button>, which can't nest inside an <a>. The stretched Link below
+    // covers the whole tile and handles navigation and keyboard focus; the
+    // toggle sits on top of it as its own focusable, clickable sibling.
+    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#1E6DEB]/30 hover:shadow-lg">
+      <Link
+        href={`/universities/${university.slug}`}
+        aria-label={`${university.name}, ${tDirectory("viewProfile")}`}
+        className="absolute inset-0 z-0 rounded-xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+      />
+
+      {/* pointer-events-none so this purely visual layer doesn't sit on top
+          of (and swallow clicks meant for) the stretched Link above — only
+          the compare toggle re-enables pointer events for itself. */}
+      <div className="relative pointer-events-none">
         {university.coverImageUrl ? (
           <div
             role="img"
@@ -223,9 +233,16 @@ async function UniversityCard({
             </span>
           ) : null}
         </div>
+
+        <UniversityCompareToggle
+          id={university.id}
+          name={university.name}
+          logoUrl={university.logoUrl}
+          className="pointer-events-auto absolute bottom-1.5 end-1.5"
+        />
       </div>
 
-      <div className="flex flex-1 flex-col p-2.5">
+      <div className="pointer-events-none relative flex flex-1 flex-col p-2.5">
         <div className="flex items-start gap-2">
           <UniversityLogo
             name={university.name}
@@ -266,6 +283,6 @@ async function UniversityCard({
           </div>
         </dl>
       </div>
-    </Link>
+    </div>
   );
 }

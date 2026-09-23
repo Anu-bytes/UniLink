@@ -37,6 +37,7 @@ export async function SiteHeader() {
   // Universities is intentionally absent here: it is reachable from the
   // footer's quick links (and from in-page CTAs), not the main nav.
   const links = [
+    { href: "/", label: t("home") },
     { href: "/students", label: t("students") },
     { href: "/partners", label: t("partners") },
     { href: "/about", label: t("about") },

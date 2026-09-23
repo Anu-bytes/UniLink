@@ -5,7 +5,7 @@ import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
-import { useCompare } from "@/components/app/compare-context";
+import { compareKindParam, useCompare } from "@/components/app/compare-context";
 import { UniversityLogo } from "@/components/university-logo";
 import { cn } from "@/lib/utils";
 
@@ -72,7 +72,14 @@ export function CompareTray() {
           </div>
           <div>
             <p className="text-sm font-bold text-[#1F2A44]">
-              {t("title", { count: entries.length })}
+              {t(
+                kind === "faculty"
+                  ? "titleFaculties"
+                  : kind === "university"
+                    ? "titleUniversities"
+                    : "title",
+                { count: entries.length },
+              )}
             </p>
             <p className="text-xs text-[#5a6072]">{t("subtitle")}</p>
           </div>
@@ -105,7 +112,7 @@ export function CompareTray() {
             {t("clear")}
           </button>
           <Link
-            href={`/app/compare?ids=${ids.join(",")}${kind === "faculty" ? "&kind=faculty" : ""}`}
+            href={`/app/compare?ids=${ids.join(",")}${compareKindParam(kind)}`}
             className="inline-flex min-h-11 items-center gap-2 rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors hover:bg-[#1859c4]"
           >
             {t("compare")}

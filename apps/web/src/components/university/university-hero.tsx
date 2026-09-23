@@ -13,6 +13,7 @@ import {
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { UniversityCompareButton } from "@/components/app/university-compare-button";
 import { UniversityLogo } from "@/components/university-logo";
 import { ShareButton } from "@/components/university/share-button";
 import type { UniversityDetailData } from "@/lib/catalog";
@@ -244,6 +245,13 @@ export async function UniversityHero({
             title={university.name}
             label={t("share")}
             copiedLabel={t("shareCopied")}
+          />
+
+          <UniversityCompareButton
+            id={university.id}
+            name={university.name}
+            logoUrl={university.logoUrl}
+            className="h-12 flex-none rounded-xl border-slate-200 px-5 text-base font-bold text-[#1E6DEB] hover:bg-[#EEF3FF]"
           />
         </div>
       </div>

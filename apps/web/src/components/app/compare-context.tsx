@@ -13,8 +13,8 @@ export const MAX_COMPARE = 4;
 
 const STORAGE_KEY = "unilink.compare";
 
-/** Faculties and programs are compared on different attributes. */
-export type CompareKind = "program" | "faculty";
+/** Programs, faculties and universities are each compared on different attributes. */
+export type CompareKind = "program" | "faculty" | "university";
 
 export type CompareEntry = {
   id: string;
@@ -52,7 +52,8 @@ function read(): CompareEntry[] {
         entry !== null &&
         typeof (entry as CompareEntry).id === "string" &&
         ((entry as CompareEntry).kind === "program" ||
-          (entry as CompareEntry).kind === "faculty"),
+          (entry as CompareEntry).kind === "faculty" ||
+          (entry as CompareEntry).kind === "university"),
     );
 
     // A selection stored before kinds existed, or a hand-edited one, could
@@ -91,9 +92,9 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
         return previous.filter((item) => item.id !== entry.id);
       }
 
-      // Faculties and programs are compared on different attributes, so
-      // picking one kind while the other is selected starts a fresh tray
-      // rather than producing a table of mismatched rows.
+      // Programs, faculties and universities are compared on different
+      // attributes, so picking one kind while another is selected starts a
+      // fresh tray rather than producing a table of mismatched rows.
       if (previous.length > 0 && previous[0].kind !== entry.kind) {
         return [entry];
       }
@@ -127,6 +128,12 @@ export function CompareProvider({ children }: { children: React.ReactNode }) {
   return (
     <CompareContext.Provider value={value}>{children}</CompareContext.Provider>
   );
+}
+
+/** Query-string suffix carrying a non-default compare kind, e.g. for
+ * building an /app/compare link ("" for "program", the default). */
+export function compareKindParam(kind: CompareKind | null): string {
+  return kind && kind !== "program" ? `&kind=${kind}` : "";
 }
 
 export function useCompare() {

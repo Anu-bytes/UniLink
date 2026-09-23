@@ -7,6 +7,7 @@
     "explore": "تصفّح الجامعات"
   },
   "Nav": {
+    "home": "الرئيسية",
     "students": "الطلاب",
     "partners": "الشركاء",
     "about": "من نحن",
@@ -1202,7 +1203,8 @@
       "overview": "نظرة عامة",
       "cost": "التكلفة",
       "features": "المميزات",
-      "requirements": "المتطلبات"
+      "requirements": "المتطلبات",
+      "figures": "الأرقام"
     },
     "rows": {
       "location": "الموقع",
@@ -1221,7 +1223,10 @@
       "programCount": "عدد البرامج",
       "disciplines": "التخصصات",
       "levels": "الدرجات العلمية",
-      "tuitionRange": "نطاق المصروفات"
+      "tuitionRange": "نطاق المصروفات",
+      "type": "نوع الجامعة",
+      "established": "سنة التأسيس",
+      "facultyCount": "عدد الكليات"
     },
     "yes": "نعم",
     "no": "لا",
@@ -1229,6 +1234,8 @@
     "waived": "معفاة",
     "tray": {
       "title": "{count, plural, zero {# برامج جاهزة للمقارنة} one {برنامج واحد جاهز للمقارنة} two {برنامجان جاهزان للمقارنة} few {# برامج جاهزة للمقارنة} many {# برنامجاً جاهزاً للمقارنة} other {# برنامج جاهز للمقارنة}}",
+      "titleFaculties": "{count, plural, zero {# كليات جاهزة للمقارنة} one {كلية واحدة جاهزة للمقارنة} two {كليتان جاهزتان للمقارنة} few {# كليات جاهزة للمقارنة} many {# كلية جاهزة للمقارنة} other {# كلية جاهزة للمقارنة}}",
+      "titleUniversities": "{count, plural, zero {# جامعات جاهزة للمقارنة} one {جامعة واحدة جاهزة للمقارنة} two {جامعتان جاهزتان للمقارنة} few {# جامعات جاهزة للمقارنة} many {# جامعة جاهزة للمقارنة} other {# جامعة جاهزة للمقارنة}}",
       "subtitle": "قارن المصروفات ومواعيد الالتحاق والمميزات في شاشة واحدة.",
       "clear": "مسح",
       "compare": "قارن",
@@ -1238,7 +1245,9 @@
       "show": "المقارنة"
     },
     "titleFaculties": "مقارنة الكليات",
-    "subtitleFaculties": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}} جنباً إلى جنب"
+    "subtitleFaculties": "{count, plural, zero {# كليات} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}} جنباً إلى جنب",
+    "titleUniversities": "مقارنة الجامعات",
+    "subtitleUniversities": "{count, plural, zero {# جامعات} one {جامعة واحدة} two {جامعتان} few {# جامعات} many {# جامعة} other {# جامعة}} جنباً إلى جنب"
   },
   "Applications": {
     "title": "طلباتي",

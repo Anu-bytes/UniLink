@@ -7,6 +7,7 @@
     "explore": "Browse universities"
   },
   "Nav": {
+    "home": "Home",
     "students": "Students",
     "partners": "Partners",
     "about": "About us",
@@ -1202,7 +1203,8 @@
       "overview": "Overview",
       "cost": "Cost",
       "features": "Features",
-      "requirements": "Requirements"
+      "requirements": "Requirements",
+      "figures": "Numbers"
     },
     "rows": {
       "location": "Location",
@@ -1221,7 +1223,10 @@
       "programCount": "Programs",
       "disciplines": "Disciplines",
       "levels": "Degree levels",
-      "tuitionRange": "Tuition range"
+      "tuitionRange": "Tuition range",
+      "type": "University type",
+      "established": "Established",
+      "facultyCount": "Faculties"
     },
     "yes": "Yes",
     "no": "No",
@@ -1229,6 +1234,8 @@
     "waived": "Waived",
     "tray": {
       "title": "{count, plural, one {# program ready to compare} other {# programs ready to compare}}",
+      "titleFaculties": "{count, plural, one {# faculty ready to compare} other {# faculties ready to compare}}",
+      "titleUniversities": "{count, plural, one {# university ready to compare} other {# universities ready to compare}}",
       "subtitle": "Stack tuition, intake and perks in one view.",
       "clear": "Clear",
       "compare": "Compare",
@@ -1238,7 +1245,9 @@
       "show": "Compare"
     },
     "titleFaculties": "Compare faculties",
-    "subtitleFaculties": "{count, plural, one {# faculty} other {# faculties}} side by side"
+    "subtitleFaculties": "{count, plural, one {# faculty} other {# faculties}} side by side",
+    "titleUniversities": "Compare universities",
+    "subtitleUniversities": "{count, plural, one {# university} other {# universities}} side by side"
   },
   "Applications": {
     "title": "My Applications",

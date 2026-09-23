@@ -5,7 +5,11 @@ import { useTranslations } from "next-intl";
 import { useEffect } from "react";
 
 import { useRouter } from "@/i18n/navigation";
-import { useCompare, type CompareEntry } from "@/components/app/compare-context";
+import {
+  compareKindParam,
+  useCompare,
+  type CompareEntry,
+} from "@/components/app/compare-context";
 
 /**
  * When someone opens /app/compare without ids (a bookmark, or the sidebar),
@@ -17,8 +21,7 @@ export function CompareBootstrap({ hasIds }: { hasIds: boolean }) {
 
   useEffect(() => {
     if (!ready || hasIds || ids.length === 0) return;
-    const suffix = kind === "faculty" ? "&kind=faculty" : "";
-    router.replace(`/app/compare?ids=${ids.join(",")}${suffix}`);
+    router.replace(`/app/compare?ids=${ids.join(",")}${compareKindParam(kind)}`);
   }, [hasIds, ids, kind, ready, router]);
 
   return null;
@@ -68,10 +71,9 @@ export function CompareRemoveButton({
       onClick={() => {
         remove(id);
         const next = remainingIds.filter((value) => value !== id);
-        const suffix = kind === "faculty" ? "&kind=faculty" : "";
         router.replace(
           next.length > 0
-            ? `/app/compare?ids=${next.join(",")}${suffix}`
+            ? `/app/compare?ids=${next.join(",")}${compareKindParam(kind)}`
             : "/app/compare",
         );
       }}
