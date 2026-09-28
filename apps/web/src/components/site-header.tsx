@@ -7,6 +7,7 @@ import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MobileNav } from "@/components/mobile-nav";
 import { StickyHeaderShell } from "@/components/sticky-header-shell";
+import { TopNavLinks } from "@/components/top-nav-links";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
@@ -48,17 +49,7 @@ export async function SiteHeader() {
       <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 md:h-20 md:px-6 lg:px-8">
         <Logo className="min-h-11 shrink-0 [&_img]:h-9 md:[&_img]:h-12" />
 
-        <nav className="hidden items-center gap-8 lg:flex xl:gap-9">
-          {links.map((link) => (
-            <Link
-              key={link.href}
-              href={link.href}
-              className={`inline-flex min-h-11 items-center whitespace-nowrap font-semibold leading-8 text-[#1F2A44] transition-colors hover:text-[#1E6DEB] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] ${navLinkSize}`}
-            >
-              {link.label}
-            </Link>
-          ))}
-        </nav>
+        <TopNavLinks links={links} sizeClassName={navLinkSize} />
 
         <div className="hidden items-center gap-2 lg:flex xl:gap-3">
           <LanguageSwitcher />

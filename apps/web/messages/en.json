@@ -927,6 +927,7 @@
     "programsStat": "Programs",
     "facultiesCount": "+ {count}",
     "save": "Save university",
+    "saved": "Saved",
     "share": "Share",
     "shareCopied": "Link copied",
     "creationDate": "Creation Date",
@@ -963,6 +964,7 @@
     "galleryPhotoCount": "{count, plural, one {# photo of the campus} other {# photos of the campus}}",
     "location": {
       "heading": "Where the campus is",
+      "city": "City",
       "address": "Our Address",
       "phone": "Contact us anytime",
       "email": "Reach us via email",
@@ -1065,7 +1067,7 @@
       "openMenu": "Open menu",
       "closeMenu": "Close menu"
     },
-    "saved": "Saved faculties",
+    "saved": "Saved",
     "savedNav": "Saved",
     "account": "Account",
     "signOut": "Sign out",
@@ -1271,11 +1273,16 @@
     "previewBody": "You can start, track, and withdraw applications here today, and everything you record is saved to your account. Submitting an application directly to a university through UniLink is not available yet, so keep applying through each university’s own official channels as well."
   },
   "Saved": {
-    "title": "Saved faculties",
-    "subtitle": "Faculties you starred while searching.",
+    "title": "Saved",
+    "subtitle": "Faculties and universities you've liked while browsing.",
+    "tabAll": "All",
+    "tabFaculties": "Faculties",
+    "tabUniversities": "Universities",
     "emptyTitle": "Nothing saved yet",
-    "emptyBody": "Tap the heart on any faculty card to keep it here for later.",
-    "browse": "Browse faculties"
+    "emptyBody": "Tap the heart on any faculty or university to keep it here for later.",
+    "emptyTab": "Nothing saved here yet.",
+    "browse": "Browse faculties",
+    "browseUniversities": "Browse universities"
   },
   "AppProfile": {
     "title": "Profile",
@@ -1358,7 +1365,10 @@
     "programsSubtitleNoProfile": "Complete your profile to see how well each one fits you.",
     "noPrograms": "This faculty has no published programs yet.",
     "save": "Save faculty",
-    "saved": "Saved"
+    "saved": "Saved",
+    "close": "Close",
+    "loading": "Loading…",
+    "loadError": "Couldn't load this faculty. Try again."
   },
   "Admin": {
     "catalogue": {

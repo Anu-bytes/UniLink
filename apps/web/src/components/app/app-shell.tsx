@@ -14,7 +14,7 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, type ComponentType } from "react";
+import { useEffect, useRef, useState, type ComponentType } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -22,6 +22,7 @@ import { Logo } from "@/components/logo";
 import { useSavedCount } from "@/components/app/saved-context";
 import { cn } from "@/lib/utils";
 import { initialsAvatar } from "@/lib/format";
+import { isNavActive } from "@/lib/nav-active";
 
 const STORAGE_KEY = "unilink.sidebar.collapsed";
 
@@ -60,6 +61,8 @@ export function AppShell({
 
   const [collapsed, setCollapsed] = useState(false);
   const [drawerOpen, setDrawerOpen] = useState(false);
+  const [accountOpen, setAccountOpen] = useState(false);
+  const accountRef = useRef<HTMLDivElement>(null);
 
   // Read the stored preference after mount so the server and client agree on
   // the first render.
@@ -72,6 +75,7 @@ export function AppShell({
   // as well.
   useEffect(() => {
     setDrawerOpen(false);
+    setAccountOpen(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -82,6 +86,27 @@ export function AppShell({
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
   }, [drawerOpen]);
+
+  // The account menu used to be a plain <details> element, which never closes
+  // on its own: a click outside leaves it open, and a client-side route
+  // change (this component stays mounted across /app pages) doesn't reset
+  // its open attribute either. Same pointerdown/Escape pattern as the
+  // marketing header's AccountMenu.
+  useEffect(() => {
+    if (!accountOpen) return;
+    function onPointerDown(event: PointerEvent) {
+      if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false);
+    }
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "Escape") setAccountOpen(false);
+    }
+    document.addEventListener("pointerdown", onPointerDown);
+    document.addEventListener("keydown", onKeyDown);
+    return () => {
+      document.removeEventListener("pointerdown", onPointerDown);
+      document.removeEventListener("keydown", onKeyDown);
+    };
+  }, [accountOpen]);
 
   function toggleCollapsed() {
     setCollapsed((previous) => {
@@ -261,8 +286,10 @@ export function AppShell({
               href="/app/saved"
               aria-label={t("saved")}
               title={t("saved")}
+              aria-current={isNavActive(pathname, "/app/saved") ? "page" : undefined}
               className={cn(
                 "relative flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors sm:px-3.5",
+                isNavActive(pathname, "/app/saved") && "ring-2 ring-[#F82C1F]/40",
                 savedCount > 0
                   ? "bg-[#FFF0EE] text-[#F82C1F] hover:bg-[#FFE3DF]"
                   : "bg-slate-100 text-[#3F4657] hover:bg-slate-200",
@@ -280,8 +307,14 @@ export function AppShell({
               ) : null}
             </Link>
 
-            <details className="group relative">
-              <summary className="flex size-10 cursor-pointer list-none items-center justify-center rounded-full [&::-webkit-details-marker]:hidden">
+            <div ref={accountRef} className="relative">
+              <button
+                type="button"
+                onClick={() => setAccountOpen((previous) => !previous)}
+                aria-expanded={accountOpen}
+                aria-haspopup="menu"
+                className="flex size-10 cursor-pointer items-center justify-center rounded-full"
+              >
                 <span className="sr-only">{t("account")}</span>
                 {user.image ? (
                   // eslint-disable-next-line @next/next/no-img-element -- avatars
@@ -300,41 +333,57 @@ export function AppShell({
                     {avatar.initials}
                   </span>
                 )}
-              </summary>
+              </button>
 
-              <div className="absolute end-0 top-[calc(100%+0.5rem)] z-50 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl">
-                <div className="border-b border-slate-100 px-3 pb-3 pt-2">
-                  <p className="truncate text-sm font-semibold text-[#1F2A44]">
-                    {user.name ?? t("account")}
-                  </p>
-                  {user.email ? (
-                    <p className="truncate text-xs text-[#5a6072]">{user.email}</p>
-                  ) : null}
+              {accountOpen ? (
+                <div
+                  role="menu"
+                  className="absolute end-0 top-[calc(100%+0.5rem)] z-50 w-60 rounded-xl border border-slate-200 bg-white p-2 shadow-xl"
+                >
+                  <div className="border-b border-slate-100 px-3 pb-3 pt-2">
+                    <p className="truncate text-sm font-semibold text-[#1F2A44]">
+                      {user.name ?? t("account")}
+                    </p>
+                    {user.email ? (
+                      <p className="truncate text-xs text-[#5a6072]">{user.email}</p>
+                    ) : null}
+                  </div>
+                  <Link
+                    href="/app/profile"
+                    role="menuitem"
+                    onClick={() => setAccountOpen(false)}
+                    aria-current={isNavActive(pathname, "/app/profile") ? "page" : undefined}
+                    className={cn(
+                      "mt-1 flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold hover:bg-slate-50",
+                      isNavActive(pathname, "/app/profile")
+                        ? "text-[#1E6DEB]"
+                        : "text-[#5a6072]",
+                    )}
+                  >
+                    <User className="size-4" aria-hidden />
+                    {t("sidebar.profile")}
+                  </Link>
+                  <Link
+                    href="/"
+                    role="menuitem"
+                    onClick={() => setAccountOpen(false)}
+                    className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:bg-slate-50"
+                  >
+                    <ExternalLink className="size-4" aria-hidden />
+                    {t("backToSite")}
+                  </Link>
+                  <button
+                    type="button"
+                    role="menuitem"
+                    onClick={() => signOut({ callbackUrl: "/" })}
+                    className="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-sm font-semibold text-[#C81F15] hover:bg-[#FFF0EE]"
+                  >
+                    <LogOut className="size-4" aria-hidden />
+                    {t("signOut")}
+                  </button>
                 </div>
-                <Link
-                  href="/app/profile"
-                  className="mt-1 flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:bg-slate-50"
-                >
-                  <User className="size-4" aria-hidden />
-                  {t("sidebar.profile")}
-                </Link>
-                <Link
-                  href="/"
-                  className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:bg-slate-50"
-                >
-                  <ExternalLink className="size-4" aria-hidden />
-                  {t("backToSite")}
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex min-h-11 w-full items-center gap-2 rounded-lg px-3 text-sm font-semibold text-[#C81F15] hover:bg-[#FFF0EE]"
-                >
-                  <LogOut className="size-4" aria-hidden />
-                  {t("signOut")}
-                </button>
-              </div>
-            </details>
+              ) : null}
+            </div>
           </div>
         </header>
 

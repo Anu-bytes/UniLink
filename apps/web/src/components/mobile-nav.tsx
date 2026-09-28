@@ -7,6 +7,8 @@ import { useEffect, useRef, useState } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { Avatar, type SessionUser } from "@/components/account-menu";
+import { isNavActive } from "@/lib/nav-active";
+import { cn } from "@/lib/utils";
 
 type NavLink = { href: string; label: string };
 
@@ -100,16 +102,23 @@ export function MobileNav({
           className="absolute end-0 top-[calc(100%+0.75rem)] z-50 max-h-[calc(100dvh-5rem)] w-[min(20rem,calc(100vw-2rem))] overflow-y-auto overscroll-contain rounded-2xl border border-slate-200 bg-white p-4 shadow-xl"
         >
           <nav className="flex flex-col">
-            {links.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                onClick={close}
-                className="inline-flex min-h-12 items-center rounded-lg px-3 py-2 text-base font-semibold text-[#292E3E] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-              >
-                {link.label}
-              </Link>
-            ))}
+            {links.map((link) => {
+              const active = isNavActive(pathname, link.href);
+              return (
+                <Link
+                  key={link.href}
+                  href={link.href}
+                  onClick={close}
+                  aria-current={active ? "page" : undefined}
+                  className={cn(
+                    "inline-flex min-h-12 items-center rounded-lg px-3 py-2 text-base font-semibold transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+                    active ? "bg-[#EEF3FF] text-[#1E6DEB]" : "text-[#292E3E]",
+                  )}
+                >
+                  {link.label}
+                </Link>
+              );
+            })}
           </nav>
 
           <div className="mt-3 border-t border-slate-200 pt-4">
@@ -141,17 +150,27 @@ export function MobileNav({
                     },
                     { href: "/app/saved", label: tApp("saved"), icon: Heart },
                     { href: "/app/profile", label: tApp("sidebar.profile"), icon: User },
-                  ].map((item) => (
-                    <Link
-                      key={item.href}
-                      href={item.href}
-                      onClick={close}
-                      className="inline-flex min-h-12 items-center gap-2.5 rounded-lg px-3 text-base font-semibold text-[#292E3E] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
-                    >
-                      <item.icon className="size-4 shrink-0" aria-hidden />
-                      {item.label}
-                    </Link>
-                  ))}
+                  ].map((item) => {
+                    const active =
+                      item.href === "/app"
+                        ? pathname === "/app"
+                        : isNavActive(pathname, item.href);
+                    return (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={close}
+                        aria-current={active ? "page" : undefined}
+                        className={cn(
+                          "inline-flex min-h-12 items-center gap-2.5 rounded-lg px-3 text-base font-semibold transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]",
+                          active ? "bg-[#EEF3FF] text-[#1E6DEB]" : "text-[#292E3E]",
+                        )}
+                      >
+                        <item.icon className="size-4 shrink-0" aria-hidden />
+                        {item.label}
+                      </Link>
+                    );
+                  })}
                 </nav>
 
                 <button

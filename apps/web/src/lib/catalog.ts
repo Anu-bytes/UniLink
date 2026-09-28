@@ -3,14 +3,23 @@ import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
 import { arabicAlifVariants } from "@/lib/arabic-text";
-import { expandCityFilter } from "@/lib/program-filters";
+import {
+  expandCityFilter,
+  governorateKeyFor,
+  governorateOf,
+  withGovernorateCityOptions,
+} from "@/lib/program-filters";
 import { prisma } from "@/lib/prisma";
 
 export type UniversityCardData = {
   id: string;
   slug: string;
   name: string;
+  acronym: string | null;
   city: string;
+  /** The governorate `city` sits in ("Cairo", "Giza"), localized; null when
+   * `city` is already governorate-level or not a known district. */
+  governorate: string | null;
   country: string;
   type: "NATIONAL" | "PRIVATE";
   description: string | null;
@@ -89,6 +98,7 @@ function mapUniversity(
     slug: string;
     name: string;
     nameAr: string | null;
+    acronym: string | null;
     city: string;
     cityAr: string | null;
     country: string;
@@ -109,7 +119,9 @@ function mapUniversity(
     id: university.id,
     slug: university.slug,
     name: localized(locale, university.name, university.nameAr),
+    acronym: university.acronym,
     city: localized(locale, university.city, university.cityAr),
+    governorate: governorateOf(locale, university.city),
     country: localized(locale, university.country, university.countryAr),
     type: university.type,
     description: localizedOrNull(
@@ -133,6 +145,7 @@ const universityCardSelect = {
   slug: true,
   name: true,
   nameAr: true,
+  acronym: true,
   city: true,
   cityAr: true,
   country: true,
@@ -289,6 +302,11 @@ function universitySearchWhere(q: string): Prisma.UniversityWhereInput {
       // autocomplete the hamza, so a plain `contains` on the Arabic columns
       // alone silently missed real matches (e.g. "6th of October City").
       const arVariants = arabicAlifVariants(word);
+      // A governorate name ("Cairo", "القاهرة") doesn't literally appear on
+      // any university that sits in one of its districts (their `city` is
+      // the district itself, e.g. "El Shorouk City") — typed free-text, that
+      // reads as "no results" for a search most people expect to work.
+      const governorate = governorateKeyFor(word);
       return {
         OR: [
           { name: { contains: word, mode: "insensitive" as const } },
@@ -299,6 +317,7 @@ function universitySearchWhere(q: string): Prisma.UniversityWhereInput {
           ...arVariants.map((v) => ({ countryAr: { contains: v } })),
           { description: { contains: word, mode: "insensitive" as const } },
           ...arVariants.map((v) => ({ descriptionAr: { contains: v } })),
+          ...(governorate ? [{ city: { in: expandCityFilter([governorate]) } }] : []),
         ],
       };
     }),
@@ -369,6 +388,36 @@ export type UniversityDirectoryPage = {
   page: number;
   pageCount: number;
 };
+
+/** Whether the given user has liked (SavedUniversity) this university. */
+export async function isUniversitySaved(
+  userId: string | null,
+  universityId: string,
+): Promise<boolean> {
+  if (!userId) return false;
+  const row = await prisma.savedUniversity.findUnique({
+    where: { userId_universityId: { userId, universityId } },
+    select: { id: true },
+  });
+  return row != null;
+}
+
+/** Universities a user has liked, most recently liked first. */
+export async function getSavedUniversities(
+  locale: string,
+  userId: string,
+): Promise<UniversityCardData[]> {
+  const saved = await prisma.savedUniversity.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    select: { universityId: true },
+  });
+
+  return getUniversitiesForCompare(
+    locale,
+    saved.map((row) => row.universityId),
+  );
+}
 
 /** Universities for the compare table, in the order the student picked them. */
 export async function getUniversitiesForCompare(
@@ -515,7 +564,7 @@ export const getUniversityCities = unstable_cache(
       select: { city: true, cityAr: true },
     });
 
-    return rows.map((row) => ({
+    return withGovernorateCityOptions(rows).map((row) => ({
       value: row.city,
       label: localized(locale, row.city, row.cityAr),
     }));
@@ -607,8 +656,10 @@ export type UniversityDetailData = {
   id: string;
   slug: string;
   name: string;
+  acronym: string | null;
   type: "NATIONAL" | "PRIVATE";
   city: string;
+  governorate: string | null;
   country: string;
   addressLine: string | null;
   description: string | null;
@@ -721,8 +772,10 @@ async function getUniversityDetailUncached(
     id: university.id,
     slug: university.slug,
     name: localized(locale, university.name, university.nameAr),
+    acronym: university.acronym,
     type: university.type,
     city: localized(locale, university.city, university.cityAr),
+    governorate: governorateOf(locale, university.city),
     country: localized(locale, university.country, university.countryAr),
     addressLine: localizedOrNull(
       locale,

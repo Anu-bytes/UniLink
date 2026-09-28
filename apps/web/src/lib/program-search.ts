@@ -3,6 +3,7 @@ import { unstable_cache } from "next/cache";
 
 import { localized, localizedOrNull } from "@/lib/catalog";
 import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matching";
+import { withGovernorateCityOptions } from "@/lib/program-filters";
 import { prisma } from "@/lib/prisma";
 
 export type ProgramIntakeData = {
@@ -281,7 +282,7 @@ async function getSearchVocabularyUncached() {
 
   return {
     universities,
-    cities: cities.map((row) => ({
+    cities: withGovernorateCityOptions(cities).map((row) => ({
       value: row.city,
       en: row.city,
       ar: row.cityAr,
