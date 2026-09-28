@@ -516,11 +516,17 @@ function UniversityTile({
       <div className="flex flex-1 flex-col p-4">
         <h3 className="line-clamp-2 min-h-12 text-[16px] font-bold leading-6 text-[#16233F]">
           {university.name}
+          {university.acronym ? (
+            <span className="font-semibold text-[#5a6072]"> ({university.acronym})</span>
+          ) : null}
         </h3>
 
         <p className="mt-1 flex items-center gap-1.5 text-sm text-[#5a6072]">
           <MapPin className="size-4 shrink-0 text-[#1E6DEB]" aria-hidden />
-          <span className="truncate">{university.city}</span>
+          <span className="truncate">
+            {university.city}
+            {university.governorate ? `, ${university.governorate}` : ""}
+          </span>
         </p>
 
         {/* Both counts carry a label; a bare number beside an icon read as

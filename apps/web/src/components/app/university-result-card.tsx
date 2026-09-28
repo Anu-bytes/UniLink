@@ -41,6 +41,9 @@ export async function UniversityResultCard({
             </p>
             <h3 className="line-clamp-2 text-sm font-bold leading-snug text-[#1F2A44]">
               {university.name}
+              {university.acronym ? (
+                <span className="font-semibold text-[#5a6072]"> ({university.acronym})</span>
+              ) : null}
             </h3>
           </div>
         </div>
@@ -52,7 +55,8 @@ export async function UniversityResultCard({
               {t("cityLabel")}
             </dt>
             <dd className="mt-0.5 truncate text-[13px] font-bold text-[#1F2A44]">
-              {university.city}, {university.country}
+              {university.city}
+              {university.governorate ? `, ${university.governorate}` : ""}, {university.country}
             </dd>
           </div>
           <div className="min-w-0 rounded-lg bg-slate-50 px-2.5 py-1.5">

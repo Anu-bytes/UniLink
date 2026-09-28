@@ -255,6 +255,9 @@ async function UniversityCard({
             </p>
             <h2 className="mt-0.5 line-clamp-1 text-[13px] font-bold leading-snug text-[#363B51]">
               {university.name}
+              {university.acronym ? (
+                <span className="font-semibold text-[#5a6072]"> ({university.acronym})</span>
+              ) : null}
             </h2>
           </div>
           <ArrowUpRight
@@ -268,7 +271,8 @@ async function UniversityCard({
             <MapPin className="size-3 shrink-0 text-[#1E6DEB]" aria-hidden />
             <dt className="sr-only">{tDirectory("cityLabel")}</dt>
             <dd className="truncate">
-              {university.city}, {university.country}
+              {university.city}
+              {university.governorate ? `, ${university.governorate}` : ""}, {university.country}
             </dd>
           </div>
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">

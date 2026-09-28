@@ -80,8 +80,12 @@ export default async function ComparePage({ searchParams }: PageProps) {
       : kind === "university"
         ? universities.map((university) => ({
             id: university.id,
-            title: university.name,
-            subtitle: `${university.city}, ${university.country}`,
+            title: university.acronym
+              ? `${university.name} (${university.acronym})`
+              : university.name,
+            subtitle: [university.city, university.governorate, university.country]
+              .filter(Boolean)
+              .join(", "),
             logoName: university.name,
             logoUrl: university.logoUrl,
             band: null,
@@ -132,7 +136,9 @@ export default async function ComparePage({ searchParams }: PageProps) {
     ? (() => {
         const value = (university: (typeof universities)[number]) => ({
           type: tCatalog(`universityTypes.${university.type}`),
-          location: `${university.city}, ${university.country}`,
+          location: [university.city, university.governorate, university.country]
+            .filter(Boolean)
+            .join(", "),
           established: university.establishedYear
             ? String(university.establishedYear)
             : notSet,

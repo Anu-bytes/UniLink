@@ -215,7 +215,10 @@ function CityMultiSelect({
                 role="option"
                 aria-selected={isSelected}
                 disabled={disabled}
-                onClick={() => onToggle(option.value)}
+                onClick={() => {
+                  onToggle(option.value);
+                  setOpen(false);
+                }}
                 className={cn(
                   "flex w-full items-center gap-2 rounded-md px-2 py-2 text-start text-sm font-medium transition-colors",
                   disabled

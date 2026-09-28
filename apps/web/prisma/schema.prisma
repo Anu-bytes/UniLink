@@ -42,6 +42,7 @@ model User {
   studentProfile StudentProfile?
   savedPrograms  SavedProgram[]
   savedFaculties SavedFaculty[]
+  savedUniversities SavedUniversity[]
   passwordResetTokens PasswordResetToken[]
   // Bumped on every password change. Sessions minted before this instant are
   // rejected, so resetting a password logs out whoever else was signed in.
@@ -205,6 +206,10 @@ model University {
   id            String         @id @default(cuid())
   name          String
   nameAr        String?
+  // Short well-known abbreviation ("BUE", "GUC"), shown beside the full name.
+  // Latin letters even on the Arabic site — that's how these are actually
+  // written and recognised locally, not translated.
+  acronym       String?
   slug          String         @unique
   type          UniversityType
   country       String
@@ -241,6 +246,7 @@ model University {
   features      UniversityFeature[]
   contentBlocks UniversityContentBlock[]
   minimumScores MinimumScore[]
+  savedBy       SavedUniversity[]
   createdAt     DateTime       @default(now())
   updatedAt     DateTime       @updatedAt
 
@@ -464,6 +470,19 @@ model SavedFaculty {
   createdAt DateTime @default(now())
 
   @@unique([userId, facultyId])
+  @@index([userId])
+}
+
+// The heart on a university profile.
+model SavedUniversity {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, universityId])
   @@index([userId])
 }
 

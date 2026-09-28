@@ -16,6 +16,7 @@ import { TabLocation } from "@/components/university/tab-location";
 import {
   getUniversityDetail,
   incrementUniversityViews,
+  isUniversitySaved,
   type UniversityDetailData,
 } from "@/lib/catalog";
 
@@ -61,6 +62,7 @@ export default async function UniversityDetailPage({
 
   const active: UniversityTab = isUniversityTab(tab) ? tab : "faculties";
   const isAuthenticated = Boolean(session?.user?.id);
+  const isLiked = await isUniversitySaved(session?.user?.id ?? null, university.id);
 
   // Counts pages read, not tab switches, so only the default tab increments.
   //
@@ -83,7 +85,11 @@ export default async function UniversityDetailPage({
 
   return (
     <>
-      <UniversityHero university={university} isAuthenticated={isAuthenticated} />
+      <UniversityHero
+        university={university}
+        isAuthenticated={isAuthenticated}
+        isLiked={isLiked}
+      />
 
       {/* Anchored so links elsewhere on the page (the hero's "Explore
           programs" CTA) can jump straight to the tab content instead of

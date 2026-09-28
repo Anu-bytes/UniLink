@@ -26,26 +26,100 @@ export const UNIVERSITY_TYPES = ["NATIONAL", "PRIVATE"] as const;
 export const MAX_CITIES = 5;
 
 /**
- * Satellite cities that administratively sit inside Cairo Governorate (New
- * Cairo/Fifth Settlement, El Shorouk City, Badr City), distinct from cities
- * like 6th of October or Sheikh Zayed which are in Giza Governorate. Each is
- * still its own selectable city in the picker — a search for "New Cairo"
- * stays exact — but a plain "Cairo" pick reads to most students as "Cairo
- * and its satellite cities", not the literal city-proper string stored on
- * `University.city`. Without this, picking "Cairo" silently excludes real
- * Cairo-area universities (e.g. BUE, in El Shorouk City) that most people
- * would call "in Cairo".
+ * `University.city` records the actual district/satellite city a university
+ * sits in (New Cairo, El Shorouk City, 6th of October City, ...), not the
+ * governorate it administratively belongs to. Most students search or filter
+ * by the governorate instead ("Cairo", "Giza") and expect every district
+ * inside it back, the way they'd describe "a university in Cairo" in
+ * conversation — so each governorate below expands to the district cities
+ * that actually appear in the catalogue.
+ *
+ * Add a district here (and to its governorate's list) whenever a new
+ * district-level `city` value is added to the catalogue — otherwise it's
+ * only reachable by its own exact name, not by searching the governorate.
  */
-const CAIRO_GOVERNORATE_ALIASES = ["New Cairo", "El Shorouk City", "Badr City"];
+export const GOVERNORATE_DISTRICTS: Record<string, { ar: string; districts: string[] }> = {
+  Cairo: {
+    ar: "القاهرة",
+    districts: ["New Cairo", "El Shorouk City", "Badr City"],
+  },
+  Giza: {
+    ar: "الجيزة",
+    districts: ["6th of October City", "Sheikh Zayed City"],
+  },
+};
 
 /**
- * Widens a city filter so "Cairo" also matches its Cairo-Governorate
- * satellite cities. Used everywhere `cities` becomes a `city IN (...)`
- * clause; leaves the list untouched when "Cairo" isn't selected.
+ * Widens a city filter so a governorate name also matches every district
+ * recorded under it (see GOVERNORATE_DISTRICTS). Used everywhere `cities`
+ * becomes a `city IN (...)` clause; a city that isn't a known governorate
+ * passes through untouched.
  */
 export function expandCityFilter(cities: string[]): string[] {
-  if (!cities.includes("Cairo")) return cities;
-  return [...new Set([...cities, ...CAIRO_GOVERNORATE_ALIASES])];
+  const expanded = new Set(cities);
+  for (const city of cities) {
+    for (const district of GOVERNORATE_DISTRICTS[city]?.districts ?? []) {
+      expanded.add(district);
+    }
+  }
+  return [...expanded];
+}
+
+/**
+ * The governorate a district-level city sits in, localized — e.g. "Cairo" /
+ * "القاهرة" for "El Shorouk City". Null when `city` isn't a known district
+ * (it's already a governorate-level city like "Cairo" itself, or one not yet
+ * mapped in GOVERNORATE_DISTRICTS above).
+ */
+export function governorateOf(locale: string, city: string): string | null {
+  for (const [governorate, info] of Object.entries(GOVERNORATE_DISTRICTS)) {
+    if (info.districts.includes(city)) {
+      return locale.startsWith("ar") ? info.ar : governorate;
+    }
+  }
+  return null;
+}
+
+/**
+ * The English governorate key a typed word refers to, English or Arabic,
+ * case-insensitive — "cairo", "Cairo" and "القاهرة" all resolve to "Cairo".
+ * Used by free-text search (not the city picker, which already works in
+ * values) so typing a governorate name finds universities in its districts
+ * too, not just literal name/city/description matches.
+ */
+export function governorateKeyFor(word: string): string | null {
+  const needle = word.trim().toLowerCase();
+  if (!needle) return null;
+  for (const [governorate, info] of Object.entries(GOVERNORATE_DISTRICTS)) {
+    if (governorate.toLowerCase() === needle || info.ar === word.trim()) {
+      return governorate;
+    }
+  }
+  return null;
+}
+
+/**
+ * City picker / search-vocabulary options, built from the catalogue's real
+ * `city` values plus a pseudo-entry for any governorate that isn't already
+ * one of them but has at least one of its districts present — so "Giza" /
+ * "الجيزة" is searchable and pickable even though no university's own `city`
+ * literally equals "Giza".
+ */
+export function withGovernorateCityOptions<T extends { city: string; cityAr: string | null }>(
+  rows: T[],
+): T[] {
+  const present = new Set(rows.map((row) => row.city));
+  const governorates = Object.entries(GOVERNORATE_DISTRICTS)
+    .filter(
+      ([governorate, info]) =>
+        !present.has(governorate) &&
+        info.districts.some((district) => present.has(district)),
+    )
+    .map(
+      ([governorate, info]) =>
+        ({ city: governorate, cityAr: info.ar }) as T,
+    );
+  return [...rows, ...governorates].sort((a, b) => a.city.localeCompare(b.city));
 }
 
 /** Quick toggles rendered as chips above the results, in display order. */

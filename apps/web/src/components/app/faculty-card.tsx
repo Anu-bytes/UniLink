@@ -1,8 +1,8 @@
 import { ArrowRight, BookOpen, MapPin, Percent, Wallet } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
-import { Link } from "@/i18n/navigation";
 import { FacultyCompareButton } from "@/components/app/faculty-compare-button";
+import { FacultyDialog } from "@/components/app/faculty-dialog";
 import { FacultySaveButton } from "@/components/app/faculty-save-button";
 import { UniversityLogo } from "@/components/university-logo";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
@@ -151,16 +151,18 @@ export async function FacultyCard({ faculty }: { faculty: FacultyResult }) {
         ) : null}
 
         <div className="mt-auto space-y-2 border-t border-slate-100 pt-4">
-          <Link
-            href={`/app/faculties/${faculty.id}`}
-            className="group/cta inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#1E6DEB] text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-          >
-            {tFaculty("explorePrograms")}
-            <ArrowRight
-              className="size-4 transition-transform duration-200 group-hover/cta:translate-x-0.5 rtl:rotate-180 rtl:group-hover/cta:-translate-x-0.5"
-              aria-hidden
-            />
-          </Link>
+          <FacultyDialog
+            facultyId={faculty.id}
+            trigger={
+              <>
+                {tFaculty("explorePrograms")}
+                <ArrowRight
+                  className="size-4 transition-transform duration-200 group-hover/cta:translate-x-0.5 rtl:rotate-180 rtl:group-hover/cta:-translate-x-0.5"
+                  aria-hidden
+                />
+              </>
+            }
+          />
 
           <div className="flex gap-2">
             <FacultySaveButton facultyId={faculty.id} initialSaved={faculty.saved} />

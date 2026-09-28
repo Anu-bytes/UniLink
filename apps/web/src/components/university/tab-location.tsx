@@ -11,21 +11,25 @@ export async function TabLocation({
 }) {
   const t = await getTranslations("UniversityDetail");
 
-  const hasContact =
-    university.addressLine || university.phone || university.email;
   const hasCoordinates =
     university.latitude != null && university.longitude != null;
 
-  if (!hasContact && !hasCoordinates) {
-    return <EmptySection message={t("emptySection")} />;
-  }
+  // "El Shorouk City, Cairo, Egypt" — district, then the governorate it sits
+  // in (when known), then country.
+  const citySummary = [university.city, university.governorate, university.country]
+    .filter(Boolean)
+    .join(", ");
 
   const contacts = [
-    university.phone
-      ? { icon: Phone, label: t("location.phone"), value: university.phone, href: `tel:${university.phone}` }
-      : null,
+    // Always present — city is a required field, so every university shows
+    // at least a governorate/district location here, not only the ones with
+    // a full street address on file.
+    { icon: MapPin, label: t("location.city"), value: citySummary, href: null },
     university.addressLine
       ? { icon: MapPin, label: t("location.address"), value: university.addressLine, href: null }
+      : null,
+    university.phone
+      ? { icon: Phone, label: t("location.phone"), value: university.phone, href: `tel:${university.phone}` }
       : null,
     university.email
       ? { icon: Mail, label: t("location.email"), value: university.email, href: `mailto:${university.email}` }

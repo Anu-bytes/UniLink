@@ -16,6 +16,7 @@ import { Link } from "@/i18n/navigation";
 import { UniversityCompareButton } from "@/components/app/university-compare-button";
 import { UniversityLogo } from "@/components/university-logo";
 import { ShareButton } from "@/components/university/share-button";
+import { UniversityLikeButton } from "@/components/university/university-like-button";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { formatCompact, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -32,13 +33,22 @@ const STAT_ACCENTS = [
 export async function UniversityHero({
   university,
   isAuthenticated,
+  isLiked,
 }: {
   university: UniversityDetailData;
   isAuthenticated: boolean;
+  /** Whether the signed-in visitor has already liked this university. */
+  isLiked: boolean;
 }) {
   const t = await getTranslations("UniversityDetail");
   const tCatalog = await getTranslations("Catalog");
   const locale = await getLocale();
+
+  // "El Shorouk City, Cairo, Egypt" — district, then the governorate it
+  // sits in (when known), then country.
+  const locationSummary = [university.city, university.governorate, university.country]
+    .filter(Boolean)
+    .join(", ");
 
   const stats = [
     {
@@ -136,13 +146,23 @@ export async function UniversityHero({
             <div className="min-w-0">
               <h1 className="truncate text-xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl">
                 {university.name}
+                {university.acronym ? (
+                  <span className="ms-2 align-middle text-sm font-semibold text-white/80 sm:text-base">
+                    ({university.acronym})
+                  </span>
+                ) : null}
               </h1>
-              {university.addressLine ? (
-                <p className="mt-1 flex items-center gap-1.5 text-sm text-white/90">
-                  <MapPin className="size-4 shrink-0" aria-hidden />
-                  <span className="truncate">{university.addressLine}</span>
-                </p>
-              ) : null}
+              {/* The admin-entered street address when there is one — it's
+                  more specific — otherwise the district/governorate/country
+                  derived from the catalogue, so every university shows a
+                  location here rather than only the ones with a full
+                  address on file. */}
+              <p className="mt-1 flex items-center gap-1.5 text-sm text-white/90">
+                <MapPin className="size-4 shrink-0" aria-hidden />
+                <span className="truncate">
+                  {university.addressLine ?? locationSummary}
+                </span>
+              </p>
             </div>
           </div>
         </div>
@@ -231,15 +251,14 @@ export async function UniversityHero({
             {t("exploreProgramsCta")}
           </Link>
 
-          <button
-            type="button"
-            aria-label={t("save")}
-            title={t("save")}
-            className="flex min-h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-5 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#EEF3FF] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-          >
-            <Heart className="size-5" aria-hidden />
-            {t("save")}
-          </button>
+          <UniversityLikeButton
+            universityId={university.id}
+            isAuthenticated={isAuthenticated}
+            initialLiked={isLiked}
+            likeLabel={t("save")}
+            likedLabel={t("saved")}
+            callbackUrl={`/universities/${university.slug}`}
+          />
 
           <ShareButton
             title={university.name}
