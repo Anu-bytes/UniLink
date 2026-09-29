@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityLogo } from "@/components/university-logo";
+import { AcronymBadge } from "@/components/university/acronym-badge";
 import type { UniversityCardData } from "@/lib/catalog";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
@@ -501,6 +502,15 @@ function UniversityTile({
           </span>
         ) : null}
 
+        {university.acronym ? (
+          <AcronymBadge
+            acronym={university.acronym}
+            variant="solid"
+            size="lg"
+            className="absolute bottom-3 end-3"
+          />
+        ) : null}
+
         {/* Only shown when a real logo exists. The initials fallback looked
             like a stray coloured blob half-overlapping the photo, so an
             absent logo now simply leaves the image clean. */}
@@ -516,9 +526,6 @@ function UniversityTile({
       <div className="flex flex-1 flex-col p-4">
         <h3 className="line-clamp-2 min-h-12 text-[16px] font-bold leading-6 text-[#16233F]">
           {university.name}
-          {university.acronym ? (
-            <span className="font-semibold text-[#5a6072]"> ({university.acronym})</span>
-          ) : null}
         </h3>
 
         <p className="mt-1 flex items-center gap-1.5 text-sm text-[#5a6072]">

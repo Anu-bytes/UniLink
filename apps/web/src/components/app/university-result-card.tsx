@@ -4,6 +4,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareButton } from "@/components/app/university-compare-button";
 import { UniversityLogo } from "@/components/university-logo";
+import { AcronymBadge } from "@/components/university/acronym-badge";
 import type { UniversityCardData } from "@/lib/catalog";
 import { formatNumber } from "@/lib/format";
 
@@ -36,14 +37,16 @@ export async function UniversityResultCard({
             className="size-10 shrink-0"
           />
           <div className="min-w-0">
-            <p className="text-[10px] font-bold uppercase tracking-wider text-[#F82C1F]">
-              {tCatalog(`universityTypes.${university.type}`)}
-            </p>
-            <h3 className="line-clamp-2 text-sm font-bold leading-snug text-[#1F2A44]">
-              {university.name}
+            <div className="flex items-center gap-1.5">
               {university.acronym ? (
-                <span className="font-semibold text-[#5a6072]"> ({university.acronym})</span>
+                <AcronymBadge acronym={university.acronym} size="md" />
               ) : null}
+              <p className="truncate text-[10px] font-bold uppercase tracking-wider text-[#F82C1F]">
+                {tCatalog(`universityTypes.${university.type}`)}
+              </p>
+            </div>
+            <h3 className="mt-1 line-clamp-2 text-sm font-bold leading-snug text-[#1F2A44]">
+              {university.name}
             </h3>
           </div>
         </div>
