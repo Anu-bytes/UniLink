@@ -107,6 +107,7 @@ async function seedUniversity(seed: UniversitySeed) {
   const base = {
     name: seed.name,
     nameAr: seed.nameAr,
+    acronym: seed.acronym ?? null,
     type: seed.type,
     country: "Egypt",
     countryAr: "مصر",
