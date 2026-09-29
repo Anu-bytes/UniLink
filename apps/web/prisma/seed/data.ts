@@ -62,6 +62,8 @@ export type UniversitySeed = {
   slug: string;
   name: string;
   nameAr: string;
+  /** Short well-known abbreviation ("BUE", "GUC"); optional. */
+  acronym?: string;
   type: UniversityType;
   city: string;
   cityAr: string;
