@@ -15,6 +15,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareButton } from "@/components/app/university-compare-button";
 import { UniversityLogo } from "@/components/university-logo";
+import { AcronymBadge } from "@/components/university/acronym-badge";
 import { ShareButton } from "@/components/university/share-button";
 import { UniversityLikeButton } from "@/components/university/university-like-button";
 import type { UniversityDetailData } from "@/lib/catalog";
@@ -144,14 +145,18 @@ export async function UniversityHero({
               className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
             />
             <div className="min-w-0">
-              <h1 className="truncate text-xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl">
-                {university.name}
+              <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                <h1 className="min-w-0 truncate text-xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl">
+                  {university.name}
+                </h1>
                 {university.acronym ? (
-                  <span className="ms-2 align-middle text-sm font-semibold text-white/80 sm:text-base">
-                    ({university.acronym})
-                  </span>
+                  <AcronymBadge
+                    acronym={university.acronym}
+                    variant="solid"
+                    size="lg"
+                  />
                 ) : null}
-              </h1>
+              </div>
               {/* The admin-entered street address when there is one — it's
                   more specific — otherwise the district/governorate/country
                   derived from the catalogue, so every university shows a

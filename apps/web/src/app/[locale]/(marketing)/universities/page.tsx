@@ -15,6 +15,7 @@ import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareToggle } from "@/components/app/university-compare-toggle";
 import { UniversityLogo } from "@/components/university-logo";
+import { AcronymBadge } from "@/components/university/acronym-badge";
 import { AdvancedSearchPromo } from "@/components/university/advanced-search-promo";
 import { UniversityDirectoryFiltersBar } from "@/components/university/directory-filters";
 import {
@@ -234,6 +235,15 @@ async function UniversityCard({
           ) : null}
         </div>
 
+        {university.acronym ? (
+          <AcronymBadge
+            acronym={university.acronym}
+            variant="solid"
+            size="md"
+            className="absolute bottom-1.5 start-1.5"
+          />
+        ) : null}
+
         <UniversityCompareToggle
           id={university.id}
           name={university.name}
@@ -255,9 +265,6 @@ async function UniversityCard({
             </p>
             <h2 className="mt-0.5 line-clamp-1 text-[13px] font-bold leading-snug text-[#363B51]">
               {university.name}
-              {university.acronym ? (
-                <span className="font-semibold text-[#5a6072]"> ({university.acronym})</span>
-              ) : null}
             </h2>
           </div>
           <ArrowUpRight
