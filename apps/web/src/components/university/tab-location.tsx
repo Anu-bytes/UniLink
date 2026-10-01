@@ -14,6 +14,16 @@ export async function TabLocation({
   const hasCoordinates =
     university.latitude != null && university.longitude != null;
 
+  // Only ever link out to an https Google Maps URL. This value comes from
+  // stored data, so a `javascript:` or other scheme must never reach an href.
+  const mapsHref =
+    university.googleMapsUrl &&
+    /^https:\/\/(?:www\.)?(?:maps\.google\.com|google\.com\/maps|maps\.app\.goo\.gl)/i.test(
+      university.googleMapsUrl,
+    )
+      ? university.googleMapsUrl
+      : null;
+
   // "El Shorouk City, Cairo, Egypt" — district, then the governorate it sits
   // in (when known), then country.
   const citySummary = [university.city, university.governorate, university.country]
@@ -100,6 +110,25 @@ export async function TabLocation({
                 <ExternalLink className="size-4" aria-hidden />
               </a>
             </>
+          ) : mapsHref ? (
+            // No coordinates on file, but there is a Google Maps link: the
+            // CSP only allows the OpenStreetMap iframe, so rather than embed
+            // it, offer it as a prominent card that opens in a new tab.
+            <a
+              href={mapsHref}
+              target="_blank"
+              rel="noreferrer"
+              className="group flex h-full min-h-56 flex-col items-center justify-center gap-4 rounded-2xl border border-slate-200 bg-[#F5F8FF] p-8 text-center transition-colors hover:border-[#1E6DEB]/40 hover:bg-[#EEF3FF]"
+            >
+              <span className="flex size-14 items-center justify-center rounded-full bg-white text-[#1E6DEB] shadow-sm">
+                <MapPin className="size-7" aria-hidden />
+              </span>
+              <span className="text-base font-bold text-[#1F2A44]">{citySummary}</span>
+              <span className="inline-flex min-h-11 items-center gap-2 rounded-xl bg-[#1E6DEB] px-5 text-sm font-bold text-white transition-colors group-hover:bg-[#1859c4]">
+                {t("location.openInMaps")}
+                <ExternalLink className="size-4" aria-hidden />
+              </span>
+            </a>
           ) : (
             <EmptySection message={t("location.noCoordinates")} />
           )}

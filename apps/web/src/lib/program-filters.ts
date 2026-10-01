@@ -41,12 +41,32 @@ export const MAX_CITIES = 5;
 export const GOVERNORATE_DISTRICTS: Record<string, { ar: string; districts: string[] }> = {
   Cairo: {
     ar: "القاهرة",
-    districts: ["New Cairo", "El Shorouk City", "Badr City"],
+    districts: [
+      "New Cairo",
+      "El Shorouk City",
+      "Badr City",
+      "New Administrative Capital",
+      "El Salam City",
+      "Mokattam",
+      "15th of May City",
+    ],
   },
   Giza: {
     ar: "الجيزة",
     districts: ["6th of October City", "Sheikh Zayed City"],
   },
+  Qalyubia: { ar: "القليوبية", districts: ["Obour City"] },
+  Alexandria: { ar: "الإسكندرية", districts: ["New Borg El Arab"] },
+  Dakahlia: { ar: "الدقهلية", districts: ["Gamasa", "New Mansoura"] },
+  Assiut: { ar: "أسيوط", districts: ["New Assiut"] },
+  Minya: { ar: "المنيا", districts: ["New Minya"] },
+  Beheira: { ar: "البحيرة", districts: ["New Rashid"] },
+  Matrouh: { ar: "مطروح", districts: ["New Alamein"] },
+  Sharqia: { ar: "الشرقية", districts: ["10th of Ramadan City"] },
+  Menoufia: { ar: "المنوفية", districts: ["Sadat City"] },
+  Damietta: { ar: "دمياط", districts: ["New Damietta"] },
+  Suez: { ar: "السويس", districts: ["Ain Sokhna"] },
+  "North Sinai": { ar: "شمال سيناء", districts: ["Arish"] },
 };
 
 /**
@@ -101,9 +121,14 @@ export function governorateKeyFor(word: string): string | null {
 /**
  * City picker / search-vocabulary options, built from the catalogue's real
  * `city` values plus a pseudo-entry for any governorate that isn't already
- * one of them but has at least one of its districts present — so "Giza" /
+ * one of them but covers at least TWO of its districts, so "Giza" /
  * "الجيزة" is searchable and pickable even though no university's own `city`
  * literally equals "Giza".
+ *
+ * Two, not one: a governorate with a single district in the catalogue would
+ * just add a second picker entry that returns exactly what its district
+ * already does. (Typing such a governorate in the search box still works,
+ * through governorateKeyFor.)
  */
 export function withGovernorateCityOptions<T extends { city: string; cityAr: string | null }>(
   rows: T[],
@@ -113,7 +138,7 @@ export function withGovernorateCityOptions<T extends { city: string; cityAr: str
     .filter(
       ([governorate, info]) =>
         !present.has(governorate) &&
-        info.districts.some((district) => present.has(district)),
+        info.districts.filter((district) => present.has(district)).length >= 2,
     )
     .map(
       ([governorate, info]) =>
