@@ -239,6 +239,10 @@ model University {
   // Location as plain coordinates (simplified from the old PostGIS point).
   latitude      Float?
   longitude     Float?
+  // A Google Maps link, for universities that have one on file but no
+  // coordinates. Opened in a new tab rather than embedded (the site's CSP
+  // only allows the OpenStreetMap iframe).
+  googleMapsUrl String?
   programs      Program[]
   faculties     Faculty[]
   scholarships  Scholarship[]

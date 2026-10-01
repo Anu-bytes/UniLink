@@ -671,6 +671,7 @@ export type UniversityDetailData = {
   email: string | null;
   establishedYear: number | null;
   latitude: number | null;
+  googleMapsUrl: string | null;
   longitude: number | null;
   viewCount: number;
   isRecommended: boolean;
@@ -795,6 +796,7 @@ async function getUniversityDetailUncached(
     email: university.email,
     establishedYear: university.establishedYear,
     latitude: university.latitude,
+    googleMapsUrl: university.googleMapsUrl,
     longitude: university.longitude,
     viewCount: university.viewCount,
     isRecommended: university.isRecommended,

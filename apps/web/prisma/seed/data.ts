@@ -1292,7 +1292,6 @@ export const UNIVERSITIES: UniversitySeed[] = [
   {
     slug: "future-university-in-egypt",
     name: "Future University in Egypt",
-    acronym: "FUE",
     nameAr: "جامعة المستقبل في مصر",
     type: "PRIVATE",
     city: "New Cairo",
@@ -1460,7 +1459,6 @@ export const UNIVERSITIES: UniversitySeed[] = [
   {
     slug: "misr-international-university",
     name: "Misr International University",
-    acronym: "MIU",
     nameAr: "جامعة مصر الدولية",
     type: "PRIVATE",
     city: "Cairo",
@@ -1595,7 +1593,6 @@ export const UNIVERSITIES: UniversitySeed[] = [
   {
     slug: "nile-university",
     name: "Nile University",
-    acronym: "NU",
     nameAr: "جامعة النيل",
     type: "PRIVATE",
     city: "6th of October City",

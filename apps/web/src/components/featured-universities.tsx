@@ -28,6 +28,10 @@ const HOVER_SPEED_FACTOR = 0.28;
 // recovering on mouse-leave). Larger = more gradual.
 const SPEED_EASE_MS = 450;
 
+// Gap between rail cards, in px. Must match the `gap-5` on the rail below —
+// the fits-in-the-rail check measures with it.
+const RAIL_GAP_PX = 20;
+
 export function FeaturedUniversities({
   universities,
   allLabel,
@@ -67,6 +71,33 @@ export function FeaturedUniversities({
   const loopStartRef = useRef<HTMLLIElement>(null);
   const [atStart, setAtStart] = useState(true);
   const [atEnd, setAtEnd] = useState(false);
+
+  // True while the real cards all fit inside the rail without scrolling.
+  // Starts true so the server render (and the first client paint) has no
+  // looping copy; it is only switched off, after measuring, when the cards
+  // genuinely overflow. The autoplay loop works by rendering a second,
+  // identical copy of the cards — with only a couple of universities that
+  // copy lands on screen right next to the originals and the row reads as
+  // the same cards repeated, so a rail that fits just sits still instead.
+  const [fits, setFits] = useState(true);
+
+  useEffect(() => {
+    const wrap = wrapRef.current;
+    if (!wrap) return;
+
+    function measure() {
+      const card = firstItemRef.current;
+      if (!wrap || !card) return;
+      const total =
+        visible.length * card.offsetWidth + (visible.length - 1) * RAIL_GAP_PX;
+      setFits(total <= wrap.clientWidth);
+    }
+
+    measure();
+    const observer = new ResizeObserver(measure);
+    observer.observe(wrap);
+    return () => observer.disconnect();
+  }, [visible.length]);
 
   // scrollLeft is negative in RTL in most engines, so compare on magnitude.
   const syncArrows = useCallback(() => {
@@ -134,7 +165,7 @@ export function FeaturedUniversities({
   // Looping needs two distinct cards to loop between, and only matters when
   // motion is allowed — reduced motion never autoplays, so there is no reason
   // to double the DOM for a loop that will never run.
-  const shouldLoop = !reducedMotion && visible.length > 1;
+  const shouldLoop = !reducedMotion && visible.length > 1 && !fits;
 
   // The rail renders this instead of `visible` directly. The second, looping
   // copy is marked so it can be pulled out of the accessibility tree and tab
@@ -346,6 +377,10 @@ export function FeaturedUniversities({
           className={cn(
             "flex gap-5 overflow-x-auto pb-2 [-ms-overflow-style:none] [scrollbar-width:none] [&::-webkit-scrollbar]:hidden",
             !autoplayActive && "snap-x snap-mandatory",
+            // Centres a short row, but caps at the container width so a long
+            // one still scrolls from its first card (justify-center would
+            // clip the start of an overflowing row).
+            "mx-auto w-fit max-w-full",
           )}
         >
           {trackItems.map(({ university, clone }, index) => (
