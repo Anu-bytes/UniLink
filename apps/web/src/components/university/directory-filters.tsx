@@ -6,6 +6,7 @@ import { useEffect, useState, useTransition } from "react";
 
 import { Link, useRouter } from "@/i18n/navigation";
 import { UNIVERSITY_TYPES } from "@/lib/program-filters";
+import { cn } from "@/lib/utils";
 
 type CityOption = { value: string; label: string };
 
@@ -108,7 +109,7 @@ export function UniversityDirectoryFiltersBar({
   const hasFilters = Boolean(q.trim() || type || city);
 
   return (
-    <div className="rounded-2xl border border-slate-100 bg-white p-4 shadow-[0_24px_48px_-24px_rgba(15,23,42,0.35)] md:p-5">
+    <div className="rounded-2xl border border-slate-100 bg-white p-3 shadow-[0_24px_48px_-24px_rgba(15,23,42,0.35)] md:p-5">
       <form
         onSubmit={(event) => {
           event.preventDefault();
@@ -130,66 +131,97 @@ export function UniversityDirectoryFiltersBar({
             value={q}
             onChange={(event) => setQ(event.target.value)}
             placeholder={t("searchPlaceholder")}
-            className="h-[3.25rem] w-full rounded-xl bg-[#F5F7FB] ps-12 pe-4 text-[15px] text-[#1F2A44] outline-none transition-colors placeholder:text-[#98A0B4] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/30"
+            className="h-12 w-full rounded-xl bg-[#F5F7FB] ps-12 pe-14 text-[15px] text-[#1F2A44] outline-none transition-colors placeholder:text-[#98A0B4] focus-visible:bg-white focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/30 md:h-[3.25rem] lg:pe-4"
           />
+          {/* Phones submit from inside the field, so the filters below can
+              sit on one row instead of stacking a full-width button. */}
+          <button
+            type="submit"
+            aria-label={t("searchLabel")}
+            className="absolute end-1.5 top-1/2 flex size-9 -translate-y-1/2 items-center justify-center rounded-lg bg-[#1E6DEB] text-white transition-colors hover:bg-[#1859c4] lg:hidden"
+          >
+            <Search className="size-4" aria-hidden />
+          </button>
         </div>
 
-        <div className="mt-4 grid gap-3 border-t border-slate-100 pt-4 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto_auto]">
-          <div>
+        <div className="mt-2.5 grid grid-cols-2 gap-2 lg:mt-4 lg:grid-cols-[1fr_1fr_auto_auto] lg:gap-3 lg:border-t lg:border-slate-100 lg:pt-4">
+          <div className="min-w-0">
             <label
               htmlFor="university-type"
-              className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#5a6072]"
+              className="sr-only lg:not-sr-only lg:mb-1.5 lg:flex lg:items-center lg:gap-1.5 lg:text-xs lg:font-bold lg:uppercase lg:tracking-wide lg:text-[#5a6072]"
             >
               <Building2 className="size-3.5 text-[#1E6DEB]" aria-hidden />
               {t("typeLabel")}
             </label>
-            <select
-              id="university-type"
-              value={type}
-              onChange={(event) => {
-                setType(event.target.value);
-                apply({ type: event.target.value });
-              }}
-              className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm font-medium text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
-            >
-              <option value="">{t("allTypes")}</option>
-              {UNIVERSITY_TYPES.map((value) => (
-                <option key={value} value={value}>
-                  {tCatalog(`universityTypes.${value}`)}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <Building2
+                className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#1E6DEB] lg:hidden"
+                aria-hidden
+              />
+              <select
+                id="university-type"
+                value={type}
+                onChange={(event) => {
+                  setType(event.target.value);
+                  apply({ type: event.target.value });
+                }}
+                className={cn(
+                  "h-11 w-full truncate rounded-xl border ps-9 pe-2 text-sm font-semibold outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25 lg:rounded-lg lg:px-3 lg:font-medium",
+                  type
+                    ? "border-[#1E6DEB]/40 bg-[#EEF4FF] text-[#1E3A8A]"
+                    : "border-slate-200 bg-white text-[#1F2A44]",
+                )}
+              >
+                <option value="">{t("allTypes")}</option>
+                {UNIVERSITY_TYPES.map((value) => (
+                  <option key={value} value={value}>
+                    {tCatalog(`universityTypes.${value}`)}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
-          <div>
+          <div className="min-w-0">
             <label
               htmlFor="university-city"
-              className="mb-1.5 flex items-center gap-1.5 text-xs font-bold uppercase tracking-wide text-[#5a6072]"
+              className="sr-only lg:not-sr-only lg:mb-1.5 lg:flex lg:items-center lg:gap-1.5 lg:text-xs lg:font-bold lg:uppercase lg:tracking-wide lg:text-[#5a6072]"
             >
               <MapPin className="size-3.5 text-[#1E6DEB]" aria-hidden />
               {t("cityLabel")}
             </label>
-            <select
-              id="university-city"
-              value={city}
-              onChange={(event) => {
-                setCity(event.target.value);
-                apply({ city: event.target.value });
-              }}
-              className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm font-medium text-[#1F2A44] outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25"
-            >
-              <option value="">{t("allCities")}</option>
-              {cities.map((option) => (
-                <option key={option.value} value={option.value}>
-                  {option.label}
-                </option>
-              ))}
-            </select>
+            <div className="relative">
+              <MapPin
+                className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#1E6DEB] lg:hidden"
+                aria-hidden
+              />
+              <select
+                id="university-city"
+                value={city}
+                onChange={(event) => {
+                  setCity(event.target.value);
+                  apply({ city: event.target.value });
+                }}
+                className={cn(
+                  "h-11 w-full truncate rounded-xl border ps-9 pe-2 text-sm font-semibold outline-none focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25 lg:rounded-lg lg:px-3 lg:font-medium",
+                  city
+                    ? "border-[#1E6DEB]/40 bg-[#EEF4FF] text-[#1E3A8A]"
+                    : "border-slate-200 bg-white text-[#1F2A44]",
+                )}
+              >
+                <option value="">{t("allCities")}</option>
+                {cities.map((option) => (
+                  <option key={option.value} value={option.value}>
+                    {option.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           <button
             type="submit"
-            className="inline-flex h-11 items-center justify-center gap-1.5 self-end rounded-lg bg-[#1E6DEB] px-6 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="hidden h-11 items-center justify-center gap-1.5 self-end rounded-lg bg-[#1E6DEB] px-6 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] lg:inline-flex"
           >
             <SlidersHorizontal className="size-4" aria-hidden />
             {t("searchLabel")}
@@ -199,7 +231,7 @@ export function UniversityDirectoryFiltersBar({
             <button
               type="button"
               onClick={clearAll}
-              className="inline-flex h-11 items-center justify-center gap-1 self-end rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:text-[#1E6DEB]"
+              className="col-span-2 inline-flex h-9 items-center justify-center gap-1 self-end rounded-lg px-3 text-sm font-semibold text-[#5a6072] hover:text-[#1E6DEB] lg:col-span-1 lg:h-11"
             >
               <X className="size-4" aria-hidden />
               {t("clear")}

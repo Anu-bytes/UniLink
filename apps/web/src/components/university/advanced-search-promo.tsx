@@ -17,9 +17,10 @@ export async function AdvancedSearchPromo() {
 
   return (
     <div className="flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl bg-gradient-to-r from-[#1E3A8A] to-[#1E6DEB] px-4 py-2.5 md:px-5">
-      <div className="flex min-w-0 flex-1 items-center gap-2 text-sm font-semibold text-white">
+      <div className="flex min-w-0 flex-1 items-center gap-2 text-[13px] font-semibold leading-snug text-white sm:text-sm">
         <Sparkles className="size-4 shrink-0 text-[#F5A623]" aria-hidden />
-        <span className="truncate">{t("title")}</span>
+        {/* Two lines on a phone rather than a truncated half-sentence. */}
+        <span className="line-clamp-2 sm:truncate">{t("title")}</span>
       </div>
 
       <div className="flex shrink-0 items-center gap-2">

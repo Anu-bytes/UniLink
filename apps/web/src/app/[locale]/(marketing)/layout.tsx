@@ -1,6 +1,7 @@
 import { CompareProvider } from "@/components/app/compare-context";
 import { CompareTray } from "@/components/app/compare-tray";
 import { SiteHeader } from "@/components/site-header";
+import { SiteBottomNav } from "@/components/site-bottom-nav";
 import { SiteFooter } from "@/components/site-footer";
 
 export default function MarketingLayout({
@@ -19,6 +20,7 @@ export default function MarketingLayout({
         <SiteFooter />
       </div>
       <CompareTray />
+      <SiteBottomNav />
     </CompareProvider>
   );
 }

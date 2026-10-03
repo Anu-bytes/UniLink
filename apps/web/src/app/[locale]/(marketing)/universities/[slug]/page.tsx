@@ -94,11 +94,14 @@ export default async function UniversityDetailPage({
       {/* Anchored so links elsewhere on the page (the hero's "Explore
           programs" CTA) can jump straight to the tab content instead of
           just swapping it in off-screen below a tall hero. */}
-      <section id="tabs" className="mx-auto max-w-7xl scroll-mt-6 px-4 pb-16 md:px-6">
-        <div className="overflow-hidden rounded-3xl border border-slate-200/80 bg-white shadow-sm">
+      {/* On a phone the panel runs edge to edge (no card inside the page
+          gutter), which gives the faculty list the full screen width instead
+          of squeezing it inside two layers of padding. */}
+      <section id="tabs" className="mx-auto max-w-7xl scroll-mt-20 pb-16 sm:px-4 md:px-6">
+        <div className="overflow-hidden border-y border-slate-200/80 bg-white sm:rounded-3xl sm:border sm:shadow-sm">
           <UniversityTabs slug={university.slug} active={active} />
 
-          <div className="p-5 md:p-8">{panel}</div>
+          <div className="px-4 py-5 sm:p-5 md:p-8">{panel}</div>
         </div>
       </section>
     </>

@@ -1,6 +1,7 @@
 import { ArrowLeft, ExternalLink, Check, X, ArrowLeftRight } from "lucide-react";
 import Image from "next/image";
 import { getLocale, getTranslations } from "next-intl/server";
+import { Fragment } from "react";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
@@ -421,13 +422,17 @@ export default async function ComparePage({ searchParams }: PageProps) {
       </header>
 
       <div className="mt-6 overflow-x-auto rounded-2xl border border-slate-200">
-        <table className="w-full min-w-[48rem] border-collapse text-start">
+        {/* Phones drop the left-hand label column: each row's label is
+            printed on its own full-width line above the values instead, so
+            the compared items get the whole screen width (two fit side by
+            side without scrolling). */}
+        <table className="w-full min-w-full border-collapse text-start sm:min-w-[48rem]">
           <caption className="sr-only">{t("title")}</caption>
           <thead>
             <tr>
               <th
                 scope="col"
-                className="w-52 border-b border-slate-200 bg-white p-4 text-start align-top"
+                className="hidden w-52 border-b border-slate-200 bg-white p-4 text-start align-top sm:table-cell"
               >
                 <span className="sr-only">{t("title")}</span>
               </th>
@@ -437,7 +442,7 @@ export default async function ComparePage({ searchParams }: PageProps) {
                   <th
                     key={column.id}
                     scope="col"
-                    className="min-w-64 border-s border-b border-slate-200 bg-white p-4 text-start align-top"
+                    className="min-w-40 border-b border-slate-200 bg-white p-3 text-start align-top sm:min-w-64 sm:border-s sm:p-4 [&:nth-child(n+3)]:border-s"
                   >
                     <div className="flex items-start justify-between gap-2">
                       <UniversityLogo
@@ -492,49 +497,62 @@ export default async function ComparePage({ searchParams }: PageProps) {
                 <th
                   scope="colgroup"
                   colSpan={columns.length + 1}
-                  className="bg-[#F7F9FE] px-4 py-2 text-start text-xs font-bold uppercase tracking-wider text-[#5a6072]"
+                  className="bg-[#F7F9FE] px-3 py-2 text-start text-xs font-bold uppercase tracking-wider text-[#5a6072] sm:px-4"
                 >
-                  {group.title}
+                  <span className="sticky start-3 sm:static">{group.title}</span>
                 </th>
               </tr>
               {group.rows.map((row) => (
-                <tr key={row.label} className="border-t border-slate-100">
-                  <th
-                    scope="row"
-                    className="bg-[#FCFDFF] px-4 py-3 text-start align-top text-sm font-semibold text-[#5a6072]"
-                  >
-                    {row.label}
-                  </th>
-                  {row.values.map((entry, index) => (
+                <Fragment key={row.label}>
+                  <tr className="border-t border-slate-100 sm:hidden">
                     <td
-                      key={`${row.label}-${columns[index]?.id ?? index}`}
-                      className={cn(
-                        "border-s border-slate-100 px-4 py-3 align-top text-sm",
-                        row.highlight
-                          ? "font-bold text-[#1F2A44]"
-                          : "text-[#1F2A44]",
-                      )}
+                      colSpan={columns.length}
+                      className="px-3 pt-2.5 text-xs font-semibold text-[#5a6072]"
                     >
-                      {entry === yesLabel ? (
-                        <span className="inline-flex items-center gap-1.5 text-[#1F7A4D]">
-                          <Check className="size-4" aria-hidden />
-                          {entry}
-                        </span>
-                      ) : entry === noLabel ? (
-                        <span className="inline-flex items-center gap-1.5 text-[#98A0B4]">
-                          <X className="size-4" aria-hidden />
-                          {entry}
-                        </span>
-                      ) : (
-                        entry.split("\n").map((line) => (
-                          <span key={line} className="block">
-                            {line}
-                          </span>
-                        ))
-                      )}
+                      {/* Stays in view while a wide (3-4 item) table scrolls sideways. */}
+                      <span className="sticky start-3">{row.label}</span>
                     </td>
-                  ))}
-                </tr>
+                  </tr>
+                  <tr className="sm:border-t sm:border-slate-100">
+                    <th
+                      scope="row"
+                      className="hidden bg-[#FCFDFF] px-4 py-3 text-start align-top text-sm font-semibold text-[#5a6072] sm:table-cell"
+                    >
+                      {row.label}
+                    </th>
+                    {row.values.map((entry, index) => (
+                      <td
+                        key={`${row.label}-${columns[index]?.id ?? index}`}
+                        className={cn(
+                          // nth-child counts the (phone-hidden) row label too,
+                          // so n+3 is "every value column after the first".
+                          "border-slate-100 px-3 pb-2.5 pt-1 align-top text-sm sm:border-s sm:px-4 sm:py-3 [&:nth-child(n+3)]:border-s",
+                          row.highlight
+                            ? "font-bold text-[#1F2A44]"
+                            : "text-[#1F2A44]",
+                        )}
+                      >
+                        {entry === yesLabel ? (
+                          <span className="inline-flex items-center gap-1.5 text-[#1F7A4D]">
+                            <Check className="size-4" aria-hidden />
+                            {entry}
+                          </span>
+                        ) : entry === noLabel ? (
+                          <span className="inline-flex items-center gap-1.5 text-[#98A0B4]">
+                            <X className="size-4" aria-hidden />
+                            {entry}
+                          </span>
+                        ) : (
+                          entry.split("\n").map((line) => (
+                            <span key={line} className="block">
+                              {line}
+                            </span>
+                          ))
+                        )}
+                      </td>
+                    ))}
+                  </tr>
+                </Fragment>
               ))}
             </tbody>
           ))}

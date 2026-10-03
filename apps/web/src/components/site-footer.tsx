@@ -74,8 +74,10 @@ export async function SiteFooter() {
 
   return (
     <footer className="bg-[#0C1A34] font-[family-name:var(--font-open-sans)] text-slate-300">
-      <div className="mx-auto grid max-w-7xl gap-x-8 gap-y-10 px-4 py-12 md:px-6 md:py-14 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1fr]">
-        <div className="space-y-4">
+      {/* Two link columns side by side on a phone (brand and socials span
+          the full width) instead of one long single-file list. */}
+      <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-8 px-4 py-10 sm:grid-cols-3 md:gap-x-8 md:gap-y-10 md:px-6 md:py-14 lg:grid-cols-[1.6fr_1fr_1fr_1fr_1fr]">
+        <div className="col-span-2 space-y-4 sm:col-span-3 lg:col-span-1">
           <Link href="/" className="inline-flex items-center gap-2" aria-label="UniLink">
             <Image
               src="/logo/unilink-logo-mark-v2.png"
@@ -107,7 +109,7 @@ export async function SiteFooter() {
           </div>
         ))}
 
-        <div className="space-y-3">
+        <div className="col-span-2 space-y-3 sm:col-span-3 lg:col-span-1">
           <h3 className="text-sm font-bold text-white">{t("followUs")}</h3>
           <div className="flex flex-wrap gap-2.5">
             {socials.map(({ label, Icon, color, href }) => (

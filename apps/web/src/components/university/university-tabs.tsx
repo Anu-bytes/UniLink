@@ -27,27 +27,31 @@ export async function UniversityTabs({
   return (
     <nav
       aria-label={t("breadcrumbUniversities")}
-      className="flex flex-wrap items-center justify-center gap-2 border-b border-slate-100 px-4 py-5 md:px-6"
+      className="border-b border-slate-100 px-4 py-3 md:px-6 md:py-5"
     >
-      {UNIVERSITY_TABS.map((tab) => {
-        const isActive = tab === active;
-        return (
-          <Link
-            key={tab}
-            href={`/universities/${slug}${tab === "faculties" ? "" : `?tab=${tab}`}`}
-            scroll={false}
-            aria-current={isActive ? "page" : undefined}
-            className={cn(
-              "inline-flex min-h-11 items-center whitespace-nowrap rounded-full px-4 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] md:px-5 md:text-base",
-              isActive
-                ? "bg-[#1E3A8A] text-white shadow-sm"
-                : "text-[#5a6072] hover:bg-[#EEF3FF] hover:text-[#1E3A8A]",
-            )}
-          >
-            {t(`tabs.${tab}`)}
-          </Link>
-        );
-      })}
+      {/* Phone: one full-width segmented control (three equal segments in a
+          tinted track). md+: the centred pill row. */}
+      <div className="mx-auto grid max-w-md grid-cols-3 gap-1 rounded-full bg-[#F1F4FA] p-1 md:flex md:max-w-none md:flex-wrap md:items-center md:justify-center md:gap-2 md:bg-transparent md:p-0">
+        {UNIVERSITY_TABS.map((tab) => {
+          const isActive = tab === active;
+          return (
+            <Link
+              key={tab}
+              href={`/universities/${slug}${tab === "faculties" ? "" : `?tab=${tab}`}`}
+              scroll={false}
+              aria-current={isActive ? "page" : undefined}
+              className={cn(
+                "inline-flex min-h-10 items-center justify-center whitespace-nowrap rounded-full px-3 text-sm font-semibold transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] md:min-h-11 md:px-5 md:text-base",
+                isActive
+                  ? "bg-[#1E3A8A] text-white shadow-sm"
+                  : "text-[#5a6072] hover:bg-white hover:text-[#1E3A8A] md:hover:bg-[#EEF3FF]",
+              )}
+            >
+              {t(`tabs.${tab}`)}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }
