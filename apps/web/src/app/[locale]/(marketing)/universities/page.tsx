@@ -211,25 +211,28 @@ async function UniversityCard({
           <div
             role="img"
             aria-label={university.name}
-            className="h-24 w-full bg-slate-200 bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03]"
+            className="h-40 w-full bg-slate-200 bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03] sm:h-24"
             style={{
               backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
             }}
           />
         ) : (
-          <div className="h-24 w-full bg-gradient-to-br from-[#E8EFFC] to-[#D5E2F8]" />
+          <div className="h-40 w-full bg-gradient-to-br from-[#E8EFFC] to-[#D5E2F8] sm:h-24" />
         )}
 
-        <div className="absolute inset-x-1.5 top-1.5 flex flex-wrap gap-1">
+        {/* Scrim so the badges stay legible over any photograph. */}
+        <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3A]/45 via-transparent to-transparent sm:hidden" />
+
+        <div className="absolute inset-x-2.5 top-2.5 flex flex-wrap gap-1 sm:inset-x-1.5 sm:top-1.5">
           {university.isRecommended ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-1.5 py-0.5 text-[10px] font-bold text-[#1E3A8A]">
-              <Heart className="size-2.5 text-[#1E6DEB]" aria-hidden />
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-bold text-[#1E3A8A] sm:px-1.5 sm:text-[10px]">
+              <Heart className="size-3 text-[#1E6DEB] sm:size-2.5" aria-hidden />
               {tDetail("recommended")}
             </span>
           ) : null}
           {university.isTrending ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-1.5 py-0.5 text-[10px] font-bold text-[#C81F15]">
-              <Flame className="size-2.5 text-[#F82C1F]" aria-hidden />
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-bold text-[#C81F15] sm:px-1.5 sm:text-[10px]">
+              <Flame className="size-3 text-[#F82C1F] sm:size-2.5" aria-hidden />
               {tDetail("trending")}
             </span>
           ) : null}
@@ -240,7 +243,7 @@ async function UniversityCard({
             acronym={university.acronym}
             variant="solid"
             size="md"
-            className="absolute bottom-1.5 start-1.5"
+            className="absolute bottom-2.5 start-2.5 sm:bottom-1.5 sm:start-1.5"
           />
         ) : null}
 
@@ -248,34 +251,34 @@ async function UniversityCard({
           id={university.id}
           name={university.name}
           logoUrl={university.logoUrl}
-          className="pointer-events-auto absolute bottom-1.5 end-1.5"
+          className="pointer-events-auto absolute bottom-2.5 end-2.5 sm:bottom-1.5 sm:end-1.5 sm:h-7 sm:px-2.5 sm:text-[11px]"
         />
       </div>
 
-      <div className="pointer-events-none relative flex flex-1 flex-col p-2.5">
-        <div className="flex items-start gap-2">
+      <div className="pointer-events-none relative flex flex-1 flex-col p-3.5 sm:p-2.5">
+        <div className="flex items-start gap-2.5 sm:gap-2">
           <UniversityLogo
             name={university.name}
             logoUrl={university.logoUrl}
-            className="size-8 shrink-0"
+            className="size-11 shrink-0 sm:size-8"
           />
           <div className="min-w-0 flex-1">
-            <p className="text-[9px] font-bold uppercase tracking-wider text-[#1E6DEB]">
+            <p className="text-[10px] font-bold uppercase tracking-wider text-[#1E6DEB] sm:text-[9px]">
               {tCatalog(`universityTypes.${university.type}`)}
             </p>
-            <h2 className="mt-0.5 line-clamp-1 text-[13px] font-bold leading-snug text-[#363B51]">
+            <h2 className="mt-0.5 line-clamp-2 text-base font-bold leading-snug text-[#16233F] sm:line-clamp-1 sm:text-[13px] sm:text-[#363B51]">
               {university.name}
             </h2>
           </div>
           <ArrowUpRight
-            className="mt-0.5 size-3.5 shrink-0 text-[#C7CCDA] transition-all duration-200 group-hover:text-[#1E6DEB] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 rtl:rotate-90 rtl:group-hover:translate-x-0 rtl:group-hover:-translate-y-1"
+            className="mt-0.5 size-4 shrink-0 text-[#C7CCDA] transition-all duration-200 group-hover:text-[#1E6DEB] group-hover:translate-x-0.5 group-hover:-translate-y-0.5 sm:size-3.5 rtl:rotate-90 rtl:group-hover:translate-x-0 rtl:group-hover:-translate-y-1"
             aria-hidden
           />
         </div>
 
-        <dl className="mt-2 space-y-1 text-[11px] text-[#5a6072]">
+        <dl className="mt-3 space-y-1.5 text-[13px] text-[#5a6072] sm:mt-2 sm:space-y-1 sm:text-[11px]">
           <div className="flex items-center gap-1">
-            <MapPin className="size-3 shrink-0 text-[#1E6DEB]" aria-hidden />
+            <MapPin className="size-3.5 shrink-0 text-[#1E6DEB] sm:size-3" aria-hidden />
             <dt className="sr-only">{tDirectory("cityLabel")}</dt>
             <dd className="truncate">
               {university.city}
@@ -284,11 +287,11 @@ async function UniversityCard({
           </div>
           <div className="flex flex-wrap items-center gap-x-2.5 gap-y-1">
             <span className="flex items-center gap-1">
-              <Layers className="size-3 shrink-0 text-[#1E6DEB]" aria-hidden />
+              <Layers className="size-3.5 shrink-0 text-[#1E6DEB] sm:size-3" aria-hidden />
               {tDirectory("facultyCount", { count: university.facultyCount })}
             </span>
             <span className="flex items-center gap-1">
-              <BookOpen className="size-3 shrink-0 text-[#1E6DEB]" aria-hidden />
+              <BookOpen className="size-3.5 shrink-0 text-[#1E6DEB] sm:size-3" aria-hidden />
               {t("programCount", { count: university.programCount })}
             </span>
           </div>

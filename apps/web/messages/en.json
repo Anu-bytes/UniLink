@@ -15,7 +15,15 @@
     "registerAsStudent": "Register as a Student",
     "openMenu": "Open menu",
     "closeMenu": "Close menu",
-    "searchPrograms": "Explore Faculties"
+    "searchPrograms": "Explore Faculties",
+    "bottom": {
+      "label": "Quick navigation",
+      "home": "Home",
+      "universities": "Universities",
+      "search": "Search",
+      "saved": "Saved",
+      "account": "Account"
+    }
   },
   "Footer": {
     "tagline": "A smart platform to discover and compare universities in Egypt.",
@@ -74,6 +82,8 @@
         "title": "Private, Public, and Specialized Universities Across Egypt",
         "allCities": "All",
         "filterLabel": "Filter universities by city",
+        "prev": "Previous universities",
+        "next": "Next universities",
         "programsLabel": "Programs",
         "viewDetails": "View details",
         "empty": "Published universities will appear here once they are added to the catalogue.",
@@ -1235,16 +1245,18 @@
     "notSpecified": "Not specified",
     "waived": "Waived",
     "tray": {
-      "title": "{count, plural, one {# program ready to compare} other {# programs ready to compare}}",
-      "titleFaculties": "{count, plural, one {# faculty ready to compare} other {# faculties ready to compare}}",
-      "titleUniversities": "{count, plural, one {# university ready to compare} other {# universities ready to compare}}",
+      "title": "{count, plural, one {# program selected} other {# programs ready to compare}}",
+      "titleFaculties": "{count, plural, one {# faculty selected} other {# faculties ready to compare}}",
+      "titleUniversities": "{count, plural, one {# university selected} other {# universities ready to compare}}",
       "subtitle": "Stack tuition, intake and perks in one view.",
       "clear": "Clear",
       "compare": "Compare",
       "limit": "You can compare up to {max} programs at a time.",
       "remove": "Remove {name}",
       "hide": "Hide",
-      "show": "Compare"
+      "show": "Compare",
+      "needMore": "Add one more to start comparing",
+      "roomLeft": "Compare up to {max} side by side"
     },
     "titleFaculties": "Compare faculties",
     "subtitleFaculties": "{count, plural, one {# faculty} other {# faculties}} side by side",

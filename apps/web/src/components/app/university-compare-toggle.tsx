@@ -7,10 +7,11 @@ import { useCompare } from "@/components/app/compare-context";
 import { cn } from "@/lib/utils";
 
 /**
- * Compact icon-only compare toggle for a university tile, for grids too
- * dense for a full-width button (the public directory). Sits as a sibling
- * of a stretched card link rather than nested inside it — an interactive
- * element can't nest inside an <a>.
+ * Compact compare toggle for a university tile. It carries a visible label
+ * ("Compare" / "Comparing") rather than a bare icon, which nobody could tell
+ * was a compare control on a phone. Sits as a sibling of a stretched card
+ * link rather than nested inside it, since an interactive element can't nest
+ * inside an <a>.
  */
 export function UniversityCompareToggle({
   id,
@@ -42,13 +43,11 @@ export function UniversityCompareToggle({
       }}
       disabled={blocked}
       aria-pressed={selected}
-      aria-label={label}
-      title={label}
       className={cn(
-        "relative z-10 flex size-7 items-center justify-center rounded-full shadow-sm transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] disabled:cursor-not-allowed disabled:opacity-50",
+        "relative z-10 inline-flex h-8 items-center gap-1.5 rounded-full px-3 text-xs font-bold shadow-md ring-1 transition-all focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:scale-95 disabled:cursor-not-allowed disabled:opacity-50",
         selected
-          ? "bg-[#1E6DEB] text-white"
-          : "bg-white/95 text-[#5a6072] hover:bg-white hover:text-[#1E6DEB]",
+          ? "bg-[#1E6DEB] text-white ring-[#1E6DEB]"
+          : "bg-white/95 text-[#1E3A8A] ring-black/5 backdrop-blur hover:bg-white hover:text-[#1E6DEB]",
         className,
       )}
     >
@@ -57,6 +56,7 @@ export function UniversityCompareToggle({
       ) : (
         <GitCompareArrows className="size-3.5" aria-hidden />
       )}
+      {label}
     </button>
   );
 }

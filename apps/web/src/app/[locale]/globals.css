@@ -434,6 +434,21 @@ html[lang="ar"] body {
     }
   }
 
+  /* Compare tray sliding up into view from the bottom edge. */
+  @keyframes ul-tray-in {
+    from {
+      transform: translateY(24px);
+      opacity: 0;
+    }
+    to {
+      transform: none;
+      opacity: 1;
+    }
+  }
+  .ul-tray-in {
+    animation: ul-tray-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+
   /* Gentle attention pulse for a status dot. */
   @keyframes ul-pulse-dot {
     0%,
@@ -883,6 +898,15 @@ html[lang="ar"] body {
   }
 }
 
+/* Height of the phone tab bar (components/bottom-nav.tsx) while it is on the
+   page, so other fixed-bottom UI such as the compare tray can sit above it
+   instead of underneath. Unset (0) wherever the bar is absent or hidden (lg+). */
+@media (max-width: 1023.98px) {
+  body:has([data-bottom-nav]) {
+    --ul-bottom-nav: calc(4.25rem + env(safe-area-inset-bottom));
+  }
+}
+
 /* Respect users who ask for less motion: show everything immediately and drop
    the transforms. This also acts as a no-JS safety net for those users. */
 @media (prefers-reduced-motion: reduce) {
@@ -910,7 +934,8 @@ html[lang="ar"] body {
   .ul-cta-ring,
   .ul-pulse-dot,
   .ul-blink-warm,
-  .ul-marquee {
+  .ul-marquee,
+  .ul-tray-in {
     animation: none;
   }
   /* These only exist as motion, so hide them rather than freeze them mid-travel. */

@@ -103,7 +103,7 @@ export async function UniversityHero({
           told in one glance instead of split across a plain gradient strip
           and a separate text column below it. */}
       <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6">
-        <div className="relative isolate h-48 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
+        <div className="relative isolate h-56 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
           {university.coverImageUrl ? (
             // eslint-disable-next-line @next/next/no-img-element -- cover
             // photos come from arbitrary partner hosts, same as the gallery.
@@ -138,15 +138,26 @@ export async function UniversityHero({
             </span>
           </div>
 
-          <div className="absolute inset-x-4 bottom-4 flex items-center gap-3 sm:inset-x-6 sm:bottom-5 sm:gap-4">
+          <div className="absolute inset-x-4 bottom-4 flex items-end gap-3 sm:inset-x-6 sm:bottom-5 sm:items-center sm:gap-4">
             <UniversityLogo
               name={university.name}
               logoUrl={university.logoUrl}
               className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
             />
             <div className="min-w-0">
+              {/* On a phone the acronym sits above the name and the name may
+                  wrap to two lines: a single truncated line cut most names
+                  ("The British Univer...") down to nothing useful. */}
+              {university.acronym ? (
+                <AcronymBadge
+                  acronym={university.acronym}
+                  variant="solid"
+                  size="md"
+                  className="mb-1.5 sm:hidden"
+                />
+              ) : null}
               <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-                <h1 className="min-w-0 truncate text-xl font-bold text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:text-2xl md:text-3xl">
+                <h1 className="line-clamp-2 min-w-0 text-[19px] font-bold leading-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:line-clamp-1 sm:text-2xl md:text-3xl">
                   {university.name}
                 </h1>
                 {university.acronym ? (
@@ -154,6 +165,7 @@ export async function UniversityHero({
                     acronym={university.acronym}
                     variant="solid"
                     size="lg"
+                    className="hidden sm:inline-flex"
                   />
                 ) : null}
               </div>
@@ -162,9 +174,9 @@ export async function UniversityHero({
                   derived from the catalogue, so every university shows a
                   location here rather than only the ones with a full
                   address on file. */}
-              <p className="mt-1 flex items-center gap-1.5 text-sm text-white/90">
-                <MapPin className="size-4 shrink-0" aria-hidden />
-                <span className="truncate">
+              <p className="mt-1 flex items-start gap-1.5 text-[13px] text-white/90 sm:items-center sm:text-sm">
+                <MapPin className="mt-0.5 size-4 shrink-0 sm:mt-0" aria-hidden />
+                <span className="line-clamp-2 sm:line-clamp-1">
                   {university.addressLine ?? locationSummary}
                 </span>
               </p>
@@ -180,24 +192,30 @@ export async function UniversityHero({
           overlapping it — a negative margin here collided with the logo and
           name/address text anchored to the banner's own bottom edge. */}
       <div className="mx-auto max-w-7xl px-4 pt-4 md:px-6">
-        <dl className="grid grid-cols-1 gap-3 rounded-2xl border border-slate-200/80 bg-white p-4 shadow-sm sm:grid-cols-3 sm:p-5">
+        {/* Always three across: on a phone each stat stacks icon / value /
+            label in its own column, instead of three full-width rows that
+            pushed the actions and tabs a whole screen down. */}
+        <dl className="grid grid-cols-3 divide-x divide-slate-100 rounded-2xl border border-slate-200/80 bg-white py-3.5 shadow-sm sm:gap-3 sm:divide-x-0 sm:p-5 rtl:divide-x-reverse">
           {stats.map((stat, index) => (
-            <div key={stat.label} className="flex items-center gap-3">
+            <div
+              key={stat.label}
+              className="flex min-w-0 flex-col items-center gap-1.5 px-1 text-center sm:flex-row sm:gap-3 sm:px-0 sm:text-start"
+            >
               <span
                 className={cn(
-                  "flex size-11 shrink-0 items-center justify-center rounded-xl text-white shadow-sm sm:size-12",
+                  "flex size-9 shrink-0 items-center justify-center rounded-xl text-white shadow-sm sm:size-12",
                   STAT_ACCENTS[index % STAT_ACCENTS.length],
                 )}
               >
-                <stat.icon className="size-5" aria-hidden />
+                <stat.icon className="size-[18px] sm:size-5" aria-hidden />
               </span>
-              <div className="min-w-0">
-                <dd className="truncate text-lg font-bold text-[#1F2A44] sm:text-xl">
-                  {stat.value}
-                </dd>
-                <dt className="truncate text-xs font-semibold text-[#5a6072] sm:text-sm">
+              <div className="flex min-w-0 flex-col-reverse">
+                <dt className="truncate text-[11px] font-semibold text-[#5a6072] sm:text-sm">
                   {stat.label}
                 </dt>
+                <dd className="truncate text-base font-bold text-[#1F2A44] sm:text-xl">
+                  {stat.value}
+                </dd>
               </div>
             </div>
           ))}
@@ -247,10 +265,12 @@ export async function UniversityHero({
           </span>
         </div>
 
-        <div className="mt-6 flex flex-wrap items-center gap-3">
+        {/* Phone: the main action full width, then save / compare / share as
+            three equal labelled buttons. sm+: one row. */}
+        <div className="mt-6 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
           <Link
             href={`/universities/${university.slug}?tab=faculties#tabs`}
-            className="inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
+            className="col-span-3 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
           >
             <Compass className="size-5" aria-hidden />
             {t("exploreProgramsCta")}
@@ -263,19 +283,21 @@ export async function UniversityHero({
             likeLabel={t("save")}
             likedLabel={t("saved")}
             callbackUrl={`/universities/${university.slug}`}
-          />
-
-          <ShareButton
-            title={university.name}
-            label={t("share")}
-            copiedLabel={t("shareCopied")}
+            className="min-w-0 gap-1.5 px-2 text-sm sm:gap-2 sm:px-5 sm:text-base"
           />
 
           <UniversityCompareButton
             id={university.id}
             name={university.name}
             logoUrl={university.logoUrl}
-            className="h-12 flex-none rounded-xl border-slate-200 px-5 text-base font-bold text-[#1E6DEB] hover:bg-[#EEF3FF]"
+            className="h-12 min-w-0 flex-none rounded-xl border-slate-200 px-2 text-sm font-bold text-[#1E6DEB] hover:bg-[#EEF3FF] sm:px-5 sm:text-base"
+          />
+
+          <ShareButton
+            title={university.name}
+            label={t("share")}
+            copiedLabel={t("shareCopied")}
+            labelOnMobile
           />
         </div>
       </div>
