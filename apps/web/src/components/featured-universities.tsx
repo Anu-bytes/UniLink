@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ViewTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { ArrowRight, ChevronLeft, ChevronRight, Flame, Heart, MapPin } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -496,6 +496,26 @@ function UniversityTile({
    */
   decorative?: boolean;
 }) {
+  const cover = university.coverImageUrl ? (
+    <div
+      role="img"
+      aria-label={university.name}
+      className="size-full bg-slate-200 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
+      style={{
+        backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
+      }}
+    />
+  ) : (
+    <div className="size-full bg-gradient-to-br from-[#EAF1FF] to-[#DCE7FA] transition-transform duration-500 group-hover:scale-105" />
+  );
+  const logo = (
+    <UniversityLogo
+      name={university.name}
+      logoUrl={university.logoUrl}
+      className="absolute bottom-3 start-3 size-11 border-2 border-white shadow-md"
+    />
+  );
+
   return (
     // A plain wrapper rather than the link itself: the compare toggle is a
     // real <button>, which can't nest inside an <a>. The stretched Link
@@ -503,7 +523,7 @@ function UniversityTile({
     // taps fall through to it, and only the toggle takes its own taps.
     <div
       aria-hidden={decorative || undefined}
-      className="group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#E7EDF5] bg-white shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/40 hover:shadow-lg"
+      className="ul-spotlight group relative flex h-full flex-col overflow-hidden rounded-2xl border border-[#E7EDF5] bg-white shadow-[0_10px_30px_-18px_rgba(15,23,42,0.35)] transition-all duration-300 hover:-translate-y-1.5 hover:border-[#1E6DEB]/40 hover:shadow-[0_26px_50px_-24px_rgba(30,109,235,0.55)]"
     >
       <Link
         href={`/universities/${university.slug}`}
@@ -513,17 +533,12 @@ function UniversityTile({
       />
 
       <div className="pointer-events-none relative aspect-[16/10] w-full overflow-hidden">
-        {university.coverImageUrl ? (
-          <div
-            role="img"
-            aria-label={university.name}
-            className="size-full bg-slate-200 bg-cover bg-center transition-transform duration-500 group-hover:scale-105"
-            style={{
-              backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
-            }}
-          />
-        ) : (
-          <div className="size-full bg-gradient-to-br from-[#EAF1FF] to-[#DCE7FA] transition-transform duration-500 group-hover:scale-105" />
+        {decorative ? cover : (
+          // Shared with the profile banner: the photo flies into it on
+          // navigation. Loop copies stay unnamed (names must be unique).
+          <ViewTransition name={`uni-cover-${university.slug}`} share="ul-morph" default="none">
+            {cover}
+          </ViewTransition>
         )}
 
         {/* Scrim so the type chip stays legible over any photograph. */}
@@ -561,11 +576,13 @@ function UniversityTile({
         {/* Only shown when a real logo exists; the initials fallback looked
             like a stray coloured blob over the photo. */}
         {university.logoUrl ? (
-          <UniversityLogo
-            name={university.name}
-            logoUrl={university.logoUrl}
-            className="absolute bottom-3 start-3 size-11 border-2 border-white shadow-md"
-          />
+          decorative ? (
+            logo
+          ) : (
+            <ViewTransition name={`uni-logo-${university.slug}`} share="ul-morph" default="none">
+              {logo}
+            </ViewTransition>
+          )
         ) : null}
       </div>
 

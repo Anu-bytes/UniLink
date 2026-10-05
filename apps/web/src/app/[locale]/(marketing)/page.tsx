@@ -26,7 +26,8 @@ import { HowItWorks } from "@/components/how-it-works";
 import { MotionSection } from "@/components/motion-section";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
-import { getLandingCatalog, withDisplayOffsets } from "@/lib/catalog";
+import { UniversityLogoMarquee } from "@/components/university-logo-marquee";
+import { getLandingCatalog, getUniversitySearchIndex, withDisplayOffsets } from "@/lib/catalog";
 import { getPrimaryCta } from "@/lib/primary-cta";
 
 export const dynamic = "force-dynamic";
@@ -86,7 +87,10 @@ export default async function HomePage() {
   const locale = await getLocale();
   const session = await auth();
   const isAuthenticated = Boolean(session?.user?.id);
-  const catalog = await getLandingCatalog(locale);
+  const [catalog, searchIndex] = await Promise.all([
+    getLandingCatalog(locale),
+    getUniversitySearchIndex(locale),
+  ]);
   const primaryCta = await getPrimaryCta(t("hero.cta"));
 
   const heroPhotos = buildHeroPhotos(t("hero.searchBadge"), t("hero.mapBadge"));
@@ -224,12 +228,21 @@ export default async function HomePage() {
         </div>
       </MotionSection>
 
+      {/* LOGO STRIP: every university with a logo, each linking to its profile */}
+      <UniversityLogoMarquee
+        universities={searchIndex}
+        title={t("logoStrip.title", { count: searchIndex.length })}
+        viewLabel={(name) => t("logoStrip.viewProfile", { name })}
+      />
+
       {/* QUICK UNIVERSITY SEARCH */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#1E6DEB] to-[#12224A] py-14 md:py-20">
-        <div
-          aria-hidden
-          className="ul-dots pointer-events-none absolute -inset-8 opacity-20"
-        />
+      {/* z-10 and no overflow clipping on the section itself, so the live
+          suggestion list under the search box can drop over the next section;
+          only the decorative dot layer is clipped. */}
+      <section className="relative z-10 bg-gradient-to-br from-[#1E6DEB] to-[#12224A] py-14 md:py-20">
+        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="ul-dots absolute -inset-8 opacity-20" />
+        </div>
         <div className="relative mx-auto max-w-3xl px-4 text-center md:px-6">
           <Reveal>
             <h2 className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-white">
@@ -395,7 +408,7 @@ export default async function HomePage() {
                   return (
                     <li
                       key={feature}
-                      className="flex items-center gap-3 rounded-2xl bg-white/90 p-3 text-start shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
+                      className="ul-spotlight flex items-center gap-3 rounded-2xl bg-white/90 p-3 text-start shadow-sm ring-1 ring-black/5 transition-all duration-300 hover:-translate-y-0.5 hover:bg-white hover:shadow-md"
                     >
                       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-[#1E6DEB]/10 text-[#1E6DEB]">
                         <Icon className="size-5" strokeWidth={1.75} />

@@ -68,7 +68,17 @@
         "unlockHintActive": "That's an AI match preview. Register free to see the full results",
         "previewLabel": "AI preview:",
         "registerCta": "Register free",
-        "loginCta": "Log in"
+        "loginCta": "Log in",
+        "examplePrefix": "Try:",
+        "examples": [
+          "Computer science in New Cairo",
+          "GUC",
+          "Pharmacy in Giza",
+          "Engineering under 150k",
+          "British University in Egypt"
+        ],
+        "suggestions": "Universities",
+        "suggestionsHint": "Press Enter to search everything"
       },
       "testimonials": {
         "title": "What Our Students Have to Say",
@@ -153,6 +163,10 @@
             "a": "Yes. Answer a few quick questions and we'll match you with programs that fit your grades, budget, and interests."
           }
         ]
+      },
+      "logoStrip": {
+        "title": "Explore {count} universities across Egypt",
+        "viewProfile": "View {name}"
       }
     },
     "counters": {
@@ -956,13 +970,12 @@
     },
     "aboutHeading": "About {name}",
     "featuresHeading": "Features of {name}",
-    "facultiesHeading": "Faculties and programs",
+    "facultiesHeading": "University faculties",
     "facultyProgramCount": "{count, plural, one {# program} other {# programs}}",
     "viewProgram": "View program",
     "showMorePrograms": "{count, plural, one {Show # more program} other {Show # more programs}}",
     "showLessPrograms": "Show less",
     "programsAndMajors": "Programs & majors offered",
-    "facultiesHeading": "University faculties",
     "facultiesSubtitle": "Pick a faculty to explore its programs",
     "facultiesCountBadge": "{count, plural, one {# faculty} other {# faculties}}",
     "searchFaculties": "Search for a faculty...",
@@ -2365,5 +2378,30 @@
         "description": "Try a different search, or change the university and status filters."
       }
     }
+  },
+  "Palette": {
+    "open": "Search UniLink",
+    "trigger": "Quick search",
+    "placeholder": "Search by university, acronym, city or faculty…",
+    "trending": "Trending universities",
+    "quickLinks": "Quick links",
+    "browseAll": "Browse all universities",
+    "browseAllHint": "Filter the full directory by type and city",
+    "smartSearch": "Smart faculty search",
+    "smartSearchHint": "Describe what you want in plain words and let UniLink match it",
+    "students": "For students",
+    "studentsHint": "How UniLink helps you choose",
+    "seeAll": "See all results for “{query}”",
+    "seeAllHint": "Open the university directory with this search",
+    "noResults": "No universities match “{query}”",
+    "noResultsHint": "Try a city (New Cairo), an acronym (GUC) or a faculty (pharmacy).",
+    "programs": "{count, plural, one {# program} other {# programs}}",
+    "error": "Search is unavailable right now. Please try again.",
+    "hintNavigate": "to navigate",
+    "hintOpen": "to open",
+    "hintClose": "to close"
+  },
+  "Common": {
+    "backToTop": "Back to top"
   }
 }

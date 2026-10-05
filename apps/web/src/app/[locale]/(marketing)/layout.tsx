@@ -1,5 +1,7 @@
 import { CompareProvider } from "@/components/app/compare-context";
 import { CompareTray } from "@/components/app/compare-tray";
+import { BackToTop } from "@/components/back-to-top";
+import { PageTransition } from "@/components/page-transition";
 import { SiteHeader } from "@/components/site-header";
 import { SiteBottomNav } from "@/components/site-bottom-nav";
 import { SiteFooter } from "@/components/site-footer";
@@ -16,11 +18,14 @@ export default function MarketingLayout({
     <CompareProvider>
       <div className="flex min-h-full flex-1 flex-col">
         <SiteHeader />
-        <main className="flex-1">{children}</main>
+        <PageTransition>
+          <main className="flex-1">{children}</main>
+        </PageTransition>
         <SiteFooter />
       </div>
       <CompareTray />
       <SiteBottomNav />
+      <BackToTop />
     </CompareProvider>
   );
 }

@@ -7,6 +7,7 @@ import { hasLocale } from "next-intl";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { routing, type Locale } from "@/i18n/routing";
 import { BootSplash } from "@/components/boot-splash";
+import { SpotlightTracker } from "@/components/spotlight-tracker";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -81,6 +82,7 @@ export default async function LocaleLayout({
         {/* Covers the browser's own load and hydration, which no route-level
             loading.tsx can reach. Ships in the initial HTML. */}
         <BootSplash label={t("loading")} />
+        <SpotlightTracker />
         <NextIntlClientProvider messages={messages}>
           <DirectionProvider direction={dir}>{children}</DirectionProvider>
         </NextIntlClientProvider>

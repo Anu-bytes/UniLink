@@ -449,6 +449,112 @@ html[lang="ar"] body {
     animation: ul-tray-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
   }
 
+  /* Search palette: the panel springs in, its backdrop fades, and result rows
+     cascade in a few ms apart (delay set inline per row). */
+  @keyframes ul-palette-in {
+    from {
+      opacity: 0;
+      transform: translateY(-10px) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes ul-fade-in {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes ul-row-in {
+    from {
+      opacity: 0;
+      transform: translateY(6px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .ul-palette[open] {
+    animation: ul-palette-in 0.24s cubic-bezier(0.2, 0.9, 0.3, 1.15) both;
+  }
+  .ul-palette[open]::backdrop {
+    animation: ul-fade-in 0.2s ease-out both;
+  }
+  .ul-palette-row {
+    animation: ul-row-in 0.28s ease-out both;
+  }
+
+  /* Cursor spotlight for cards (components/spotlight-tracker.tsx feeds
+     --mx/--my): a soft brand-blue glow and a brighter rim that follow the
+     mouse. Pure decoration layered above the card, never takes clicks. */
+  .ul-spotlight {
+    position: relative;
+  }
+  .ul-spotlight::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 5;
+    border-radius: inherit;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    background: radial-gradient(
+      380px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(59, 134, 247, 0.13),
+      transparent 45%
+    );
+  }
+  .ul-spotlight::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 6;
+    border-radius: inherit;
+    padding: 1px;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.35s ease;
+    background: radial-gradient(
+      260px circle at var(--mx, 50%) var(--my, 50%),
+      rgba(30, 109, 235, 0.65),
+      transparent 60%
+    );
+    -webkit-mask:
+      linear-gradient(#000 0 0) content-box,
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    .ul-spotlight:hover::after,
+    .ul-spotlight:hover::before {
+      opacity: 1;
+    }
+  }
+
+  /* Cards in a grid rise in one after another; each card sets --i (its
+     index) inline. */
+  @keyframes ul-card-in {
+    from {
+      opacity: 0;
+      transform: translateY(18px) scale(0.98);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .ul-card-in {
+    animation: ul-card-in 0.55s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+    animation-delay: calc(min(var(--i, 0), 12) * 45ms);
+  }
+
   /* Gentle attention pulse for a status dot. */
   @keyframes ul-pulse-dot {
     0%,
@@ -898,6 +1004,82 @@ html[lang="ar"] body {
   }
 }
 
+/* ---------------------------------------------------------------------------
+   View transitions (React <ViewTransition>, see components/page-transition.tsx)
+   --------------------------------------------------------------------------- */
+
+/* Clicks pass through to the live page while a transition plays. */
+::view-transition {
+  pointer-events: none;
+}
+
+/* Everything outside the animated page (footer, tray, tab bar) switches
+   instantly instead of the browser's default whole-screen crossfade. */
+::view-transition-old(root) {
+  display: none;
+}
+::view-transition-new(root) {
+  animation: none;
+}
+
+/* The header is the fixed reference point: it never moves or fades. */
+::view-transition-group(site-header) {
+  animation: none;
+  z-index: 100;
+}
+::view-transition-old(site-header) {
+  display: none;
+}
+::view-transition-new(site-header) {
+  animation: none;
+}
+
+/* Page to page: the old page lifts away quickly, the new one rises in. */
+::view-transition-old(.ul-page-out) {
+  animation: ul-vt-out 160ms ease-in both;
+}
+::view-transition-new(.ul-page-in) {
+  animation: ul-vt-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 70ms both;
+}
+@keyframes ul-vt-out {
+  to {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+}
+@keyframes ul-vt-in {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+    filter: blur(4px);
+  }
+}
+
+/* Shared elements (a university's cover photo and logo) fly from the card
+   into the profile banner. The blur hides the scaling mid-flight. */
+::view-transition-group(.ul-morph) {
+  animation-duration: 460ms;
+  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+::view-transition-image-pair(.ul-morph) {
+  animation-name: ul-vt-morph-blur;
+}
+@keyframes ul-vt-morph-blur {
+  40% {
+    filter: blur(3px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  ::view-transition-old(*),
+  ::view-transition-new(*),
+  ::view-transition-group(*),
+  ::view-transition-image-pair(*) {
+    animation-duration: 0s !important;
+    animation-delay: 0s !important;
+  }
+}
+
 /* Height of the phone tab bar (components/bottom-nav.tsx) while it is on the
    page, so other fixed-bottom UI such as the compare tray can sit above it
    instead of underneath. Unset (0) wherever the bar is absent or hidden (lg+). */
@@ -935,8 +1117,16 @@ html[lang="ar"] body {
   .ul-pulse-dot,
   .ul-blink-warm,
   .ul-marquee,
-  .ul-tray-in {
+  .ul-tray-in,
+  .ul-palette[open],
+  .ul-palette[open]::backdrop,
+  .ul-palette-row,
+  .ul-card-in {
     animation: none;
+  }
+  .ul-spotlight::after,
+  .ul-spotlight::before {
+    display: none;
   }
   /* These only exist as motion, so hide them rather than freeze them mid-travel. */
   .ul-sheen,

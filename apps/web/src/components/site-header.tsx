@@ -6,6 +6,7 @@ import { AccountMenu } from "@/components/account-menu";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { MobileNav } from "@/components/mobile-nav";
+import { SearchPalette } from "@/components/search/search-palette";
 import { StickyHeaderShell } from "@/components/sticky-header-shell";
 import { TopNavLinks } from "@/components/top-nav-links";
 
@@ -51,53 +52,57 @@ export async function SiteHeader() {
 
         <TopNavLinks links={links} sizeClassName={navLinkSize} />
 
-        <div className="hidden items-center gap-2 lg:flex xl:gap-3">
-          <LanguageSwitcher />
+        <div className="flex items-center gap-2 xl:gap-3">
+          <SearchPalette signedIn={Boolean(user)} />
 
-          {user ? (
-            <>
-              <Link
-                href="/app/search"
-                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
-              >
-                {t("searchPrograms")}
-              </Link>
-              <AccountMenu user={user} />
-            </>
-          ) : (
-            <>
-              {/* Both CTAs stay visible for the whole lg+ range. Below lg they
-                  live in the mobile menu, so neither can fall into a gap where
-                  it is hidden here but the hamburger is already gone. */}
-              <Link
-                href="/onboarding"
-                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
-              >
-                {t("registerAsStudent")}
-              </Link>
+          <div className="hidden items-center gap-2 lg:flex xl:gap-3">
+            <LanguageSwitcher />
 
-              <Link
-                href="/login"
-                className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
-              >
-                {t("login")}
-              </Link>
-            </>
-          )}
+            {user ? (
+              <>
+                <Link
+                  href="/app/search"
+                  className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+                >
+                  {t("searchPrograms")}
+                </Link>
+                <AccountMenu user={user} />
+              </>
+            ) : (
+              <>
+                {/* Both CTAs stay visible for the whole lg+ range. Below lg they
+                    live in the mobile menu, so neither can fall into a gap where
+                    it is hidden here but the hamburger is already gone. */}
+                <Link
+                  href="/onboarding"
+                  className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
+                >
+                  {t("registerAsStudent")}
+                </Link>
+
+                <Link
+                  href="/login"
+                  className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+                >
+                  {t("login")}
+                </Link>
+              </>
+            )}
+          </div>
+
+          <MobileNav
+            links={links}
+            openLabel={t("openMenu")}
+            closeLabel={t("closeMenu")}
+            registerHref="/onboarding"
+            registerLabel={t("registerAsStudent")}
+            loginHref="/login"
+            loginLabel={t("login")}
+            user={user}
+          >
+            <LanguageSwitcher />
+          </MobileNav>
         </div>
-
-        <MobileNav
-          links={links}
-          openLabel={t("openMenu")}
-          closeLabel={t("closeMenu")}
-          registerHref="/onboarding"
-          registerLabel={t("registerAsStudent")}
-          loginHref="/login"
-          loginLabel={t("login")}
-          user={user}
-        >
-          <LanguageSwitcher />
-        </MobileNav>
       </div>
     </StickyHeaderShell>
   );

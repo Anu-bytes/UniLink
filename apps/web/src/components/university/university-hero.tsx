@@ -11,6 +11,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ViewTransition } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareButton } from "@/components/app/university-compare-button";
@@ -103,86 +104,92 @@ export async function UniversityHero({
           told in one glance instead of split across a plain gradient strip
           and a separate text column below it. */}
       <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6">
-        <div className="relative isolate h-56 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
-          {university.coverImageUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element -- cover
-            // photos come from arbitrary partner hosts, same as the gallery.
-            <img
-              src={university.coverImageUrl}
-              alt=""
-              className="absolute inset-0 size-full object-cover"
+        {/* Shared with the university's card in the directory and the
+            homepage slider: the card's photo flies into this banner. */}
+        <ViewTransition name={`uni-cover-${university.slug}`} share="ul-morph" default="none">
+          <div className="relative isolate h-56 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
+            {university.coverImageUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element -- cover
+              // photos come from arbitrary partner hosts, same as the gallery.
+              <img
+                src={university.coverImageUrl}
+                alt=""
+                className="absolute inset-0 size-full object-cover"
+              />
+            ) : (
+              <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A] via-[#1E6DEB] to-[#3B86F7]" />
+            )}
+            <div
+              aria-hidden
+              className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/0"
             />
-          ) : (
-            <div className="absolute inset-0 bg-gradient-to-br from-[#1E3A8A] via-[#1E6DEB] to-[#3B86F7]" />
-          )}
-          <div
-            aria-hidden
-            className="absolute inset-0 bg-gradient-to-t from-black/85 via-black/25 to-black/0"
-          />
 
-          <div className="absolute inset-x-4 top-4 flex flex-wrap justify-end gap-2 sm:inset-x-6 sm:top-5">
-            {university.isRecommended ? (
-              <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#1E3A8A] shadow-sm backdrop-blur-sm sm:text-sm">
-                <Heart className="size-3.5 text-[#1E6DEB]" aria-hidden />
-                {t("recommended")}
-              </span>
-            ) : null}
-            {university.isTrending ? (
-              <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#C81F15] shadow-sm backdrop-blur-sm sm:text-sm">
-                <Flame className="size-3.5 text-[#F82C1F]" aria-hidden />
-                {t("trending")}
-              </span>
-            ) : null}
-            <span className="inline-flex min-h-8 items-center rounded-full bg-white/90 px-3 text-xs font-bold text-[#1F2A44] shadow-sm backdrop-blur-sm sm:text-sm">
-              {tCatalog(`universityTypes.${university.type}`)}
-            </span>
-          </div>
-
-          <div className="absolute inset-x-4 bottom-4 flex items-end gap-3 sm:inset-x-6 sm:bottom-5 sm:items-center sm:gap-4">
-            <UniversityLogo
-              name={university.name}
-              logoUrl={university.logoUrl}
-              className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
-            />
-            <div className="min-w-0">
-              {/* On a phone the acronym sits above the name and the name may
-                  wrap to two lines: a single truncated line cut most names
-                  ("The British Univer...") down to nothing useful. */}
-              {university.acronym ? (
-                <AcronymBadge
-                  acronym={university.acronym}
-                  variant="solid"
-                  size="md"
-                  className="mb-1.5 sm:hidden"
-                />
+            <div className="absolute inset-x-4 top-4 flex flex-wrap justify-end gap-2 sm:inset-x-6 sm:top-5">
+              {university.isRecommended ? (
+                <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#1E3A8A] shadow-sm backdrop-blur-sm sm:text-sm">
+                  <Heart className="size-3.5 text-[#1E6DEB]" aria-hidden />
+                  {t("recommended")}
+                </span>
               ) : null}
-              <div className="flex min-w-0 items-center gap-2 sm:gap-3">
-                <h1 className="line-clamp-2 min-w-0 text-[19px] font-bold leading-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:line-clamp-1 sm:text-2xl md:text-3xl">
-                  {university.name}
-                </h1>
+              {university.isTrending ? (
+                <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#C81F15] shadow-sm backdrop-blur-sm sm:text-sm">
+                  <Flame className="size-3.5 text-[#F82C1F]" aria-hidden />
+                  {t("trending")}
+                </span>
+              ) : null}
+              <span className="inline-flex min-h-8 items-center rounded-full bg-white/90 px-3 text-xs font-bold text-[#1F2A44] shadow-sm backdrop-blur-sm sm:text-sm">
+                {tCatalog(`universityTypes.${university.type}`)}
+              </span>
+            </div>
+
+            <div className="absolute inset-x-4 bottom-4 flex items-end gap-3 sm:inset-x-6 sm:bottom-5 sm:items-center sm:gap-4">
+              <ViewTransition name={`uni-logo-${university.slug}`} share="ul-morph" default="none">
+                <UniversityLogo
+                  name={university.name}
+                  logoUrl={university.logoUrl}
+                  className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
+                />
+              </ViewTransition>
+              <div className="min-w-0">
+                {/* On a phone the acronym sits above the name and the name may
+                    wrap to two lines: a single truncated line cut most names
+                    ("The British Univer...") down to nothing useful. */}
                 {university.acronym ? (
                   <AcronymBadge
                     acronym={university.acronym}
                     variant="solid"
-                    size="lg"
-                    className="hidden sm:inline-flex"
+                    size="md"
+                    className="mb-1.5 sm:hidden"
                   />
                 ) : null}
+                <div className="flex min-w-0 items-center gap-2 sm:gap-3">
+                  <h1 className="line-clamp-2 min-w-0 text-[19px] font-bold leading-tight text-white [text-shadow:0_2px_10px_rgba(0,0,0,0.4)] sm:line-clamp-1 sm:text-2xl md:text-3xl">
+                    {university.name}
+                  </h1>
+                  {university.acronym ? (
+                    <AcronymBadge
+                      acronym={university.acronym}
+                      variant="solid"
+                      size="lg"
+                      className="hidden sm:inline-flex"
+                    />
+                  ) : null}
+                </div>
+                {/* The admin-entered street address when there is one — it's
+                    more specific — otherwise the district/governorate/country
+                    derived from the catalogue, so every university shows a
+                    location here rather than only the ones with a full
+                    address on file. */}
+                <p className="mt-1 flex items-start gap-1.5 text-[13px] text-white/90 sm:items-center sm:text-sm">
+                  <MapPin className="mt-0.5 size-4 shrink-0 sm:mt-0" aria-hidden />
+                  <span className="line-clamp-2 sm:line-clamp-1">
+                    {university.addressLine ?? locationSummary}
+                  </span>
+                </p>
               </div>
-              {/* The admin-entered street address when there is one — it's
-                  more specific — otherwise the district/governorate/country
-                  derived from the catalogue, so every university shows a
-                  location here rather than only the ones with a full
-                  address on file. */}
-              <p className="mt-1 flex items-start gap-1.5 text-[13px] text-white/90 sm:items-center sm:text-sm">
-                <MapPin className="mt-0.5 size-4 shrink-0 sm:mt-0" aria-hidden />
-                <span className="line-clamp-2 sm:line-clamp-1">
-                  {university.addressLine ?? locationSummary}
-                </span>
-              </p>
             </div>
           </div>
-        </div>
+        </ViewTransition>
       </div>
 
       {/* Stat bar right below the banner, so the headline facts (established,

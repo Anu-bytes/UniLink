@@ -10,6 +10,7 @@ import {
   MapPin,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
+import { ViewTransition } from "react";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
@@ -124,8 +125,8 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
         {universities.length > 0 ? (
           <>
             <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-              {universities.map((university) => (
-                <UniversityCard key={university.id} university={university} />
+              {universities.map((university, index) => (
+                <UniversityCard key={university.id} university={university} index={index} />
               ))}
             </div>
 
@@ -183,8 +184,11 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
 
 async function UniversityCard({
   university,
+  index,
 }: {
   university: UniversityCardData;
+  /** Position in the grid, staggering the entrance animation. */
+  index: number;
 }) {
   const t = await getTranslations("Universities");
   const tDirectory = await getTranslations("UniversityDirectory");
@@ -196,7 +200,10 @@ async function UniversityCard({
     // <button>, which can't nest inside an <a>. The stretched Link below
     // covers the whole tile and handles navigation and keyboard focus; the
     // toggle sits on top of it as its own focusable, clickable sibling.
-    <div className="group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#1E6DEB]/30 hover:shadow-lg">
+    <div
+      style={{ "--i": index } as React.CSSProperties}
+      className="ul-spotlight ul-card-in group relative flex flex-col overflow-hidden rounded-xl border border-slate-200 bg-white shadow-sm transition-[transform,box-shadow,border-color] duration-300 hover:-translate-y-1 hover:border-[#1E6DEB]/30 hover:shadow-[0_22px_45px_-22px_rgba(30,109,235,0.55)]"
+    >
       <Link
         href={`/universities/${university.slug}`}
         aria-label={`${university.name}, ${tDirectory("viewProfile")}`}
@@ -207,18 +214,22 @@ async function UniversityCard({
           of (and swallow clicks meant for) the stretched Link above — only
           the compare toggle re-enables pointer events for itself. */}
       <div className="relative pointer-events-none">
-        {university.coverImageUrl ? (
-          <div
-            role="img"
-            aria-label={university.name}
-            className="h-40 w-full bg-slate-200 bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03] sm:h-24"
-            style={{
-              backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
-            }}
-          />
-        ) : (
-          <div className="h-40 w-full bg-gradient-to-br from-[#E8EFFC] to-[#D5E2F8] sm:h-24" />
-        )}
+        {/* Shared with the profile banner: the photo flies from this card
+            into the banner on navigation (see globals.css .ul-morph). */}
+        <ViewTransition name={`uni-cover-${university.slug}`} share="ul-morph" default="none">
+          {university.coverImageUrl ? (
+            <div
+              role="img"
+              aria-label={university.name}
+              className="h-40 w-full bg-slate-200 bg-cover bg-center transition-transform duration-300 group-hover:scale-[1.03] sm:h-24"
+              style={{
+                backgroundImage: `url(${JSON.stringify(university.coverImageUrl)})`,
+              }}
+            />
+          ) : (
+            <div className="h-40 w-full bg-gradient-to-br from-[#E8EFFC] to-[#D5E2F8] sm:h-24" />
+          )}
+        </ViewTransition>
 
         {/* Scrim so the badges stay legible over any photograph. */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3A]/45 via-transparent to-transparent sm:hidden" />
@@ -257,11 +268,13 @@ async function UniversityCard({
 
       <div className="pointer-events-none relative flex flex-1 flex-col p-3.5 sm:p-2.5">
         <div className="flex items-start gap-2.5 sm:gap-2">
-          <UniversityLogo
-            name={university.name}
-            logoUrl={university.logoUrl}
-            className="size-11 shrink-0 sm:size-8"
-          />
+          <ViewTransition name={`uni-logo-${university.slug}`} share="ul-morph" default="none">
+            <UniversityLogo
+              name={university.name}
+              logoUrl={university.logoUrl}
+              className="size-11 shrink-0 sm:size-8"
+            />
+          </ViewTransition>
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[#1E6DEB] sm:text-[9px]">
               {tCatalog(`universityTypes.${university.type}`)}
