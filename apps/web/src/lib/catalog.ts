@@ -573,6 +573,72 @@ export const getUniversityCities = unstable_cache(
   { revalidate: 300 },
 );
 
+/** One row of the instant-search index (header palette, home search bar). */
+export type UniversitySearchEntry = {
+  slug: string;
+  name: string;
+  /** The name in the other language, so either spelling finds it. */
+  altName: string | null;
+  acronym: string | null;
+  city: string;
+  governorate: string | null;
+  type: "NATIONAL" | "PRIVATE";
+  logoUrl: string | null;
+  programCount: number;
+  /** Faculty names (displayed language), for "pharmacy" -> universities. */
+  faculties: string[];
+  /** Same faculties in the other language, matched but not displayed. */
+  altFaculties: string[];
+};
+
+/**
+ * Every published university in a compact shape the browser can search
+ * as-you-type without a round trip per keystroke. ~50 rows, so it ships as
+ * one small JSON payload and is cached on the server.
+ */
+export const getUniversitySearchIndex = unstable_cache(
+  async (locale: string): Promise<UniversitySearchEntry[]> => {
+    const isArabic = locale.startsWith("ar");
+    const rows = await prisma.university.findMany({
+      where: publishedUniversityWhere,
+      orderBy: [{ isTrending: "desc" }, { isRecommended: "desc" }, { name: "asc" }],
+      select: {
+        slug: true,
+        name: true,
+        nameAr: true,
+        acronym: true,
+        city: true,
+        cityAr: true,
+        type: true,
+        logoUrl: true,
+        _count: { select: { programs: { where: { isPublished: true } } } },
+        faculties: {
+          orderBy: { sortOrder: "asc" },
+          select: { name: true, nameAr: true },
+        },
+      },
+    });
+
+    return rows.map((row) => ({
+      slug: row.slug,
+      name: localized(locale, row.name, row.nameAr),
+      altName: isArabic ? row.name : row.nameAr,
+      acronym: row.acronym,
+      city: localized(locale, row.city, row.cityAr),
+      governorate: governorateOf(locale, row.city),
+      type: row.type,
+      logoUrl: row.logoUrl,
+      programCount: row._count.programs,
+      faculties: row.faculties.map((f) => localized(locale, f.name, f.nameAr)),
+      altFaculties: row.faculties
+        .map((f) => (isArabic ? f.name : f.nameAr))
+        .filter((value): value is string => Boolean(value)),
+    }));
+  },
+  ["university-search-index"],
+  { revalidate: 300 },
+);
+
 export async function getPublishedPrograms(
   locale: string,
 ): Promise<ProgramCardData[]> {

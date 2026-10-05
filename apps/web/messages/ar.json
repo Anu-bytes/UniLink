@@ -68,7 +68,17 @@
         "unlockHintActive": "هذه معاينة مطابقة بالذكاء الاصطناعي. سجّل مجاناً لرؤية النتائج كاملة",
         "previewLabel": "معاينة الذكاء الاصطناعي:",
         "registerCta": "سجّل مجاناً",
-        "loginCta": "تسجيل الدخول"
+        "loginCta": "تسجيل الدخول",
+        "examplePrefix": "جرّب:",
+        "examples": [
+          "علوم الحاسب في القاهرة الجديدة",
+          "GUC",
+          "صيدلة في الجيزة",
+          "هندسة أقل من 150 ألف",
+          "الجامعة البريطانية في مصر"
+        ],
+        "suggestions": "الجامعات",
+        "suggestionsHint": "اضغط Enter للبحث في كل شيء"
       },
       "testimonials": {
         "title": "ماذا يقول طلابنا",
@@ -153,6 +163,10 @@
             "a": "نعم، أجب عن بضعة أسئلة سريعة وسنرشّح لك البرامج التي تناسب درجاتك وميزانيتك واهتماماتك."
           }
         ]
+      },
+      "logoStrip": {
+        "title": "استكشف {count} جامعة في جميع أنحاء مصر",
+        "viewProfile": "عرض {name}"
       }
     },
     "counters": {
@@ -956,13 +970,12 @@
     },
     "aboutHeading": "عن {name}",
     "featuresHeading": "مميزات {name}",
-    "facultiesHeading": "الكليات والبرامج",
+    "facultiesHeading": "كليات الجامعة",
     "facultyProgramCount": "{count, plural, zero {# برامج} one {برنامج واحد} two {برنامجان} few {# برامج} many {# برنامجاً} other {# برنامج}}",
     "viewProgram": "عرض البرنامج",
     "showMorePrograms": "{count, plural, zero {عرض المزيد} one {عرض برنامج واحد آخر} two {عرض برنامجين آخرين} few {عرض # برامج أخرى} many {عرض # برنامجاً آخر} other {عرض # برنامج آخر}}",
     "showLessPrograms": "عرض أقل",
     "programsAndMajors": "البرامج والتخصصات المتاحة",
-    "facultiesHeading": "كليات الجامعة",
     "facultiesSubtitle": "اختر الكلية التي ترغب في استكشافها",
     "facultiesCountBadge": "{count, plural, zero {# كلية} one {كلية واحدة} two {كليتان} few {# كليات} many {# كلية} other {# كلية}}",
     "searchFaculties": "ابحث عن كلية...",
@@ -2365,5 +2378,30 @@
         "description": "جرّب بحثاً آخر أو غيّر تصفية الجامعة والحالة."
       }
     }
+  },
+  "Palette": {
+    "open": "البحث في يوني لينك",
+    "trigger": "بحث سريع",
+    "placeholder": "ابحث باسم الجامعة أو اختصارها أو المدينة أو الكلية…",
+    "trending": "الجامعات الأكثر رواجاً",
+    "quickLinks": "روابط سريعة",
+    "browseAll": "تصفح كل الجامعات",
+    "browseAllHint": "صفِّ الدليل الكامل حسب النوع والمدينة",
+    "smartSearch": "البحث الذكي عن الكليات",
+    "smartSearchHint": "صف ما تريده بكلماتك ودع يوني لينك يطابقه لك",
+    "students": "للطلاب",
+    "studentsHint": "كيف يساعدك يوني لينك في الاختيار",
+    "seeAll": "عرض كل النتائج لـ «{query}»",
+    "seeAllHint": "افتح دليل الجامعات بهذا البحث",
+    "noResults": "لا توجد جامعات مطابقة لـ «{query}»",
+    "noResultsHint": "جرّب مدينة (القاهرة الجديدة) أو اختصاراً (GUC) أو كلية (صيدلة).",
+    "programs": "{count, plural, zero {لا برامج} one {برنامج واحد} two {برنامجان} few {# برامج} many {# برنامجاً} other {# برنامج}}",
+    "error": "البحث غير متاح الآن. حاول مرة أخرى.",
+    "hintNavigate": "للتنقل",
+    "hintOpen": "للفتح",
+    "hintClose": "للإغلاق"
+  },
+  "Common": {
+    "backToTop": "العودة إلى الأعلى"
   }
 }

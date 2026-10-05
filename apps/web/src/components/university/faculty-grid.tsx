@@ -109,8 +109,9 @@ export function FacultyGrid({
             return (
               <div
                 key={item.id}
+                style={{ "--i": index } as React.CSSProperties}
                 className={cn(
-                  "overflow-hidden rounded-2xl border bg-white transition-all duration-300",
+                  "ul-spotlight ul-card-in overflow-hidden rounded-2xl border bg-white transition-all duration-300",
                   isOpen || isLoneLast ? "sm:col-span-2" : "",
                   isOpen
                     ? "border-[#1E6DEB]/40 shadow-[0_20px_45px_-24px_rgba(30,109,235,0.35)]"

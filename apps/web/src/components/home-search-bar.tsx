@@ -1,11 +1,60 @@
 "use client";
 
-import { Loader2, Lock, Search, Sparkles, X } from "lucide-react";
+import { ArrowRight, Loader2, Lock, MapPin, Search, Sparkles, X } from "lucide-react";
 import { useLocale, useTranslations } from "next-intl";
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Link, useRouter } from "@/i18n/navigation";
+import { UniversityLogo } from "@/components/university-logo";
+import {
+  highlightParts,
+  searchUniversities,
+  useUniversityIndex,
+} from "@/components/search/university-search";
+import { useMediaQuery } from "@/hooks/use-media-query";
 import type { MatchedTerm } from "@/lib/search-query";
+import { cn } from "@/lib/utils";
+
+/**
+ * Types each phrase out, pauses, erases it and moves to the next, while
+ * `active`. Drives the "Try: ..." hint in the empty search box.
+ */
+function useTypewriter(phrases: string[], active: boolean) {
+  const [text, setText] = useState("");
+  useEffect(() => {
+    if (!active || phrases.length === 0) return;
+    let phrase = 0;
+    let length = 0;
+    let deleting = false;
+    let timer: ReturnType<typeof setTimeout>;
+    const tick = () => {
+      const target = phrases[phrase] ?? "";
+      if (!deleting) {
+        length += 1;
+        setText(target.slice(0, length));
+        if (length >= target.length) {
+          deleting = true;
+          timer = setTimeout(tick, 1700);
+          return;
+        }
+        timer = setTimeout(tick, 55);
+      } else {
+        length -= 1;
+        setText(target.slice(0, length));
+        if (length <= 0) {
+          deleting = false;
+          phrase = (phrase + 1) % phrases.length;
+          timer = setTimeout(tick, 350);
+          return;
+        }
+        timer = setTimeout(tick, 28);
+      }
+    };
+    timer = setTimeout(tick, 600);
+    return () => clearTimeout(timer);
+  }, [active, phrases]);
+  return active ? text : "";
+}
 
 /**
  * The quick search above "Featured Universities". Signed-in students already
@@ -30,6 +79,21 @@ export function HomeSearchBar({ isAuthenticated }: { isAuthenticated: boolean })
   const [isParsing, setIsParsing] = useState(false);
   const debounceRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const requestId = useRef(0);
+
+  // Instant university suggestions under the box (guests; signed-in visitors
+  // get the full app search instead).
+  const [focused, setFocused] = useState(false);
+  const [active, setActive] = useState(-1);
+  const { entries } = useUniversityIndex(locale, !isAuthenticated && (focused || value.length > 0));
+  const hits = useMemo(
+    () => (entries && value.trim() ? searchUniversities(entries, value, 5) : []),
+    [entries, value],
+  );
+  const showSuggestions = !isAuthenticated && focused && hits.length > 0;
+
+  const reducedMotion = useMediaQuery("(prefers-reduced-motion: reduce)");
+  const examples = useMemo(() => t.raw("examples") as string[], [t]);
+  const typed = useTypewriter(examples, !isAuthenticated && !focused && !value && !reducedMotion);
 
   useEffect(() => {
     // The signed-in box is a static blurred CTA (see below); it never takes
@@ -77,6 +141,11 @@ export function HomeSearchBar({ isAuthenticated }: { isAuthenticated: boolean })
   function submit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     if (isAuthenticated) return;
+    const picked = showSuggestions && active >= 0 ? hits[active] : undefined;
+    if (picked) {
+      router.push(`/universities/${picked.entry.slug}`);
+      return;
+    }
     const query = value.trim();
     router.push(`/universities${query ? `?q=${encodeURIComponent(query)}` : ""}`);
   }
@@ -116,8 +185,34 @@ export function HomeSearchBar({ isAuthenticated }: { isAuthenticated: boolean })
             id="home-university-search"
             type="text"
             value={value}
-            onChange={(event) => setValue(event.target.value)}
-            placeholder={t("placeholder")}
+            onChange={(event) => {
+              setValue(event.target.value);
+              setActive(-1);
+            }}
+            onFocus={() => setFocused(true)}
+            onBlur={() => setFocused(false)}
+            onKeyDown={(event) => {
+              if (!showSuggestions) return;
+              if (event.key === "ArrowDown") {
+                event.preventDefault();
+                setActive((index) => (index + 1) % hits.length);
+              } else if (event.key === "ArrowUp") {
+                event.preventDefault();
+                setActive((index) => (index <= 0 ? hits.length - 1 : index - 1));
+              } else if (event.key === "Escape") {
+                setActive(-1);
+                event.currentTarget.blur();
+              }
+            }}
+            role="combobox"
+            aria-expanded={showSuggestions}
+            aria-controls="home-search-suggestions"
+            aria-activedescendant={
+              showSuggestions && active >= 0 ? `home-suggestion-${active}` : undefined
+            }
+            autoComplete="off"
+            // While idle, the box types out example searches as its hint.
+            placeholder={typed ? `${t("examplePrefix")} ${typed}` : t("placeholder")}
             tabIndex={isAuthenticated ? -1 : undefined}
             className="h-12 min-w-0 flex-1 bg-transparent px-1 text-[15px] text-[#1F2A44] outline-none placeholder:text-[#98A0B4]"
           />
@@ -129,6 +224,79 @@ export function HomeSearchBar({ isAuthenticated }: { isAuthenticated: boolean })
             {t("button")}
           </button>
         </form>
+
+        {showSuggestions ? (
+          <div className="ul-tray-in absolute inset-x-0 top-[calc(100%+0.5rem)] z-30 overflow-hidden rounded-2xl bg-white text-start shadow-[0_30px_60px_-20px_rgba(15,23,42,0.55)] ring-1 ring-black/5">
+            <p className="px-4 pb-1 pt-3 text-[11px] font-bold uppercase tracking-wider text-[#98A0B4]">
+              {t("suggestions")}
+            </p>
+            <ul id="home-search-suggestions" role="listbox" className="px-2 pb-2">
+              {hits.map((hit, index) => (
+                <li
+                  key={hit.entry.slug}
+                  id={`home-suggestion-${index}`}
+                  role="option"
+                  aria-selected={index === active}
+                  // mousedown, not click: the input's blur would otherwise
+                  // close the list before the click lands.
+                  onMouseDown={(event) => {
+                    event.preventDefault();
+                    router.push(`/universities/${hit.entry.slug}`);
+                  }}
+                  onMouseMove={() => setActive(index)}
+                  className={cn(
+                    "ul-palette-row flex cursor-pointer items-center gap-3 rounded-xl px-2.5 py-2 transition-colors",
+                    index === active ? "bg-[#EEF4FF]" : "hover:bg-slate-50",
+                  )}
+                  style={{ animationDelay: `${index * 25}ms` }}
+                >
+                  <UniversityLogo
+                    name={hit.entry.name}
+                    logoUrl={hit.entry.logoUrl}
+                    className="size-9 shrink-0 ring-1 ring-slate-200"
+                    textClassName="text-[10px]"
+                  />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate text-sm font-semibold text-[#16233F]">
+                      {highlightParts(hit.entry.name, value).map((part, i) =>
+                        part.hit ? (
+                          <mark key={i} className="rounded bg-[#FFE7A3] px-0.5 text-inherit">
+                            {part.text}
+                          </mark>
+                        ) : (
+                          <span key={i}>{part.text}</span>
+                        ),
+                      )}
+                      {hit.entry.acronym ? (
+                        <span
+                          dir="ltr"
+                          className="ms-2 rounded bg-[#1E6DEB]/10 px-1.5 py-0.5 text-[10px] font-extrabold tracking-wider text-[#1E6DEB]"
+                        >
+                          {hit.entry.acronym}
+                        </span>
+                      ) : null}
+                    </span>
+                    <span className="mt-0.5 flex items-center gap-1 truncate text-xs text-[#5a6072]">
+                      <MapPin className="size-3 shrink-0 text-[#1E6DEB]" aria-hidden />
+                      {hit.faculty ??
+                        `${hit.entry.city}${hit.entry.governorate ? `, ${hit.entry.governorate}` : ""}`}
+                    </span>
+                  </span>
+                  <ArrowRight
+                    className={cn(
+                      "size-4 shrink-0 text-[#1E6DEB] transition-opacity rtl:rotate-180",
+                      index === active ? "opacity-100" : "opacity-0",
+                    )}
+                    aria-hidden
+                  />
+                </li>
+              ))}
+            </ul>
+            <p className="border-t border-slate-100 bg-[#FAFBFE] px-4 py-2 text-[11px] font-medium text-[#98A0B4]">
+              {t("suggestionsHint")}
+            </p>
+          </div>
+        ) : null}
 
         {isAuthenticated ? (
           <div className="absolute inset-0 flex items-center justify-center">

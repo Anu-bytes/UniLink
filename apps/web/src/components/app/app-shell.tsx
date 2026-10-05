@@ -17,6 +17,8 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type ComponentType } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { PageTransition } from "@/components/page-transition";
+import { SearchPalette } from "@/components/search/search-palette";
 import { LanguageSwitcher } from "@/components/language-switcher";
 import { Logo } from "@/components/logo";
 import { useSavedCount } from "@/components/app/saved-context";
@@ -262,7 +264,11 @@ export function AppShell({
       ) : null}
 
       <div className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-slate-100 bg-white px-4 md:px-6">
+        <header
+          // Pinned during page transitions (see components/page-transition.tsx).
+          style={{ viewTransitionName: "site-header" }}
+          className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-slate-100 bg-white px-4 md:px-6"
+        >
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -273,6 +279,9 @@ export function AppShell({
           </button>
 
           <div className="ms-auto flex items-center gap-2 sm:gap-3">
+            {/* Site-wide instant search (Ctrl/Cmd+K), same as the marketing header. */}
+            <SearchPalette signedIn />
+
             {/* Same control as the marketing header, so switching language
                 keeps you on the current app page rather than sending you
                 back to the site. */}
@@ -387,7 +396,9 @@ export function AppShell({
           </div>
         </header>
 
-        <main className="min-w-0 flex-1 bg-white">{children}</main>
+        <PageTransition>
+          <main className="min-w-0 flex-1 bg-white">{children}</main>
+        </PageTransition>
       </div>
     </div>
   );
