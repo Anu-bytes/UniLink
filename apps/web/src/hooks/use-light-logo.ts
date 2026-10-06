@@ -2,8 +2,12 @@
 
 import { useCallback, useState } from "react";
 
-// One result per logo URL for the whole page session.
-const cache = new Map<string, boolean>();
+// One result per logo URL for the whole page session: the recoloured image
+// as a data URL, or null when the logo is fine as it is (or unreadable).
+const cache = new Map<string, string | null>();
+
+// The site's dark text colour (#1F2A44). Near-white marks are mapped to it.
+const DARK = [31, 42, 68] as const;
 
 /**
  * Whether a logo is mostly light marks on a transparent background (white
@@ -38,22 +42,65 @@ function isLightLogo(image: HTMLImageElement): boolean {
 }
 
 /**
- * `light` is true once the image has loaded and turned out to be a light
- * logo, so the caller can put it on a dark background. Pass `ref` to the
- * <img> (it also handles images that finished loading before hydration).
+ * Redraws a light logo for a white background: only the neutral (white and
+ * grey) pixels are flipped, white becoming the site's dark text colour, so
+ * every coloured part (a red star, a blue crest) keeps its exact brand
+ * colour. A whole-image CSS invert turned those colours into their negative.
+ */
+function recolourLightLogo(image: HTMLImageElement): string | null {
+  try {
+    const scale = Math.min(1, 480 / Math.max(image.naturalWidth, image.naturalHeight));
+    const width = Math.max(1, Math.round(image.naturalWidth * scale));
+    const height = Math.max(1, Math.round(image.naturalHeight * scale));
+    const canvas = document.createElement("canvas");
+    canvas.width = width;
+    canvas.height = height;
+    const context = canvas.getContext("2d", { willReadFrequently: true });
+    if (!context) return null;
+    context.drawImage(image, 0, 0, width, height);
+    const pixels = context.getImageData(0, 0, width, height);
+    const { data } = pixels;
+    for (let i = 0; i < data.length; i += 4) {
+      if (data[i + 3] === 0) continue;
+      const r = data[i];
+      const g = data[i + 1];
+      const b = data[i + 2];
+      // Saturated pixels are brand colour: leave them alone.
+      if (Math.max(r, g, b) - Math.min(r, g, b) > 48) continue;
+      // Neutral pixels: white maps to the dark colour, black to white, greys
+      // in between, so anti-aliased edges stay smooth.
+      const lightness = (0.299 * r + 0.587 * g + 0.114 * b) / 255;
+      data[i] = Math.round(DARK[0] + (255 - DARK[0]) * (1 - lightness));
+      data[i + 1] = Math.round(DARK[1] + (255 - DARK[1]) * (1 - lightness));
+      data[i + 2] = Math.round(DARK[2] + (255 - DARK[2]) * (1 - lightness));
+    }
+    context.putImageData(pixels, 0, 0);
+    return canvas.toDataURL("image/png");
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * For logos that are white marks on transparency, returns a recoloured
+ * version (`src`) that reads on a white tile, keeping the brand colours.
+ * Use `src ?? originalUrl` as the <img> source and pass `ref` to the <img>
+ * (it also handles images that finished loading before hydration).
  */
 export function useLightLogo(src: string | null | undefined) {
-  const [light, setLight] = useState(() => (src ? (cache.get(src) ?? false) : false));
+  const [recoloured, setRecoloured] = useState<string | null>(() =>
+    src ? (cache.get(src) ?? null) : null,
+  );
 
   const check = useCallback(
     (image: HTMLImageElement) => {
       if (!src) return;
       let value = cache.get(src);
       if (value === undefined) {
-        value = isLightLogo(image);
+        value = isLightLogo(image) ? recolourLightLogo(image) : null;
         cache.set(src, value);
       }
-      setLight(value);
+      setRecoloured(value);
     },
     [src],
   );
@@ -61,11 +108,13 @@ export function useLightLogo(src: string | null | undefined) {
   const ref = useCallback(
     (image: HTMLImageElement | null) => {
       if (!image) return;
+      // Once swapped to the recoloured data URL, there is nothing to check.
+      if (image.src.startsWith("data:")) return;
       if (image.complete && image.naturalWidth > 0) check(image);
       else image.addEventListener("load", () => check(image), { once: true });
     },
     [check],
   );
 
-  return { light, ref };
+  return { src: recoloured, ref };
 }
