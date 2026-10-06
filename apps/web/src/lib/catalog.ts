@@ -169,31 +169,71 @@ const universityCardSelect = {
 // without this every hit re-runs 7 queries. Cached per locale for a short
 // window — cheap to keep fresh, and it takes the load off the pooled
 // connection under concurrent traffic.
-export const getLandingCatalog = unstable_cache(
+//
+// A result with a failed query is never cached: it is thrown out of the cache
+// callback (unstable_cache does not store throws) and served for that one
+// request only. Caching it used to pin an empty featured slider and
+// testimonials list on the homepage for the whole window after a single
+// pooler hiccup.
+class PartialLandingCatalog extends Error {
+  constructor(readonly data: LandingCatalogData) {
+    super("Landing catalogue incomplete; not caching");
+  }
+}
+
+const getLandingCatalogCached = unstable_cache(
   async (locale: string): Promise<LandingCatalogData> => {
-    return getLandingCatalogUncached(locale);
+    const { data, failed } = await getLandingCatalogUncached(locale);
+    if (failed) throw new PartialLandingCatalog(data);
+    return data;
   },
   ["landing-catalog"],
   { revalidate: 120 },
 );
+
+export async function getLandingCatalog(
+  locale: string,
+): Promise<LandingCatalogData> {
+  try {
+    return await getLandingCatalogCached(locale);
+  } catch (error) {
+    if (error instanceof PartialLandingCatalog) return error.data;
+    throw error;
+  }
+}
 
 // Each query below is independent (a broken Scholarship query has nothing to
 // do with whether the University count works), so they're settled rather
 // than awaited as one unit: one failing query used to zero out every stat on
 // the page, including the ones that had nothing wrong with them. Labelled so
 // a failure is traceable to the actual query in server logs instead of a
-// single opaque "landing catalogue" error.
-async function settled<T>(label: string, fallback: T, query: Promise<T>): Promise<T> {
-  const result = await Promise.allSettled([query]);
-  const [outcome] = result;
-  if (outcome.status === "fulfilled") return outcome.value;
-  console.error(`Landing catalogue query failed: ${label}`, outcome.reason);
+// single opaque "landing catalogue" error. A failure is retried once (most
+// are momentary pooler drops) before falling back.
+async function settled<T>(
+  label: string,
+  fallback: T,
+  query: () => Promise<T>,
+  failures: string[],
+): Promise<T> {
+  for (let attempt = 0; attempt < 2; attempt++) {
+    try {
+      return await query();
+    } catch (error) {
+      if (attempt === 0) {
+        await new Promise((resolve) => setTimeout(resolve, 200));
+        continue;
+      }
+      console.error(`Landing catalogue query failed: ${label}`, error);
+    }
+  }
+  failures.push(label);
   return fallback;
 }
 
 async function getLandingCatalogUncached(
   locale: string,
-): Promise<LandingCatalogData> {
+): Promise<{ data: LandingCatalogData; failed: boolean }> {
+  const failures: string[] = [];
   const [
     universities,
     testimonials,
@@ -206,54 +246,68 @@ async function getLandingCatalogUncached(
     settled(
       "featured universities",
       [],
-      prisma.university.findMany({
-        where: { ...publishedUniversityWhere, isFeatured: true },
-        orderBy: [{ name: "asc" }],
-        take: 9,
-        select: universityCardSelect,
-      }),
+      () =>
+        prisma.university.findMany({
+          where: { ...publishedUniversityWhere, isFeatured: true },
+          orderBy: [{ name: "asc" }],
+          take: 9,
+          select: universityCardSelect,
+        }),
+      failures,
     ),
     settled(
       "testimonials",
       [],
-      prisma.testimonial.findMany({
-        where: { isPublished: true },
-        orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
-        take: 6,
-      }),
+      () =>
+        prisma.testimonial.findMany({
+          where: { isPublished: true },
+          orderBy: [{ sortOrder: "asc" }, { createdAt: "asc" }],
+          take: 6,
+        }),
+      failures,
     ),
     settled(
       "university count",
       0,
-      prisma.university.count({ where: publishedUniversityWhere }),
+      () =>
+        prisma.university.count({ where: publishedUniversityWhere }),
+      failures,
     ),
     settled(
       "program count",
       0,
-      prisma.program.count({ where: { isPublished: true } }),
+      () =>
+        prisma.program.count({ where: { isPublished: true } }),
+      failures,
     ),
     settled(
       "student count",
       0,
-      prisma.user.count({ where: { role: "STUDENT" } }),
+      () =>
+        prisma.user.count({ where: { role: "STUDENT" } }),
+      failures,
     ),
     settled(
       "cities",
       [],
-      prisma.university.findMany({
-        where: publishedUniversityWhere,
-        distinct: ["city"],
-        select: { city: true },
-      }),
+      () =>
+        prisma.university.findMany({
+          where: publishedUniversityWhere,
+          distinct: ["city"],
+          select: { city: true },
+        }),
+      failures,
     ),
     settled(
       "scholarship count",
       0,
-      prisma.scholarship.count({ where: { isPublished: true } }),
+      () =>
+        prisma.scholarship.count({ where: { isPublished: true } }),
+      failures,
     ),
   ]);
 
-  return {
+  const data: LandingCatalogData = {
     universities: universities.map((university) =>
       mapUniversity(locale, university),
     ),
@@ -276,6 +330,7 @@ async function getLandingCatalogUncached(
       scholarshipCount,
     ],
   };
+  return { data, failed: failures.length > 0 };
 }
 
 export type UniversityDirectoryFilters = {
