@@ -33,8 +33,8 @@ export async function SiteHeader() {
   // Cairo renders visually smaller than its metric size, so the Arabic nav
   // needs a larger px value than the Latin one to read at the same weight.
   const navLinkSize = isArabic
-    ? "text-[17px]"
-    : "text-[15px]";
+    ? "text-[19px]"
+    : "text-base";
 
   // Universities is intentionally absent here: it is reachable from the
   // footer's quick links (and from in-page CTAs), not the main nav.
