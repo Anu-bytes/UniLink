@@ -17,8 +17,11 @@ const SIZES = {
  * A university's short name ("BUE", "GUC") as a badge, so it reads at a
  * glance instead of trailing the full name as small grey "(BUE)" text.
  * Latin letters even on the Arabic site (that's how these are written and
- * recognised locally), so it's forced left-to-right rather than flipping
- * with the page direction.
+ * recognised locally), so the text is forced left-to-right rather than
+ * flipping with the page direction. Only the inner text gets `dir="ltr"`:
+ * logical position classes passed in (`start-3`, `end-3`) resolve against
+ * the element's own direction, so on the badge itself they would point the
+ * wrong way on the Arabic site.
  */
 export function AcronymBadge({
   acronym,
@@ -33,7 +36,6 @@ export function AcronymBadge({
 }) {
   return (
     <span
-      dir="ltr"
       className={cn(
         "inline-flex shrink-0 items-center font-extrabold uppercase leading-none tracking-wider",
         VARIANTS[variant],
@@ -41,7 +43,7 @@ export function AcronymBadge({
         className,
       )}
     >
-      {acronym}
+      <span dir="ltr">{acronym}</span>
     </span>
   );
 }

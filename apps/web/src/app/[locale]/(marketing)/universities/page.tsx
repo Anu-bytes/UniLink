@@ -15,6 +15,7 @@ import { ViewTransition } from "react";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareToggle } from "@/components/app/university-compare-toggle";
+import { UniversitySaveToggle } from "@/components/app/university-save-toggle";
 import { UniversityLogo } from "@/components/university-logo";
 import { AcronymBadge } from "@/components/university/acronym-badge";
 import { AdvancedSearchPromo } from "@/components/university/advanced-search-promo";
@@ -124,7 +125,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
 
         {universities.length > 0 ? (
           <>
-            <div className="mt-4 grid gap-3 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
+            <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 xl:gap-5">
               {universities.map((university, index) => (
                 <UniversityCard key={university.id} university={university} index={index} />
               ))}
@@ -258,12 +259,15 @@ async function UniversityCard({
           />
         ) : null}
 
-        <UniversityCompareToggle
-          id={university.id}
-          name={university.name}
-          logoUrl={university.logoUrl}
-          className="pointer-events-auto absolute bottom-2.5 end-2.5 sm:bottom-1.5 sm:end-1.5 sm:h-7 sm:px-2.5 sm:text-[11px]"
-        />
+        <div className="pointer-events-auto absolute bottom-2.5 end-2.5 flex items-center gap-1.5 sm:bottom-1.5 sm:end-1.5 sm:gap-1">
+          <UniversitySaveToggle id={university.id} className="sm:size-7" />
+          <UniversityCompareToggle
+            id={university.id}
+            name={university.name}
+            logoUrl={university.logoUrl}
+            className="sm:h-7 sm:px-2.5 sm:text-[11px]"
+          />
+        </div>
       </div>
 
       <div className="pointer-events-none relative flex flex-1 flex-col p-3.5 sm:p-2.5">

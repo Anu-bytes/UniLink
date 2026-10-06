@@ -4,6 +4,7 @@ import { Heart } from "lucide-react";
 import { useState } from "react";
 
 import { Link, useRouter } from "@/i18n/navigation";
+import { setUniversitySaved } from "@/components/app/saved-universities-store";
 import { cn } from "@/lib/utils";
 
 /**
@@ -62,6 +63,8 @@ export function UniversityLikeButton({
         body: JSON.stringify({ universityId }),
       });
       if (!response.ok) throw new Error(await response.text());
+      // Keep any card hearts elsewhere on the page in step.
+      setUniversitySaved(universityId, next);
       // The header's saved-faculties count and any "Saved" list elsewhere
       // read from a server component, so they need a fresh render to notice.
       router.refresh();

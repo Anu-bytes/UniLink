@@ -109,7 +109,7 @@ export function AccountMenu({ user }: { user: SessionUser }) {
         className="flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white py-1 ps-1 pe-3 transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
       >
         <Avatar user={user} />
-        <span className="hidden max-w-32 truncate text-sm font-semibold text-[#1F2A44] xl:block">
+        <span className="hidden max-w-28 truncate text-sm font-semibold text-[#1F2A44] 2xl:block">
           {displayName}
         </span>
         <ChevronDown

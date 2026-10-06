@@ -6,6 +6,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareToggle } from "@/components/app/university-compare-toggle";
+import { UniversitySaveToggle } from "@/components/app/university-save-toggle";
 import { UniversityLogo } from "@/components/university-logo";
 import { AcronymBadge } from "@/components/university/acronym-badge";
 import { useMediaQuery } from "@/hooks/use-media-query";
@@ -328,6 +329,11 @@ export function FeaturedUniversities({
               : // Centres a short row, but caps at the container width so a
                 // long one still scrolls from its first card.
                 "mx-auto w-fit max-w-full",
+            // Soft edges so cards scrolling past the container don't get
+            // sliced off mid-card.
+            !compact &&
+              !fits &&
+              "[mask-image:linear-gradient(to_right,transparent,black_3rem,black_calc(100%-3rem),transparent)]",
           )}
         >
           {trackItems.map(({ university, clone }, index) => (
@@ -621,7 +627,7 @@ function UniversityTile({
         </dl>
 
         <div className="mt-auto flex items-center justify-between gap-2 pt-3">
-          <span className="inline-flex items-center gap-1 text-sm font-semibold text-[#1E6DEB] transition-colors group-hover:text-[#1859c4]">
+          <span className="inline-flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-[#1E6DEB] transition-colors group-hover:text-[#1859c4]">
             {viewDetailsLabel}
             <ArrowRight
               className="size-4 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
@@ -629,12 +635,15 @@ function UniversityTile({
             />
           </span>
           {decorative ? null : (
-            <UniversityCompareToggle
-              id={university.id}
-              name={university.name}
-              logoUrl={university.logoUrl}
-              className="pointer-events-auto shadow-none ring-slate-200"
-            />
+            <span className="pointer-events-auto relative z-10 flex items-center gap-1.5">
+              <UniversitySaveToggle id={university.id} className="size-7 shadow-none ring-slate-200" />
+              <UniversityCompareToggle
+                id={university.id}
+                name={university.name}
+                logoUrl={university.logoUrl}
+                className="h-7 px-2.5 text-[11px] shadow-none ring-slate-200"
+              />
+            </span>
           )}
         </div>
       </div>

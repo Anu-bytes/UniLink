@@ -5,6 +5,7 @@ import { auth } from "@/auth";
 import { AppShell } from "@/components/app/app-shell";
 import { CompareProvider } from "@/components/app/compare-context";
 import { CompareTray } from "@/components/app/compare-tray";
+import { SiteBottomNav } from "@/components/site-bottom-nav";
 import { SavedProvider } from "@/components/app/saved-context";
 import { prisma } from "@/lib/prisma";
 
@@ -58,6 +59,7 @@ export default async function AppLayout({
           {children}
         </AppShell>
         <CompareTray />
+        <SiteBottomNav />
       </CompareProvider>
     </SavedProvider>
   );

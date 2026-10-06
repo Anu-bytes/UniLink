@@ -33,8 +33,8 @@ export async function SiteHeader() {
   // Cairo renders visually smaller than its metric size, so the Arabic nav
   // needs a larger px value than the Latin one to read at the same weight.
   const navLinkSize = isArabic
-    ? "text-[21px] xl:text-[24px]"
-    : "text-[17px] xl:text-[19px]";
+    ? "text-[17px]"
+    : "text-[15px]";
 
   // Universities is intentionally absent here: it is reachable from the
   // footer's quick links (and from in-page CTAs), not the main nav.
@@ -47,22 +47,22 @@ export async function SiteHeader() {
 
   return (
     <StickyHeaderShell className={fontClass}>
-      <div className="mx-auto flex h-16 max-w-7xl items-center justify-between gap-3 px-4 md:h-20 md:px-6 lg:px-8">
-        <Logo className="min-h-11 shrink-0 [&_img]:h-9 md:[&_img]:h-12" />
+      <div className="mx-auto flex h-16 max-w-[88rem] items-center justify-between gap-3 px-4 md:h-20 md:px-6 lg:px-8">
+        <Logo className="min-h-11 shrink-0 [&_img]:h-9 md:[&_img]:h-11" />
 
         <TopNavLinks links={links} sizeClassName={navLinkSize} />
 
-        <div className="flex items-center gap-2 xl:gap-3">
+        <div className="flex shrink-0 items-center gap-2 xl:gap-2.5">
           <SearchPalette signedIn={Boolean(user)} />
 
-          <div className="hidden items-center gap-2 lg:flex xl:gap-3">
+          <div className="hidden items-center gap-2 lg:flex xl:gap-2.5 [&>*]:shrink-0">
             <LanguageSwitcher />
 
             {user ? (
               <>
                 <Link
                   href="/app/search"
-                  className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+                  className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-[15px] font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:px-5"
                 >
                   {t("searchPrograms")}
                 </Link>
@@ -75,14 +75,14 @@ export async function SiteHeader() {
                     it is hidden here but the hamburger is already gone. */}
                 <Link
                   href="/onboarding"
-                  className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-base font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-5 xl:text-[18px]"
+                  className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[8px] border border-[#0064E1] bg-white px-4 text-[15px] font-bold text-[#1E6DEB] transition-colors hover:bg-[#1E6DEB]/5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:px-5"
                 >
                   {t("registerAsStudent")}
                 </Link>
 
                 <Link
                   href="/login"
-                  className="inline-flex h-12 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-base font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:h-14 xl:px-6 xl:text-[18px]"
+                  className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-[15px] font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:px-5"
                 >
                   {t("login")}
                 </Link>

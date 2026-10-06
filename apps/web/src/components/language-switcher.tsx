@@ -37,7 +37,7 @@ export function LanguageSwitcher({ onBeforeChange }: { onBeforeChange?: (navigat
       role="group"
       aria-label="Change language"
       className={cn(
-        "relative inline-grid h-10 grid-cols-2 rounded-full border border-border bg-muted p-1 text-sm font-semibold",
+        "relative inline-grid h-10 shrink-0 grid-cols-2 whitespace-nowrap rounded-full border border-border bg-muted p-1 text-sm font-semibold",
         isPending && "opacity-60",
       )}
     >

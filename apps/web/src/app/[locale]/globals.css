@@ -449,6 +449,25 @@ html[lang="ar"] body {
     animation: ul-tray-in 0.32s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
   }
 
+  /* Heart "pop" when a university is saved. */
+  @keyframes ul-heart-pop {
+    0% {
+      transform: scale(1);
+    }
+    35% {
+      transform: scale(1.35);
+    }
+    60% {
+      transform: scale(0.9);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  .ul-heart-pop {
+    animation: ul-heart-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+
   /* Search palette: the panel springs in, its backdrop fades, and result rows
      cascade in a few ms apart (delay set inline per row). */
   @keyframes ul-palette-in {
@@ -1121,7 +1140,8 @@ html[lang="ar"] body {
   .ul-palette[open],
   .ul-palette[open]::backdrop,
   .ul-palette-row,
-  .ul-card-in {
+  .ul-card-in,
+  .ul-heart-pop {
     animation: none;
   }
   .ul-spotlight::after,

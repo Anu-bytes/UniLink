@@ -17,11 +17,13 @@ export default async function ForgotPasswordPage() {
     emailPlaceholder: t("emailPlaceholder"),
     sendCode: t("sendCode"),
     codeStepTitle: t("codeStepTitle"),
-    codeStepSubtitle: t("codeStepSubtitle"),
+    // Raw templates: the form fills in {email} and {seconds} itself, so
+    // formatting them here (with no values) only raised errors.
+    codeStepSubtitle: t.raw("codeStepSubtitle") as string,
     codeLabel: t("codeLabel"),
     verify: t("verify"),
     resend: t("resend"),
-    resendIn: t("resendIn"),
+    resendIn: t.raw("resendIn") as string,
     changeEmail: t("changeEmail"),
     passwordStepTitle: t("passwordStepTitle"),
     passwordStepSubtitle: t("passwordStepSubtitle"),

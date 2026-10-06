@@ -1,5 +1,8 @@
+"use client";
+
 import Image from "next/image";
 
+import { useLightLogo } from "@/hooks/use-light-logo";
 import { cn } from "@/lib/utils";
 
 /**
@@ -20,18 +23,33 @@ export function UniversityLogo({
   /** @deprecated unused now that the fallback is an icon, not initials. */
   textClassName?: string;
 }) {
+  // White-on-transparent logos vanish on the white badge, so they are
+  // recoloured dark (inverted, then hue-rotated back so brand colours stay
+  // close to the original), detected from the image itself once it loads.
+  const { light, ref } = useLightLogo(logoUrl);
+
   if (logoUrl) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- logos come from
-      // arbitrary partner hosts, which next/image would need whitelisted.
-      <img
-        src={logoUrl}
-        alt=""
+      // The badge (white circle, border, any size/position from `className`)
+      // is the wrapper, so recolouring a light logo only touches the logo,
+      // never the white background behind it.
+      <span
         className={cn(
-          "size-10 shrink-0 rounded-full border border-slate-200 bg-white object-contain p-1",
+          "inline-flex size-10 shrink-0 items-center justify-center overflow-hidden rounded-full border border-slate-200 bg-white p-1",
           className,
         )}
-      />
+      >
+        {/* eslint-disable-next-line @next/next/no-img-element -- logos come from arbitrary partner hosts, which next/image would need whitelisted. */}
+        <img
+          ref={ref}
+          src={logoUrl}
+          alt=""
+          className={cn(
+            "size-full object-contain",
+            light && "[filter:invert(1)_hue-rotate(180deg)]",
+          )}
+        />
+      </span>
     );
   }
 
