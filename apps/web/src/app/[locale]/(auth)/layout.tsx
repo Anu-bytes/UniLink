@@ -1,4 +1,5 @@
 import { Logo } from "@/components/logo";
+import { SiteBottomNav } from "@/components/site-bottom-nav";
 
 export default function AuthLayout({
   children,
@@ -13,6 +14,7 @@ export default function AuthLayout({
       <main className="flex flex-1 items-center justify-center px-4 pb-16">
         {children}
       </main>
+      <SiteBottomNav />
     </div>
   );
 }

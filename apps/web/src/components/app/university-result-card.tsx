@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareButton } from "@/components/app/university-compare-button";
+import { UniversitySaveToggle } from "@/components/app/university-save-toggle";
 import { UniversityLogo } from "@/components/university-logo";
 import { AcronymBadge } from "@/components/university/acronym-badge";
 import type { UniversityCardData } from "@/lib/catalog";
@@ -93,12 +94,18 @@ export async function UniversityResultCard({
               aria-hidden
             />
           </Link>
-          <UniversityCompareButton
-            id={university.id}
-            name={university.name}
-            logoUrl={university.logoUrl}
-            className="w-full"
-          />
+          <div className="flex items-center gap-2">
+            <UniversityCompareButton
+              id={university.id}
+              name={university.name}
+              logoUrl={university.logoUrl}
+              className="w-full"
+            />
+            <UniversitySaveToggle
+              id={university.id}
+              className="size-10 rounded-md border border-slate-200 shadow-none ring-0"
+            />
+          </div>
         </div>
       </div>
     </article>

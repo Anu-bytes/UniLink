@@ -178,9 +178,9 @@ export function AppShell({
                 </span>
               ) : (
                 <>
-                  <span>{t(`sidebar.${item.labelKey}`)}</span>
+                  <span className="whitespace-nowrap">{t(`sidebar.${item.labelKey}`)}</span>
                   {item.comingSoon ? (
-                    <span className="ms-auto shrink-0 rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-[#B77714]">
+                    <span className="ms-auto shrink-0 rounded-full bg-[#FFF6E5] px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide text-[#B77714]">
                       {t("comingSoon")}
                     </span>
                   ) : null}
@@ -242,7 +242,7 @@ export function AppShell({
       <aside
         className={cn(
           "sticky top-0 hidden h-dvh shrink-0 border-e border-slate-200 bg-white transition-[width] duration-200 lg:block",
-          collapsed ? "w-[68px]" : "w-[220px]",
+          collapsed ? "w-[68px]" : "w-[240px]",
         )}
       >
         {sidebar}
@@ -257,7 +257,7 @@ export function AppShell({
             onClick={() => setDrawerOpen(false)}
             className="absolute inset-0 bg-slate-900/40"
           />
-          <div className="absolute inset-y-0 start-0 w-[220px] bg-white shadow-xl">
+          <div className="absolute inset-y-0 start-0 w-[240px] bg-white shadow-xl">
             {sidebar}
           </div>
         </div>
@@ -278,9 +278,9 @@ export function AppShell({
             <Menu className="size-5" aria-hidden />
           </button>
 
-          <div className="ms-auto flex items-center gap-2 sm:gap-3">
+          <div className="ms-auto flex items-center gap-2 sm:gap-3 [&>*]:shrink-0">
             {/* Site-wide instant search (Ctrl/Cmd+K), same as the marketing header. */}
-            <SearchPalette signedIn />
+            <SearchPalette signedIn compactOnMobile />
 
             {/* Same control as the marketing header, so switching language
                 keeps you on the current app page rather than sending you

@@ -37,7 +37,14 @@ const noopSubscribe = () => () => {};
  * every published university by name (either language), acronym, district,
  * governorate or faculty as you type, with full keyboard control.
  */
-export function SearchPalette({ signedIn }: { signedIn: boolean }) {
+export function SearchPalette({
+  signedIn,
+  compactOnMobile = false,
+}: {
+  signedIn: boolean;
+  /** Icon-only on phones too (for headers with little room). */
+  compactOnMobile?: boolean;
+}) {
   const t = useTranslations("Palette");
   const tCatalog = useTranslations("Catalog");
   const locale = useLocale();
@@ -220,7 +227,9 @@ export function SearchPalette({ signedIn }: { signedIn: boolean }) {
         {/* Icon-only in the 1024-1279px range, where the full desktop header
             (links, language, both account buttons) has no room for the
             label; labelled everywhere else. */}
-        <span className="lg:max-xl:sr-only">{t("trigger")}</span>
+        <span className={cn("lg:max-xl:sr-only", compactOnMobile && "max-sm:sr-only")}>
+          {t("trigger")}
+        </span>
       </button>
 
       <dialog

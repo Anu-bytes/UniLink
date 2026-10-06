@@ -17,15 +17,18 @@ const ICONS = {
 export type BottomNavItem = {
   key: keyof typeof ICONS;
   href: string;
-  /** Path that marks this tab as current (differs from href for guests, whose
-   * Saved/Account taps go to the login page first). */
-  match: string;
+  /** Paths that mark this tab as current (they differ from href for guests,
+   * whose Saved/Account taps go to the login page first). "/" and "/app"
+   * only match exactly; anything else also matches its sub-pages. */
+  match: string[];
   label: string;
 };
 
 /**
  * App-style tab bar pinned to the bottom of the screen on phones and tablets
- * (hidden from lg up, where the header carries the same links). The middle
+ * (hidden from lg up, where the header carries the same links). Rendered by
+ * the public site, the signed-in app and the auth pages, so it is there on
+ * nearly every page. The middle
  * tab is the raised search button. The `data-bottom-nav` hook lets other
  * fixed-bottom UI (the compare tray) sit above it; see globals.css.
  */
@@ -44,7 +47,9 @@ export function BottomNav({ items, label }: { items: BottomNavItem[]; label: str
         <ul className="mx-auto grid h-[4.25rem] max-w-lg grid-cols-5 items-stretch">
           {items.map((item) => {
             const Icon = ICONS[item.key];
-            const active = isNavActive(pathname, item.match);
+            const active = item.match.some((path) =>
+              path === "/app" ? pathname === "/app" : isNavActive(pathname, path),
+            );
             const raised = item.key === "search";
 
             return (
@@ -58,7 +63,7 @@ export function BottomNav({ items, label }: { items: BottomNavItem[]; label: str
                   )}
                 >
                   {raised ? (
-                    <span className="-mt-7 flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-[0_10px_24px_-8px_rgba(30,109,235,0.85)] ring-4 ring-white transition-transform active:scale-95">
+                    <span className="-mt-[34px] flex size-14 items-center justify-center rounded-full bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-[0_10px_24px_-8px_rgba(30,109,235,0.85)] ring-4 ring-white transition-transform active:scale-95">
                       <Icon className="size-6" strokeWidth={2.25} aria-hidden />
                     </span>
                   ) : (

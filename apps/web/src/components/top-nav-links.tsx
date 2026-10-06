@@ -20,27 +20,30 @@ export function TopNavLinks({
   const pathname = usePathname();
 
   return (
-    <nav className="hidden items-center gap-8 lg:flex xl:gap-9">
-      {links.map((link) => {
-        const active = isNavActive(pathname, link.href);
-        return (
-          <Link
-            key={link.href}
-            href={link.href}
-            aria-current={active ? "page" : undefined}
-            className={cn(
-              "relative inline-flex min-h-11 items-center whitespace-nowrap font-semibold leading-8 transition-colors hover:text-[#1E6DEB] focus-visible:rounded-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
-              "after:absolute after:inset-x-0 after:-bottom-0.5 after:h-0.5 after:origin-center after:rounded-full after:bg-[#1E6DEB] after:transition-transform after:duration-300 after:content-['']",
-              active
-                ? "text-[#1E6DEB] after:scale-x-100"
-                : "text-[#1F2A44] after:scale-x-0 after:bg-[#1E6DEB]/45 hover:after:scale-x-100",
-              sizeClassName,
-            )}
-          >
-            {link.label}
-          </Link>
-        );
-      })}
+    <nav className="mx-4 hidden min-w-0 flex-1 justify-center lg:flex xl:mx-6">
+      {/* One soft pill holds the links, so they read as a single group with
+          clear separation from the logo and the actions on either side. */}
+      <div className="flex shrink-0 items-center gap-0.5 rounded-full bg-[#F3F6FB] p-1 ring-1 ring-inset ring-[#E3EAF4] xl:gap-1">
+        {links.map((link) => {
+          const active = isNavActive(pathname, link.href);
+          return (
+            <Link
+              key={link.href}
+              href={link.href}
+              aria-current={active ? "page" : undefined}
+              className={cn(
+                "inline-flex h-9 items-center whitespace-nowrap rounded-full px-3.5 font-semibold transition-all duration-200 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:px-4",
+                active
+                  ? "bg-white text-[#1E6DEB] shadow-[0_2px_8px_-2px_rgba(15,23,42,0.15)] ring-1 ring-[#E3EAF4]"
+                  : "text-[#3F4A63] hover:bg-white/70 hover:text-[#1E6DEB]",
+                sizeClassName,
+              )}
+            >
+              {link.label}
+            </Link>
+          );
+        })}
+      </div>
     </nav>
   );
 }

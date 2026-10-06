@@ -206,17 +206,17 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         </ul>
       ) : null}
 
-      <dl className="mt-8 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <dl className="mt-8 grid grid-cols-2 gap-3 sm:gap-4 lg:grid-cols-3">
         {facts.map((fact) => (
           <div
             key={fact.label}
-            className="rounded-2xl border border-slate-200 p-4"
+            className="min-w-0 rounded-2xl border border-slate-200 p-3.5 sm:p-4"
           >
             <dt className="flex items-center gap-2 text-sm font-semibold text-[#5a6072]">
-              <fact.icon className="size-4 text-[#1E6DEB]" aria-hidden />
+              <fact.icon className="size-4 shrink-0 text-[#1E6DEB]" aria-hidden />
               {fact.label}
             </dt>
-            <dd className="mt-2 text-base font-bold text-[#1F2A44]">
+            <dd className="mt-2 text-[15px] font-bold [overflow-wrap:anywhere] text-[#1F2A44] sm:text-base">
               {fact.value}
             </dd>
           </div>
@@ -268,7 +268,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
             {program.intakes.map((intake) => (
               <li
                 key={intake.id}
-                className="rounded-2xl border border-slate-200 p-4"
+                className="min-w-0 rounded-2xl border border-slate-200 p-3.5 sm:p-4"
               >
                 <p className="font-semibold text-[#1F2A44]">
                   {tCatalog(`seasons.${intake.season}`)}{" "}

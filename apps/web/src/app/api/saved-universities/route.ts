@@ -17,6 +17,31 @@ async function readUniversityId(request: Request) {
   }
 }
 
+/**
+ * The signed-in visitor's saved university ids, for the heart toggles on
+ * university cards across the site. Guests get `signedIn: false` (not a 401),
+ * so a card can show the heart and send them to log in on click.
+ */
+export async function GET() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    return NextResponse.json(
+      { signedIn: false, ids: [] },
+      { headers: { "Cache-Control": "no-store" } },
+    );
+  }
+
+  const rows = await prisma.savedUniversity.findMany({
+    where: { userId: session.user.id },
+    select: { universityId: true },
+  });
+
+  return NextResponse.json(
+    { signedIn: true, ids: rows.map((row) => row.universityId) },
+    { headers: { "Cache-Control": "no-store" } },
+  );
+}
+
 export async function POST(request: Request) {
   const session = await auth();
   if (!session?.user?.id) {

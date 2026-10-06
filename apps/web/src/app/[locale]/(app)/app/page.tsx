@@ -71,18 +71,20 @@ export default async function AppHomePage() {
         </Link>
       </header>
 
-      <div className="mt-6 grid gap-4 sm:grid-cols-3">
+      {/* Three across even on phones: stacked, the three small numbers
+          filled a whole screen before any real content. */}
+      <div className="mt-6 grid grid-cols-3 gap-2.5 sm:gap-4">
         {stats.map((stat) => (
           <Link
             key={stat.label}
             href={stat.href}
-            className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md"
+            className="rounded-xl border border-slate-200 bg-white p-3 shadow-sm transition-shadow hover:shadow-md sm:p-5"
           >
-            <span className="flex size-10 items-center justify-center rounded-lg bg-[#EEF3FF] text-[#1E6DEB]">
-              <stat.icon className="size-5" aria-hidden />
+            <span className="flex size-8 items-center justify-center rounded-lg bg-[#EEF3FF] text-[#1E6DEB] sm:size-10">
+              <stat.icon className="size-4 sm:size-5" aria-hidden />
             </span>
-            <p className="mt-4 text-3xl font-bold text-[#1F2A44]">{stat.value}</p>
-            <p className="mt-1 text-sm text-[#5a6072]">{stat.label}</p>
+            <p className="mt-2.5 text-2xl font-bold text-[#1F2A44] sm:mt-4 sm:text-3xl">{stat.value}</p>
+            <p className="mt-1 text-xs leading-snug text-[#5a6072] sm:text-sm">{stat.label}</p>
           </Link>
         ))}
       </div>

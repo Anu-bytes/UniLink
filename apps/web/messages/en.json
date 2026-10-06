@@ -949,7 +949,7 @@
     "established": "Established",
     "facultiesStat": "Faculties",
     "programsStat": "Programs",
-    "facultiesCount": "+ {count}",
+    "facultiesCount": "+{count}",
     "save": "Save university",
     "saved": "Saved",
     "share": "Share",
