@@ -14,7 +14,13 @@ import {
 } from "lucide-react";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, type ComponentType } from "react";
+import {
+  useEffect,
+  useRef,
+  useState,
+  useSyncExternalStore,
+  type ComponentType,
+} from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { PageTransition } from "@/components/page-transition";
@@ -27,6 +33,25 @@ import { initialsAvatar } from "@/lib/format";
 import { isNavActive } from "@/lib/nav-active";
 
 const STORAGE_KEY = "unilink.sidebar.collapsed";
+// Same-tab change signal: the native `storage` event only fires in other tabs.
+const COLLAPSED_EVENT = "unilink:sidebar-collapsed";
+
+function readCollapsed() {
+  try {
+    return window.localStorage.getItem(STORAGE_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+function subscribeCollapsed(onChange: () => void) {
+  window.addEventListener(COLLAPSED_EVENT, onChange);
+  window.addEventListener("storage", onChange);
+  return () => {
+    window.removeEventListener(COLLAPSED_EVENT, onChange);
+    window.removeEventListener("storage", onChange);
+  };
+}
 
 type NavItem = {
   href: string;
@@ -61,29 +86,30 @@ export function AppShell({
   const pathname = usePathname();
   const { count: savedCount } = useSavedCount();
 
-  const [collapsed, setCollapsed] = useState(false);
-  const [drawerOpen, setDrawerOpen] = useState(false);
-  const [accountOpen, setAccountOpen] = useState(false);
+  // Read straight from storage; the server snapshot (expanded) keeps the
+  // first render identical on server and client.
+  const collapsed = useSyncExternalStore(
+    subscribeCollapsed,
+    readCollapsed,
+    () => false,
+  );
   const accountRef = useRef<HTMLDivElement>(null);
 
-  // Read the stored preference after mount so the server and client agree on
-  // the first render.
-  useEffect(() => {
-    setCollapsed(window.localStorage.getItem(STORAGE_KEY) === "1");
-  }, []);
-
-  // Covers navigation to a different route. Tapping the link for the route you
-  // are already on does not change the pathname, so the links close it directly
-  // as well.
-  useEffect(() => {
-    setDrawerOpen(false);
-    setAccountOpen(false);
-  }, [pathname]);
+  // The drawer and account menu remember the route they were opened on and
+  // only count as open while still on it, so navigating elsewhere closes them
+  // without a reset effect. Tapping the link for the route you are already on
+  // does not change the pathname, so the links close them directly as well.
+  const [drawerOpenAt, setDrawerOpenAt] = useState<string | null>(null);
+  const [accountOpenAt, setAccountOpenAt] = useState<string | null>(null);
+  const drawerOpen = drawerOpenAt === pathname;
+  const accountOpen = accountOpenAt === pathname;
+  const setDrawerOpen = (open: boolean) => setDrawerOpenAt(open ? pathname : null);
+  const setAccountOpen = (open: boolean) => setAccountOpenAt(open ? pathname : null);
 
   useEffect(() => {
     if (!drawerOpen) return;
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setDrawerOpen(false);
+      if (event.key === "Escape") setDrawerOpenAt(null);
     }
     document.addEventListener("keydown", onKeyDown);
     return () => document.removeEventListener("keydown", onKeyDown);
@@ -97,10 +123,10 @@ export function AppShell({
   useEffect(() => {
     if (!accountOpen) return;
     function onPointerDown(event: PointerEvent) {
-      if (!accountRef.current?.contains(event.target as Node)) setAccountOpen(false);
+      if (!accountRef.current?.contains(event.target as Node)) setAccountOpenAt(null);
     }
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setAccountOpen(false);
+      if (event.key === "Escape") setAccountOpenAt(null);
     }
     document.addEventListener("pointerdown", onPointerDown);
     document.addEventListener("keydown", onKeyDown);
@@ -111,11 +137,12 @@ export function AppShell({
   }, [accountOpen]);
 
   function toggleCollapsed() {
-    setCollapsed((previous) => {
-      const next = !previous;
-      window.localStorage.setItem(STORAGE_KEY, next ? "1" : "0");
-      return next;
-    });
+    try {
+      window.localStorage.setItem(STORAGE_KEY, collapsed ? "0" : "1");
+    } catch {
+      // Storage blocked (private mode etc.): the toggle just won't stick.
+    }
+    window.dispatchEvent(new Event(COLLAPSED_EVENT));
   }
 
   function isActive(item: NavItem) {
@@ -319,15 +346,15 @@ export function AppShell({
             <div ref={accountRef} className="relative">
               <button
                 type="button"
-                onClick={() => setAccountOpen((previous) => !previous)}
+                onClick={() => setAccountOpen(!accountOpen)}
                 aria-expanded={accountOpen}
                 aria-haspopup="menu"
                 className="flex size-10 cursor-pointer items-center justify-center rounded-full"
               >
                 <span className="sr-only">{t("account")}</span>
                 {user.image ? (
-                  // eslint-disable-next-line @next/next/no-img-element -- avatars
-                  // come from arbitrary OAuth hosts.
+                  // Avatars come from arbitrary OAuth hosts.
+                  // eslint-disable-next-line @next/next/no-img-element
                   <img
                     src={user.image}
                     alt=""
