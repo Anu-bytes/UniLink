@@ -55,7 +55,9 @@ test("programs map by field of study, with name rules for petroleum and Sinai ca
   assert.equal(program("artificial_intelligence")?.EQUIVALENT, 65);
   assert.equal(program("nursing")?.EGYPTIAN, 55);
   assert.equal(program("business_administration")?.EGYPTIAN, 53);
-  assert.equal(program("mass_communication"), null, "not in the published table");
+  assert.equal(program("mass_communication")?.category, "ARTS_HUMANITIES");
+  assert.equal(program("mass_communication", "Mass Communication", "msa-university")?.EGYPTIAN, 55);
+  assert.equal(program("unknown_field"), null, "fields outside the table stay without a limit");
 
   const arish = program("pharmacy", "Pharmacy – Arish Campus", "sinai-university");
   assert.deepEqual(arish, { category: "PHARMACY", branch: "ARISH", EGYPTIAN: 68, EQUIVALENT: 66 });
@@ -102,7 +104,7 @@ test("national programs: petroleum and science computing use the general rows; Z
   assert.deepEqual([nile("engineering")?.EGYPTIAN, nile("engineering")?.EQUIVALENT], [68, 70]);
   assert.equal(nile("engineering", "Petroleum Engineering")?.EGYPTIAN, 68);
   assert.equal(nile("science", "Computer Science")?.EGYPTIAN, 61);
-  assert.equal(nile("mass_communication"), null);
+  assert.equal(nile("mass_communication")?.EGYPTIAN, 53);
   assert.equal(
     admissionLimitFor({ universitySlug: "zewail-city-of-science-technology-and-innovation", universityType: "NATIONAL", fieldOfStudy: "engineering", programName: "Engineering" }),
     null,
