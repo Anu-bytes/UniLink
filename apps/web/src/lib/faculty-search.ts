@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 
 import { arabicAlifVariants } from "@/lib/arabic-text";
 import { localized, localizedOrNull } from "@/lib/catalog";
+import { certificateGroupFor, resolveMinGrade } from "@/lib/admission-limits";
 import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matching";
 import { prisma } from "@/lib/prisma";
 import {
@@ -83,6 +84,7 @@ const facultyInclude = {
   programs: {
     where: { isPublished: true },
     select: {
+      name: true,
       tuitionFee: true,
       currency: true,
       minGradePercent: true,
@@ -291,19 +293,23 @@ function mapFaculty(
     .map((program) => (program.tuitionFee ? Number(program.tuitionFee) : null))
     .filter((value): value is number => value != null);
 
-  const grades = row.programs
-    .map((program) => program.minGradePercent)
-    .filter((value): value is number => value != null);
+  // Each program's minimum for this student (published limit for their
+  // certificate when the program has no value of its own).
+  const group = certificateGroupFor(profile?.highSchoolSystem);
+  const minimums = row.programs.map(
+    (program) => resolveMinGrade(program, row.university, group).minGradePercent,
+  );
+  const grades = minimums.filter((value): value is number => value != null);
 
   // The faculty's score is its strongest program: a student searching a
   // faculty cares whether anything inside it fits them.
   const scores = profile
-    ? row.programs.map((program) =>
+    ? row.programs.map((program, index) =>
         scoreProgram(profile, {
           fieldOfStudy: program.fieldOfStudy,
           studyLevel: program.studyLevel,
           tuitionFee: program.tuitionFee ? Number(program.tuitionFee) : null,
-          minGradePercent: program.minGradePercent,
+          minGradePercent: minimums[index],
           englishRequirements: program.englishRequirements.map((entry) => ({
             test: entry.test as string,
             minScore: entry.minScore,

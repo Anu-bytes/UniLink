@@ -24,6 +24,9 @@ import {
 } from "@/lib/catalog";
 import { formatDate, formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
+import { certificateGroupFor, headlineMinGrade } from "@/lib/admission-limits";
+import { auth } from "@/auth";
+import { AdmissionLimitPanel } from "@/components/university/admission-limit-panel";
 
 export const dynamic = "force-dynamic";
 
@@ -45,6 +48,7 @@ const loadProgram = cache(async function loadProgram(
       university: { slug, publishedAt: { not: null } },
     },
     include: {
+      university: { select: { slug: true, type: true } },
       faculty: { select: { name: true, nameAr: true } },
       intakes: { orderBy: [{ year: "asc" }, { season: "asc" }] },
       englishRequirements: true,
@@ -71,7 +75,7 @@ const loadProgram = cache(async function loadProgram(
     currency: program.currency,
     applicationFee: program.applicationFee ? Number(program.applicationFee) : null,
     applicationFeeWaived: program.applicationFeeWaived,
-    minGradePercent: program.minGradePercent,
+    ...headlineMinGrade(program, program.university),
     coopAvailable: program.coopAvailable,
     tags: program.tags as string[],
     facultyName: program.faculty
@@ -119,6 +123,19 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 
   if (!university || !program) notFound();
 
+  // Highlight the signed-in student's certificate column.
+  const session = await auth();
+  const certificateGroup = session?.user?.id
+    ? certificateGroupFor(
+        (
+          await prisma.studentProfile.findUnique({
+            where: { userId: session.user.id },
+            select: { highSchoolSystem: true },
+          })
+        )?.highSchoolSystem,
+      )
+    : null;
+
   const years = yearsFromMonths(program.durationMonths);
   const duration =
     program.durationLabel ??
@@ -152,7 +169,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         : (formatMoney(locale, program.applicationFee, program.currency) ??
           t("notSpecified")),
     },
-    program.minGradePercent != null
+    program.minGradePercent != null && !program.admissionLimit
       ? {
           icon: Percent,
           label: t("minimumGrade"),
@@ -222,6 +239,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
           </div>
         ))}
       </dl>
+
+      {program.admissionLimit ? (
+        <AdmissionLimitPanel
+          limit={program.admissionLimit}
+          highlight={certificateGroup}
+          className="mt-4"
+        />
+      ) : null}
 
       {program.description ? (
         <section className="mt-10">

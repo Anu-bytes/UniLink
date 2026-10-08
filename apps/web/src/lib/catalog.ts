@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+import { headlineMinGrade, type AdmissionLimit } from "@/lib/admission-limits";
 import { arabicAlifVariants } from "@/lib/arabic-text";
 import {
   expandCityFilter,
@@ -751,7 +752,11 @@ export type UniversityDetailProgram = {
   currency: string;
   applicationFee: number | null;
   applicationFeeWaived: boolean;
+  /** Headline minimum: the program's own value, else the published limit for
+   *  Thanaweya Amma (the equivalent-certificates limit when only that exists). */
   minGradePercent: number | null;
+  /** The published 2026/2027 limit, both certificate groups, when it applies. */
+  admissionLimit: AdmissionLimit | null;
   tags: string[];
   description: string | null;
   coopAvailable: boolean;
@@ -976,7 +981,7 @@ async function getUniversityDetailUncached(
           ? Number(program.applicationFee)
           : null,
         applicationFeeWaived: program.applicationFeeWaived,
-        minGradePercent: program.minGradePercent,
+        ...headlineMinGrade(program, university),
         tags: program.tags,
         description: localizedOrNull(
           locale,

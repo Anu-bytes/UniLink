@@ -56,7 +56,25 @@
         "subtitle": "Explore and compare private and national universities in Egypt. Colleges, majors, fees, admission requirements, and scholarships, all in one place.",
         "cta": "Start searching now!",
         "searchBadge": "Egypt's first advanced faculty & university search",
-        "mapBadge": "Every university, one search away"
+        "mapBadge": "Every university, one search away",
+        "words": [
+          "Explore",
+          "Compare",
+          "Apply"
+        ],
+        "journeyTitle": "Your University Journey Starts Here",
+        "journeySubtitle": "Discover the right university, compare programs, and take the next step towards your future.",
+        "searchPlaceholder": "Search universities, faculties or cities…",
+        "searchButton": "Search",
+        "searchLabel": "Search universities",
+        "popularLabel": "Popular:",
+        "popular": [
+          "Medicine",
+          "Engineering",
+          "Computer science",
+          "Pharmacy",
+          "Business"
+        ]
       },
       "quickSearch": {
         "title": "Find your university in seconds",
@@ -1029,7 +1047,10 @@
     "notFoundTitle": "University not found",
     "notFoundBody": "This university is not published, or the link is out of date.",
     "backToUniversities": "Back to universities",
-    "searchPrograms": "Search all programs"
+    "searchPrograms": "Search all programs",
+    "tabsShort": {
+      "scores": "Min. scores"
+    }
   },
   "UniversityDirectory": {
     "searchLabel": "Search universities",
@@ -2403,5 +2424,50 @@
   },
   "Common": {
     "backToTop": "Back to top"
+  },
+  "Admission": {
+    "heading": "Minimum admission scores",
+    "year": "Academic year {year}",
+    "intro": "The lowest secondary-certificate percentage accepted for each group of faculties at this university this year. Find your certificate's column.",
+    "minimumToApply": "Minimum to apply",
+    "yourCertificate": "Your certificate",
+    "notOffered": "Not offered",
+    "disclaimer": "These are the officially published minimums for this type of university. A university can ask for a higher score, and limits can change when the admission round opens, so confirm with the university before applying.",
+    "notCovered": "No published minimum yet for: {list}",
+    "programMinimums": "Program minimums set by the university",
+    "universityScores": "Scores published by the university",
+    "empty": "Minimum scores for this university haven't been published yet.",
+    "facultiesHere": "At this university",
+    "groups": {
+      "EGYPTIAN": "Thanaweya Amma, Al-Azhar, STEM & Nile schools",
+      "EQUIVALENT": "Arab & foreign equivalent certificates"
+    },
+    "groupsShort": {
+      "EGYPTIAN": "Egyptian",
+      "EQUIVALENT": "Arab/foreign"
+    },
+    "branches": {
+      "ARISH": "Arish campus",
+      "QANTARA": "Qantara campus"
+    },
+    "categories": {
+      "MEDICINE": "Medicine",
+      "DENTISTRY": "Dentistry",
+      "PHYSICAL_THERAPY": "Physical therapy",
+      "PHARMACY": "Pharmacy",
+      "VETERINARY": "Veterinary medicine",
+      "ENGINEERING": "Engineering",
+      "PETROLEUM_ENGINEERING": "Petroleum engineering",
+      "COMPUTING": "Computers & information",
+      "COMPUTER_SCIENCE_IN_SCIENCE": "Computer science (faculties of science)",
+      "SCIENCES_HEALTH": "Biotechnology, health sciences, basic sciences & nursing",
+      "ARTS_HUMANITIES": "Arts, business, law, languages & humanities",
+      "TECHNOLOGICAL_UNIVERSITIES": "Technological universities"
+    },
+    "categoryNotes": {
+      "ARTS_HUMANITIES": "Arts and applied arts, agriculture, education, literature, languages and translation, social sciences and economics, business, law, tourism, hotels and archaeology.",
+      "TECHNOLOGICAL_UNIVERSITIES": "El Sewedy University of Technology and Saxony University."
+    },
+    "fullTableNote": "This university's faculties aren't listed on UniLink yet, so here is the full published table that applies to it."
   }
 }
