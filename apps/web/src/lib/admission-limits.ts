@@ -210,7 +210,10 @@ const FIELD_CATEGORY: Record<string, AdmissionCategory> = {
   law: "ARTS_HUMANITIES",
   tourism_hotels: "ARTS_HUMANITIES",
   archaeology_tourism: "ARTS_HUMANITIES",
-  // Not in the published table, so deliberately unmapped: mass_communication.
+  // Not named on its own in the published tables; mass communication is a
+  // social science and the film/music/performing-arts programs filed under it
+  // are arts, both listed in the arts and humanities row.
+  mass_communication: "ARTS_HUMANITIES",
 };
 
 /** Which published table a student's certificate is judged against. */
