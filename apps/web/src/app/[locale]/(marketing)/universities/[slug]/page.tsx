@@ -11,6 +11,9 @@ import {
   type UniversityTab,
 } from "@/components/university/university-tabs";
 import { TabFaculties } from "@/components/university/tab-faculties";
+import { TabMinimumScores } from "@/components/university/tab-minimum-scores";
+import { certificateGroupFor, type CertificateGroup } from "@/lib/admission-limits";
+import { prisma } from "@/lib/prisma";
 import { TabGallery } from "@/components/university/tab-gallery";
 import { TabLocation } from "@/components/university/tab-location";
 import {
@@ -73,6 +76,20 @@ export default async function UniversityDetailPage({
     after(() => incrementUniversityViews(university.id));
   }
 
+  // The signed-in student's certificate, so the scores tab can point at
+  // their column. Only read on that tab.
+  const certificateGroup =
+    active === "scores" && session?.user?.id
+      ? certificateGroupFor(
+          (
+            await prisma.studentProfile.findUnique({
+              where: { userId: session.user.id },
+              select: { highSchoolSystem: true },
+            })
+          )?.highSchoolSystem,
+        )
+      : null;
+
   const callbackUrl = `/universities/${university.slug}${active === "faculties" ? "" : `?tab=${active}`}`;
   const panel = (
     <TabPanel
@@ -80,6 +97,7 @@ export default async function UniversityDetailPage({
       university={university}
       isAuthenticated={isAuthenticated}
       callbackUrl={callbackUrl}
+      certificateGroup={certificateGroup}
     />
   );
 
@@ -113,13 +131,17 @@ function TabPanel({
   university,
   isAuthenticated,
   callbackUrl,
+  certificateGroup,
 }: {
   tab: UniversityTab;
   university: UniversityDetailData;
   isAuthenticated: boolean;
   callbackUrl: string;
+  certificateGroup: CertificateGroup | null;
 }) {
   switch (tab) {
+    case "scores":
+      return <TabMinimumScores university={university} highlight={certificateGroup} />;
     case "gallery":
       return <TabGallery university={university} />;
     case "location":

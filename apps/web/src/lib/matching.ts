@@ -22,6 +22,8 @@ export type MatchProfile = {
   studyLevel: string;
   budgetBand: string;
   gradeValue: string;
+  /** HighSchoolSystem value; picks which published minimum applies. */
+  highSchoolSystem: string | null;
   englishTest: string;
   englishScore: number | null;
   intakeSeason: string;

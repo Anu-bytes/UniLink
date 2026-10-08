@@ -26,6 +26,11 @@ import {
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
+import {
+  AdmissionLimitBadge,
+  AdmissionLimitPanel,
+} from "@/components/university/admission-limit-panel";
+
 import { Link } from "@/i18n/navigation";
 import { EmptySection, Paragraphs } from "@/components/university/prose";
 import { FacultyGrid } from "@/components/university/faculty-grid";
@@ -375,7 +380,7 @@ function ProgramDetail({
         : (formatMoney(locale, program.applicationFee, program.currency) ??
           t("notSpecified")),
     },
-    program.minGradePercent != null
+    program.minGradePercent != null && !program.admissionLimit
       ? {
           icon: Percent,
           label: t("minimumGrade"),
@@ -436,6 +441,10 @@ function ProgramDetail({
           </div>
         ))}
       </dl>
+
+      {program.admissionLimit ? (
+        <AdmissionLimitPanel limit={program.admissionLimit} className="mt-3" />
+      ) : null}
 
       {program.description ? (
         <section className="mt-6">
@@ -618,7 +627,9 @@ function ProgramCardFace({
           ) : null}
         </div>
 
-        {program.minGradePercent != null ? (
+        {program.admissionLimit ? (
+          <AdmissionLimitBadge limit={program.admissionLimit} />
+        ) : program.minGradePercent != null ? (
           <div className="shrink-0 rounded-xl bg-[#F7F9FE] px-3 py-2 text-end">
             <p className="flex items-center justify-end gap-1 text-[11px] font-semibold text-[#98A0B4]">
               <Target className="size-3" aria-hidden />

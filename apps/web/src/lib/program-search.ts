@@ -1,6 +1,11 @@
 import type { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 
+import {
+  certificateGroupFor,
+  resolveMinGrade,
+  type AdmissionLimit,
+} from "@/lib/admission-limits";
 import { localized, localizedOrNull } from "@/lib/catalog";
 import { scoreProgram, type MatchProfile, type MatchResult } from "@/lib/matching";
 import { withGovernorateCityOptions } from "@/lib/program-filters";
@@ -26,7 +31,10 @@ export type ProgramResult = {
   currency: string;
   applicationFee: number | null;
   applicationFeeWaived: boolean;
+  /** The minimum for this viewer (their certificate group when known). */
   minGradePercent: number | null;
+  /** The published 2026/2027 limit behind it, when one applies. */
+  admissionLimit: AdmissionLimit | null;
   coopAvailable: boolean;
   tags: string[];
   university: {
@@ -85,6 +93,11 @@ function mapProgram(
     year: intake.year,
     applicationDeadline: intake.applicationDeadline?.toISOString() ?? null,
   }));
+  const { minGradePercent, admissionLimit } = resolveMinGrade(
+    row,
+    row.university,
+    certificateGroupFor(profile?.highSchoolSystem),
+  );
 
   return {
     id: row.id,
@@ -104,7 +117,8 @@ function mapProgram(
     currency: row.currency,
     applicationFee: row.applicationFee ? Number(row.applicationFee) : null,
     applicationFeeWaived: row.applicationFeeWaived,
-    minGradePercent: row.minGradePercent,
+    minGradePercent,
+    admissionLimit,
     coopAvailable: row.coopAvailable,
     tags: row.tags,
     university: {
@@ -127,7 +141,7 @@ function mapProgram(
           fieldOfStudy: row.fieldOfStudy,
           studyLevel: row.studyLevel,
           tuitionFee,
-          minGradePercent: row.minGradePercent,
+          minGradePercent,
           englishRequirements,
           intakes,
         })
@@ -162,6 +176,7 @@ export async function getMatchProfile(
       studyLevel: true,
       budgetBand: true,
       gradeValue: true,
+      highSchoolSystem: true,
       englishTest: true,
       englishScore: true,
       intakeSeason: true,
@@ -176,6 +191,7 @@ export async function getMatchProfile(
     studyLevel: profile.studyLevel,
     budgetBand: profile.budgetBand,
     gradeValue: profile.gradeValue,
+    highSchoolSystem: profile.highSchoolSystem,
     englishTest: profile.englishTest,
     englishScore: profile.englishScore,
     intakeSeason: profile.intakeSeason,

@@ -1,6 +1,5 @@
 import {
   Activity,
-  ArrowRight,
   BarChart3,
   Building2,
   Check,
@@ -8,8 +7,6 @@ import {
   GraduationCap,
   LayoutDashboard,
   Megaphone,
-  Search,
-  Star,
   Users,
   type LucideIcon,
 } from "lucide-react";
@@ -19,16 +16,15 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { FeaturedUniversities } from "@/components/featured-universities";
-import { HeroPhotoCarousel, type HeroPhoto } from "@/components/hero-photo-carousel";
 import { HeroStats } from "@/components/hero-stats";
-import { HomeSearchBar } from "@/components/home-search-bar";
+import { HeroSearch } from "@/components/hero-search";
+import { HeroWords } from "@/components/hero-words";
 import { HowItWorks } from "@/components/how-it-works";
 import { MotionSection } from "@/components/motion-section";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { UniversityLogoMarquee } from "@/components/university-logo-marquee";
 import { getLandingCatalog, getUniversitySearchIndex, withDisplayOffsets } from "@/lib/catalog";
-import { getPrimaryCta } from "@/lib/primary-cta";
 
 export const dynamic = "force-dynamic";
 
@@ -44,23 +40,6 @@ const representIcons: LucideIcon[] = [
 // Hero stat order maps into catalog.stats / counters.items:
 // [universities(0), programs(1), students(2), scholarships(4)]
 const heroStatOrder = [0, 1, 2, 4];
-
-function buildHeroPhotos(searchBadge: string, mapBadge: string): HeroPhoto[] {
-  return [
-    {
-      src: "/images/hero-search-illustration-v2.png",
-      alt: "UniLink advanced search",
-      badge: searchBadge,
-    },
-    { src: "/images/hero-booth-v2.png", alt: "UniLink" },
-    {
-      src: "/images/hero-map-egypt-v4.png",
-      alt: "UniLink universities across Egypt",
-      badge: mapBadge,
-      badgePosition: "bottom",
-    },
-  ];
-}
 
 function PrimaryButton({
   href,
@@ -91,9 +70,8 @@ export default async function HomePage() {
     getLandingCatalog(locale),
     getUniversitySearchIndex(locale),
   ]);
-  const primaryCta = await getPrimaryCta(t("hero.cta"));
 
-  const heroPhotos = buildHeroPhotos(t("hero.searchBadge"), t("hero.mapBadge"));
+  const heroWords = t.raw("hero.words") as string[];
   const counterLabels = tc.raw("items") as string[];
   const displayStats = withDisplayOffsets(catalog.stats);
   const heroValues = heroStatOrder.map((i) => displayStats[i] ?? 0);
@@ -106,125 +84,85 @@ export default async function HomePage() {
 
   return (
     <div className="font-[family-name:var(--font-open-sans)] text-[#2D3748]">
-      {/* HERO */}
-      <MotionSection className="ul-mesh relative isolate overflow-hidden">
-        {/* decorative backdrop: a single soft blob behind the image + dot grid */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 -z-10">
-          <span className="ul-drift absolute -right-24 -top-16 size-80 rounded-full bg-[#F5A623]/18 blur-3xl [animation-delay:-7s] [animation-duration:21s]" />
-          <span className="ul-dots absolute -inset-8" />
-          {/* soft hand-off into the white section below */}
-          <span className="absolute inset-x-0 bottom-0 h-28 bg-gradient-to-b from-transparent to-white" />
+      {/* HERO. Desktop: the graduate photo fills the section and a white veil
+          keeps the copy side clean (the copy stays on that side in Arabic too:
+          mirroring the photo would reverse its lettering). Phones: copy first,
+          then the photo cropped around the graduate. Each block rises in
+          softly, one after another (--i). */}
+      <MotionSection className="relative isolate overflow-hidden bg-gradient-to-b from-[#EEF4FD] to-white lg:bg-white">
+        {/* Brand glows behind the copy: UniLink blue and red, echoing the
+            blue bar and red triangle in the photo. */}
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+          <span className="ul-drift absolute -left-28 -top-24 size-[26rem] rounded-full bg-[#1E6DEB]/[0.16] blur-3xl [animation-duration:22s]" />
+          <span className="ul-drift absolute left-[24%] top-[18%] size-72 rounded-full bg-[#F82C1F]/[0.13] blur-3xl [animation-delay:-8s] [animation-duration:26s]" />
+          <span className="ul-drift absolute bottom-[-5rem] left-[6%] size-72 rounded-full bg-[#1E6DEB]/[0.12] blur-3xl [animation-delay:-14s] [animation-duration:30s]" />
         </div>
-
-        <div className="relative z-10 mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16 lg:py-20">
-          <div className="grid items-center gap-10 lg:grid-cols-2 lg:gap-12">
-            <Reveal className="min-w-0 text-center lg:text-start">
-              <span className="inline-flex items-center gap-2 rounded-full border border-[#CFE0FB] bg-white/90 px-4 py-1.5 text-[13px] font-semibold text-[#1E6DEB] shadow-sm">
-                <span className="relative flex size-2.5">
-                  <span className="ul-blink-warm inline-flex size-2.5 rounded-full bg-[#f82c1f]" />
-                </span>
+        <div className="relative z-10 mx-auto flex max-w-7xl items-start px-4 pt-5 md:px-6 md:pt-7 lg:min-h-[min(38rem,calc(100svh-5rem))] lg:pb-12 lg:pt-11">
+          <div className="mx-auto w-full max-w-[38rem] text-center lg:ml-0 lg:mr-auto lg:max-w-[40rem] lg:text-start">
+            <span
+              className="ul-hero-rise inline-flex rounded-full border border-[#CFE0FB] shadow-sm"
+              style={{ "--i": 0 } as React.CSSProperties}
+            >
+              <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-[11.5px] font-semibold text-[#1E3A8A] sm:px-3.5 sm:text-[13px]">
+                <span className="size-1.5 shrink-0 rounded-full bg-[#F82C1F]" />
+                <GraduationCap className="hidden size-4 text-[#1E6DEB] sm:block" aria-hidden />
                 {t("hero.badge")}
               </span>
+            </span>
 
-              <h1 className="mt-4 text-[clamp(2rem,6vw,3rem)] font-bold leading-[1.15] text-[#16233F]">
-                {t("hero.titleLead")}{" "}
-                <span className="ul-text-shine text-[#1E6DEB]">
-                  {t("hero.titleHighlight")}
-                </span>
-              </h1>
-              <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#4A5568] md:mt-5 md:text-[18px] md:leading-8 lg:mx-0">
-                {t("hero.subtitle")}
-              </p>
+            <div className="mt-5">
+              <HeroWords words={heroWords} />
+            </div>
 
-              <div className="mt-7">
-                <HeroStats values={heroValues} labels={heroLabels} />
-              </div>
-
-              <div className="mt-8 flex justify-center lg:justify-start">
-                <Link
-                  href={primaryCta.href}
-                  className="group relative inline-flex min-h-14 w-full items-center justify-center gap-2.5 rounded-full bg-gradient-to-r from-[#1E6DEB] to-[#3B86F7] px-8 py-4 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:shadow-[0_24px_46px_-14px_rgba(30,109,235,0.8)] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:translate-y-0 motion-reduce:transform-none sm:w-auto"
-                >
-                  {/* pulse ring, outside the clip so it can scale past the edge */}
-                  <span
-                    aria-hidden
-                    className="ul-cta-ring pointer-events-none absolute inset-0 rounded-full ring-2 ring-[#3B86F7]"
-                  />
-                  {/* shine passing over the button, clipped to its own layer */}
-                  <span
-                    aria-hidden
-                    className="pointer-events-none absolute inset-0 overflow-hidden rounded-full"
-                  >
-                    <span className="ul-sheen absolute inset-y-0 -left-1/4 w-1/4 bg-gradient-to-r from-transparent via-white/35 to-transparent [animation-duration:6s]" />
-                  </span>
-                  <Search className="size-5 shrink-0" aria-hidden />
-                  {/* The hero keeps its own wording in both states; only the
-                      destination changes, to registration or straight to
-                      search once the student has an account. */}
-                  {t("hero.cta")}
-                  <ArrowRight
-                    className="size-5 shrink-0 transition-transform duration-300 group-hover:translate-x-1 rtl:rotate-180 rtl:group-hover:-translate-x-1"
-                    aria-hidden
-                  />
-                </Link>
-              </div>
-            </Reveal>
-
-            <Reveal
-              delay={120}
-              className="flex min-w-0 items-center justify-center lg:justify-end"
+            <h1
+              className="ul-hero-rise mt-3 text-[clamp(1.45rem,2.8vw,2.2rem)] font-bold leading-tight text-[#16233F]"
+              style={{ "--i": 6 } as React.CSSProperties}
             >
-              <div className="ul-float-slow relative w-full max-w-[33rem] px-4 pb-6 pt-2">
-                {/* layered gradient accent behind the photo for depth */}
-                <div
-                  aria-hidden
-                  className="absolute inset-x-2 inset-y-4 -z-10 rotate-[4deg] rounded-[40px] bg-gradient-to-br from-[#1E6DEB]/40 via-[#3B86F7]/22 to-[#F5A623]/25 blur-[2px]"
-                />
-                {/* dotted pattern accent */}
-                <div
-                  aria-hidden
-                  className="absolute -top-2 end-0 -z-10 hidden size-28 rounded-full bg-[radial-gradient(rgba(30,109,235,0.28)_1.5px,transparent_1.5px)] [background-size:12px_12px] lg:block"
-                />
+              {t("hero.journeyTitle")}
+            </h1>
+            <p
+              className="ul-hero-rise mx-auto mt-3 max-w-xl text-base leading-7 text-[#4A5568] md:text-[17px] lg:mx-0"
+              style={{ "--i": 7 } as React.CSSProperties}
+            >
+              {t("hero.journeySubtitle")}
+            </p>
 
-                {/* white card mount around the photo */}
-                <div className="relative rounded-[30px] bg-white p-2.5 shadow-[0_40px_80px_-32px_rgba(15,23,42,0.5)] ring-1 ring-black/5">
-                  {/* halo turning behind the card */}
-                  <div
-                    aria-hidden
-                    className="ul-ring-glow pointer-events-none absolute -inset-4 -z-10 rounded-[44px] opacity-70 blur-2xl"
-                  />
-                  <div className="relative aspect-[5/4] overflow-hidden rounded-[22px] bg-slate-100">
-                    <HeroPhotoCarousel photos={heroPhotos} />
-                    <div
-                      aria-hidden
-                      className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#0C1A34]/25 via-transparent to-transparent"
-                    />
-                    {/* light sweeping across the card */}
-                    <span
-                      aria-hidden
-                      className="ul-sheen pointer-events-none absolute inset-y-0 -left-1/4 w-1/4 bg-gradient-to-r from-transparent via-white/45 to-transparent"
-                    />
-                  </div>
-                </div>
+            <div
+              className="ul-hero-rise relative z-20 mt-7 text-start"
+              style={{ "--i": 8 } as React.CSSProperties}
+            >
+              <HeroSearch isAuthenticated={isAuthenticated} />
+            </div>
 
-                {/* rating badge */}
-                <div className="absolute -bottom-1 start-0 flex items-center gap-2.5 rounded-2xl border border-black/5 bg-white px-3.5 py-2.5 shadow-xl">
-                  <span className="flex size-9 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white shadow-md">
-                    <GraduationCap className="size-5" aria-hidden />
-                  </span>
-                  <div className="flex gap-0.5">
-                    {Array.from({ length: 5 }).map((_, i) => (
-                      <Star
-                        key={i}
-                        className="size-3.5 fill-[#F5A623] text-[#F5A623]"
-                        aria-hidden
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-            </Reveal>
+            <div
+              className="ul-hero-rise mt-8 rounded-2xl border border-white/80 bg-white/80 px-4 py-4 text-start shadow-[0_18px_40px_-28px_rgba(15,23,42,0.45)] backdrop-blur-md sm:px-6"
+              style={{ "--i": 9 } as React.CSSProperties}
+            >
+              <HeroStats values={heroValues} labels={heroLabels} variant="inline" />
+            </div>
           </div>
+        </div>
+
+        {/* Phones/tablets: a photo block under the copy. Desktop: the backdrop. */}
+        <div className="relative mt-8 h-80 sm:h-[26rem] lg:absolute lg:inset-0 lg:mt-0 lg:h-auto">
+          <Image
+            src="/images/hero-graduate.jpg"
+            alt=""
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover object-[74%_center] lg:object-[68%_center] xl:object-[60%_center]"
+          />
+          {/* Phones: fade the photo in from the copy above. */}
+          <div aria-hidden className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#F5F8FE] to-transparent lg:hidden" />
+          {/* Desktop: a white veil over the copy side (physical left in both
+              directions, matching where the photo is already pale). */}
+          <div
+            aria-hidden
+            className="absolute inset-y-0 left-0 hidden w-[64%] bg-gradient-to-r from-[#F2F7FF] from-30% via-[#F2F7FF]/75 to-transparent lg:block"
+          />
+          {/* Soft hand-off into the logo strip below. */}
+          <div aria-hidden className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-white" />
         </div>
       </MotionSection>
 
@@ -235,28 +173,6 @@ export default async function HomePage() {
         viewLabel={(name) => t("logoStrip.viewProfile", { name })}
       />
 
-      {/* QUICK UNIVERSITY SEARCH */}
-      {/* z-10 and no overflow clipping on the section itself, so the live
-          suggestion list under the search box can drop over the next section;
-          only the decorative dot layer is clipped. */}
-      <section className="relative z-10 bg-gradient-to-br from-[#1E6DEB] to-[#12224A] py-14 md:py-20">
-        <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="ul-dots absolute -inset-8 opacity-20" />
-        </div>
-        <div className="relative mx-auto max-w-3xl px-4 text-center md:px-6">
-          <Reveal>
-            <h2 className="text-[clamp(1.5rem,4vw,2rem)] font-bold text-white">
-              {t("quickSearch.title")}
-            </h2>
-            <p className="mx-auto mt-2 max-w-lg text-white/80">
-              {t("quickSearch.subtitle")}
-            </p>
-            <div className="mt-7">
-              <HomeSearchBar isAuthenticated={isAuthenticated} />
-            </div>
-          </Reveal>
-        </div>
-      </section>
 
       {/* FEATURED UNIVERSITIES */}
       <section className="bg-white">

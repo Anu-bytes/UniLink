@@ -9,7 +9,7 @@
     "start": "next start",
     "lint": "eslint",
     "lint:admin": "eslint src/components/admin src/app/api/admin 'src/app/[locale]/(admin)' src/lib/admin*.ts src/lib/supabase-storage.ts src/lib/image-upload.ts",
-    "test:admin": "node --import tsx --test src/lib/admin-validation.test.ts src/lib/admin-ordering.test.ts src/lib/admin-catalogue.test.ts src/lib/image-upload.test.ts src/lib/storage-path.test.ts",
+    "test:admin": "node --import tsx --test src/lib/admission-limits.test.ts src/lib/admin-validation.test.ts src/lib/admin-ordering.test.ts src/lib/admin-catalogue.test.ts src/lib/image-upload.test.ts src/lib/storage-path.test.ts",
     "test:admin:smoke": "node scripts/admin-smoke.mjs",
     "postinstall": "prisma generate",
     "db:generate": "prisma generate",

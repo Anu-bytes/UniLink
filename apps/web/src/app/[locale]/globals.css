@@ -1250,3 +1250,41 @@ html[lang="ar"] body {
     break-inside: avoid;
   }
 }
+
+/* Homepage hero: every block rises in softly, staggered by --i (words,
+   then headline, subtitle, search, stats). The search caret blinks. */
+@keyframes ul-hero-rise {
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+    filter: blur(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+    filter: blur(0);
+  }
+}
+@keyframes ul-caret-blink {
+  0%,
+  50% {
+    opacity: 1;
+  }
+  51%,
+  100% {
+    opacity: 0;
+  }
+}
+.ul-hero-rise {
+  animation: ul-hero-rise 0.8s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+  animation-delay: calc(var(--i, 0) * 90ms);
+}
+.ul-caret {
+  animation: ul-caret-blink 1s step-end infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ul-hero-rise,
+  .ul-caret {
+    animation: none;
+  }
+}
