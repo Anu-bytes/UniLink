@@ -86,19 +86,20 @@ export default async function HomePage() {
     <div className="font-[family-name:var(--font-open-sans)] text-[#2D3748]">
       {/* HERO. Desktop: the graduate photo fills the section and a white veil
           keeps the copy side clean (the copy stays on that side in Arabic too:
-          mirroring the photo would reverse its lettering). Phones: copy first,
-          then the photo cropped around the graduate. Each block rises in
-          softly, one after another (--i). */}
-      <MotionSection className="relative isolate overflow-hidden bg-gradient-to-b from-[#EEF4FD] to-white lg:bg-white">
+          mirroring the photo would reverse its lettering). Phones/tablets: the
+          photo is a banner on top and the copy sits on a white sheet that
+          overlaps its bottom edge, so text never runs over the photo. Each
+          block rises in softly, one after another (--i). */}
+      <MotionSection className="relative isolate flex flex-col overflow-hidden bg-gradient-to-b from-[#EEF4FD] to-white lg:block lg:bg-white">
         {/* Brand glows behind the copy: UniLink blue and red, echoing the
             blue bar and red triangle in the photo. */}
-        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] overflow-hidden">
+        <div aria-hidden className="pointer-events-none absolute inset-0 z-[1] hidden overflow-hidden lg:block">
           <span className="ul-drift absolute -left-28 -top-24 size-[26rem] rounded-full bg-[#1E6DEB]/[0.16] blur-3xl [animation-duration:22s]" />
           <span className="ul-drift absolute left-[24%] top-[18%] size-72 rounded-full bg-[#F82C1F]/[0.13] blur-3xl [animation-delay:-8s] [animation-duration:26s]" />
           <span className="ul-drift absolute bottom-[-5rem] left-[6%] size-72 rounded-full bg-[#1E6DEB]/[0.12] blur-3xl [animation-delay:-14s] [animation-duration:30s]" />
         </div>
-        <div className="relative z-10 mx-auto flex max-w-7xl items-start px-4 pt-5 md:px-6 md:pt-7 lg:min-h-[min(38rem,calc(100svh-5rem))] lg:pb-12 lg:pt-11">
-          <div className="mx-auto w-full max-w-[38rem] text-center lg:ml-0 lg:mr-auto lg:max-w-[40rem] lg:text-start">
+        <div className="relative z-10 mx-auto -mt-16 flex w-full max-w-7xl items-start px-3 pb-8 sm:-mt-20 sm:px-6 lg:mt-0 lg:min-h-[min(38rem,calc(100svh-5rem))] lg:px-8 lg:pb-12 lg:pt-11">
+          <div className="mx-auto w-full max-w-[38rem] rounded-[28px] bg-white px-4 pb-6 pt-6 text-center shadow-[0_-10px_40px_-18px_rgba(15,23,42,0.35)] ring-1 ring-black/[0.04] sm:px-7 sm:pt-7 lg:ml-0 lg:mr-auto lg:max-w-[40rem] lg:rounded-none lg:bg-transparent lg:p-0 lg:text-start lg:shadow-none lg:ring-0">
             <span
               className="ul-hero-rise inline-flex rounded-full border border-[#CFE0FB] shadow-sm"
               style={{ "--i": 0 } as React.CSSProperties}
@@ -135,7 +136,7 @@ export default async function HomePage() {
             </div>
 
             <div
-              className="ul-hero-rise mt-8 rounded-2xl border border-white/80 bg-white/80 px-4 py-4 text-start shadow-[0_18px_40px_-28px_rgba(15,23,42,0.45)] backdrop-blur-md sm:px-6"
+              className="ul-hero-rise mt-7 rounded-2xl border border-[#E3ECFB] bg-[#F6F9FF] px-3 py-4 text-start sm:px-6 lg:mt-8 lg:border-white/80 lg:bg-white/80 lg:px-6 lg:shadow-[0_18px_40px_-28px_rgba(15,23,42,0.45)] lg:backdrop-blur-md"
               style={{ "--i": 9 } as React.CSSProperties}
             >
               <HeroStats values={heroValues} labels={heroLabels} variant="inline" />
@@ -143,26 +144,26 @@ export default async function HomePage() {
           </div>
         </div>
 
-        {/* Phones/tablets: a photo block under the copy. Desktop: the backdrop. */}
-        <div className="relative mt-8 h-80 sm:h-[26rem] lg:absolute lg:inset-0 lg:mt-0 lg:h-auto">
+        {/* Phones/tablets: a banner above the copy. Desktop: the backdrop. */}
+        <div className="relative order-first h-[17.5rem] sm:h-[24rem] lg:absolute lg:inset-0 lg:order-none lg:h-auto">
           <Image
             src="/images/hero-graduate.jpg"
             alt=""
             fill
             priority
             sizes="100vw"
-            className="object-cover object-[74%_center] lg:object-[68%_center] xl:object-[60%_center]"
+            className="object-cover object-[88%_center] sm:object-center lg:object-[68%_center] xl:object-[60%_center]"
           />
-          {/* Phones: fade the photo in from the copy above. */}
-          <div aria-hidden className="absolute inset-x-0 top-0 h-28 bg-gradient-to-b from-[#F5F8FE] to-transparent lg:hidden" />
+          {/* Phones: a light wash at the top so the photo meets the header softly. */}
+          <div aria-hidden className="absolute inset-x-0 top-0 h-12 bg-gradient-to-b from-white/70 to-transparent lg:hidden" />
           {/* Desktop: a white veil over the copy side (physical left in both
               directions, matching where the photo is already pale). */}
           <div
             aria-hidden
             className="absolute inset-y-0 left-0 hidden w-[64%] bg-gradient-to-r from-[#F2F7FF] from-30% via-[#F2F7FF]/75 to-transparent lg:block"
           />
-          {/* Soft hand-off into the logo strip below. */}
-          <div aria-hidden className="absolute inset-x-0 bottom-0 h-20 bg-gradient-to-b from-transparent to-white" />
+          {/* Desktop: soft hand-off into the logo strip below. */}
+          <div aria-hidden className="absolute inset-x-0 bottom-0 hidden h-20 bg-gradient-to-b from-transparent to-white lg:block" />
         </div>
       </MotionSection>
 
