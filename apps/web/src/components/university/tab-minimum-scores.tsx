@@ -93,37 +93,41 @@ export async function TabMinimumScores({
           {t("intro")}
         </p>
 
-        {/* Legend: the short column labels used in every row, spelled out. */}
-        <ul className="mt-4 grid gap-2 sm:grid-cols-2">
-          {CERTIFICATE_GROUPS.map((group) => (
-            <li
-              key={group}
-              className={cn(
-                "flex items-center gap-3 rounded-xl border px-3.5 py-2.5",
-                highlight === group
-                  ? "border-[#1E6DEB] bg-[#F3F7FF]"
-                  : "border-slate-200 bg-white",
-              )}
-            >
-              <span
+        {/* Legend: the short column labels used in every row, spelled out.
+            Only shown when there are table rows to read it against; a
+            university with only its own program minimums has none. */}
+        {rows.length > 0 ? (
+          <ul className="mt-4 grid gap-2 sm:grid-cols-2">
+            {CERTIFICATE_GROUPS.map((group) => (
+              <li
+                key={group}
                 className={cn(
-                  "shrink-0 rounded-md px-2 py-0.5 text-xs font-bold",
-                  group === "EGYPTIAN" ? "bg-[#1E6DEB] text-white" : "bg-[#0F9F8F] text-white",
+                  "flex items-center gap-3 rounded-xl border px-3.5 py-2.5",
+                  highlight === group
+                    ? "border-[#1E6DEB] bg-[#F3F7FF]"
+                    : "border-slate-200 bg-white",
                 )}
               >
-                {t(`groupsShort.${group}`)}
-              </span>
-              <span className="min-w-0 text-sm font-semibold text-[#1F2A44]">
-                {t(`groups.${group}`)}
-              </span>
-              {highlight === group ? (
-                <span className="ms-auto shrink-0 rounded-full bg-[#1E6DEB] px-2 py-0.5 text-[10px] font-bold text-white">
-                  {t("yourCertificate")}
+                <span
+                  className={cn(
+                    "shrink-0 rounded-md px-2 py-0.5 text-xs font-bold",
+                    group === "EGYPTIAN" ? "bg-[#1E6DEB] text-white" : "bg-[#0F9F8F] text-white",
+                  )}
+                >
+                  {t(`groupsShort.${group}`)}
                 </span>
-              ) : null}
-            </li>
-          ))}
-        </ul>
+                <span className="min-w-0 text-sm font-semibold text-[#1F2A44]">
+                  {t(`groups.${group}`)}
+                </span>
+                {highlight === group ? (
+                  <span className="ms-auto shrink-0 rounded-full bg-[#1E6DEB] px-2 py-0.5 text-[10px] font-bold text-white">
+                    {t("yourCertificate")}
+                  </span>
+                ) : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </header>
 
       {fullTable && rows.length > 0 ? (

@@ -227,7 +227,7 @@ export function SearchPalette({
         {/* Icon-only in the 1024-1279px range, where the full desktop header
             (links, language, both account buttons) has no room for the
             label; labelled everywhere else. */}
-        <span className={cn("lg:max-xl:sr-only", compactOnMobile && "max-sm:sr-only")}>
+        <span className={cn("max-[359px]:sr-only lg:max-xl:sr-only", compactOnMobile && "max-sm:sr-only")}>
           {t("trigger")}
         </span>
       </button>

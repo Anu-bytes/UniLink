@@ -1262,7 +1262,9 @@ html[lang="ar"] body {
   to {
     opacity: 1;
     transform: none;
-    filter: blur(0);
+    /* none, not blur(0): the fill keeps the end state applied, and a
+       lingering filter can soften text rendering on phones. */
+    filter: none;
   }
 }
 @keyframes ul-caret-blink {

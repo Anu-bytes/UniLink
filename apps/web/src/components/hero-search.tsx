@@ -104,8 +104,14 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
           <div className="relative min-w-0 flex-1">
             <input
               id="hero-search"
-              type="search"
+              // Plain text field: iOS restyles type="search" (rounded inset,
+              // extra padding). The keyboard still shows a Search key.
+              type="text"
+              inputMode="search"
+              enterKeyHint="search"
               autoComplete="off"
+              autoCorrect="off"
+              spellCheck={false}
               value={value}
               onChange={(event) => {
                 setValue(event.target.value);
@@ -121,19 +127,21 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
                 active >= 0 ? `hero-hit-${active}` : undefined
               }
               placeholder={typed ? "" : t("hero.searchPlaceholder")}
-              className="h-12 w-full bg-transparent text-[15px] text-[#1F2A44] outline-none placeholder:text-[#98A0B4] md:text-base [&::-webkit-search-cancel-button]:hidden"
+              className="h-12 w-full min-w-0 appearance-none rounded-none border-0 bg-transparent p-0 text-base text-[#1F2A44] outline-none placeholder:truncate placeholder:text-[#98A0B4]"
             />
             {/* Rotating example, drawn over the empty box like a placeholder. */}
             {typed ? (
+              // Confined to the input's own width (inset-x-0 + clipping), so a
+              // long example can never run under the Search button.
               <span
                 aria-hidden
-                className="pointer-events-none absolute inset-y-0 start-0 flex items-center truncate text-[15px] text-[#98A0B4] md:text-base"
+                className="pointer-events-none absolute inset-0 flex items-center overflow-hidden whitespace-nowrap text-base text-[#98A0B4]"
               >
-                <span className="me-1 font-semibold text-[#1E6DEB]">
+                <span className="me-1 shrink-0 font-semibold text-[#1E6DEB]">
                   {t("quickSearch.examplePrefix")}
                 </span>
-                {typed}
-                <span className="ul-caret ms-0.5 inline-block h-5 w-px bg-[#1E6DEB]" />
+                <span className="min-w-0 truncate">{typed}</span>
+                <span className="ul-caret ms-0.5 inline-block h-5 w-px shrink-0 bg-[#1E6DEB]" />
               </span>
             ) : null}
           </div>
