@@ -101,10 +101,10 @@ export default async function HomePage() {
         <div className="relative z-10 mx-auto -mt-16 flex w-full max-w-7xl items-start px-3 pb-8 sm:-mt-20 sm:px-6 lg:mt-0 lg:min-h-[min(38rem,calc(100svh-5rem))] lg:px-8 lg:pb-12 lg:pt-11">
           <div className="mx-auto w-full max-w-[38rem] rounded-[28px] bg-white px-4 pb-6 pt-6 text-center shadow-[0_-10px_40px_-18px_rgba(15,23,42,0.35)] ring-1 ring-black/[0.04] sm:px-7 sm:pt-7 lg:ml-0 lg:mr-auto lg:max-w-[40rem] lg:rounded-none lg:bg-transparent lg:p-0 lg:text-start lg:shadow-none lg:ring-0">
             <span
-              className="ul-hero-rise inline-flex rounded-full border border-[#CFE0FB] shadow-sm"
+              className="ul-hero-rise inline-flex max-w-full rounded-full border border-[#CFE0FB] shadow-sm"
               style={{ "--i": 0 } as React.CSSProperties}
             >
-              <span className="inline-flex items-center gap-2 whitespace-nowrap rounded-full bg-white px-3 py-1.5 text-[11.5px] font-semibold text-[#1E3A8A] sm:px-3.5 sm:text-[13px]">
+              <span className="inline-flex items-center gap-2 rounded-full bg-white px-3 py-1.5 text-[11.5px] font-semibold leading-snug text-[#1E3A8A] min-[360px]:whitespace-nowrap sm:px-3.5 sm:text-[13px]">
                 <span className="size-1.5 shrink-0 rounded-full bg-[#F82C1F]" />
                 <GraduationCap className="hidden size-4 text-[#1E6DEB] sm:block" aria-hidden />
                 {t("hero.badge")}

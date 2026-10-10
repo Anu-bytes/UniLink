@@ -31,7 +31,7 @@ export function HeroWords({ words }: { words: string[] }) {
   return (
     <p
       aria-hidden
-      className="flex flex-nowrap items-center justify-center gap-x-2.5 whitespace-nowrap text-[clamp(1.6rem,6.4vw,3.25rem)] font-extrabold leading-[1.2] tracking-tight sm:gap-x-4 lg:justify-start"
+      className="flex flex-nowrap items-center justify-center gap-x-2 whitespace-nowrap text-[clamp(1.15rem,6vw,3.25rem)] font-extrabold leading-[1.2] tracking-tight sm:gap-x-4 lg:justify-start"
     >
       {words.map((word, index) => {
         const accent = ACCENTS[index % ACCENTS.length];
