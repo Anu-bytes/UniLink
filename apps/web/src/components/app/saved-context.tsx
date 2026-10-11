@@ -2,6 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
+import { useSavedUniversities } from "@/components/app/saved-universities-store";
+
 type SavedContextValue = {
   count: number;
   increment: () => void;
@@ -11,18 +13,28 @@ type SavedContextValue = {
 const SavedContext = createContext<SavedContextValue | null>(null);
 
 /**
- * Holds the saved-faculties count for the header badge. Seeded from the
- * server on load, then nudged by FacultySaveButton so the badge updates the
- * instant a heart is toggled instead of waiting for a page refresh.
+ * The "Saved" count (header badge, dashboard stat): saved faculties plus
+ * saved universities, the two tabs of the Saved page. Seeded from the server
+ * on load and kept live: faculty hearts nudge it through increment/decrement,
+ * and university hearts are read from the shared saved-universities store,
+ * so saving either updates every count instantly, without a refresh.
  */
 export function SavedProvider({
   initialCount,
+  initialUniversityCount = 0,
   children,
 }: {
+  /** Saved faculties. */
   initialCount: number;
+  /** Saved universities, used until the live store has loaded. */
+  initialUniversityCount?: number;
   children: React.ReactNode;
 }) {
-  const [count, setCount] = useState(initialCount);
+  const [facultyCount, setCount] = useState(initialCount);
+  const universities = useSavedUniversities();
+  const universityCount =
+    universities.status === "ready" ? universities.ids.size : initialUniversityCount;
+  const count = facultyCount + universityCount;
 
   const increment = useCallback(() => setCount((current) => current + 1), []);
   const decrement = useCallback(
