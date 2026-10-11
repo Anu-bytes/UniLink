@@ -5,10 +5,10 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { RecommendedPanel } from "@/components/app/recommended-panel";
+import { SavedCount } from "@/components/app/saved-count";
 import { UniversityLogo } from "@/components/university-logo";
 import { getRecommendedFaculties } from "@/lib/faculty-search";
 import { formatDate } from "@/lib/format";
-import { prisma } from "@/lib/prisma";
 import { getApplications, getMatchProfile } from "@/lib/program-search";
 
 export const dynamic = "force-dynamic";
@@ -22,8 +22,7 @@ export default async function AppHomePage() {
   if (!session?.user?.id) redirect(`/${locale}/login`);
   const userId = session.user.id;
 
-  const [savedCount, applications, recommended, profile] = await Promise.all([
-    prisma.savedFaculty.count({ where: { userId } }),
+  const [applications, recommended, profile] = await Promise.all([
     getApplications(locale, userId),
     getRecommendedFaculties(locale, userId, 4),
     getMatchProfile(userId),
@@ -36,7 +35,8 @@ export default async function AppHomePage() {
   const firstName = session.user.name?.split(" ")[0];
 
   const stats = [
-    { icon: Heart, label: t("stats.saved"), value: savedCount, href: "/app/saved" },
+    // Live: follows faculty and university hearts toggled anywhere in the app.
+    { icon: Heart, label: t("stats.saved"), value: <SavedCount />, href: "/app/saved" },
     {
       icon: FileText,
       label: t("stats.applications"),

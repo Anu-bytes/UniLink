@@ -30,12 +30,13 @@ export default async function AppLayout({
   // and then land straight on the app with no profile ever collected, since
   // nothing forced them back through onboarding. PARTNER/ADMIN accounts never
   // get a StudentProfile in the first place, so they're excluded here.
-  const [account, savedCount] = await Promise.all([
+  const [account, savedCount, savedUniversityCount] = await Promise.all([
     prisma.user.findUnique({
       where: { id: session.user.id },
       select: { role: true, studentProfile: { select: { id: true } } },
     }),
     prisma.savedFaculty.count({ where: { userId: session.user.id } }),
+    prisma.savedUniversity.count({ where: { userId: session.user.id } }),
   ]);
 
   if (
@@ -47,7 +48,7 @@ export default async function AppLayout({
   }
 
   return (
-    <SavedProvider initialCount={savedCount}>
+    <SavedProvider initialCount={savedCount} initialUniversityCount={savedUniversityCount}>
       <CompareProvider>
         <AppShell
           user={{
