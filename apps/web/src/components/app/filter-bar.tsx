@@ -21,6 +21,7 @@ import {
 
 import { useRouter } from "@/i18n/navigation";
 import { FiltersPanel } from "@/components/app/filters-panel";
+import { UniversityTypeToggle } from "@/components/app/university-type-toggle";
 import { formatNumber } from "@/lib/format";
 import {
   MAX_CITIES,
@@ -49,9 +50,9 @@ export type FilterOptions = {
 };
 
 /**
- * The chip row above the results. Tuition and city get dedicated dropdowns
- * because they are what students narrow on first; everything else stays in the
- * filter drawer behind "Filters & Eligibility".
+ * The chip row above the results. University type, city and tuition get
+ * dedicated controls because they are what students narrow on first;
+ * everything else stays in the filter drawer behind "Filters & Eligibility".
  */
 export function FilterBar({
   filters,
@@ -70,6 +71,9 @@ export function FilterBar({
   const activeCount = countActiveFilters(filters);
   const activeTags = new Set(filters.tags ?? []);
   const activeRange = tuitionRangeKeyOf(filters);
+  // Both types ticked in the drawer is the same as no type filter.
+  const activeType =
+    filters.universityTypes?.length === 1 ? filters.universityTypes[0] : "";
 
   // Checkboxes need to flip the instant they're clicked. `filters.cities`
   // only updates once the URL push above finishes its full server round
@@ -147,6 +151,14 @@ export function FilterBar({
             ? t("filtersCount", { count: formatNumber(locale, activeCount) })
             : t("filtersButton")}
         </button>
+
+        <UniversityTypeToggle
+          tone="blue"
+          value={activeType}
+          onChange={(type) =>
+            push({ ...filters, universityTypes: type ? [type] : undefined })
+          }
+        />
 
         {/* City and tuition are the two filters students reach for first, so
             they sit next to the drawer button and carry more visual weight

@@ -1,15 +1,16 @@
 "use client";
 
-import { Building2, Check, ChevronDown, MapPin, X } from "lucide-react";
+import { Check, ChevronDown, MapPin, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useRef, useState, useTransition, type ComponentType } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 
 import { useRouter } from "@/i18n/navigation";
+import { UniversityTypeToggle } from "@/components/app/university-type-toggle";
 import { MAX_CITIES, UNIVERSITY_TYPES } from "@/lib/program-filters";
 import { cn } from "@/lib/utils";
 
 /**
- * Type + city chips for the university search mode, styled to match
+ * Type toggle + city picker for the university search mode, styled to match
  * UniversitySearchBar's red scheme rather than FilterBar's blue one, so the
  * two modes stay visually distinct the way SearchModeSwitch already promises.
  * City is multi-select (same MAX_CITIES cap as the faculty mode's picker);
@@ -28,7 +29,6 @@ export function UniversityFilterBar({
 }) {
   const t = useTranslations("Search");
   const tDir = useTranslations("UniversityDirectory");
-  const tCatalog = useTranslations("Catalog");
   const router = useRouter();
   const [isPending, startTransition] = useTransition();
 
@@ -77,16 +77,10 @@ export function UniversityFilterBar({
       className="flex flex-wrap items-center gap-2"
       data-pending={isPending || undefined}
     >
-      <SelectChip
-        icon={Building2}
-        label={tDir("typeLabel")}
-        value={type}
+      <UniversityTypeToggle
+        tone="red"
+        value={UNIVERSITY_TYPES.find((value) => value === type) ?? ""}
         onChange={(value) => push({ type: value })}
-        placeholder={tDir("allTypes")}
-        options={UNIVERSITY_TYPES.map((value) => ({
-          value,
-          label: tCatalog(`universityTypes.${value}`),
-        }))}
       />
 
       <CityMultiSelect
@@ -244,55 +238,6 @@ function CityMultiSelect({
           })}
         </div>
       ) : null}
-    </div>
-  );
-}
-
-function SelectChip({
-  icon: Icon,
-  label,
-  value,
-  onChange,
-  placeholder,
-  options,
-}: {
-  icon: ComponentType<{ className?: string }>;
-  label: string;
-  value: string;
-  onChange: (value: string) => void;
-  placeholder: string;
-  options: { value: string; label: string }[];
-}) {
-  const active = Boolean(value);
-
-  return (
-    <div className="relative">
-      <Icon
-        className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#F82C1F]"
-        aria-hidden
-      />
-      <select
-        aria-label={label}
-        value={value}
-        onChange={(event) => onChange(event.target.value)}
-        className={cn(
-          "h-10 cursor-pointer appearance-none rounded-lg border-2 ps-9 pe-8 text-sm font-semibold shadow-sm outline-none transition-colors focus-visible:border-[#F82C1F] focus-visible:ring-2 focus-visible:ring-[#F82C1F]/25",
-          active
-            ? "border-[#F82C1F] bg-[#FFF0EE] text-[#F82C1F]"
-            : "border-[#F82C1F]/35 bg-white text-[#1F2A44] hover:border-[#F82C1F]/60 hover:bg-[#FFF7F6]",
-        )}
-      >
-        <option value="">{placeholder}</option>
-        {options.map((option) => (
-          <option key={option.value} value={option.value}>
-            {option.label}
-          </option>
-        ))}
-      </select>
-      <ChevronDown
-        className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-[#F82C1F]"
-        aria-hidden
-      />
     </div>
   );
 }

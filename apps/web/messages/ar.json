@@ -1222,7 +1222,12 @@
       "anyCity": "كل المدن",
       "anyTuition": "كل المصروفات",
       "cityLimit": "{count} / {max} مدن",
-      "moreCities": "+{count}"
+      "moreCities": "+{count}",
+      "allTypes": "الكل",
+      "types": {
+        "NATIONAL": "أهلية",
+        "PRIVATE": "خاصة"
+      }
     },
     "clearSearch": "مسح البحث",
     "tuitionRanges": {
