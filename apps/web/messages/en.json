@@ -1325,15 +1325,19 @@
   },
   "Saved": {
     "title": "Saved",
-    "subtitle": "Faculties and universities you've liked while browsing.",
-    "tabAll": "All",
+    "subtitle": "Universities, faculties and programs you've liked while browsing.",
     "tabFaculties": "Faculties",
     "tabUniversities": "Universities",
     "emptyTitle": "Nothing saved yet",
-    "emptyBody": "Tap the heart on any faculty or university to keep it here for later.",
-    "emptyTab": "Nothing saved here yet.",
+    "emptyBody": "Tap the heart on any university, faculty or program to keep it here for later.",
     "browse": "Browse faculties",
-    "browseUniversities": "Browse universities"
+    "browseUniversities": "Browse universities",
+    "tabPrograms": "Programs",
+    "emptyUniversities": "No saved universities yet.",
+    "emptyFaculties": "No saved faculties yet.",
+    "emptyPrograms": "No saved programs yet.",
+    "saveProgram": "Save",
+    "savedProgram": "Saved"
   },
   "AppProfile": {
     "title": "Profile",

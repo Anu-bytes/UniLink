@@ -36,6 +36,7 @@ import { EmptySection, Paragraphs } from "@/components/university/prose";
 import { FacultyGrid } from "@/components/university/faculty-grid";
 import { ProgramCompareButton } from "@/components/university/program-compare-button";
 import { ProgramDialog } from "@/components/university/program-dialog";
+import { ProgramSaveButton } from "@/components/app/program-save-button";
 import { UniversityLogo } from "@/components/university-logo";
 import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
 import { Reveal } from "@/components/reveal";
@@ -528,6 +529,7 @@ function ProgramDetail({
           universityName={university.name}
           logoUrl={university.logoUrl}
         />
+        <ProgramSaveButton programId={program.id} variant="button" />
       </div>
     </div>
   );

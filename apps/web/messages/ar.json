@@ -1325,15 +1325,19 @@
   },
   "Saved": {
     "title": "المحفوظات",
-    "subtitle": "الكليات والجامعات التي أعجبتك أثناء التصفح.",
-    "tabAll": "الكل",
+    "subtitle": "الجامعات والكليات والبرامج التي أعجبتك أثناء التصفح.",
     "tabFaculties": "الكليات",
     "tabUniversities": "الجامعات",
     "emptyTitle": "لا يوجد محفوظات بعد",
-    "emptyBody": "اضغط على القلب في أي كلية أو جامعة لحفظها هنا.",
-    "emptyTab": "لا يوجد محفوظات هنا بعد.",
+    "emptyBody": "اضغط على القلب في أي جامعة أو كلية أو برنامج لحفظه هنا.",
     "browse": "تصفح الكليات",
-    "browseUniversities": "تصفح الجامعات"
+    "browseUniversities": "تصفح الجامعات",
+    "tabPrograms": "البرامج",
+    "emptyUniversities": "لا توجد جامعات محفوظة بعد.",
+    "emptyFaculties": "لا توجد كليات محفوظة بعد.",
+    "emptyPrograms": "لا توجد برامج محفوظة بعد.",
+    "saveProgram": "حفظ",
+    "savedProgram": "محفوظ"
   },
   "AppProfile": {
     "title": "الملف الشخصي",

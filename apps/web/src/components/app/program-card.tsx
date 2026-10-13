@@ -5,6 +5,7 @@ import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/components/app/compare-context";
+import { ProgramSaveButton } from "@/components/app/program-save-button";
 import { UniversityLogo } from "@/components/university-logo";
 import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 import { BAND_STYLES } from "@/lib/matching";
@@ -80,7 +81,7 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
             className="size-9"
             textClassName="text-xs"
           />
-          <div className="min-w-0">
+          <div className="min-w-0 flex-1">
             <Link
               href={`/universities/${program.university.slug}/programs/${program.slug}`}
               className="text-sm font-bold leading-snug text-[#1E6DEB] underline-offset-2 hover:underline"
@@ -89,6 +90,7 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
             </Link>
             <p className="mt-0.5 text-xs text-[#5a6072]">{degreeLabel}</p>
           </div>
+          <ProgramSaveButton programId={program.id} variant="icon" />
         </div>
 
         <Link

@@ -2,6 +2,7 @@
 
 import { createContext, useCallback, useContext, useMemo, useState } from "react";
 
+import { useSavedPrograms } from "@/components/app/saved-programs-store";
 import { useSavedUniversities } from "@/components/app/saved-universities-store";
 
 type SavedContextValue = {
@@ -13,28 +14,35 @@ type SavedContextValue = {
 const SavedContext = createContext<SavedContextValue | null>(null);
 
 /**
- * The "Saved" count (header badge, dashboard stat): saved faculties plus
- * saved universities, the two tabs of the Saved page. Seeded from the server
- * on load and kept live: faculty hearts nudge it through increment/decrement,
- * and university hearts are read from the shared saved-universities store,
- * so saving either updates every count instantly, without a refresh.
+ * The "Saved" count (header badge, dashboard stat): saved universities,
+ * faculties and programs, the three sections of the Saved page. Seeded from
+ * the server on load and kept live: faculty hearts nudge it through
+ * increment/decrement, and university and program hearts are read from their
+ * shared stores, so saving anything updates every count instantly, without a
+ * refresh.
  */
 export function SavedProvider({
   initialCount,
   initialUniversityCount = 0,
+  initialProgramCount = 0,
   children,
 }: {
   /** Saved faculties. */
   initialCount: number;
   /** Saved universities, used until the live store has loaded. */
   initialUniversityCount?: number;
+  /** Saved programs, used until the live store has loaded. */
+  initialProgramCount?: number;
   children: React.ReactNode;
 }) {
   const [facultyCount, setCount] = useState(initialCount);
   const universities = useSavedUniversities();
+  const programs = useSavedPrograms();
   const universityCount =
     universities.status === "ready" ? universities.ids.size : initialUniversityCount;
-  const count = facultyCount + universityCount;
+  const programCount =
+    programs.status === "ready" ? programs.ids.size : initialProgramCount;
+  const count = facultyCount + universityCount + programCount;
 
   const increment = useCallback(() => setCount((current) => current + 1), []);
   const decrement = useCallback(

@@ -5,26 +5,46 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { FacultyCard } from "@/components/app/faculty-card";
-import { SavedTabs } from "@/components/app/saved-tabs";
+import { ProgramCard } from "@/components/app/program-card";
+import { SavedTabs, type SavedSection } from "@/components/app/saved-tabs";
 import { UniversityResultCard } from "@/components/app/university-result-card";
 import { getSavedFaculties } from "@/lib/faculty-search";
+import { getSavedPrograms } from "@/lib/program-search";
 import { getSavedUniversities } from "@/lib/catalog";
 
 export const dynamic = "force-dynamic";
 
-export default async function SavedPage() {
+const SECTIONS: SavedSection[] = ["universities", "faculties", "programs"];
+
+type PageProps = {
+  searchParams: Promise<Record<string, string | string[] | undefined>>;
+};
+
+export default async function SavedPage({ searchParams }: PageProps) {
   const t = await getTranslations("Saved");
   const locale = await getLocale();
   const session = await auth();
 
   if (!session?.user?.id) redirect(`/${locale}/login`);
 
-  const [faculties, universities] = await Promise.all([
+  const [faculties, universities, programs, raw] = await Promise.all([
     getSavedFaculties(locale, session.user.id),
     getSavedUniversities(locale, session.user.id),
+    getSavedPrograms(locale, session.user.id),
+    searchParams,
   ]);
 
-  const hasAny = faculties.length > 0 || universities.length > 0;
+  const counts: Record<SavedSection, number> = {
+    universities: universities.length,
+    faculties: faculties.length,
+    programs: programs.length,
+  };
+  const hasAny = SECTIONS.some((section) => counts[section] > 0);
+
+  // The list asked for in the URL, else the first one with anything in it.
+  const requested = SECTIONS.find((section) => section === raw.tab);
+  const initialSection =
+    requested ?? SECTIONS.find((section) => counts[section] > 0) ?? "universities";
 
   return (
     <div className="mx-auto max-w-[86rem] px-4 py-6 pb-32 md:px-6 md:py-8">
@@ -35,20 +55,39 @@ export default async function SavedPage() {
 
       {hasAny ? (
         <SavedTabs
-          facultyCount={faculties.length}
-          universityCount={universities.length}
-          allLabel={t("tabAll")}
-          facultiesLabel={t("tabFaculties")}
-          universitiesLabel={t("tabUniversities")}
-          facultiesHeading={t("tabFaculties")}
-          universitiesHeading={t("tabUniversities")}
-          emptyTabLabel={t("emptyTab")}
-          facultiesNode={faculties.map((faculty) => (
-            <FacultyCard key={faculty.id} faculty={faculty} />
-          ))}
-          universitiesNode={universities.map((university) => (
-            <UniversityResultCard key={university.id} university={university} />
-          ))}
+          initialSection={initialSection}
+          sections={{
+            universities: {
+              label: t("tabUniversities"),
+              count: counts.universities,
+              emptyLabel: t("emptyUniversities"),
+              browseLabel: t("browseUniversities"),
+              browseHref: "/app/search?mode=universities",
+              node: universities.map((university) => (
+                <UniversityResultCard key={university.id} university={university} />
+              )),
+            },
+            faculties: {
+              label: t("tabFaculties"),
+              count: counts.faculties,
+              emptyLabel: t("emptyFaculties"),
+              browseLabel: t("browse"),
+              browseHref: "/app/search",
+              node: faculties.map((faculty) => (
+                <FacultyCard key={faculty.id} faculty={faculty} />
+              )),
+            },
+            programs: {
+              label: t("tabPrograms"),
+              count: counts.programs,
+              emptyLabel: t("emptyPrograms"),
+              browseLabel: t("browse"),
+              browseHref: "/app/search",
+              node: programs.map((program) => (
+                <ProgramCard key={program.id} program={program} />
+              )),
+            },
+          }}
         />
       ) : (
         <div className="mt-6 rounded-xl bg-[#F5F8FF] px-6 py-16 text-center">

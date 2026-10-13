@@ -1,6 +1,14 @@
 import { UniversityLogoTile } from "@/components/university-logo-tile";
 import type { UniversitySearchEntry } from "@/lib/catalog";
 
+/** Official marks that are a tall, thin emblem with no wider version, so at
+ * strip size they read as a sliver in an empty tile. They still show on the
+ * universities' own pages and cards. */
+const LEFT_OUT_OF_STRIP = new Set([
+  "ain-shams-national-university",
+  "benha-national-university",
+]);
+
 /**
  * An endlessly scrolling strip of university logos under the homepage hero,
  * each one linking to that university's profile. It is the catalogue (the
@@ -19,7 +27,9 @@ export function UniversityLogoMarquee({
   title: string;
   viewLabel: (name: string) => string;
 }) {
-  const withLogos = universities.filter((university) => university.logoUrl);
+  const withLogos = universities.filter(
+    (university) => university.logoUrl && !LEFT_OUT_OF_STRIP.has(university.slug),
+  );
   if (withLogos.length < 6) return null;
   const track = [...withLogos, ...withLogos];
 

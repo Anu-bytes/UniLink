@@ -27,6 +27,7 @@ import { prisma } from "@/lib/prisma";
 import { certificateGroupFor, headlineMinGrade } from "@/lib/admission-limits";
 import { auth } from "@/auth";
 import { AdmissionLimitPanel } from "@/components/university/admission-limit-panel";
+import { ProgramSaveButton } from "@/components/app/program-save-button";
 
 export const dynamic = "force-dynamic";
 
@@ -329,6 +330,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         >
           {t("compare")}
         </Link>
+        <ProgramSaveButton programId={program.id} variant="button" />
       </div>
     </div>
   );
