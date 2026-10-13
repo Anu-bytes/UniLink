@@ -26,6 +26,10 @@
     "browserslist": "^4.28.7",
     "qs": "^6.16.0",
     "deepmerge-ts": "^8.0.0",
-    "next": "~16.3.8"
+    "next": "~16.3.8",
+    "fast-glob": "$fast-glob"
+  },
+  "devDependencies": {
+    "fast-glob": "file:tools/fast-glob-shim"
   }
 }
