@@ -311,3 +311,21 @@ async function getSearchVocabularyUncached() {
     })),
   };
 }
+
+/** The programs a student has hearted, most recently saved first. */
+export async function getSavedPrograms(
+  locale: string,
+  userId: string,
+): Promise<ProgramResult[]> {
+  const saved = await prisma.savedProgram.findMany({
+    where: { userId },
+    orderBy: { createdAt: "desc" },
+    select: { programId: true },
+  });
+
+  return getProgramsForCompare(
+    locale,
+    saved.map((row) => row.programId),
+    userId,
+  );
+}
