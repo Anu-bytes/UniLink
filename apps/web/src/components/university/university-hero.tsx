@@ -2,7 +2,6 @@ import {
   Building2,
   CalendarDays,
   Clock,
-  Compass,
   Eye,
   Flame,
   GraduationCap,
@@ -19,7 +18,9 @@ import { UniversityLogo } from "@/components/university-logo";
 import { AcronymBadge } from "@/components/university/acronym-badge";
 import { ShareButton } from "@/components/university/share-button";
 import { UniversityLikeButton } from "@/components/university/university-like-button";
+import { UniversityRating } from "@/components/university/university-rating";
 import type { UniversityDetailData } from "@/lib/catalog";
+import type { RatingSummary } from "@/lib/rating-summary";
 import { formatCompact, formatDate } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -36,11 +37,13 @@ export async function UniversityHero({
   university,
   isAuthenticated,
   isLiked,
+  ratingSummary,
 }: {
   university: UniversityDetailData;
   isAuthenticated: boolean;
   /** Whether the signed-in visitor has already liked this university. */
   isLiked: boolean;
+  ratingSummary: RatingSummary;
 }) {
   const t = await getTranslations("UniversityDetail");
   const tCatalog = await getTranslations("Catalog");
@@ -272,17 +275,19 @@ export async function UniversityHero({
           </span>
         </div>
 
-        {/* Phone: the main action full width, then save / compare / share as
-            three equal labelled buttons. sm+: one row. */}
-        <div className="mt-6 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
-          <Link
-            href={`/universities/${university.slug}?tab=faculties#tabs`}
-            className="col-span-3 inline-flex min-h-12 items-center justify-center gap-2 rounded-xl bg-[#1E6DEB] px-6 text-base font-bold text-white shadow-[0_16px_36px_-16px_rgba(30,109,235,0.6)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1859c4]"
-          >
-            <Compass className="size-5" aria-hidden />
-            {t("exploreProgramsCta")}
-          </Link>
+        {/* Students' rating out of 5, in the spot the main call to action
+            used to hold: the faculties are the very next thing below anyway. */}
+        <UniversityRating
+          universityId={university.id}
+          isAuthenticated={isAuthenticated}
+          callbackUrl={`/universities/${university.slug}`}
+          initialSummary={ratingSummary}
+          className="mt-6"
+        />
 
+        {/* Save / compare / share: three equal labelled buttons on a phone,
+            one row from sm. */}
+        <div className="mt-3 grid grid-cols-3 gap-2 sm:flex sm:flex-wrap sm:items-center sm:gap-3">
           <UniversityLikeButton
             universityId={university.id}
             isAuthenticated={isAuthenticated}

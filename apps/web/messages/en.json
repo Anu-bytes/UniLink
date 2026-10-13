@@ -1000,7 +1000,6 @@
     "noFacultyMatch": "No faculty matches your search.",
     "viewPrograms": "View programs",
     "hidePrograms": "Hide",
-    "exploreProgramsCta": "Explore programs",
     "campusPhotos": "Campus photos",
     "galleryPhotoCount": "{count, plural, one {# photo of the campus} other {# photos of the campus}}",
     "location": {
@@ -2478,5 +2477,43 @@
       "TECHNOLOGICAL_UNIVERSITIES": "El Sewedy University of Technology and Saxony University."
     },
     "fullTableNote": "This university's faculties aren't listed on UniLink yet, so here is the full published table that applies to it."
+  },
+  "UniversityRating": {
+    "heading": "Student rating",
+    "averageLabel": "Rated {average} out of 5",
+    "noRatings": "No ratings yet",
+    "beFirst": "No ratings yet. Be the first to rate it.",
+    "ratingCount": "{count, plural, one {{value} rating} other {{value} ratings}}",
+    "breakdown": "Ratings by number of stars",
+    "rateTitle": "Rate this university",
+    "yourRating": "Your rating",
+    "loginToRate": "Log in to rate",
+    "remove": "Remove my rating",
+    "starLabel": "{level} out of 5: {meaning}",
+    "thanks": "Thanks! You rated it {level} out of 5.",
+    "youRated": "You rated it {level} out of 5 ({meaning}). Pick another star to change it.",
+    "hint": "Each star shows what it means. Pick the one that fits your opinion.",
+    "levels": {
+      "1": {
+        "title": "Poor",
+        "description": "I wouldn't recommend it"
+      },
+      "2": {
+        "title": "Fair",
+        "description": "Below my expectations"
+      },
+      "3": {
+        "title": "Good",
+        "description": "Met my expectations"
+      },
+      "4": {
+        "title": "Very good",
+        "description": "Better than I expected"
+      },
+      "5": {
+        "title": "Excellent",
+        "description": "I'd highly recommend it"
+      }
+    }
   }
 }

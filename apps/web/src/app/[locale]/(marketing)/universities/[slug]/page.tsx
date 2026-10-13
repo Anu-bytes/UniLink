@@ -14,6 +14,7 @@ import { TabFaculties } from "@/components/university/tab-faculties";
 import { TabMinimumScores } from "@/components/university/tab-minimum-scores";
 import { certificateGroupFor, type CertificateGroup } from "@/lib/admission-limits";
 import { prisma } from "@/lib/prisma";
+import { getRatingSummary } from "@/lib/university-ratings";
 import { TabGallery } from "@/components/university/tab-gallery";
 import { TabLocation } from "@/components/university/tab-location";
 import {
@@ -65,7 +66,10 @@ export default async function UniversityDetailPage({
 
   const active: UniversityTab = isUniversityTab(tab) ? tab : "faculties";
   const isAuthenticated = Boolean(session?.user?.id);
-  const isLiked = await isUniversitySaved(session?.user?.id ?? null, university.id);
+  const [isLiked, ratingSummary] = await Promise.all([
+    isUniversitySaved(session?.user?.id ?? null, university.id),
+    getRatingSummary(university.id, session?.user?.id ?? null),
+  ]);
 
   // Counts pages read, not tab switches, so only the default tab increments.
   //
@@ -107,11 +111,12 @@ export default async function UniversityDetailPage({
         university={university}
         isAuthenticated={isAuthenticated}
         isLiked={isLiked}
+        ratingSummary={ratingSummary}
       />
 
-      {/* Anchored so links elsewhere on the page (the hero's "Explore
-          programs" CTA) can jump straight to the tab content instead of
-          just swapping it in off-screen below a tall hero. */}
+      {/* Anchored so links (?tab=...#tabs) can jump straight to the tab
+          content instead of just swapping it in off-screen below a tall
+          hero. */}
       {/* On a phone the panel runs edge to edge (no card inside the page
           gutter), which gives the faculty list the full screen width instead
           of squeezing it inside two layers of padding. */}
