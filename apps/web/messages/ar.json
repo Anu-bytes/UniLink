@@ -1000,7 +1000,6 @@
     "noFacultyMatch": "لا توجد كلية مطابقة لبحثك.",
     "viewPrograms": "عرض البرامج",
     "hidePrograms": "إخفاء",
-    "exploreProgramsCta": "استكشف البرامج",
     "campusPhotos": "صور الحرم الجامعي",
     "galleryPhotoCount": "{count, plural, zero {لا توجد صور} one {صورة واحدة من الحرم الجامعي} two {صورتان من الحرم الجامعي} few {{count} صور من الحرم الجامعي} many {{count} صورة من الحرم الجامعي} other {{count} صورة من الحرم الجامعي}}",
     "location": {
@@ -2478,5 +2477,43 @@
       "TECHNOLOGICAL_UNIVERSITIES": "جامعة السويدي للتكنولوجيا وجامعة ساكسوني."
     },
     "fullTableNote": "لم تُضف كليات هذه الجامعة على UniLink بعد، لذا نعرض الجدول المعلن كاملًا الذي ينطبق عليها."
+  },
+  "UniversityRating": {
+    "heading": "تقييم الطلاب",
+    "averageLabel": "التقييم {average} من 5",
+    "noRatings": "لا توجد تقييمات بعد",
+    "beFirst": "لا توجد تقييمات بعد. كن أول من يقيّمها.",
+    "ratingCount": "{count, plural, zero {لا توجد تقييمات} one {تقييم واحد} two {تقييمان} few {{value} تقييمات} many {{value} تقييمًا} other {{value} تقييم}}",
+    "breakdown": "التقييمات حسب عدد النجوم",
+    "rateTitle": "قيّم هذه الجامعة",
+    "yourRating": "تقييمك",
+    "loginToRate": "سجّل الدخول للتقييم",
+    "remove": "إزالة تقييمي",
+    "starLabel": "{level} من 5: {meaning}",
+    "thanks": "شكرًا! قيّمتها {level} من 5.",
+    "youRated": "قيّمتها {level} من 5 ({meaning}). اختر نجمة أخرى لتغيير تقييمك.",
+    "hint": "كل نجمة تعبّر عن معنى. اختر ما يناسب رأيك.",
+    "levels": {
+      "1": {
+        "title": "ضعيف",
+        "description": "لا أنصح بها"
+      },
+      "2": {
+        "title": "مقبول",
+        "description": "أقل من توقعاتي"
+      },
+      "3": {
+        "title": "جيد",
+        "description": "على قدر توقعاتي"
+      },
+      "4": {
+        "title": "جيد جدًا",
+        "description": "أفضل مما توقعت"
+      },
+      "5": {
+        "title": "ممتاز",
+        "description": "أنصح بها بشدة"
+      }
+    }
   }
 }

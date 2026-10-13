@@ -33,3 +33,7 @@ Thumbs.db
 # local Claude Code settings (keep launch.json shared, ignore personal overrides)
 .claude/settings.local.json
 .vercel
+
+# database backups (contain personal data and password hashes)
+backups/
+recovery-cache-backup/

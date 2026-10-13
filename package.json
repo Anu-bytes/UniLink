@@ -20,7 +20,8 @@
     "db:seed": "npm run db:seed --workspace=apps/web",
     "db:seed:user": "npm run db:seed:user --workspace=apps/web",
     "db:seed:admin": "npm run db:seed:admin --workspace=apps/web",
-    "db:studio": "npm run db:studio --workspace=apps/web"
+    "db:studio": "npm run db:studio --workspace=apps/web",
+    "db:backup": "npm run db:backup --workspace=apps/web"
   },
   "overrides": {
     "browserslist": "^4.28.7",

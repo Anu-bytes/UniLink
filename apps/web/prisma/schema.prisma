@@ -26,30 +26,31 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id             String          @id @default(cuid())
-  name           String?
-  firstName      String? // collected at onboarding registration
-  lastName       String?
-  email          String          @unique
-  phone          String? // collected at onboarding registration
-  emailVerified  DateTime?
-  image          String?
+  id                  String               @id @default(cuid())
+  name                String?
+  firstName           String? // collected at onboarding registration
+  lastName            String?
+  email               String               @unique
+  phone               String? // collected at onboarding registration
+  emailVerified       DateTime?
+  image               String?
   // Set only for email/password (credentials) accounts. OAuth users have none.
-  passwordHash   String?
-  role           UserRole        @default(STUDENT)
-  accounts       Account[]
-  sessions       Session[]
-  studentProfile StudentProfile?
-  savedPrograms  SavedProgram[]
-  savedFaculties SavedFaculty[]
-  savedUniversities SavedUniversity[]
+  passwordHash        String?
+  role                UserRole             @default(STUDENT)
+  accounts            Account[]
+  sessions            Session[]
+  studentProfile      StudentProfile?
+  savedPrograms       SavedProgram[]
+  savedFaculties      SavedFaculty[]
+  savedUniversities   SavedUniversity[]
+  universityRatings   UniversityRating[]
   passwordResetTokens PasswordResetToken[]
   // Bumped on every password change. Sessions minted before this instant are
   // rejected, so resetting a password logs out whoever else was signed in.
-  passwordChangedAt DateTime?
-  applications   Application[]
-  createdAt      DateTime        @default(now())
-  updatedAt      DateTime        @updatedAt
+  passwordChangedAt   DateTime?
+  applications        Application[]
+  createdAt           DateTime             @default(now())
+  updatedAt           DateTime             @updatedAt
 }
 
 enum UserRole {
@@ -142,15 +143,15 @@ model StudentProfile {
   graduationYear        Int // expected high-school graduation year
   gradeValue            String // expected grade, free text to fit any system
   fieldsOfStudy         String[]
-  englishTest   EnglishTest  @default(NONE)
-  englishScore  Float? // null when englishTest = NONE
-  nationality   String // ISO 3166-1 alpha-2 country code
-  intakeSeason  IntakeSeason
-  intakeYear    Int
-  budgetBand    BudgetBand // bucketed tuition budget in EGP
+  englishTest           EnglishTest      @default(NONE)
+  englishScore          Float? // null when englishTest = NONE
+  nationality           String // ISO 3166-1 alpha-2 country code
+  intakeSeason          IntakeSeason
+  intakeYear            Int
+  budgetBand            BudgetBand // bucketed tuition budget in EGP
   // Short free-text "About Me" shown on the profile page. Purely
   // presentational — the match scorer in lib/matching.ts never reads it.
-  bio           String?
+  bio                   String?
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -203,56 +204,57 @@ enum BudgetBand {
 }
 
 model University {
-  id            String         @id @default(cuid())
-  name          String
-  nameAr        String?
+  id              String                   @id @default(cuid())
+  name            String
+  nameAr          String?
   // Short well-known abbreviation ("BUE", "GUC"), shown beside the full name.
   // Latin letters even on the Arabic site — that's how these are actually
   // written and recognised locally, not translated.
-  acronym       String?
-  slug          String         @unique
-  type          UniversityType
-  country       String
-  countryAr     String?
-  city          String
-  cityAr        String?
-  description   String?
-  descriptionAr String?
+  acronym         String?
+  slug            String                   @unique
+  type            UniversityType
+  country         String
+  countryAr       String?
+  city            String
+  cityAr          String?
+  description     String?
+  descriptionAr   String?
   // Long-form body of the "About the University" tab. `description` stays the
   // short blurb used on cards and in the page hero.
-  aboutRich     String?
-  aboutRichAr   String?
-  websiteUrl    String?
-  logoUrl       String?
-  coverImageUrl String?
+  aboutRich       String?
+  aboutRichAr     String?
+  websiteUrl      String?
+  logoUrl         String?
+  coverImageUrl   String?
   establishedYear Int?
   addressLine     String?
   addressLineAr   String?
   phone           String?
   email           String?
   // Denormalised page-view counter shown in the hero meta row.
-  viewCount       Int          @default(0)
-  isFeatured    Boolean        @default(false)
-  isRecommended Boolean        @default(false)
-  isTrending    Boolean        @default(false)
-  publishedAt   DateTime?
+  viewCount       Int                      @default(0)
+  isFeatured      Boolean                  @default(false)
+  isRecommended   Boolean                  @default(false)
+  isTrending      Boolean                  @default(false)
+  publishedAt     DateTime?
   // Location as plain coordinates (simplified from the old PostGIS point).
-  latitude      Float?
-  longitude     Float?
+  latitude        Float?
+  longitude       Float?
   // A Google Maps link, for universities that have one on file but no
   // coordinates. Opened in a new tab rather than embedded (the site's CSP
   // only allows the OpenStreetMap iframe).
-  googleMapsUrl String?
-  programs      Program[]
-  faculties     Faculty[]
-  scholarships  Scholarship[]
-  images        UniversityImage[]
-  features      UniversityFeature[]
-  contentBlocks UniversityContentBlock[]
-  minimumScores MinimumScore[]
-  savedBy       SavedUniversity[]
-  createdAt     DateTime       @default(now())
-  updatedAt     DateTime       @updatedAt
+  googleMapsUrl   String?
+  programs        Program[]
+  faculties       Faculty[]
+  scholarships    Scholarship[]
+  images          UniversityImage[]
+  features        UniversityFeature[]
+  contentBlocks   UniversityContentBlock[]
+  minimumScores   MinimumScore[]
+  savedBy         SavedUniversity[]
+  ratings         UniversityRating[]
+  createdAt       DateTime                 @default(now())
+  updatedAt       DateTime                 @updatedAt
 
   @@index([country])
   @@index([city])
@@ -323,21 +325,21 @@ enum ContentSection {
 }
 
 model Faculty {
-  id            String        @id @default(cuid())
+  id            String         @id @default(cuid())
   universityId  String
-  university    University    @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  university    University     @relation(fields: [universityId], references: [id], onDelete: Cascade)
   name          String
   nameAr        String?
   slug          String
   description   String?
   descriptionAr String?
   imageUrl      String?
-  sortOrder     Int           @default(0)
+  sortOrder     Int            @default(0)
   programs      Program[]
   minimumScores MinimumScore[]
   savedBy       SavedFaculty[]
-  createdAt     DateTime      @default(now())
-  updatedAt     DateTime      @updatedAt
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
 
   @@unique([universityId, slug])
   @@index([universityId, sortOrder])
@@ -346,14 +348,14 @@ model Faculty {
 // One row of the "Minimum Scores" tab: the cut-off for a given certificate
 // system, either university-wide (facultyId null) or per faculty.
 model MinimumScore {
-  id           String     @id @default(cuid())
+  id           String           @id @default(cuid())
   universityId String
-  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  university   University       @relation(fields: [universityId], references: [id], onDelete: Cascade)
   facultyId    String?
-  faculty      Faculty?   @relation(fields: [facultyId], references: [id], onDelete: Cascade)
+  faculty      Faculty?         @relation(fields: [facultyId], references: [id], onDelete: Cascade)
   system       HighSchoolSystem
-  minScore     Decimal    @db.Decimal(6, 2)
-  unit         ScoreUnit  @default(PERCENT)
+  minScore     Decimal          @db.Decimal(6, 2)
+  unit         ScoreUnit        @default(PERCENT)
   year         Int?
 
   @@index([universityId])
@@ -367,40 +369,40 @@ enum ScoreUnit {
 }
 
 model Program {
-  id             String     @id @default(cuid())
-  universityId   String
-  university     University @relation(fields: [universityId], references: [id], onDelete: Cascade)
-  facultyId      String?
-  faculty        Faculty?   @relation(fields: [facultyId], references: [id], onDelete: SetNull)
-  name           String
-  nameAr         String?
-  slug           String
-  description    String?
-  descriptionAr  String?
-  studyLevel     StudyLevel
-  fieldOfStudy   String
-  durationMonths Int?
+  id                   String                      @id @default(cuid())
+  universityId         String
+  university           University                  @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  facultyId            String?
+  faculty              Faculty?                    @relation(fields: [facultyId], references: [id], onDelete: SetNull)
+  name                 String
+  nameAr               String?
+  slug                 String
+  description          String?
+  descriptionAr        String?
+  studyLevel           StudyLevel
+  fieldOfStudy         String
+  durationMonths       Int?
   // Overrides the duration derived from `durationMonths` when a program needs
   // wording like "4 year bachelor's degree including an optional internship".
-  durationLabel   String?
-  durationLabelAr String?
-  tuitionFee     Decimal?      @db.Decimal(12, 2)
-  tuitionPeriod  TuitionPeriod @default(YEAR)
-  currency       String        @default("EGP") @db.Char(3)
-  applicationFee Decimal?      @db.Decimal(12, 2)
-  applicationFeeWaived Boolean @default(false)
+  durationLabel        String?
+  durationLabelAr      String?
+  tuitionFee           Decimal?                    @db.Decimal(12, 2)
+  tuitionPeriod        TuitionPeriod               @default(YEAR)
+  currency             String                      @default("EGP") @db.Char(3)
+  applicationFee       Decimal?                    @db.Decimal(12, 2)
+  applicationFeeWaived Boolean                     @default(false)
   // Minimum secondary-certificate percentage. Compared against the student's
   // onboarding grade by src/lib/matching.ts.
   minGradePercent      Float?
-  coopAvailable        Boolean @default(false)
+  coopAvailable        Boolean                     @default(false)
   tags                 ProgramTag[]
   intakes              ProgramIntake[]
   englishRequirements  ProgramEnglishRequirement[]
   savedBy              SavedProgram[]
   applications         Application[]
-  isPublished    Boolean    @default(false)
-  createdAt      DateTime   @default(now())
-  updatedAt      DateTime   @updatedAt
+  isPublished          Boolean                     @default(false)
+  createdAt            DateTime                    @default(now())
+  updatedAt            DateTime                    @updatedAt
 
   @@unique([universityId, slug])
   @@index([universityId])
@@ -488,6 +490,23 @@ model SavedUniversity {
 
   @@unique([userId, universityId])
   @@index([userId])
+}
+
+// A signed-in student's 1 to 5 star rating of a university, shown on its
+// profile. One per student per university; rating again replaces it. The
+// 1..5 range is also enforced by a CHECK constraint in the migration.
+model UniversityRating {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation(fields: [userId], references: [id], onDelete: Cascade)
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  stars        Int
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  @@unique([userId, universityId])
+  @@index([universityId])
 }
 
 model Application {

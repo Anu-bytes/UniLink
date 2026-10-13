@@ -468,6 +468,63 @@ html[lang="ar"] body {
     animation: ul-heart-pop 0.45s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
   }
 
+  /* University rating: the chosen star pops with a spin, a ring bursts out
+     of it, and the caption under the stars slides in as it changes. */
+  @keyframes ul-star-pop {
+    0% {
+      transform: scale(1) rotate(0deg);
+    }
+    40% {
+      transform: scale(1.45) rotate(-14deg);
+    }
+    70% {
+      transform: scale(0.92) rotate(6deg);
+    }
+    100% {
+      transform: scale(1) rotate(0deg);
+    }
+  }
+  .ul-star-pop {
+    animation: ul-star-pop 0.55s cubic-bezier(0.2, 0.9, 0.3, 1.2) both;
+  }
+  @keyframes ul-star-burst {
+    from {
+      transform: scale(0.4);
+      opacity: 0.9;
+    }
+    to {
+      transform: scale(1.5);
+      opacity: 0;
+    }
+  }
+  .ul-star-burst {
+    animation: ul-star-burst 0.6s ease-out both;
+    pointer-events: none;
+  }
+  @keyframes ul-rating-caption {
+    from {
+      opacity: 0;
+      transform: translateY(4px);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  .ul-rating-caption {
+    animation: ul-rating-caption 0.22s ease-out both;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .ul-star-pop,
+    .ul-star-burst,
+    .ul-rating-caption {
+      animation: none;
+    }
+    .ul-star-burst {
+      opacity: 0;
+    }
+  }
+
   /* Search palette: the panel springs in, its backdrop fades, and result rows
      cascade in a few ms apart (delay set inline per row). */
   @keyframes ul-palette-in {
