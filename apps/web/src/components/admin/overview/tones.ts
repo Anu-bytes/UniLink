@@ -30,4 +30,6 @@ export const USER_ROLE_TONES: Record<UserRole, BadgeTone> = {
   PARENT: "blue",
   PARTNER: "amber",
   ADMIN: "slate",
+  REVIEWER: "green",
+  UNIVERSITY_ADMIN: "blue",
 };

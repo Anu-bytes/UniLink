@@ -43,8 +43,14 @@ const folderSchema = z.enum(MEDIA_FOLDERS);
 const deleteSchema = z.object({ url: z.string().min(1) });
 
 export async function POST(request: Request) {
-  const guard = await requireAdmin();
+  // University admins upload photos too: the upload alone changes nothing on
+  // the site, and using the file goes through the review queue. Reviewers
+  // do not edit, so they cannot upload.
+  const guard = await requireAdmin({ minLevel: 1 });
   if (!guard.ok) return guard.response;
+  if (guard.actor.level === 2) {
+    return NextResponse.json({ error: "Forbidden" }, { status: 403 });
+  }
   const actorId = guard.actor.id;
 
   if (!isStorageConfigured()) {

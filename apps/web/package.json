@@ -19,6 +19,7 @@
     "db:seed": "prisma db seed",
     "db:seed:user": "tsx prisma/seed/dev-user.ts",
     "db:seed:admin": "tsx prisma/seed/admin.ts",
+    "db:seed:test-admins": "tsx prisma/seed/test-admins.ts",
     "db:studio": "prisma studio",
     "db:backup": "tsx scripts/db-backup.ts"
   },

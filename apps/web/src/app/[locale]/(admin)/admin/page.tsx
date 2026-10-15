@@ -10,6 +10,9 @@ import { RecentLeads } from "@/components/admin/overview/recent-leads";
 import { RecentUsers } from "@/components/admin/overview/recent-users";
 import { SecondaryStats } from "@/components/admin/overview/secondary-stats";
 import { requireAdminPage } from "@/lib/admin";
+import { ApprovalsSnapshot } from "@/components/admin/home/approvals-snapshot";
+import { ReviewerHome } from "@/components/admin/home/reviewer-home";
+import { UniversityAdminHome } from "@/components/admin/home/university-admin-home";
 import { formatNumber } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 
@@ -17,7 +20,10 @@ export default async function AdminOverviewPage() {
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  // Every admin level lands here, each on its own home.
+  const actor = await requireAdminPage({ minLevel: 1 });
+  if (actor.level === 1) return <UniversityAdminHome actor={actor} />;
+  if (actor.level === 2) return <ReviewerHome actor={actor} />;
 
   const t = await getTranslations("Admin.overview");
   const locale = await getLocale();
@@ -142,6 +148,7 @@ export default async function AdminOverviewPage() {
       <PageHeader title={t("title")} description={t("subtitle")} />
 
       <div className="mt-6 flex flex-col gap-6">
+        <ApprovalsSnapshot />
         <AttentionPanel submitted={byStatus.SUBMITTED} reviewing={byStatus.IN_REVIEW} drafts={universitiesTotal - universitiesPublished} />
         <StatCardGrid>
           <StatCard

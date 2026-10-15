@@ -7,6 +7,7 @@
  * field, the delete dialog reads the counts, and nothing is swallowed.
  */
 import { adminErrorMessage } from "@/lib/admin-errors";
+import { notePendingChange } from "@/components/admin/toast";
 
 export type WriteResult<T> =
   | { ok: true; data: T }
@@ -51,6 +52,15 @@ export async function adminWrite<T>(
       field: typeof detail?.field === "string" ? detail.field : null,
       body: payload,
     };
+  }
+
+  // 202: a university admin's edit, queued for review rather than applied
+  // (see lib/admin-changes.ts). Hand the form the proposed record so it keeps
+  // what was typed, and let the toast say "sent for approval".
+  const queued = payload as { pending?: unknown; proposed?: unknown } | null;
+  if (response.status === 202 && queued?.pending) {
+    notePendingChange();
+    return { ok: true, data: (queued.proposed ?? null) as T };
   }
 
   return { ok: true, data: payload as T };

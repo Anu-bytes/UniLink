@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { PageHeader } from "@/components/admin";
 import { ProgramCreateForm } from "@/components/admin/programs/program-create-form";
 import { PAGE_WRAPPER } from "@/components/admin/programs/styles";
-import { requireAdminPage } from "@/lib/admin";
+import { requireEditorPage, universityIdScope } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 /** A repeated query key arrives as an array; the first value wins. */
@@ -20,13 +20,15 @@ export default async function NewProgramPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  const actor = await requireEditorPage();
+  const scope = universityIdScope(actor);
 
   const t = await getTranslations("Admin.programs");
   const sp = await searchParams;
 
   const [universities, faculties] = await prisma.$transaction([
     prisma.university.findMany({
+      where: scope ? { id: scope } : undefined,
       orderBy: [{ name: "asc" }, { id: "asc" }],
       select: { id: true, name: true, nameAr: true },
     }),
@@ -34,6 +36,7 @@ export default async function NewProgramPage({
     // browser as the university changes, which beats a round trip per change
     // for a list this size and keeps the two controls from disagreeing.
     prisma.faculty.findMany({
+      where: scope ? { universityId: scope } : undefined,
       orderBy: [{ universityId: "asc" }, { sortOrder: "asc" }, { id: "asc" }],
       select: { id: true, name: true, nameAr: true, universityId: true },
     }),

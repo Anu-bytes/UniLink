@@ -26,17 +26,21 @@ datasource db {
 // ---------------------------------------------------------------------------
 
 model User {
-  id                  String               @id @default(cuid())
+  id                  String                      @id @default(cuid())
   name                String?
   firstName           String? // collected at onboarding registration
   lastName            String?
-  email               String               @unique
+  email               String                      @unique
   phone               String? // collected at onboarding registration
   emailVerified       DateTime?
   image               String?
   // Set only for email/password (credentials) accounts. OAuth users have none.
   passwordHash        String?
-  role                UserRole             @default(STUDENT)
+  role                UserRole                    @default(STUDENT)
+  status              AccountStatus               @default(ACTIVE)
+  statusReason        String?
+  statusChangedAt     DateTime?
+  lastLoginAt         DateTime?
   accounts            Account[]
   sessions            Session[]
   studentProfile      StudentProfile?
@@ -49,8 +53,14 @@ model User {
   // rejected, so resetting a password logs out whoever else was signed in.
   passwordChangedAt   DateTime?
   applications        Application[]
-  createdAt           DateTime             @default(now())
-  updatedAt           DateTime             @updatedAt
+  adminAssignments    UniversityAdminAssignment[] @relation("AssignedAdmin")
+  assignmentsMade     UniversityAdminAssignment[] @relation("AssignedBy")
+  changeRequests      ChangeRequest[]             @relation("ChangeAuthor")
+  reviewedChanges     ChangeRequest[]             @relation("ChangeReviewer")
+  auditLogs           AdminAuditLog[]
+  searchLogs          SearchLog[]
+  createdAt           DateTime                    @default(now())
+  updatedAt           DateTime                    @updatedAt
 }
 
 enum UserRole {
@@ -59,7 +69,23 @@ enum UserRole {
   // the same StudentProfile shape as STUDENT; this only labels the account.
   PARENT
   PARTNER
+  // Level 3: the super admin. Edits everything directly, reviews changes,
+  // manages admin accounts. Kept as ADMIN so existing accounts keep access.
   ADMIN
+  // Level 2: approves or rejects pending university edits and reads the
+  // statistics. Cannot edit content directly.
+  REVIEWER
+  // Level 1: edits only the universities assigned to them, and every edit
+  // waits in the review queue until a reviewer or super admin approves it.
+  UNIVERSITY_ADMIN
+}
+
+// Whether an account may sign in. DISABLED is a pause (re-enable any time);
+// BANNED is a block. Both end open sessions within a minute.
+enum AccountStatus {
+  ACTIVE
+  DISABLED
+  BANNED
 }
 
 model Account {
@@ -204,14 +230,14 @@ enum BudgetBand {
 }
 
 model University {
-  id              String                   @id @default(cuid())
+  id              String                      @id @default(cuid())
   name            String
   nameAr          String?
   // Short well-known abbreviation ("BUE", "GUC"), shown beside the full name.
   // Latin letters even on the Arabic site — that's how these are actually
   // written and recognised locally, not translated.
   acronym         String?
-  slug            String                   @unique
+  slug            String                      @unique
   type            UniversityType
   country         String
   countryAr       String?
@@ -232,10 +258,10 @@ model University {
   phone           String?
   email           String?
   // Denormalised page-view counter shown in the hero meta row.
-  viewCount       Int                      @default(0)
-  isFeatured      Boolean                  @default(false)
-  isRecommended   Boolean                  @default(false)
-  isTrending      Boolean                  @default(false)
+  viewCount       Int                         @default(0)
+  isFeatured      Boolean                     @default(false)
+  isRecommended   Boolean                     @default(false)
+  isTrending      Boolean                     @default(false)
   publishedAt     DateTime?
   // Location as plain coordinates (simplified from the old PostGIS point).
   latitude        Float?
@@ -253,8 +279,12 @@ model University {
   minimumScores   MinimumScore[]
   savedBy         SavedUniversity[]
   ratings         UniversityRating[]
-  createdAt       DateTime                 @default(now())
-  updatedAt       DateTime                 @updatedAt
+  admins          UniversityAdminAssignment[]
+  changeRequests  ChangeRequest[]
+  viewDays        UniversityViewDaily[]
+  searchLogs      SearchLog[]
+  createdAt       DateTime                    @default(now())
+  updatedAt       DateTime                    @updatedAt
 
   @@index([country])
   @@index([city])
@@ -507,6 +537,117 @@ model UniversityRating {
 
   @@unique([userId, universityId])
   @@index([universityId])
+}
+
+// Which universities a UNIVERSITY_ADMIN may edit.
+model UniversityAdminAssignment {
+  id           String     @id @default(cuid())
+  userId       String
+  user         User       @relation("AssignedAdmin", fields: [userId], references: [id], onDelete: Cascade)
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  assignedById String?
+  assignedBy   User?      @relation("AssignedBy", fields: [assignedById], references: [id], onDelete: SetNull)
+  createdAt    DateTime   @default(now())
+
+  @@unique([userId, universityId])
+  @@index([universityId])
+}
+
+enum ChangeRequestStatus {
+  PENDING
+  APPROVED
+  REJECTED
+  WITHDRAWN
+}
+
+enum ChangeAction {
+  CREATE
+  UPDATE
+  DELETE
+}
+
+// A university admin's edit, held until a reviewer or super admin approves
+// it. Keeps the original admin API call (method, path, body) so approving
+// replays exactly the write the editor asked for, and the record as it was
+// before, so the review screen can show a field-by-field diff.
+model ChangeRequest {
+  id           String              @id @default(cuid())
+  universityId String
+  university   University          @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  authorId     String?
+  author       User?               @relation("ChangeAuthor", fields: [authorId], references: [id], onDelete: SetNull)
+  entity       String
+  entityId     String?
+  entityLabel  String
+  action       ChangeAction
+  method       String
+  path         String
+  payload      Json?
+  before       Json?
+  status       ChangeRequestStatus @default(PENDING)
+  reviewerId   String?
+  reviewer     User?               @relation("ChangeReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewNote   String?
+  reviewedAt   DateTime?
+  applyError   String?
+  createdAt    DateTime            @default(now())
+  updatedAt    DateTime            @updatedAt
+
+  @@index([status, createdAt])
+  @@index([universityId, status])
+  @@index([authorId, createdAt])
+}
+
+// Everything an admin did: direct edits, submitted and reviewed changes, and
+// account management. Feeds each admin's recent-changes list.
+model AdminAuditLog {
+  id           String   @id @default(cuid())
+  actorId      String?
+  actor        User?    @relation(fields: [actorId], references: [id], onDelete: SetNull)
+  action       String
+  entity       String
+  entityId     String?
+  entityLabel  String?
+  universityId String?
+  summary      String
+  metadata     Json?
+  createdAt    DateTime @default(now())
+
+  @@index([actorId, createdAt])
+  @@index([createdAt])
+}
+
+// Profile views per university per day, for trends. University.viewCount
+// stays the all-time total.
+model UniversityViewDaily {
+  universityId String
+  university   University @relation(fields: [universityId], references: [id], onDelete: Cascade)
+  day          DateTime   @db.Date
+  views        Int        @default(0)
+
+  @@id([universityId, day])
+  @@index([day])
+}
+
+// One row per search a visitor ran (search page, quick search, homepage
+// search). universityId is set when the search was for, or ended on, one
+// university, which is what "most searched universities" counts.
+model SearchLog {
+  id           String      @id @default(cuid())
+  query        String
+  mode         String
+  source       String
+  locale       String?
+  resultCount  Int?
+  universityId String?
+  university   University? @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  userId       String?
+  user         User?       @relation(fields: [userId], references: [id], onDelete: SetNull)
+  createdAt    DateTime    @default(now())
+
+  @@index([createdAt])
+  @@index([universityId, createdAt])
 }
 
 model Application {

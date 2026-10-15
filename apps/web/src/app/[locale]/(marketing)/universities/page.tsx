@@ -9,10 +9,12 @@ import {
   Layers,
   MapPin,
 } from "lucide-react";
+import { after } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
 import { ViewTransition } from "react";
 
 import { auth } from "@/auth";
+import { logSearch } from "@/lib/search-log";
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareToggle } from "@/components/app/university-compare-toggle";
 import { UniversitySaveToggle } from "@/components/app/university-save-toggle";
@@ -60,6 +62,22 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
 
   const universities = directory.results;
   const hasActiveFilters = Boolean(q?.trim() || type || city);
+
+  // Admin statistics: the directory's own search box counts as a search.
+  const typed = q?.trim();
+  if (typed && directory.page === 1) {
+    after(() =>
+      logSearch({
+        query: typed,
+        mode: "universities",
+        source: "directory",
+        locale,
+        resultCount: directory.total,
+        universitySlug: universities.length === 1 ? universities[0].slug : null,
+        userId: session?.user?.id ?? null,
+      }),
+    );
+  }
 
   // The filter bar rebuilds the query string from scratch, so changing a filter
   // already drops the page; only these links need to carry it.

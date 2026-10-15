@@ -8,6 +8,8 @@ export const USER_ROLES = [
   "PARENT",
   "PARTNER",
   "ADMIN",
+  "REVIEWER",
+  "UNIVERSITY_ADMIN",
 ] as const satisfies readonly UserRole[];
 
 // ADMIN takes the one solid pill the kit reserves for a state that has to
@@ -23,6 +25,8 @@ export const USER_ROLE_TONES: Record<UserRole, BadgeTone> = {
   PARENT: "blue",
   PARTNER: "amber",
   ADMIN: "slate",
+  REVIEWER: "green",
+  UNIVERSITY_ADMIN: "blue",
 };
 
 // The activity card borrows the pipeline's colours so an application reads the

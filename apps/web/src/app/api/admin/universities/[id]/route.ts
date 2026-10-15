@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import {
   badRequest,
   emptyToNull,
@@ -75,6 +76,8 @@ const updateSchema = z
   .object({
     name: z.string().trim().min(1, "Name is required").max(200),
     nameAr: z.string().trim().max(200).nullish(),
+    acronym: z.string().trim().max(20).nullish(),
+    googleMapsUrl: urlField,
     slug: z.string().trim().max(120).nullish(),
     type: z.enum(UNIVERSITY_TYPES),
     country: z.string().trim().min(1, "Country is required").max(100),
@@ -121,7 +124,7 @@ export async function GET(
   return NextResponse.json(university);
 }
 
-export async function PATCH(
+async function patchHandler(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -149,6 +152,8 @@ export async function PATCH(
   if (input.countryAr !== undefined) {
     data.countryAr = emptyToNull(input.countryAr);
   }
+  if (input.acronym !== undefined) data.acronym = emptyToNull(input.acronym);
+  if (input.googleMapsUrl !== undefined) data.googleMapsUrl = emptyToNull(input.googleMapsUrl);
   if (input.city !== undefined) data.city = input.city;
   if (input.cityAr !== undefined) data.cityAr = emptyToNull(input.cityAr);
   if (input.description !== undefined) {
@@ -234,7 +239,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
+async function deleteHandler(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -287,3 +292,8 @@ export async function DELETE(
 
   return NextResponse.json({ ok: true });
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const PATCH = catalogueWrite("university", "UPDATE", patchHandler);
+export const DELETE = catalogueWrite("university", "DELETE", deleteHandler, { superAdminOnly: true });

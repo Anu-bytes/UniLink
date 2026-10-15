@@ -9,7 +9,7 @@ import { PAGE_WRAPPER, PRIMARY_BUTTON } from "@/components/admin/programs/styles
 import { STUDY_LEVELS } from "@/components/admin/programs/types";
 import type { ProgramRow } from "@/components/admin/programs/types";
 import { Link } from "@/i18n/navigation";
-import { requireAdminPage } from "@/lib/admin";
+import { requireEditorPage, universityIdScope } from "@/lib/admin";
 import { DEFAULT_PER_PAGE } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { adminPage } from "@/lib/admin-validation";
@@ -35,7 +35,9 @@ export default async function AdminProgramsPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  // A university admin only sees the universities assigned to them.
+  const actor = await requireEditorPage();
+  const scope = universityIdScope(actor);
 
   const t = await getTranslations("Admin.programs");
   const sp = await searchParams;
@@ -64,6 +66,7 @@ export default async function AdminProgramsPage({
   // name, which is how "Cairo" finds every program at Cairo University.
   const where: Prisma.ProgramWhereInput = {
     ...(universityId ? { universityId } : {}),
+    ...(scope ? { AND: [{ universityId: scope }] } : {}),
     ...(facultyId ? { facultyId } : {}),
     ...(studyLevel ? { studyLevel } : {}),
     ...(published === null ? {} : { isPublished: published }),
@@ -107,6 +110,7 @@ export default async function AdminProgramsPage({
     }),
     prisma.program.count({ where }),
     prisma.university.findMany({
+      where: scope ? { id: scope } : undefined,
       orderBy: [{ name: "asc" }, { id: "asc" }],
       select: { id: true, name: true, nameAr: true },
     }),

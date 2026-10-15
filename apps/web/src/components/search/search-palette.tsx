@@ -23,6 +23,7 @@ import {
   useUniversityIndex,
   type UniversitySearchEntry,
 } from "@/components/search/university-search";
+import { reportSearch } from "@/lib/search-beacon";
 import { cn } from "@/lib/utils";
 
 type PaletteItem =
@@ -181,9 +182,13 @@ export function SearchPalette({
   const go = useCallback(
     (href: string) => {
       setOpen(false);
+      // Searches that end on a university profile count towards that
+      // university in the admin statistics.
+      const slug = /^\/universities\/([^/?#]+)/.exec(href)?.[1];
+      if (trimmed) reportSearch({ query: trimmed, source: "quick_search", universitySlug: slug, locale });
       router.push(href);
     },
-    [router],
+    [router, trimmed, locale],
   );
 
   function onInputKeyDown(event: React.KeyboardEvent<HTMLInputElement>) {

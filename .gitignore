@@ -37,3 +37,6 @@ Thumbs.db
 # database backups (contain personal data and password hashes)
 backups/
 recovery-cache-backup/
+
+# generated test logins (the database is shared with the live site)
+*.local.md

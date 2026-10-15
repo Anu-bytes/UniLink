@@ -34,10 +34,16 @@ const COUNT_KEYS = [
 export function UniversityTable({
   rows,
   filtered,
+  fullControl = true,
 }: {
   rows: UniversityRow[];
   /** A search or filter is active, so "nothing here" is a different message. */
   filtered: boolean;
+  /**
+   * Publish and delete. Off for a university admin, who can only edit (and
+   * whose edits go to the review queue).
+   */
+  fullControl?: boolean;
 }) {
   const t = useTranslations("Admin");
   const tCatalog = useTranslations("Catalog");
@@ -256,6 +262,7 @@ export function UniversityTable({
               <Pencil className="size-4" aria-hidden />
             </Link>
 
+            {fullControl ? (
             <DropdownMenu>
               <DropdownMenuTrigger ref={(node) => { if (node) actionTriggers.current.set(row.id, node); else actionTriggers.current.delete(row.id); }} disabled={busy} aria-label={`${t("common.actions")}: ${locale === "ar" ? row.nameAr ?? row.name : row.name}`} className={ICON_BUTTON}>
                 {busy ? <Loader2 className="size-4 animate-spin" aria-hidden /> : <MoreHorizontal className="size-4" aria-hidden />}
@@ -270,6 +277,7 @@ export function UniversityTable({
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>
+            ) : null}
           </div>
         );
       },

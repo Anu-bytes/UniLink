@@ -14,7 +14,8 @@ import { ProgramIntakesPanel } from "@/components/admin/programs/intakes-panel";
 import { ProgramDeleteAction } from "@/components/admin/programs/program-delete-action";
 import { PAGE_WRAPPER, SECONDARY_BUTTON } from "@/components/admin/programs/styles";
 import { Link } from "@/i18n/navigation";
-import { requireAdminPage } from "@/lib/admin";
+import { canEditUniversity, requireEditorPage } from "@/lib/admin";
+import { PendingChangesNotice } from "@/components/admin/changes/pending-notice";
 import { prisma } from "@/lib/prisma";
 
 /** A repeated query key arrives as an array; the first value wins. */
@@ -32,7 +33,7 @@ export default async function EditProgramPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  const actor = await requireEditorPage();
 
   const { id } = await params;
   const sp = await searchParams;
@@ -71,7 +72,7 @@ export default async function EditProgramPage({
     },
   });
 
-  if (!program) {
+  if (!program || !canEditUniversity(actor, program.universityId)) {
     notFound();
   }
 
@@ -156,6 +157,7 @@ export default async function EditProgramPage({
       />
 
       <div className="mt-6 space-y-5">
+        <PendingChangesNotice actor={actor} universityId={program.universityId} entityId={program.id} />
         <ProgramEditorTabs programId={program.id} active={tab} />
 
         {tab === "details" ? (

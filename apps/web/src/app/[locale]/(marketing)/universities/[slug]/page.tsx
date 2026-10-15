@@ -15,6 +15,8 @@ import { TabMinimumScores } from "@/components/university/tab-minimum-scores";
 import { certificateGroupFor, type CertificateGroup } from "@/lib/admission-limits";
 import { prisma } from "@/lib/prisma";
 import { getRatingSummary } from "@/lib/university-ratings";
+import { canEditUniversity, getAdminActor } from "@/lib/admin";
+import { ProfileEditor, type EditableUniversity } from "@/components/university/profile-editor";
 import { TabGallery } from "@/components/university/tab-gallery";
 import { TabLocation } from "@/components/university/tab-location";
 import {
@@ -28,7 +30,7 @@ export const dynamic = "force-dynamic";
 
 type PageProps = {
   params: Promise<{ slug: string; locale: string }>;
-  searchParams: Promise<{ tab?: string }>;
+  searchParams: Promise<{ tab?: string; edit?: string }>;
 };
 
 export async function generateMetadata({
@@ -55,7 +57,7 @@ export default async function UniversityDetailPage({
   searchParams,
 }: PageProps) {
   const { slug } = await params;
-  const { tab } = await searchParams;
+  const { tab, edit } = await searchParams;
   const locale = await getLocale();
 
   const [university, session] = await Promise.all([
@@ -94,6 +96,16 @@ export default async function UniversityDetailPage({
         )
       : null;
 
+  // Admins who may edit this university get the on-page editor. Read fresh
+  // (not the cached detail) so they always edit the current values.
+  const actor = isAuthenticated ? await getAdminActor() : null;
+  const canEdit = actor ? canEditUniversity(actor, university.id) : false;
+  const editable = canEdit ? await loadEditable(university.id) : null;
+  const myPending =
+    canEdit && actor?.level === 1
+      ? await prisma.changeRequest.count({ where: { universityId: university.id, authorId: actor.id, status: "PENDING" } })
+      : 0;
+
   const callbackUrl = `/universities/${university.slug}${active === "faculties" ? "" : `?tab=${active}`}`;
   const panel = (
     <TabPanel
@@ -102,6 +114,7 @@ export default async function UniversityDetailPage({
       isAuthenticated={isAuthenticated}
       callbackUrl={callbackUrl}
       certificateGroup={certificateGroup}
+      canEdit={canEdit}
     />
   );
 
@@ -127,8 +140,75 @@ export default async function UniversityDetailPage({
           <div className="px-4 py-5 sm:p-5 md:p-8">{panel}</div>
         </div>
       </section>
+
+      {editable && actor ? (
+        <ProfileEditor
+          university={editable}
+          mode={actor.level === 3 ? "direct" : "review"}
+          pendingCount={myPending}
+          startOpen={edit === "1"}
+        />
+      ) : null}
     </>
   );
+}
+
+async function loadEditable(id: string): Promise<EditableUniversity | null> {
+  const row = await prisma.university.findUnique({
+    where: { id },
+    select: {
+      id: true,
+      slug: true,
+      name: true,
+      nameAr: true,
+      acronym: true,
+      type: true,
+      city: true,
+      cityAr: true,
+      addressLine: true,
+      addressLineAr: true,
+      description: true,
+      descriptionAr: true,
+      establishedYear: true,
+      websiteUrl: true,
+      googleMapsUrl: true,
+      logoUrl: true,
+      coverImageUrl: true,
+      images: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }], select: { id: true, url: true, alt: true } },
+      faculties: {
+        orderBy: [{ sortOrder: "asc" }, { id: "asc" }],
+        select: {
+          id: true,
+          name: true,
+          nameAr: true,
+          programs: {
+            orderBy: { name: "asc" },
+            select: {
+              id: true,
+              name: true,
+              nameAr: true,
+              tuitionFee: true,
+              tuitionPeriod: true,
+              currency: true,
+              minGradePercent: true,
+              isPublished: true,
+            },
+          },
+        },
+      },
+    },
+  });
+  if (!row) return null;
+  return {
+    ...row,
+    faculties: row.faculties.map((faculty) => ({
+      ...faculty,
+      programs: faculty.programs.map((program) => ({
+        ...program,
+        tuitionFee: program.tuitionFee == null ? null : Number(program.tuitionFee),
+      })),
+    })),
+  };
 }
 
 function TabPanel({
@@ -137,12 +217,14 @@ function TabPanel({
   isAuthenticated,
   callbackUrl,
   certificateGroup,
+  canEdit,
 }: {
   tab: UniversityTab;
   university: UniversityDetailData;
   isAuthenticated: boolean;
   callbackUrl: string;
   certificateGroup: CertificateGroup | null;
+  canEdit: boolean;
 }) {
   switch (tab) {
     case "scores":
@@ -157,6 +239,7 @@ function TabPanel({
           university={university}
           isAuthenticated={isAuthenticated}
           callbackUrl={callbackUrl}
+          canEdit={canEdit}
         />
       );
   }

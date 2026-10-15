@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import {
   emptyToNull,
   notFound,
@@ -28,7 +29,7 @@ const updateSchema = z
   })
   .partial();
 
-export async function PATCH(
+async function patchHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; imageId: string }> },
 ) {
@@ -74,7 +75,7 @@ export async function PATCH(
   return NextResponse.json(updated);
 }
 
-export async function DELETE(
+async function deleteHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; imageId: string }> },
 ) {
@@ -96,3 +97,8 @@ export async function DELETE(
 
   return NextResponse.json({ ok: true });
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const PATCH = catalogueWrite("image", "UPDATE", patchHandler);
+export const DELETE = catalogueWrite("image", "DELETE", deleteHandler);

@@ -1491,7 +1491,16 @@
       "openMenu": "فتح القائمة",
       "closeMenu": "إغلاق القائمة",
       "collapse": "طي",
-      "expand": "توسيع"
+      "expand": "توسيع",
+      "statistics": "الإحصائيات",
+      "approvals": "الموافقات",
+      "bulkEdit": "تعديل الكل مرة واحدة",
+      "admins": "المشرفون",
+      "myDashboard": "لوحتي",
+      "myChanges": "تعديلاتي",
+      "myCatalogue": "جامعاتي",
+      "myUniversities": "الجامعات",
+      "pending": "بانتظار المراجعة"
     },
     "common": {
       "search": "بحث",
@@ -1550,7 +1559,9 @@
         "STUDENT": "طالب",
         "PARENT": "ولي أمر",
         "PARTNER": "شريك",
-        "ADMIN": "مدير"
+        "ADMIN": "مشرف عام",
+        "REVIEWER": "مراجع",
+        "UNIVERSITY_ADMIN": "مشرف جامعة"
       },
       "budgetBands": {
         "UNDER_100K": "أقل من 100,000 ج.م.",
@@ -2406,6 +2417,461 @@
         "title": "لا توجد منح مطابقة",
         "description": "جرّب بحثاً آخر أو غيّر تصفية الجامعة والحالة."
       }
+    },
+    "roles": {
+      "universityAdmin": {
+        "universitiesHint": "الجامعات المسندة إليك. تُرسل تعديلاتك للموافقة قبل نشرها."
+      }
+    },
+    "changes": {
+      "sentTitle": "أُرسل للموافقة",
+      "sentBody": "سيراجعه أحد المراجعين قبل نشره.",
+      "noticeMine": "{count, plural, one {لديك تعديل واحد بانتظار الموافقة} two {لديك تعديلان بانتظار الموافقة} few {لديك {count} تعديلات بانتظار الموافقة} many {لديك {count} تعديلًا بانتظار الموافقة} other {لديك {count} تعديل بانتظار الموافقة}}",
+      "noticeAll": "{count, plural, one {تعديل واحد بانتظار المراجعة} two {تعديلان بانتظار المراجعة} few {{count} تعديلات بانتظار المراجعة} many {{count} تعديلًا بانتظار المراجعة} other {{count} تعديل بانتظار المراجعة}}",
+      "noticeMineBody": "يعرض المحرر أدناه القيم المنشورة حتى يوافق المراجع على تعديلاتك.",
+      "noticeAllBody": "اقترح مشرفو الجامعات هذه التعديلات. راجعها قبل تعديل الحقول نفسها.",
+      "viewMine": "عرض تعديلاتي",
+      "review": "مراجعة",
+      "actions": {
+        "CREATE": "إضافة",
+        "UPDATE": "تعديل",
+        "DELETE": "حذف"
+      },
+      "entities": {
+        "university": "ملف الجامعة",
+        "image": "صورة",
+        "feature": "ميزة",
+        "contentBlock": "محتوى",
+        "minimumScore": "الحد الأدنى",
+        "faculty": "كلية",
+        "program": "برنامج",
+        "intake": "موعد التقديم",
+        "englishRequirement": "متطلب اللغة الإنجليزية"
+      },
+      "status": {
+        "PENDING": "بانتظار المراجعة",
+        "APPROVED": "تمت الموافقة",
+        "REJECTED": "مرفوض",
+        "WITHDRAWN": "تم السحب"
+      },
+      "tabs": {
+        "PENDING": "بانتظار المراجعة",
+        "APPROVED": "تمت الموافقة",
+        "REJECTED": "مرفوض",
+        "WITHDRAWN": "تم السحب",
+        "ALL": "الكل"
+      },
+      "title": "الموافقات",
+      "titleMine": "تعديلاتي",
+      "subtitle": "تعديلات مشرفي الجامعات. لا يُنشر أي تعديل قبل الموافقة عليه هنا.",
+      "subtitleMine": "كل ما عدّلته وحالته. التعديلات الموافق عليها منشورة على الموقع.",
+      "statusNav": "التصفية حسب الحالة",
+      "emptyMine": "لا توجد تعديلات بانتظار الموافقة",
+      "emptyPending": "لا شيء بانتظار المراجعة",
+      "emptyPendingBody": "ستظهر هنا تعديلات مشرفي الجامعات الجديدة.",
+      "emptyOther": "لا توجد تعديلات هنا",
+      "filterUniversity": "الجامعة",
+      "allUniversities": "كل الجامعات",
+      "filterAuthor": "المشرف",
+      "allAdmins": "كل المشرفين",
+      "failed": "تعذّر إتمام العملية",
+      "bulkApproved": "تمت الموافقة على {count}",
+      "bulkRejected": "تم رفض {count}",
+      "bulkFailed": "تعذّر تطبيق {count} وما زالت بانتظار المراجعة",
+      "selectAll": "تحديد الكل",
+      "selected": "تم تحديد {count}",
+      "rejectSelected": "رفض المحدد",
+      "approveSelected": "الموافقة على المحدد",
+      "approvedToast": "تمت الموافقة والنشر",
+      "rejectedToast": "تم الرفض",
+      "withdrawnToast": "تم سحب التعديل",
+      "selectOne": "تحديد {label}",
+      "by": "بواسطة {name}",
+      "unknownAdmin": "مشرف محذوف",
+      "viewProfile": "عرض الصفحة",
+      "missing": "لم يعد هذا السجل موجودًا، لذلك لا يمكن تطبيق التعديل. ارفضه لإزالته.",
+      "stale": "عدّل أحدهم هذا السجل بعد إرسال الطلب. راجع الحقول المظللة قبل الموافقة.",
+      "applyError": "تعذّر التطبيق: {error}",
+      "willDelete": "الموافقة ستحذف هذا السجل:",
+      "field": "الحقل",
+      "currentValue": "المنشور الآن",
+      "proposedValue": "المقترح",
+      "value": "القيمة",
+      "noFields": "لا توجد تغييرات في الحقول.",
+      "rejectedBy": "رفضه {name}",
+      "reviewedBy": "راجعه {name}",
+      "noteLabel": "ملاحظة للمشرف (اختياري)",
+      "notePlaceholder": "اشرح ما يحتاج إلى تصحيح",
+      "cancel": "إلغاء",
+      "confirmReject": "رفض التعديل",
+      "withdraw": "سحب",
+      "reject": "رفض",
+      "approve": "موافقة",
+      "changedSince": "تغيّر منذ الطلب",
+      "notSet": "غير محدد",
+      "yes": "نعم",
+      "no": "لا",
+      "showLess": "عرض أقل",
+      "showMore": "عرض المزيد",
+      "fields": {
+        "name": "الاسم (بالإنجليزية)",
+        "nameAr": "الاسم (بالعربية)",
+        "acronym": "الاختصار",
+        "slug": "عنوان الصفحة",
+        "type": "النوع",
+        "country": "الدولة",
+        "countryAr": "الدولة (بالعربية)",
+        "city": "المدينة",
+        "cityAr": "المدينة (بالعربية)",
+        "addressLine": "العنوان",
+        "addressLineAr": "العنوان (بالعربية)",
+        "latitude": "خط العرض",
+        "longitude": "خط الطول",
+        "establishedYear": "سنة التأسيس",
+        "websiteUrl": "الموقع الإلكتروني",
+        "phone": "الهاتف",
+        "email": "البريد الإلكتروني",
+        "description": "الوصف (بالإنجليزية)",
+        "descriptionAr": "الوصف (بالعربية)",
+        "aboutRich": "نبذة (بالإنجليزية)",
+        "aboutRichAr": "نبذة (بالعربية)",
+        "published": "منشورة",
+        "isFeatured": "مميزة",
+        "isRecommended": "موصى بها",
+        "isTrending": "رائجة",
+        "logoUrl": "الشعار",
+        "coverImageUrl": "صورة الغلاف",
+        "googleMapsUrl": "رابط خرائط جوجل",
+        "url": "الصورة",
+        "alt": "وصف الصورة",
+        "altAr": "وصف الصورة (بالعربية)",
+        "sortOrder": "الترتيب",
+        "title": "العنوان",
+        "titleAr": "العنوان (بالعربية)",
+        "body": "النص",
+        "bodyAr": "النص (بالعربية)",
+        "section": "القسم",
+        "system": "الشهادة",
+        "minScore": "الحد الأدنى",
+        "unit": "الوحدة",
+        "year": "السنة",
+        "facultyId": "الكلية",
+        "imageUrl": "الصورة",
+        "studyLevel": "الدرجة العلمية",
+        "fieldOfStudy": "مجال الدراسة",
+        "durationMonths": "المدة (بالشهور)",
+        "durationLabel": "وصف المدة",
+        "durationLabelAr": "وصف المدة (بالعربية)",
+        "tuitionFee": "المصروفات",
+        "tuitionPeriod": "فترة المصروفات",
+        "currency": "العملة",
+        "applicationFee": "رسوم التقديم",
+        "applicationFeeWaived": "إعفاء من رسوم التقديم",
+        "minGradePercent": "الحد الأدنى للمجموع (%)",
+        "coopAvailable": "تدريب عملي متاح",
+        "tags": "الوسوم",
+        "isPublished": "منشور",
+        "season": "الفصل",
+        "applicationDeadline": "آخر موعد للتقديم",
+        "test": "الاختبار"
+      }
+    },
+    "admins": {
+      "unassign": "إزالة {name}",
+      "searchUniversities": "ابحث عن جامعة",
+      "noUniversityMatch": "لا توجد جامعة مطابقة",
+      "createFailed": "تعذّرت إضافة المشرف",
+      "promoted": "تم منح صلاحية الإشراف",
+      "created": "تم إنشاء حساب المشرف",
+      "add": "إضافة مشرف",
+      "createdTitle": "تمت إضافة المشرف",
+      "addTitle": "إضافة مشرف",
+      "addBody": "أنشئ حسابًا لمشرف جديد، أو امنح صلاحية الإشراف لشخص لديه حساب بالفعل.",
+      "done": "تم",
+      "cancel": "إلغاء",
+      "create": "إضافة المشرف",
+      "passwordIntro": "شارك كلمة المرور المؤقتة هذه مع {email}. تظهر مرة واحدة فقط.",
+      "copied": "تم النسخ",
+      "copy": "نسخ",
+      "passwordWarning": "اطلب منه تسجيل الدخول وتغييرها. يمكنك إصدار كلمة مرور جديدة من صفحته في أي وقت.",
+      "promotedBody": "لدى {email} حساب بالفعل، لذلك يحتفظ بكلمة مروره ويمكنه الدخول إلى لوحة الإدارة الآن.",
+      "name": "الاسم الكامل",
+      "email": "البريد الإلكتروني",
+      "level": "مستوى الإشراف",
+      "universities": "الجامعات التي يديرها",
+      "levels": {
+        "levelN": "المستوى {level}",
+        "UNIVERSITY_ADMIN": {
+          "title": "مشرف جامعة",
+          "body": "يعدّل الجامعات التي تسندها إليه، وكل تعديل ينتظر الموافقة."
+        },
+        "REVIEWER": {
+          "title": "مراجع",
+          "body": "يوافق على التعديلات أو يرفضها ويطّلع على الإحصائيات، ولا يعدّل المحتوى."
+        },
+        "ADMIN": {
+          "title": "مشرف عام",
+          "body": "صلاحيات كاملة: يعدّل كل شيء ويراجع ويدير المشرفين."
+        }
+      },
+      "title": "المشرفون",
+      "subtitle": "من يعمل في لوحة الإدارة، وصلاحياته، وما عدّله.",
+      "stats": {
+        "total": "كل المشرفين",
+        "inactive": "{count} موقوف أو محظور"
+      },
+      "roleNav": "التصفية حسب المستوى",
+      "allLevels": "الكل",
+      "search": "ابحث بالاسم أو البريد",
+      "pendingBanner": "{count} تعديل بانتظار المراجعة",
+      "columns": {
+        "admin": "المشرف",
+        "level": "المستوى",
+        "status": "الحالة",
+        "universities": "الجامعات",
+        "lastSignIn": "آخر دخول",
+        "lastActivity": "آخر تعديل"
+      },
+      "you": "أنت",
+      "status": {
+        "ACTIVE": "نشط",
+        "DISABLED": "موقوف",
+        "BANNED": "محظور"
+      },
+      "pendingCount": "{count} بانتظار المراجعة",
+      "noAssignments": "لا توجد جامعات مسندة",
+      "allUniversities": "كل الجامعات",
+      "never": "أبدًا",
+      "noActivity": "لا توجد تعديلات بعد",
+      "manage": "إدارة",
+      "empty": "لا يوجد مشرفون مطابقون",
+      "saveFailed": "تعذّر الحفظ",
+      "deleted": "تم حذف الحساب",
+      "revoked": "تمت إزالة صلاحية الإشراف",
+      "selfLocked": "هذا حسابك، لذلك لا يمكن تغيير مستواه أو حالته.",
+      "saveChanges": "حفظ التغييرات",
+      "saved": "تم الحفظ",
+      "accessTitle": "الوصول",
+      "accessBody": "الإيقاف مؤقت ويمكن التراجع عنه، والحظر يمنع الحساب. كلاهما يُخرجه من الحساب خلال دقيقة.",
+      "reason": "السبب (يظهر في صفحته)",
+      "reasonPlaceholder": "اختياري",
+      "enabled": "تمت إعادة الوصول",
+      "unban": "إلغاء الحظر",
+      "enable": "إعادة التفعيل",
+      "disabled": "تم إيقاف الحساب",
+      "disable": "إيقاف",
+      "banned": "تم حظر الحساب",
+      "ban": "حظر",
+      "passwordTitle": "كلمة المرور",
+      "passwordBody": "أصدر كلمة مرور مؤقتة، وستنتهي جلساته الحالية فورًا.",
+      "passwordReset": "تم إصدار كلمة مرور جديدة",
+      "resetPassword": "إصدار كلمة مرور جديدة",
+      "dangerTitle": "إزالة",
+      "revoke": "إزالة صلاحية الإشراف",
+      "deleteAccount": "حذف الحساب",
+      "deleteTitle": "حذف هذا الحساب؟",
+      "revokeTitle": "إزالة صلاحية الإشراف؟",
+      "deleteBody": "سيُحذف {email} نهائيًا، ويبقى سجل تعديلاته دون اسمه.",
+      "revokeBody": "يحتفظ {email} بحسابه كمستخدم عادي لكنه لن يتمكن من فتح لوحة الإدارة.",
+      "facts": {
+        "joined": "تاريخ الانضمام",
+        "lastSignIn": "آخر دخول",
+        "pending": "بانتظار المراجعة",
+        "approved": "المقبول من المُراجَع"
+      },
+      "recentTitle": "آخر 10 تعديلات",
+      "allTheirChanges": "كل التعديلات التي أرسلها"
+    },
+    "stats": {
+      "hideTable": "إخفاء الجدول",
+      "showTable": "عرض كجدول",
+      "period": "الفترة",
+      "registrations": {
+        "range": {
+          "day": "آخر 30 يومًا",
+          "week": "آخر 12 أسبوعًا",
+          "month": "آخر 12 شهرًا",
+          "year": "آخر 5 سنوات"
+        },
+        "granularity": "التجميع حسب",
+        "day": "يومي",
+        "week": "أسبوعي",
+        "month": "شهري",
+        "year": "سنوي",
+        "title": "التسجيلات الجديدة",
+        "subtitle": "حسابات الطلاب وأولياء الأمور الجديدة، بتوقيت القاهرة.",
+        "signups": "التسجيلات"
+      },
+      "title": "الإحصائيات",
+      "subtitle": "التسجيلات، والاهتمام بكل جامعة، وما يبحث عنه الطلاب.",
+      "periodLabel": "الفترة",
+      "periods": {
+        "7": "7 أيام",
+        "30": "30 يومًا",
+        "90": "90 يومًا",
+        "all": "كل الأوقات"
+      },
+      "deltaNew": "جديد",
+      "deltaFlat": "دون تغيير",
+      "delta": "{sign}{value}%",
+      "signups": {
+        "today": "تسجيلات اليوم",
+        "week": "آخر 7 أيام",
+        "month": "آخر 30 يومًا",
+        "year": "آخر 12 شهرًا"
+      },
+      "vsYesterday": "مقارنة بالأمس",
+      "vsPrevious": "مقارنة بالفترة السابقة",
+      "audience": {
+        "students": "الطلاب",
+        "parents": "{count} ولي أمر",
+        "active": "نشطون هذا الأسبوع",
+        "active30": "{count} في آخر 30 يومًا",
+        "searches": "عمليات البحث",
+        "saves": "الجامعات المحفوظة",
+        "ratings": "{count} تقييم"
+      },
+      "views": {
+        "title": "مشاهدات الصفحات",
+        "subtitle": "{total} مشاهدة في آخر 30 يومًا",
+        "unit": "مشاهدة"
+      },
+      "trending": {
+        "title": "الجامعات الرائجة",
+        "subtitle": "الأكثر زيادة في المشاهدات هذا الأسبوع مقارنة بالأسبوع الماضي",
+        "empty": "لا توجد جامعة رائجة بعد",
+        "growth": "+{value}% مقارنة بالأسبوع الماضي",
+        "new": "جديد هذا الأسبوع"
+      },
+      "viewed": {
+        "title": "الأكثر مشاهدة"
+      },
+      "noData": "لا توجد بيانات بعد",
+      "searched": {
+        "title": "الجامعات الأكثر بحثًا",
+        "subtitle": "بُحث عنها بالاسم أو فُتحت من نتائج البحث",
+        "unit": "بحث"
+      },
+      "terms": {
+        "title": "أكثر كلمات البحث",
+        "zero": "{count} دون نتائج"
+      },
+      "zero": {
+        "title": "عمليات بحث دون نتائج",
+        "subtitle": "ما بحث عنه الطلاب ولم يجدوه",
+        "empty": "وجدت كل عمليات البحث نتائج"
+      },
+      "saved": {
+        "title": "الجامعات الأكثر حفظًا",
+        "unit": "حفظ"
+      },
+      "allTime": "كل الأوقات",
+      "rated": {
+        "title": "الأعلى تقييمًا",
+        "subtitle": "تقييمان على الأقل",
+        "empty": "لا توجد تقييمات كافية بعد",
+        "count": "{count} تقييم"
+      },
+      "programs": {
+        "title": "البرامج الأكثر حفظًا"
+      },
+      "health": {
+        "title": "جودة الدليل",
+        "subtitle": "النواقص في الدليل المنشور",
+        "noCover": "جامعات دون صورة غلاف",
+        "noGallery": "جامعات دون صور للحرم",
+        "noLogo": "جامعات دون شعار",
+        "noDescription": "جامعات ينقصها الوصف",
+        "programsNoFee": "برامج دون مصروفات"
+      }
+    },
+    "home": {
+      "queueTitle": "قائمة المراجعة",
+      "queueCount": "{count} تعديل بانتظار المراجعة",
+      "queueEmpty": "لا شيء بانتظار المراجعة.",
+      "reviewNow": "راجع الآن",
+      "welcome": "مرحبًا بعودتك يا {name}",
+      "reviewerSubtitle": "راجع تعديلات مشرفي الجامعات وتابع أداء الموقع.",
+      "weekSignups": "تسجيلات هذا الأسبوع",
+      "weekViews": "مشاهدات هذا الأسبوع",
+      "weekSearches": "عمليات البحث هذا الأسبوع",
+      "reviewedByYou": "راجعتها هذا الشهر",
+      "openStatistics": "فتح الإحصائيات الكاملة",
+      "universityAdminSubtitle": "حافظ على دقة صفحات جامعاتك. يراجع أحد المراجعين كل تعديل قبل نشره.",
+      "steps": {
+        "edit": "عدّل",
+        "editBody": "حدّث البيانات والصور والكليات والمصروفات.",
+        "review": "مراجعة",
+        "reviewBody": "يراجع أحد المراجعين كل تعديل.",
+        "live": "النشر",
+        "liveBody": "تظهر التعديلات الموافق عليها على الموقع."
+      },
+      "yourUniversities": "جامعاتك",
+      "noAssignments": "لم تُسند إليك أي جامعة بعد",
+      "noAssignmentsBody": "اطلب من المشرف العام إسناد الجامعات التي تديرها إليك.",
+      "waiting": "{count} بانتظار المراجعة",
+      "facts": {
+        "programs": "البرامج",
+        "views": "المشاهدات (30 يومًا)",
+        "saves": "مرات الحفظ",
+        "rating": "التقييم"
+      },
+      "editInConsole": "التعديل في لوحة الإدارة",
+      "editOnPage": "التعديل على الصفحة",
+      "recentChanges": "آخر تعديلاتك",
+      "seeAll": "عرض الكل",
+      "noChangesYet": "لم تعدّل شيئًا بعد."
+    },
+    "bulk": {
+      "onlyChanged": "الصفوف المعدلة فقط",
+      "changedCount": "{cells} تعديل في {rows} صف",
+      "discard": "تجاهل",
+      "savingProgress": "جارٍ حفظ {done} من {total}",
+      "save": "حفظ {count} صف",
+      "record": "السجل",
+      "noRows": "لا توجد صفوف مطابقة",
+      "rowFailed": "تعذّر حفظ هذا الصف",
+      "savedRows": "تم حفظ {count} صف",
+      "failedRows": "تعذّر حفظ {count} صف وهي مميزة باللون الأحمر",
+      "title": "تعديل الكل مرة واحدة",
+      "subtitle": "عدّل جامعات أو برامج كثيرة في مكان واحد. تظل الخلايا المعدلة مظللة حتى تحفظ.",
+      "tabs": {
+        "universities": "الجامعات",
+        "programs": "البرامج والمصروفات"
+      },
+      "searchUniversities": "تصفية الجامعات",
+      "searchPrograms": "تصفية البرامج",
+      "cols": {
+        "name": "الاسم",
+        "nameAr": "الاسم بالعربية",
+        "acronym": "الاختصار",
+        "type": "النوع",
+        "city": "المدينة",
+        "cityAr": "المدينة بالعربية",
+        "founded": "التأسيس",
+        "website": "الموقع",
+        "published": "منشورة",
+        "featured": "مميزة",
+        "recommended": "موصى بها",
+        "trending": "رائجة",
+        "fee": "المصروفات",
+        "period": "لكل",
+        "currency": "العملة",
+        "minGrade": "الحد الأدنى %",
+        "duration": "الشهور"
+      },
+      "counts": "{faculties} كلية · {programs} برنامج",
+      "periods": {
+        "YEAR": "سنة",
+        "TERM": "فصل",
+        "TOTAL": "إجمالي"
+      },
+      "chooseUniversity": "الجامعة"
+    },
+    "notFound": {
+      "title": "غير متاح",
+      "body": "هذه الصفحة غير موجودة، أو أنها خارج صلاحيات حسابك.",
+      "back": "العودة إلى لوحة الإدارة"
     }
   },
   "Palette": {
@@ -2515,5 +2981,74 @@
         "description": "أنصح بها بشدة"
       }
     }
+  },
+  "ProfileEditor": {
+    "title": "تعديل هذه الجامعة",
+    "close": "إغلاق",
+    "openConsole": "فتح المحرر الكامل في لوحة الإدارة",
+    "bar": {
+      "direct": "يمكنك تعديل هذه الصفحة",
+      "review": "أنت تدير هذه الجامعة",
+      "pending": "{count} بانتظار المراجعة",
+      "edit": "تعديل الصفحة"
+    },
+    "directNote": "تُنشر التعديلات فور الحفظ.",
+    "reviewNote": "تُرسل التعديلات للموافقة قبل نشرها.",
+    "sections": {
+      "details": "البيانات",
+      "photos": "الصور",
+      "programs": "البرامج والمصروفات",
+      "faculties": "الكليات"
+    },
+    "saveFailed": "تعذّر الحفظ",
+    "saved": "تم الحفظ",
+    "save": "حفظ",
+    "reset": "إعادة",
+    "changedFields": "{count} حقل معدل",
+    "noChanges": "لا توجد تغييرات بعد",
+    "fields": {
+      "name": "الاسم (بالإنجليزية)",
+      "nameAr": "الاسم (بالعربية)",
+      "acronym": "الاختصار",
+      "city": "المدينة (بالإنجليزية)",
+      "cityAr": "المدينة (بالعربية)",
+      "addressLine": "العنوان (بالإنجليزية)",
+      "addressLineAr": "العنوان (بالعربية)",
+      "establishedYear": "سنة التأسيس",
+      "websiteUrl": "الموقع الإلكتروني",
+      "googleMapsUrl": "رابط خرائط جوجل",
+      "type": "النوع",
+      "description": "الوصف (بالإنجليزية)",
+      "descriptionAr": "الوصف (بالعربية)",
+      "programName": "اسم البرنامج (بالإنجليزية)",
+      "programNameAr": "اسم البرنامج (بالعربية)",
+      "fee": "المصروفات",
+      "period": "لكل",
+      "minGrade": "الحد الأدنى %",
+      "published": "منشور",
+      "facultyName": "اسم الكلية (بالإنجليزية)",
+      "facultyNameAr": "اسم الكلية (بالعربية)"
+    },
+    "photos": {
+      "branding": "الغلاف والشعار",
+      "cover": "صورة الغلاف",
+      "logo": "الشعار",
+      "gallery": "صور الحرم ({count})",
+      "remove": "حذف الصورة",
+      "add": "إضافة صورة للحرم",
+      "addButton": "إضافة الصورة"
+    },
+    "programs": {
+      "search": "ابحث عن برنامج"
+    },
+    "periods": {
+      "YEAR": "سنة",
+      "TERM": "فصل",
+      "TOTAL": "إجمالي"
+    },
+    "faculties": {
+      "programs": "{count} برنامج"
+    },
+    "editProgram": "تعديل البرنامج"
   }
 }

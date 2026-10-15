@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import {
   badRequest,
   decimalToNumber,
@@ -182,7 +183,7 @@ export async function GET(
   return NextResponse.json(serializeProgram(program));
 }
 
-export async function PATCH(
+async function patchHandler(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -288,7 +289,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
+async function deleteHandler(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -326,3 +327,8 @@ export async function DELETE(
 
   return NextResponse.json({ ok: true });
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const PATCH = catalogueWrite("program", "UPDATE", patchHandler);
+export const DELETE = catalogueWrite("program", "DELETE", deleteHandler);
