@@ -1491,7 +1491,16 @@
       "openMenu": "Open menu",
       "closeMenu": "Close menu",
       "collapse": "Collapse",
-      "expand": "Expand"
+      "expand": "Expand",
+      "statistics": "Statistics",
+      "approvals": "Approvals",
+      "bulkEdit": "Edit all at once",
+      "admins": "Admins",
+      "myDashboard": "My dashboard",
+      "myChanges": "My changes",
+      "myCatalogue": "My universities",
+      "myUniversities": "Universities",
+      "pending": "waiting for review"
     },
     "common": {
       "search": "Search",
@@ -1550,7 +1559,9 @@
         "STUDENT": "Student",
         "PARENT": "Parent",
         "PARTNER": "Partner",
-        "ADMIN": "Admin"
+        "ADMIN": "Super admin",
+        "REVIEWER": "Reviewer",
+        "UNIVERSITY_ADMIN": "University admin"
       },
       "budgetBands": {
         "UNDER_100K": "Under 100,000 EGP",
@@ -2406,6 +2417,461 @@
         "title": "No scholarships match",
         "description": "Try a different search, or change the university and status filters."
       }
+    },
+    "roles": {
+      "universityAdmin": {
+        "universitiesHint": "The universities assigned to you. Your edits are sent for approval before they go live."
+      }
+    },
+    "changes": {
+      "sentTitle": "Sent for approval",
+      "sentBody": "A reviewer will check it before it goes live.",
+      "noticeMine": "{count, plural, one {You have {count} change waiting for approval} other {You have {count} changes waiting for approval}}",
+      "noticeAll": "{count, plural, one {{count} change waiting for review} other {{count} changes waiting for review}}",
+      "noticeMineBody": "The editor below shows the live values until a reviewer approves them.",
+      "noticeAllBody": "University admins proposed these edits. Review them before editing the same fields.",
+      "viewMine": "View my changes",
+      "review": "Review",
+      "actions": {
+        "CREATE": "Add",
+        "UPDATE": "Edit",
+        "DELETE": "Delete"
+      },
+      "entities": {
+        "university": "University profile",
+        "image": "Photo",
+        "feature": "Feature",
+        "contentBlock": "Content",
+        "minimumScore": "Minimum score",
+        "faculty": "Faculty",
+        "program": "Program",
+        "intake": "Intake",
+        "englishRequirement": "English requirement"
+      },
+      "status": {
+        "PENDING": "Waiting",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "WITHDRAWN": "Withdrawn"
+      },
+      "tabs": {
+        "PENDING": "Waiting",
+        "APPROVED": "Approved",
+        "REJECTED": "Rejected",
+        "WITHDRAWN": "Withdrawn",
+        "ALL": "All"
+      },
+      "title": "Approvals",
+      "titleMine": "My changes",
+      "subtitle": "Edits from university admins. Nothing they change goes live until it is approved here.",
+      "subtitleMine": "Everything you changed and where it stands. Approved changes are live on the site.",
+      "statusNav": "Filter by status",
+      "emptyMine": "You have no changes waiting",
+      "emptyPending": "Nothing waiting for review",
+      "emptyPendingBody": "New edits from university admins will appear here.",
+      "emptyOther": "No changes here",
+      "filterUniversity": "University",
+      "allUniversities": "All universities",
+      "filterAuthor": "Admin",
+      "allAdmins": "All admins",
+      "failed": "Could not complete that",
+      "bulkApproved": "{count, plural, one {Approved {count} change} other {Approved {count} changes}}",
+      "bulkRejected": "{count, plural, one {Rejected {count} change} other {Rejected {count} changes}}",
+      "bulkFailed": "{count, plural, one {{count} could not be applied and is still waiting} other {{count} could not be applied and are still waiting}}",
+      "selectAll": "Select all",
+      "selected": "{count} selected",
+      "rejectSelected": "Reject selected",
+      "approveSelected": "Approve selected",
+      "approvedToast": "Approved and live",
+      "rejectedToast": "Rejected",
+      "withdrawnToast": "Change withdrawn",
+      "selectOne": "Select {label}",
+      "by": "by {name}",
+      "unknownAdmin": "a removed admin",
+      "viewProfile": "View profile",
+      "missing": "This record no longer exists, so the change cannot be applied. Reject it to clear it.",
+      "stale": "Someone changed this record after the request was made. Check the highlighted fields before approving.",
+      "applyError": "Could not apply: {error}",
+      "willDelete": "Approving deletes this record:",
+      "field": "Field",
+      "currentValue": "Live now",
+      "proposedValue": "Proposed",
+      "value": "Value",
+      "noFields": "No field changes.",
+      "rejectedBy": "Rejected by {name}",
+      "reviewedBy": "Reviewed by {name}",
+      "noteLabel": "Note to the admin (optional)",
+      "notePlaceholder": "Explain what needs fixing",
+      "cancel": "Cancel",
+      "confirmReject": "Reject change",
+      "withdraw": "Withdraw",
+      "reject": "Reject",
+      "approve": "Approve",
+      "changedSince": "Changed since",
+      "notSet": "Not set",
+      "yes": "Yes",
+      "no": "No",
+      "showLess": "Show less",
+      "showMore": "Show more",
+      "fields": {
+        "name": "Name (English)",
+        "nameAr": "Name (Arabic)",
+        "acronym": "Acronym",
+        "slug": "Web address",
+        "type": "Type",
+        "country": "Country",
+        "countryAr": "Country (Arabic)",
+        "city": "City",
+        "cityAr": "City (Arabic)",
+        "addressLine": "Address",
+        "addressLineAr": "Address (Arabic)",
+        "latitude": "Latitude",
+        "longitude": "Longitude",
+        "establishedYear": "Founded",
+        "websiteUrl": "Website",
+        "phone": "Phone",
+        "email": "Email",
+        "description": "Description (English)",
+        "descriptionAr": "Description (Arabic)",
+        "aboutRich": "About (English)",
+        "aboutRichAr": "About (Arabic)",
+        "published": "Published",
+        "isFeatured": "Featured",
+        "isRecommended": "Recommended",
+        "isTrending": "Trending",
+        "logoUrl": "Logo",
+        "coverImageUrl": "Cover photo",
+        "googleMapsUrl": "Google Maps link",
+        "url": "Photo",
+        "alt": "Photo caption",
+        "altAr": "Photo caption (Arabic)",
+        "sortOrder": "Order",
+        "title": "Title",
+        "titleAr": "Title (Arabic)",
+        "body": "Text",
+        "bodyAr": "Text (Arabic)",
+        "section": "Section",
+        "system": "Certificate",
+        "minScore": "Minimum score",
+        "unit": "Unit",
+        "year": "Year",
+        "facultyId": "Faculty",
+        "imageUrl": "Image",
+        "studyLevel": "Study level",
+        "fieldOfStudy": "Field of study",
+        "durationMonths": "Duration (months)",
+        "durationLabel": "Duration label",
+        "durationLabelAr": "Duration label (Arabic)",
+        "tuitionFee": "Tuition fee",
+        "tuitionPeriod": "Fee period",
+        "currency": "Currency",
+        "applicationFee": "Application fee",
+        "applicationFeeWaived": "Application fee waived",
+        "minGradePercent": "Minimum grade (%)",
+        "coopAvailable": "Co-op available",
+        "tags": "Tags",
+        "isPublished": "Published",
+        "season": "Season",
+        "applicationDeadline": "Application deadline",
+        "test": "Test"
+      }
+    },
+    "admins": {
+      "unassign": "Remove {name}",
+      "searchUniversities": "Search universities",
+      "noUniversityMatch": "No university matches",
+      "createFailed": "Could not add this admin",
+      "promoted": "Admin access granted",
+      "created": "Admin account created",
+      "add": "Add admin",
+      "createdTitle": "Admin added",
+      "addTitle": "Add an admin",
+      "addBody": "Create an account for a new admin, or give admin access to someone who already has an account.",
+      "done": "Done",
+      "cancel": "Cancel",
+      "create": "Add admin",
+      "passwordIntro": "Share this one-time password with {email}. It is shown only once.",
+      "copied": "Copied",
+      "copy": "Copy",
+      "passwordWarning": "Ask them to sign in and change it. You can issue a new one from their page at any time.",
+      "promotedBody": "{email} already had an account, so they keep their password and can sign in to the console now.",
+      "name": "Full name",
+      "email": "Email",
+      "level": "Admin level",
+      "universities": "Universities they manage",
+      "levels": {
+        "levelN": "Level {level}",
+        "UNIVERSITY_ADMIN": {
+          "title": "University admin",
+          "body": "Edits the universities you assign. Every edit waits for approval."
+        },
+        "REVIEWER": {
+          "title": "Reviewer",
+          "body": "Approves or rejects edits and sees the statistics. Cannot edit content."
+        },
+        "ADMIN": {
+          "title": "Super admin",
+          "body": "Full access: edits everything, reviews, and manages admins."
+        }
+      },
+      "title": "Admins",
+      "subtitle": "Who can work in the console, what they can do, and what they changed.",
+      "stats": {
+        "total": "All admins",
+        "inactive": "{count} disabled or banned"
+      },
+      "roleNav": "Filter by level",
+      "allLevels": "All",
+      "search": "Search by name or email",
+      "pendingBanner": "{count, plural, one {{count} change is waiting for review} other {{count} changes are waiting for review}}",
+      "columns": {
+        "admin": "Admin",
+        "level": "Level",
+        "status": "Status",
+        "universities": "Universities",
+        "lastSignIn": "Last sign-in",
+        "lastActivity": "Last change"
+      },
+      "you": "you",
+      "status": {
+        "ACTIVE": "Active",
+        "DISABLED": "Disabled",
+        "BANNED": "Banned"
+      },
+      "pendingCount": "{count} waiting",
+      "noAssignments": "None assigned",
+      "allUniversities": "All universities",
+      "never": "Never",
+      "noActivity": "No changes yet",
+      "manage": "Manage",
+      "empty": "No admins match",
+      "saveFailed": "Could not save",
+      "deleted": "Account deleted",
+      "revoked": "Admin access removed",
+      "selfLocked": "This is your account, so its level and status are locked.",
+      "saveChanges": "Save changes",
+      "saved": "Saved",
+      "accessTitle": "Access",
+      "accessBody": "Disabling pauses access and can be undone. Banning blocks the account. Either signs them out within a minute.",
+      "reason": "Reason (shown on their admin page)",
+      "reasonPlaceholder": "Optional",
+      "enabled": "Access restored",
+      "unban": "Unban",
+      "enable": "Re-enable",
+      "disabled": "Account disabled",
+      "disable": "Disable",
+      "banned": "Account banned",
+      "ban": "Ban",
+      "passwordTitle": "Password",
+      "passwordBody": "Issue a one-time password. Their current sessions end straight away.",
+      "passwordReset": "New password issued",
+      "resetPassword": "Issue a new password",
+      "dangerTitle": "Remove",
+      "revoke": "Remove admin access",
+      "deleteAccount": "Delete account",
+      "deleteTitle": "Delete this account?",
+      "revokeTitle": "Remove admin access?",
+      "deleteBody": "{email} will be deleted permanently. Their change history stays without their name.",
+      "revokeBody": "{email} keeps their account as a regular user but can no longer open the console.",
+      "facts": {
+        "joined": "Joined",
+        "lastSignIn": "Last sign-in",
+        "pending": "Waiting for review",
+        "approved": "Approved of reviewed"
+      },
+      "recentTitle": "Last 10 changes",
+      "allTheirChanges": "All their submitted changes"
+    },
+    "stats": {
+      "hideTable": "Hide table",
+      "showTable": "Show as table",
+      "period": "Period",
+      "registrations": {
+        "range": {
+          "day": "Last 30 days",
+          "week": "Last 12 weeks",
+          "month": "Last 12 months",
+          "year": "Last 5 years"
+        },
+        "granularity": "Group by",
+        "day": "Daily",
+        "week": "Weekly",
+        "month": "Monthly",
+        "year": "Yearly",
+        "title": "New registrations",
+        "subtitle": "Student and parent accounts created, in Cairo time.",
+        "signups": "Sign-ups"
+      },
+      "title": "Statistics",
+      "subtitle": "Registrations, interest in each university, and what students search for.",
+      "periodLabel": "Period",
+      "periods": {
+        "7": "7 days",
+        "30": "30 days",
+        "90": "90 days",
+        "all": "All time"
+      },
+      "deltaNew": "New",
+      "deltaFlat": "No change",
+      "delta": "{sign}{value}%",
+      "signups": {
+        "today": "Sign-ups today",
+        "week": "Last 7 days",
+        "month": "Last 30 days",
+        "year": "Last 12 months"
+      },
+      "vsYesterday": "vs yesterday",
+      "vsPrevious": "vs the period before",
+      "audience": {
+        "students": "Students",
+        "parents": "{count} parents",
+        "active": "Active this week",
+        "active30": "{count} in the last 30 days",
+        "searches": "Searches",
+        "saves": "Saved universities",
+        "ratings": "{count} ratings"
+      },
+      "views": {
+        "title": "Profile views",
+        "subtitle": "{total} views in the last 30 days",
+        "unit": "views"
+      },
+      "trending": {
+        "title": "Trending universities",
+        "subtitle": "Most new views this week compared with last week",
+        "empty": "No university is trending yet",
+        "growth": "+{value}% vs last week",
+        "new": "New this week"
+      },
+      "viewed": {
+        "title": "Most viewed"
+      },
+      "noData": "No data yet",
+      "searched": {
+        "title": "Most searched universities",
+        "subtitle": "Searched for by name or opened from a search",
+        "unit": "searches"
+      },
+      "terms": {
+        "title": "Top search terms",
+        "zero": "{count} found nothing"
+      },
+      "zero": {
+        "title": "Searches with no results",
+        "subtitle": "What students looked for and did not find",
+        "empty": "Every search found something"
+      },
+      "saved": {
+        "title": "Most saved universities",
+        "unit": "saves"
+      },
+      "allTime": "All time",
+      "rated": {
+        "title": "Top rated",
+        "subtitle": "At least 2 ratings",
+        "empty": "Not enough ratings yet",
+        "count": "{count, plural, one {{count} rating} other {{count} ratings}}"
+      },
+      "programs": {
+        "title": "Most saved programs"
+      },
+      "health": {
+        "title": "Catalogue health",
+        "subtitle": "Gaps in the published catalogue",
+        "noCover": "Universities without a banner",
+        "noGallery": "Universities without campus photos",
+        "noLogo": "Universities without a logo",
+        "noDescription": "Universities missing a description",
+        "programsNoFee": "Programs without a fee"
+      }
+    },
+    "home": {
+      "queueTitle": "Review queue",
+      "queueCount": "{count, plural, one {{count} change waiting for review} other {{count} changes waiting for review}}",
+      "queueEmpty": "Nothing waiting. You are all caught up.",
+      "reviewNow": "Review now",
+      "welcome": "Welcome back, {name}",
+      "reviewerSubtitle": "Review edits from university admins and keep an eye on how the site is doing.",
+      "weekSignups": "Sign-ups this week",
+      "weekViews": "Profile views this week",
+      "weekSearches": "Searches this week",
+      "reviewedByYou": "Reviewed by you this month",
+      "openStatistics": "Open full statistics",
+      "universityAdminSubtitle": "Keep your universities' profiles accurate. Every edit is checked by a reviewer before it goes live.",
+      "steps": {
+        "edit": "Edit",
+        "editBody": "Update details, photos, faculties and fees.",
+        "review": "Review",
+        "reviewBody": "A reviewer checks every change.",
+        "live": "Live",
+        "liveBody": "Approved changes appear on the site."
+      },
+      "yourUniversities": "Your universities",
+      "noAssignments": "No universities assigned yet",
+      "noAssignmentsBody": "Ask a super admin to assign you the universities you manage.",
+      "waiting": "{count} waiting",
+      "facts": {
+        "programs": "Programs",
+        "views": "Views (30d)",
+        "saves": "Saves",
+        "rating": "Rating"
+      },
+      "editInConsole": "Edit in console",
+      "editOnPage": "Edit on the page",
+      "recentChanges": "Your recent changes",
+      "seeAll": "See all",
+      "noChangesYet": "You have not changed anything yet."
+    },
+    "bulk": {
+      "onlyChanged": "Changed rows only",
+      "changedCount": "{cells, plural, one {{cells} change} other {{cells} changes}} in {rows, plural, one {{rows} row} other {{rows} rows}}",
+      "discard": "Discard",
+      "savingProgress": "Saving {done} of {total}",
+      "save": "{count, plural, one {Save {count} row} other {Save {count} rows}}",
+      "record": "Record",
+      "noRows": "No rows match",
+      "rowFailed": "Could not save this row",
+      "savedRows": "{count, plural, one {Saved {count} row} other {Saved {count} rows}}",
+      "failedRows": "{count} rows could not be saved and are marked in red",
+      "title": "Edit all at once",
+      "subtitle": "Change many universities or programs in one place. Edited cells are highlighted until you save.",
+      "tabs": {
+        "universities": "Universities",
+        "programs": "Programs and fees"
+      },
+      "searchUniversities": "Filter universities",
+      "searchPrograms": "Filter programs",
+      "cols": {
+        "name": "Name",
+        "nameAr": "Arabic name",
+        "acronym": "Acronym",
+        "type": "Type",
+        "city": "City",
+        "cityAr": "Arabic city",
+        "founded": "Founded",
+        "website": "Website",
+        "published": "Live",
+        "featured": "Featured",
+        "recommended": "Recommended",
+        "trending": "Trending",
+        "fee": "Fee",
+        "period": "Per",
+        "currency": "Currency",
+        "minGrade": "Min grade %",
+        "duration": "Months"
+      },
+      "counts": "{faculties} faculties · {programs} programs",
+      "periods": {
+        "YEAR": "Year",
+        "TERM": "Term",
+        "TOTAL": "Total"
+      },
+      "chooseUniversity": "University"
+    },
+    "notFound": {
+      "title": "Not available",
+      "body": "This page does not exist, or it is outside what your admin account can open.",
+      "back": "Back to the console"
     }
   },
   "Palette": {
@@ -2515,5 +2981,74 @@
         "description": "I'd highly recommend it"
       }
     }
+  },
+  "ProfileEditor": {
+    "title": "Edit this university",
+    "close": "Close",
+    "openConsole": "Open the full editor in the console",
+    "bar": {
+      "direct": "You can edit this page",
+      "review": "You manage this university",
+      "pending": "{count} waiting",
+      "edit": "Edit page"
+    },
+    "directNote": "Changes go live as soon as you save.",
+    "reviewNote": "Changes are sent for approval before they go live.",
+    "sections": {
+      "details": "Details",
+      "photos": "Photos",
+      "programs": "Programs and fees",
+      "faculties": "Faculties"
+    },
+    "saveFailed": "Could not save",
+    "saved": "Saved",
+    "save": "Save",
+    "reset": "Reset",
+    "changedFields": "{count, plural, one {{count} field changed} other {{count} fields changed}}",
+    "noChanges": "No changes yet",
+    "fields": {
+      "name": "Name (English)",
+      "nameAr": "Name (Arabic)",
+      "acronym": "Acronym",
+      "city": "City (English)",
+      "cityAr": "City (Arabic)",
+      "addressLine": "Address (English)",
+      "addressLineAr": "Address (Arabic)",
+      "establishedYear": "Founded",
+      "websiteUrl": "Website",
+      "googleMapsUrl": "Google Maps link",
+      "type": "Type",
+      "description": "Description (English)",
+      "descriptionAr": "Description (Arabic)",
+      "programName": "Program name (English)",
+      "programNameAr": "Program name (Arabic)",
+      "fee": "Fee",
+      "period": "Per",
+      "minGrade": "Min grade %",
+      "published": "Published",
+      "facultyName": "Faculty name (English)",
+      "facultyNameAr": "Faculty name (Arabic)"
+    },
+    "photos": {
+      "branding": "Banner and logo",
+      "cover": "Banner photo",
+      "logo": "Logo",
+      "gallery": "Campus photos ({count})",
+      "remove": "Remove photo",
+      "add": "Add a campus photo",
+      "addButton": "Add photo"
+    },
+    "programs": {
+      "search": "Find a program"
+    },
+    "periods": {
+      "YEAR": "Year",
+      "TERM": "Term",
+      "TOTAL": "Total"
+    },
+    "faculties": {
+      "programs": "{count, plural, one {{count} program} other {{count} programs}}"
+    },
+    "editProgram": "Edit program"
   }
 }

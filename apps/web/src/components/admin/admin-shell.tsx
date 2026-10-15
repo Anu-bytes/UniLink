@@ -2,7 +2,12 @@
 
 import {
   Award,
+  BarChart3,
   Building2,
+  ClipboardCheck,
+  History,
+  ShieldCheck,
+  Table2,
   ChevronLeft,
   ExternalLink,
   FileText,
@@ -32,6 +37,8 @@ type NavItem = {
   href: string;
   labelKey: string;
   icon: ComponentType<{ className?: string }>;
+  /** Shows the number of changes waiting for review next to the label. */
+  badge?: "pending";
 };
 
 type NavGroup = {
@@ -40,41 +47,86 @@ type NavGroup = {
   items: NavItem[];
 };
 
-const NAV: NavGroup[] = [
-  {
-    items: [{ href: "/admin", labelKey: "overview", icon: LayoutDashboard }],
-  },
-  {
-    labelKey: "catalogue",
-    items: [
-      { href: "/admin/universities", labelKey: "universities", icon: Building2 },
-      { href: "/admin/faculties", labelKey: "faculties", icon: Library },
-      { href: "/admin/programs", labelKey: "programs", icon: GraduationCap },
-    ],
-  },
-  {
-    labelKey: "people",
-    items: [
-      { href: "/admin/users", labelKey: "users", icon: Users },
-      { href: "/admin/applications", labelKey: "applications", icon: FileText },
-    ],
-  },
-  {
-    labelKey: "growth",
-    items: [
-      { href: "/admin/leads", labelKey: "leads", icon: Inbox },
-      { href: "/admin/testimonials", labelKey: "testimonials", icon: Quote },
-      { href: "/admin/scholarships", labelKey: "scholarships", icon: Award },
-    ],
-  },
-];
+export type ShellLevel = 1 | 2 | 3;
+
+// Each admin level sees only what it can use. The pages re-check on every
+// request (see lib/admin.ts); this only keeps the menu honest.
+const NAV: Record<ShellLevel, NavGroup[]> = {
+  // Super admin.
+  3: [
+    {
+      items: [
+        { href: "/admin", labelKey: "overview", icon: LayoutDashboard },
+        { href: "/admin/statistics", labelKey: "statistics", icon: BarChart3 },
+        { href: "/admin/approvals", labelKey: "approvals", icon: ClipboardCheck, badge: "pending" },
+      ],
+    },
+    {
+      labelKey: "catalogue",
+      items: [
+        { href: "/admin/universities", labelKey: "universities", icon: Building2 },
+        { href: "/admin/bulk-edit", labelKey: "bulkEdit", icon: Table2 },
+        { href: "/admin/faculties", labelKey: "faculties", icon: Library },
+        { href: "/admin/programs", labelKey: "programs", icon: GraduationCap },
+      ],
+    },
+    {
+      labelKey: "people",
+      items: [
+        { href: "/admin/admins", labelKey: "admins", icon: ShieldCheck },
+        { href: "/admin/users", labelKey: "users", icon: Users },
+        { href: "/admin/applications", labelKey: "applications", icon: FileText },
+      ],
+    },
+    {
+      labelKey: "growth",
+      items: [
+        { href: "/admin/leads", labelKey: "leads", icon: Inbox },
+        { href: "/admin/testimonials", labelKey: "testimonials", icon: Quote },
+        { href: "/admin/scholarships", labelKey: "scholarships", icon: Award },
+      ],
+    },
+  ],
+  // Reviewer: approvals and statistics only.
+  2: [
+    {
+      items: [
+        { href: "/admin", labelKey: "overview", icon: LayoutDashboard },
+        { href: "/admin/statistics", labelKey: "statistics", icon: BarChart3 },
+        { href: "/admin/approvals", labelKey: "approvals", icon: ClipboardCheck, badge: "pending" },
+      ],
+    },
+  ],
+  // University admin: their own universities and the changes they sent.
+  1: [
+    {
+      items: [
+        { href: "/admin", labelKey: "myDashboard", icon: LayoutDashboard },
+        { href: "/admin/approvals", labelKey: "myChanges", icon: History, badge: "pending" },
+      ],
+    },
+    {
+      labelKey: "myCatalogue",
+      items: [
+        { href: "/admin/universities", labelKey: "myUniversities", icon: Building2 },
+        { href: "/admin/faculties", labelKey: "faculties", icon: Library },
+        { href: "/admin/programs", labelKey: "programs", icon: GraduationCap },
+      ],
+    },
+  ],
+};
 
 export function AdminShell({
   children,
   user,
+  level,
+  pendingCount,
 }: {
   children: React.ReactNode;
-  user: { name: string | null; email: string | null; image: string | null };
+  user: { name: string | null; email: string | null; image: string | null; role: string };
+  level: ShellLevel;
+  /** Changes waiting for review: all of them for levels 2-3, your own for level 1. */
+  pendingCount: number;
 }) {
   const t = useTranslations("Admin");
   const confirmNavigation = useConfirmNavigation();
@@ -184,7 +236,7 @@ export function AdminShell({
           className="flex-1 overflow-y-auto px-3 py-2"
           aria-label={t("nav.tag")}
         >
-          {NAV.map((group, index) => (
+          {NAV[level].map((group, index) => (
             <div key={group.labelKey ?? "root"} className={index > 0 ? "mt-5" : undefined}>
               {group.labelKey ? (
                 isCollapsed ? (
@@ -215,12 +267,28 @@ export function AdminShell({
                           : "font-normal text-white/65 hover:bg-white/[0.06] hover:text-white",
                       )}
                     >
-                      <item.icon className="size-[18px] shrink-0" />
+                      <span className="relative shrink-0">
+                        <item.icon className="size-[18px]" />
+                        {isCollapsed && item.badge && pendingCount > 0 ? (
+                          <span aria-hidden className="absolute -end-1.5 -top-1.5 size-2.5 rounded-full bg-[#F5A524] ring-2 ring-[#0B1220]" />
+                        ) : null}
+                      </span>
                       {isCollapsed ? (
                         <span className="sr-only">{label}</span>
                       ) : (
                         <span className="truncate">{label}</span>
                       )}
+                      {!isCollapsed && item.badge && pendingCount > 0 ? (
+                        <span
+                          className={cn(
+                            "ms-auto min-w-6 rounded-full px-1.5 py-0.5 text-center text-[11px] leading-none font-bold tabular-nums",
+                            active ? "bg-white/20 text-white" : "bg-[#F5A524] text-[#0B1220]",
+                          )}
+                        >
+                          {pendingCount > 99 ? "99+" : pendingCount}
+                          <span className="sr-only"> {t("nav.pending")}</span>
+                        </span>
+                      ) : null}
                     </Link>
                   );
                 })}
@@ -363,6 +431,9 @@ export function AdminShell({
                   <div className="border-b border-slate-100 px-3 pb-3 pt-2">
                     <p className="truncate text-[14px] font-semibold text-[#0F172A]">
                       {user.name ?? t("nav.account")}
+                    </p>
+                    <p className="mt-0.5 text-[11.5px] font-semibold text-[#1E6DEB]">
+                      {t(`enums.userRoles.${user.role}`)}
                     </p>
                     {user.email ? (
                       // An address stays Latin on the Arabic side, so it carries

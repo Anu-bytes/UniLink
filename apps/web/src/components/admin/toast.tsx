@@ -1,6 +1,6 @@
 "use client";
 
-import { CircleAlert, CircleCheck, X } from "lucide-react";
+import { CircleAlert, CircleCheck, Clock3, X } from "lucide-react";
 import { useTranslations } from "next-intl";
 import {
   createContext,
@@ -17,7 +17,20 @@ import { cn } from "@/lib/utils";
 const DISMISS_AFTER_MS = 4000;
 const MAX_VISIBLE = 3;
 
-export type ToastTone = "success" | "error";
+export type ToastTone = "success" | "error" | "pending";
+
+// A university admin's save does not change anything yet: the API queues it
+// for review and answers 202. The shared request helpers call this when that
+// happens, so the form's own "Saved" toast becomes "Sent for approval"
+// instead of claiming something it did not do.
+const PENDING_EVENT = "unilink:change-queued";
+const PENDING_WINDOW_MS = 1500;
+let pendingUntil = 0;
+
+export function notePendingChange() {
+  pendingUntil = Date.now() + PENDING_WINDOW_MS;
+  if (typeof window !== "undefined") window.dispatchEvent(new Event(PENDING_EVENT));
+}
 
 export type ToastInput = {
   title: string;
@@ -54,7 +67,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     setToasts((previous) => previous.filter((entry) => entry.id !== id));
   }, []);
 
-  const toast = useCallback(
+  const pendingShown = useRef(false);
+
+  const push = useCallback(
     (input: ToastInput) => {
       nextId.current += 1;
       const id = nextId.current;
@@ -67,6 +82,43 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
     },
     [dismiss],
   );
+
+  const pendingToast = useMemo<ToastInput>(
+    () => ({
+      title: t("changes.sentTitle"),
+      description: t("changes.sentBody"),
+      tone: "pending",
+    }),
+    [t],
+  );
+
+  const toast = useCallback(
+    (input: ToastInput) => {
+      if ((input.tone ?? "success") === "success" && Date.now() < pendingUntil) {
+        if (pendingShown.current) return;
+        pendingShown.current = true;
+        push(pendingToast);
+        return;
+      }
+      push(input);
+    },
+    [push, pendingToast],
+  );
+
+  // A queued save whose form shows no toast of its own still gets the notice.
+  useEffect(() => {
+    function onQueued() {
+      pendingShown.current = false;
+      window.setTimeout(() => {
+        if (!pendingShown.current) {
+          pendingShown.current = true;
+          push(pendingToast);
+        }
+      }, 400);
+    }
+    window.addEventListener(PENDING_EVENT, onQueued);
+    return () => window.removeEventListener(PENDING_EVENT, onQueued);
+  }, [push, pendingToast]);
 
   // A pending timer firing after the tree is gone would set state on nothing.
   useEffect(() => {
@@ -99,11 +151,15 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                 "flex size-7 shrink-0 items-center justify-center rounded-full",
                 entry.tone === "error"
                   ? "bg-[#FFF0EE] text-[#C81F15]"
-                  : "bg-[#E7F6EE] text-[#0F7B45]",
+                  : entry.tone === "pending"
+                    ? "bg-[#FFF6E5] text-[#B77714]"
+                    : "bg-[#E7F6EE] text-[#0F7B45]",
               )}
             >
               {entry.tone === "error" ? (
                 <CircleAlert className="size-4" />
+              ) : entry.tone === "pending" ? (
+                <Clock3 className="size-4" />
               ) : (
                 <CircleCheck className="size-4" />
               )}

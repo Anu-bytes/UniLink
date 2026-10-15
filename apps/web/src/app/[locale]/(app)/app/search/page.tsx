@@ -1,4 +1,5 @@
 import { Building2, ChevronLeft, ChevronRight, Search } from "lucide-react";
+import { after } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
@@ -24,6 +25,7 @@ import {
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { getSearchVocabulary } from "@/lib/program-search";
 import { parseSearchQuery, type MatchedTerm } from "@/lib/search-query";
+import { logSearch } from "@/lib/search-log";
 
 /** Shown as one-click starting points on the empty search state, so a first
  * search doesn't require typing anything. Slugs from the canonical
@@ -154,6 +156,23 @@ async function FacultiesSearchView({
     searched ? searchFaculties(locale, filters, userId, unmatched) : EMPTY_FACULTY_PAGE,
     getUniversityCities(locale),
   ]);
+
+  // Admin statistics: one row per typed search (first page only, so paging
+  // through results doesn't count the same search again).
+  const typed = urlFilters.q?.trim();
+  if (typed && page.page === 1) {
+    after(() =>
+      logSearch({
+        query: typed,
+        mode: "faculties",
+        source: "search_page",
+        locale,
+        resultCount: page.total,
+        universitySlug: filters.universities?.length === 1 ? filters.universities[0] : null,
+        userId,
+      }),
+    );
+  }
 
   return (
     <>
@@ -317,6 +336,21 @@ async function UniversitiesSearchView({
       : Promise.resolve({ results: [], total: 0, page: 1, pageCount: 1 }),
     getUniversityCities(locale),
   ]);
+
+  if (query && page.page === 1) {
+    const session = await auth();
+    after(() =>
+      logSearch({
+        query,
+        mode: "universities",
+        source: "search_page",
+        locale,
+        resultCount: page.total,
+        universitySlug: page.results.length === 1 ? page.results[0].slug : null,
+        userId: session?.user?.id ?? null,
+      }),
+    );
+  }
 
   return (
     <>

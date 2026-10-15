@@ -15,7 +15,7 @@ import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
 
-const USER_ROLES = ["STUDENT", "PARENT", "PARTNER", "ADMIN"] as const;
+const USER_ROLES = ["STUDENT", "PARENT", "PARTNER", "ADMIN", "REVIEWER", "UNIVERSITY_ADMIN"] as const;
 
 /**
  * Every column of User except `passwordHash`, plus the two relations the

@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import {
   badRequest,
   decimalToNumber,
@@ -57,7 +58,7 @@ function serialize<T extends { minScore: Prisma.Decimal }>(score: T) {
   return { ...score, minScore: decimalToNumber(score.minScore) };
 }
 
-export async function PATCH(
+async function patchHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; scoreId: string }> },
 ) {
@@ -120,7 +121,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
+async function deleteHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; scoreId: string }> },
 ) {
@@ -139,3 +140,8 @@ export async function DELETE(
     return prismaErrorResponse(error, "Minimum score");
   }
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const PATCH = catalogueWrite("minimumScore", "UPDATE", patchHandler);
+export const DELETE = catalogueWrite("minimumScore", "DELETE", deleteHandler);

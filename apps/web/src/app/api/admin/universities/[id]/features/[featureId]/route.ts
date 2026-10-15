@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import { emptyToNull, prismaErrorResponse, readJson } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
@@ -18,7 +19,7 @@ const updateSchema = z
   })
   .partial();
 
-export async function PATCH(
+async function patchHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; featureId: string }> },
 ) {
@@ -52,7 +53,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
+async function deleteHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; featureId: string }> },
 ) {
@@ -71,3 +72,8 @@ export async function DELETE(
     return prismaErrorResponse(error, "Feature");
   }
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const PATCH = catalogueWrite("feature", "UPDATE", patchHandler);
+export const DELETE = catalogueWrite("feature", "DELETE", deleteHandler);

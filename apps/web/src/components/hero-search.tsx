@@ -13,6 +13,7 @@ import {
 import { UniversityLogo } from "@/components/university-logo";
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { useTypewriter } from "@/hooks/use-typewriter";
+import { reportSearch } from "@/lib/search-beacon";
 import { cn } from "@/lib/utils";
 
 /**
@@ -49,6 +50,7 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
 
   function searchFor(raw: string) {
     const query = raw.trim();
+    reportSearch({ query, source: "hero", resultCount: hits.length, locale });
     if (isAuthenticated) {
       router.push(
         `/app/search${query ? `?q=${encodeURIComponent(query)}` : ""}`,
@@ -67,7 +69,10 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
   function submit(event: React.FormEvent) {
     event.preventDefault();
     const picked = active >= 0 ? hits[active] : undefined;
-    if (picked) router.push(`/universities/${picked.entry.slug}`);
+    if (picked) {
+      reportSearch({ query: value, source: "hero", universitySlug: picked.entry.slug, locale });
+      router.push(`/universities/${picked.entry.slug}`);
+    }
     else searchAll();
   }
 
@@ -171,6 +176,7 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
                 // the list before the click lands.
                 onMouseDown={(event) => {
                   event.preventDefault();
+                  reportSearch({ query: value, source: "hero", universitySlug: hit.entry.slug, locale });
                   router.push(`/universities/${hit.entry.slug}`);
                 }}
                 onMouseMove={() => setActive(index)}

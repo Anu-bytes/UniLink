@@ -8,7 +8,8 @@ import { FacultyProgramsPanel } from "@/components/admin/faculties/faculty-progr
 import { PAGE_WRAPPER } from "@/components/admin/faculties/styles";
 import type { FacultyProgramRow } from "@/components/admin/faculties/types";
 import { Link } from "@/i18n/navigation";
-import { requireAdminPage } from "@/lib/admin";
+import { canEditUniversity, requireEditorPage, universityIdScope } from "@/lib/admin";
+import { PendingChangesNotice } from "@/components/admin/changes/pending-notice";
 import { prisma } from "@/lib/prisma";
 
 /**
@@ -25,7 +26,8 @@ export default async function EditFacultyPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  const actor = await requireEditorPage();
+  const scope = universityIdScope(actor);
 
   const t = await getTranslations("Admin.faculties");
   const locale = await getLocale();
@@ -49,6 +51,7 @@ export default async function EditFacultyPage({
       },
     }),
     prisma.university.findMany({
+      where: scope ? { id: scope } : undefined,
       orderBy: [{ name: "asc" }, { id: "asc" }],
       select: { id: true, name: true, nameAr: true },
     }),
@@ -60,7 +63,7 @@ export default async function EditFacultyPage({
     }),
   ]);
 
-  if (!faculty) notFound();
+  if (!faculty || !canEditUniversity(actor, faculty.universityId)) notFound();
 
   const options: SelectOption[] = universities.map((university) => ({
     value: university.id,
@@ -104,6 +107,10 @@ export default async function EditFacultyPage({
           />
         }
       />
+
+      <div className="mt-6">
+        <PendingChangesNotice actor={actor} universityId={faculty.universityId} entityId={faculty.id} />
+      </div>
 
       <div className="mt-6 grid items-start gap-5 xl:grid-cols-3">
         <div className="xl:col-span-2">

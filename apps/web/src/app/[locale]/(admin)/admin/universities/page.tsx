@@ -10,7 +10,7 @@ import { UNIVERSITY_TYPES } from "@/components/admin/universities/types";
 import { UniversityFilters } from "@/components/admin/universities/university-filters";
 import { UniversityTable } from "@/components/admin/universities/university-table";
 import { Link } from "@/i18n/navigation";
-import { requireAdminPage } from "@/lib/admin";
+import { requireEditorPage, universityIdScope } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { adminPage } from "@/lib/admin-validation";
 import { catalogueChecks } from "@/lib/admin-catalogue";
@@ -44,7 +44,8 @@ export default async function AdminUniversitiesPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  // Super admins see every university; a university admin only theirs.
+  const actor = await requireEditorPage();
 
   const sp = await searchParams;
   const t = await getTranslations("Admin");
@@ -57,7 +58,9 @@ export default async function AdminUniversitiesPage({
 
   // The same where the list endpoint builds, so the table and the API never
   // disagree about what a filter means.
+  const scope = universityIdScope(actor);
   const where: Prisma.UniversityWhereInput = {
+    ...(scope ? { id: scope } : {}),
     ...(type ? { type } : {}),
     // There is no boolean column: a university is published exactly when
     // publishedAt is set.
@@ -133,13 +136,15 @@ export default async function AdminUniversitiesPage({
   return (
     <div className={PAGE_WRAPPER}>
       <PageHeader
-        title={t("universities.title")}
-        description={t("universities.description")}
+        title={actor.level === 1 ? t("nav.myUniversities") : t("universities.title")}
+        description={actor.level === 1 ? t("roles.universityAdmin.universitiesHint") : t("universities.description")}
         actions={
-          <Link href="/admin/universities/new" className={PRIMARY_BUTTON}>
-            <Plus className="size-4" aria-hidden />
-            {t("universities.new")}
-          </Link>
+          actor.level === 3 ? (
+            <Link href="/admin/universities/new" className={PRIMARY_BUTTON}>
+              <Plus className="size-4" aria-hidden />
+              {t("universities.new")}
+            </Link>
+          ) : null
         }
       />
 
@@ -152,6 +157,7 @@ export default async function AdminUniversitiesPage({
         </TableToolbar>
 
         <UniversityTable
+          fullControl={actor.level === 3}
           rows={rows}
           filtered={Boolean(q) || type !== null || published !== null || featured !== null}
         />

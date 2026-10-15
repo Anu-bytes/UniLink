@@ -37,6 +37,7 @@ import { FacultyGrid } from "@/components/university/faculty-grid";
 import { ProgramCompareButton } from "@/components/university/program-compare-button";
 import { ProgramDialog } from "@/components/university/program-dialog";
 import { ProgramSaveButton } from "@/components/app/program-save-button";
+import { EditProgramButton } from "@/components/university/profile-editor";
 import { UniversityLogo } from "@/components/university-logo";
 import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
 import { Reveal } from "@/components/reveal";
@@ -124,10 +125,13 @@ export async function TabFaculties({
   university,
   isAuthenticated,
   callbackUrl,
+  canEdit = false,
 }: {
   university: UniversityDetailData;
   isAuthenticated: boolean;
   callbackUrl: string;
+  /** An admin who may edit this university: programs get an Edit button. */
+  canEdit?: boolean;
 }) {
   const t = await getTranslations("UniversityDetail");
   const tCatalog = await getTranslations("Catalog");
@@ -204,6 +208,7 @@ export async function TabFaculties({
               tProgram={tProgram}
               tCatalog={tCatalog}
               accent={ICON_ACCENTS[programIndex % ICON_ACCENTS.length]}
+              canEdit={canEdit}
             />
           ))}
         />
@@ -298,6 +303,7 @@ function ProgramCard({
   tProgram,
   tCatalog,
   accent,
+  canEdit,
 }: {
   program: Program;
   university: UniversityDetailData;
@@ -307,6 +313,7 @@ function ProgramCard({
   tProgram: T;
   tCatalog: T;
   accent: string;
+  canEdit: boolean;
 }) {
   return (
     <ProgramDialog
@@ -328,6 +335,7 @@ function ProgramCard({
           locale={locale}
           t={tProgram}
           tCatalog={tCatalog}
+          canEdit={canEdit}
         />
       }
     />
@@ -341,6 +349,7 @@ function ProgramDetail({
   locale,
   t,
   tCatalog,
+  canEdit,
 }: {
   program: Program;
   university: UniversityDetailData;
@@ -348,6 +357,7 @@ function ProgramDetail({
   locale: string;
   t: T;
   tCatalog: T;
+  canEdit: boolean;
 }) {
   const years = yearsFromMonths(program.durationMonths);
   const duration =
@@ -530,6 +540,7 @@ function ProgramDetail({
           logoUrl={university.logoUrl}
         />
         <ProgramSaveButton programId={program.id} variant="button" />
+        {canEdit ? <EditProgramButton programId={program.id} /> : null}
       </div>
     </div>
   );

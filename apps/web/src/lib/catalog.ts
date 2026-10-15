@@ -1037,10 +1037,21 @@ export async function getUniversitySlugs() {
  */
 export async function incrementUniversityViews(id: string) {
   try {
-    await prisma.university.updateMany({
-      where: { id },
-      data: { viewCount: { increment: 1 } },
-    });
+    // The all-time total, plus today's row in the daily table the admin
+    // statistics read trends from (UTC day).
+    const day = new Date();
+    day.setUTCHours(0, 0, 0, 0);
+    await prisma.$transaction([
+      prisma.university.updateMany({
+        where: { id },
+        data: { viewCount: { increment: 1 } },
+      }),
+      prisma.universityViewDaily.upsert({
+        where: { universityId_day: { universityId: id, day } },
+        create: { universityId: id, day, views: 1 },
+        update: { views: { increment: 1 } },
+      }),
+    ]);
   } catch (error) {
     console.error("Unable to increment university view count", error);
   }

@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 import { PageHeader, type SelectOption } from "@/components/admin";
 import { FacultyForm } from "@/components/admin/faculties/faculty-form";
 import { PAGE_WRAPPER } from "@/components/admin/faculties/styles";
-import { requireAdminPage } from "@/lib/admin";
+import { requireEditorPage, universityIdScope } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 
 export default async function NewFacultyPage({
@@ -14,13 +14,15 @@ export default async function NewFacultyPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  const actor = await requireEditorPage();
+  const scope = universityIdScope(actor);
 
   const t = await getTranslations("Admin.faculties");
   const locale = await getLocale();
   const sp = await searchParams;
 
   const universities = await prisma.university.findMany({
+    where: scope ? { id: scope } : undefined,
     orderBy: [{ name: "asc" }, { id: "asc" }],
     select: { id: true, name: true, nameAr: true },
   });

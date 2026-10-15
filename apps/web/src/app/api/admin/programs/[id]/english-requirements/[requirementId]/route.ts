@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import { badRequest, notFound, prismaErrorResponse, readJson } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 import { validEnglishScore } from "@/lib/admin-validation";
@@ -27,7 +28,7 @@ const updateSchema = z
   })
   .partial();
 
-export async function PATCH(
+async function patchHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; requirementId: string }> },
 ) {
@@ -75,7 +76,7 @@ export async function PATCH(
   }
 }
 
-export async function DELETE(
+async function deleteHandler(
   request: Request,
   { params }: { params: Promise<{ id: string; requirementId: string }> },
 ) {
@@ -94,3 +95,8 @@ export async function DELETE(
     return prismaErrorResponse(error, "English requirement");
   }
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const PATCH = catalogueWrite("englishRequirement", "UPDATE", patchHandler);
+export const DELETE = catalogueWrite("englishRequirement", "DELETE", deleteHandler);

@@ -17,7 +17,8 @@ import {
   SECONDARY_BUTTON,
 } from "@/components/admin/universities/styles";
 import { Link } from "@/i18n/navigation";
-import { requireAdminPage } from "@/lib/admin";
+import { canEditUniversity, requireEditorPage } from "@/lib/admin";
+import { PendingChangesNotice } from "@/components/admin/changes/pending-notice";
 import { prisma } from "@/lib/prisma";
 
 function firstParam(value: string | string[] | undefined) {
@@ -34,7 +35,9 @@ export default async function EditUniversityPage({
   // Authorization lives here, not only in the layout: a client-side
   // navigation between two admin pages skips the layout entirely.
   // See the note at the top of src/lib/admin.ts.
-  await requireAdminPage();
+  // Super admins edit any university; a university admin only theirs (and
+  // their edits wait for review). Reviewers do not edit.
+  const actor = await requireEditorPage();
   const locale = await getLocale();
 
   const { id } = await params;
@@ -77,7 +80,7 @@ export default async function EditUniversityPage({
     },
   });
 
-  if (!university) {
+  if (!university || !canEditUniversity(actor, university.id)) {
     notFound();
   }
 
@@ -132,7 +135,7 @@ export default async function EditUniversityPage({
     <div className={PAGE_WRAPPER}>
       <PageHeader
         breadcrumb={[
-          { href: "/admin/universities", label: t("universities.title") },
+          { href: "/admin/universities", label: actor.level === 1 ? t("nav.myUniversities") : t("universities.title") },
           { label: locale === "ar" ? university.nameAr ?? university.name : university.name },
         ]}
         title={locale === "ar" ? university.nameAr ?? university.name : university.name}
@@ -162,6 +165,7 @@ export default async function EditUniversityPage({
       />
 
       <div className="mt-6 space-y-5">
+        <PendingChangesNotice actor={actor} universityId={university.id} />
         <UniversityEditorTabs universityId={university.id} active={tab} />
 
         {tab === "details" ? (

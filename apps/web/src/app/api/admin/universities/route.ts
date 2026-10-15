@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import {
   badRequest,
   emptyToNull,
@@ -157,7 +158,7 @@ export async function GET(request: Request) {
   return NextResponse.json(page(items, total, params));
 }
 
-export async function POST(request: Request) {
+async function postHandler(request: Request) {
   const guard = await requireAdmin();
   if (!guard.ok) return guard.response;
 
@@ -207,3 +208,7 @@ export async function POST(request: Request) {
     return prismaErrorResponse(error, "University");
   }
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const POST = catalogueWrite("university", "CREATE", postHandler, { superAdminOnly: true });

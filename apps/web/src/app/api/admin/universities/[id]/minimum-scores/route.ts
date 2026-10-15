@@ -3,6 +3,7 @@ import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
+import { catalogueWrite } from "@/lib/admin-changes";
 import {
   badRequest,
   decimalToNumber,
@@ -111,7 +112,7 @@ export async function GET(
   return NextResponse.json(page(items.map(serialize), total, listParams));
 }
 
-export async function POST(
+async function postHandler(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
 ) {
@@ -169,3 +170,7 @@ export async function POST(
     return prismaErrorResponse(error, "Minimum score");
   }
 }
+
+// Writes go through the review queue: applied directly for a super admin,
+// queued for approval for a university admin. See lib/admin-changes.ts.
+export const POST = catalogueWrite("minimumScore", "CREATE", postHandler);

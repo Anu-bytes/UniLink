@@ -67,6 +67,10 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const valid = await bcrypt.compare(password, user.passwordHash);
         if (!valid) return null;
 
+        // A disabled or banned account cannot sign in. Checked after the
+        // password so a wrong guess learns nothing about the account's state.
+        if (user.status !== "ACTIVE") return null;
+
         return {
           id: user.id,
           email: user.email,
@@ -76,7 +80,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       },
     }),
   ],
+  events: {
+    // Shown as "last sign-in" on the admin accounts page.
+    signIn: async ({ user }) => {
+      if (!user?.id) return;
+      await prisma.user
+        .update({ where: { id: user.id }, data: { lastLoginAt: new Date() } })
+        .catch(() => undefined);
+    },
+  },
   callbacks: {
+    // Google sign-in goes through here too: refuse disabled or banned accounts.
+    signIn: async ({ user }) => {
+      if (!user?.email) return true;
+      const account = await prisma.user.findFirst({
+        where: { email: { equals: user.email, mode: "insensitive" } },
+        select: { status: true },
+      });
+      return !account || account.status === "ACTIVE";
+    },
     jwt: async ({ token, user }) => {
       if (user) token.sub = user.id;
       if (!token.sub) return token;
@@ -105,11 +127,11 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
       const account = await prisma.user.findUnique({
         where: { id: token.sub },
-        select: { passwordChangedAt: true, role: true },
+        select: { passwordChangedAt: true, role: true, status: true },
       });
 
-      // The account was deleted while the session was open.
-      if (!account) return null;
+      // The account was deleted, disabled or banned while the session was open.
+      if (!account || account.status !== "ACTIVE") return null;
 
       const changedAt = account.passwordChangedAt?.getTime() ?? 0;
       const stamped = typeof token.pwdAt === "number" ? token.pwdAt : 0;
