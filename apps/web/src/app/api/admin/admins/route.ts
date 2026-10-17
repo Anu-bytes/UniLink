@@ -1,12 +1,9 @@
-import bcrypt from "bcryptjs";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
 import { ADMIN_ROLES, isAdminRole, requireAdmin } from "@/lib/admin";
 import { readJson } from "@/lib/admin-api";
-import { setAssignments, temporaryPassword } from "@/lib/admin-accounts";
-import { recordAudit } from "@/lib/admin-audit";
-import { prisma } from "@/lib/prisma";
+import { grantAdminAccess } from "@/lib/admin-accounts";
 
 export const dynamic = "force-dynamic";
 
@@ -30,55 +27,13 @@ export async function POST(request: Request) {
   if (!body.ok) return body.response;
   const { name, email, role, universityIds } = body.data;
   if (!isAdminRole(role)) return NextResponse.json({ error: "Invalid role" }, { status: 400 });
-  if (role === "UNIVERSITY_ADMIN" && universityIds.length === 0) {
-    return NextResponse.json({ error: "Assign at least one university", field: "universityIds" }, { status: 400 });
+
+  const result = await grantAdminAccess({ name, email, role, universityIds, actorId: guard.actor.id });
+  if (!result.ok) {
+    return NextResponse.json({ error: result.error, field: result.field ?? null }, { status: result.status });
   }
-
-  const existing = await prisma.user.findFirst({
-    where: { email: { equals: email, mode: "insensitive" } },
-    select: { id: true, role: true },
-  });
-  if (existing && isAdminRole(existing.role)) {
-    return NextResponse.json({ error: "This person is already an admin", field: "email" }, { status: 409 });
-  }
-
-  let userId: string;
-  let password: string | null = null;
-  if (existing) {
-    await prisma.user.update({
-      where: { id: existing.id },
-      data: { role, status: "ACTIVE", statusReason: null, statusChangedAt: new Date() },
-    });
-    userId = existing.id;
-  } else {
-    password = temporaryPassword();
-    const created = await prisma.user.create({
-      data: {
-        name,
-        email,
-        role,
-        passwordHash: await bcrypt.hash(password, 10),
-        passwordChangedAt: new Date(),
-        emailVerified: new Date(),
-      },
-      select: { id: true },
-    });
-    userId = created.id;
-  }
-
-  const assigned = role === "UNIVERSITY_ADMIN" ? await setAssignments(userId, universityIds, guard.actor.id) : [];
-
-  await recordAudit({
-    actorId: guard.actor.id,
-    action: "admin.create",
-    entity: "admin",
-    entityId: userId,
-    entityLabel: name,
-    summary: existing
-      ? `Gave ${email} admin access as ${role}`
-      : `Created admin account ${email} as ${role}`,
-    metadata: { role, universityIds: assigned },
-  });
-
-  return NextResponse.json({ id: userId, promoted: Boolean(existing), temporaryPassword: password }, { status: 201 });
+  return NextResponse.json(
+    { id: result.userId, promoted: result.promoted, temporaryPassword: result.temporaryPassword },
+    { status: 201 },
+  );
 }

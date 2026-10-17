@@ -92,6 +92,7 @@ export default async function AdminsPage({
         description={t("subtitle")}
         actions={
           <AddAdminButton
+            defaultOpen={single(sp.add) === "1"}
             universities={universities.map((university) => ({ value: university.id, label: universityName(university) }))}
           />
         }

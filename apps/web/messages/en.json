@@ -45,7 +45,8 @@
     "legal": "Legal",
     "privacy": "Privacy policy",
     "terms": "Terms & conditions",
-    "rights": "All rights reserved."
+    "rights": "All rights reserved.",
+    "workWithUs": "Work with us"
   },
   "Home": {
     "landing": {
@@ -984,7 +985,8 @@
       "requirements": "Admission Requirements",
       "criteria": "Admission Criteria",
       "scores": "Minimum Scores",
-      "tuition": "Tuition Fees"
+      "tuition": "Tuition Fees",
+      "info": "More info"
     },
     "aboutHeading": "About {name}",
     "featuresHeading": "Features of {name}",
@@ -1048,7 +1050,14 @@
     "backToUniversities": "Back to universities",
     "searchPrograms": "Search all programs",
     "tabsShort": {
-      "scores": "Min. scores"
+      "scores": "Min. scores",
+      "info": "Info"
+    },
+    "sectionKinds": {
+      "ABOUT_EXTRA": "About the university",
+      "ADMISSION_REQUIREMENTS": "Admission requirements",
+      "ADMISSION_CRITERIA": "Admission criteria",
+      "TUITION_NOTES": "Fees notes"
     }
   },
   "UniversityDirectory": {
@@ -1500,7 +1509,9 @@
       "myChanges": "My changes",
       "myCatalogue": "My universities",
       "myUniversities": "Universities",
-      "pending": "waiting for review"
+      "pending": "waiting for review",
+      "requests": "Requests",
+      "newRequests": "new requests"
     },
     "common": {
       "search": "Search",
@@ -2796,7 +2807,6 @@
       "weekViews": "Profile views this week",
       "weekSearches": "Searches this week",
       "reviewedByYou": "Reviewed by you this month",
-      "openStatistics": "Open full statistics",
       "universityAdminSubtitle": "Keep your universities' profiles accurate. Every edit is checked by a reviewer before it goes live.",
       "steps": {
         "edit": "Edit",
@@ -2872,6 +2882,131 @@
       "title": "Not available",
       "body": "This page does not exist, or it is outside what your admin account can open.",
       "back": "Back to the console"
+    },
+    "requests": {
+      "title": "Requests",
+      "subtitle": "Demo requests and university representative applications from the Work with us page.",
+      "tabs": {
+        "all": "All",
+        "demo": "Demos",
+        "representative": "Representatives"
+      },
+      "views": {
+        "open": "Open",
+        "all": "All",
+        "new": "New",
+        "in_review": "In review",
+        "scheduled": "Scheduled",
+        "approved": "Approved",
+        "declined": "Declined",
+        "closed": "Closed"
+      },
+      "searchPlaceholder": "Search by university, name or email",
+      "empty": {
+        "title": "No requests here",
+        "body": "New demo requests and representative applications will show up here.",
+        "filteredTitle": "Nothing matches",
+        "filteredBody": "Try another search or filter."
+      },
+      "types": {
+        "DEMO": "Demo request",
+        "REPRESENTATIVE": "Representative application"
+      },
+      "status": {
+        "NEW": "New",
+        "IN_REVIEW": "In review",
+        "SCHEDULED": "Scheduled",
+        "APPROVED": "Approved",
+        "DECLINED": "Declined",
+        "CLOSED": "Closed"
+      },
+      "list": {
+        "scheduledFor": "Demo on {date}",
+        "prefers": "Prefers {date}"
+      },
+      "slots": {
+        "MORNING": "Morning (9am to 12pm)",
+        "AFTERNOON": "Afternoon (12pm to 4pm)",
+        "EVENING": "Evening (4pm to 7pm)"
+      },
+      "fields": {
+        "fullName": "Name",
+        "jobTitle": "Job title",
+        "email": "Email",
+        "phone": "Phone",
+        "account": "UniLink account",
+        "university": "University",
+        "city": "City",
+        "preferredDate": "Preferred day",
+        "attendees": "Attendees",
+        "proofUrl": "Proof of role",
+        "language": "Language"
+      },
+      "detail": {
+        "received": "Received {date}",
+        "email": "Email",
+        "call": "Call",
+        "message": "Message",
+        "noMessage": "No message.",
+        "applicant": "Applicant",
+        "details": "Request",
+        "signedIn": "Signed in when applying",
+        "notSignedIn": "Not signed in",
+        "notListed": "not in the catalogue",
+        "anyDay": "Any day",
+        "noProof": "No link given",
+        "history": "History",
+        "lastReviewed": "Last updated by {name} on {date}"
+      },
+      "review": {
+        "title": "Review",
+        "status": "Status",
+        "scheduledAt": "Demo date and time",
+        "scheduledHint": "Needed before marking it Scheduled.",
+        "note": "Internal note",
+        "notePlaceholder": "Only admins see this",
+        "save": "Save",
+        "saved": "Saved",
+        "failed": "Could not save",
+        "delete": "Delete",
+        "deleted": "Request deleted",
+        "deleteTitle": "Delete this request?",
+        "deleteBody": "It is removed for good. This cannot be undone.",
+        "approvedNote": "Approved. This representative has a university admin account.",
+        "openAdmin": "Open their admin account"
+      },
+      "grant": {
+        "title": "Grant access",
+        "body": "Gives {email} a university admin account for the university below. Their edits still go through approval.",
+        "university": "University to manage",
+        "choose": "Choose a university",
+        "button": "Grant access",
+        "confirmTitle": "Grant university admin access?",
+        "confirmBody": "{email} will be able to edit this university's profile. Every change still needs approval.",
+        "created": "Access granted. A new account was created.",
+        "promoted": "Access granted to their existing account.",
+        "passwordTitle": "One-time password",
+        "passwordBody": "Shown once. Send it to them privately; they can change it after signing in.",
+        "copy": "Copy",
+        "copied": "Copied"
+      },
+      "snapshot": {
+        "title": "New requests",
+        "waiting": "{count, plural, one {# request waiting} other {# requests waiting}}",
+        "none": "Nothing new",
+        "open": "Open requests"
+      }
+    },
+    "notifications": {
+      "label": "Notifications",
+      "labelCount": "{count, plural, one {Notifications, # new} other {Notifications, # new}}",
+      "title": "Notifications",
+      "newDemo": "New demo request",
+      "newRepresentative": "New representative application",
+      "pendingChanges": "{count, plural, one {# change waiting for your review} other {# changes waiting for your review}}",
+      "empty": "You are all caught up.",
+      "seeAll": "Open requests",
+      "seeAllCount": "See all {count} new requests"
     }
   },
   "Palette": {
@@ -2998,7 +3133,8 @@
       "details": "Details",
       "photos": "Photos",
       "programs": "Programs and fees",
-      "faculties": "Faculties"
+      "faculties": "Faculties",
+      "sections": "Sections"
     },
     "saveFailed": "Could not save",
     "saved": "Saved",
@@ -3047,8 +3183,186 @@
       "TOTAL": "Total"
     },
     "faculties": {
-      "programs": "{count, plural, one {{count} program} other {{count} programs}}"
+      "programs": "{count, plural, one {{count} program} other {{count} programs}}",
+      "add": "Add a faculty",
+      "addButton": "Add faculty",
+      "addHintDirect": "It appears on the profile right away.",
+      "addHintReview": "It is sent for approval first.",
+      "addProgram": "Add a program"
     },
-    "editProgram": "Edit program"
+    "editProgram": "Edit program",
+    "sectionsTab": {
+      "intro": "Add sections to the More info tab of this profile, such as admission requirements, scholarships or student life. Text only.",
+      "add": "Add a section",
+      "new": "New section",
+      "addButton": "Add section",
+      "cancel": "Cancel",
+      "full": "This profile has the maximum of {max} sections",
+      "empty": "No sections yet.",
+      "kind": "Where it appears",
+      "title": "Title (English)",
+      "titleAr": "Title (Arabic)",
+      "body": "Text (English)",
+      "bodyAr": "Text (Arabic)",
+      "formatHint": "Leave a blank line between paragraphs. Lines right under each other show as a bulleted list.",
+      "untitled": "Untitled section",
+      "moveUp": "Move up",
+      "moveDown": "Move down",
+      "edit": "Edit section",
+      "delete": "Delete section",
+      "confirmDelete": "Delete this section from the profile?",
+      "manage": "Add or edit sections",
+      "kinds": {
+        "ABOUT_EXTRA": "About the university",
+        "ADMISSION_REQUIREMENTS": "Admission requirements",
+        "ADMISSION_CRITERIA": "Admission criteria",
+        "TUITION_NOTES": "Fees notes"
+      }
+    }
+  },
+  "AdminAccess": {
+    "cta": "Admin dashboard",
+    "menuHeading": "Admin",
+    "bar": {
+      "title": "Admin mode"
+    },
+    "roles": {
+      "ADMIN": "Super admin",
+      "REVIEWER": "Reviewer",
+      "UNIVERSITY_ADMIN": "University admin"
+    },
+    "links": {
+      "dashboard": "Dashboard",
+      "approvals": "Approvals",
+      "myChanges": "My changes",
+      "statistics": "Statistics",
+      "universities": "Universities",
+      "myUniversities": "My universities",
+      "bulkEdit": "Edit all at once",
+      "admins": "Admins",
+      "requests": "Requests"
+    },
+    "quick": {
+      "button": "Quick actions",
+      "heading": "Quick actions",
+      "items": {
+        "reviewChanges": {
+          "title": "Review changes",
+          "description": "Approve or reject edits sent by university admins."
+        },
+        "addUniversity": {
+          "title": "Add a university",
+          "description": "Create a new university profile."
+        },
+        "addFaculty": {
+          "title": "Add a faculty",
+          "description": "Add a faculty to a university."
+        },
+        "addProgram": {
+          "title": "Add a program",
+          "description": "Add a program with its fees and requirements."
+        },
+        "bulkEdit": {
+          "title": "Edit all at once",
+          "description": "Change many universities in one table."
+        },
+        "addAdmin": {
+          "title": "Add an admin",
+          "description": "Invite a reviewer or a university admin."
+        },
+        "statistics": {
+          "title": "View statistics",
+          "description": "Sign-ups, views, searches and trends."
+        },
+        "editMyUniversity": {
+          "title": "Edit my university",
+          "description": "Update the profile, photos and details."
+        },
+        "trackChanges": {
+          "title": "Track my changes",
+          "description": "See what was approved, rejected or still waiting."
+        },
+        "browseSite": {
+          "title": "Open the public site",
+          "description": "See universities the way students see them."
+        }
+      }
+    }
+  },
+  "WorkWithUs": {
+    "eyebrow": "For universities",
+    "title": "Work with UniLink",
+    "subtitle": "Book a demo of UniLink for your team, or apply to represent your university and manage its profile.",
+    "chooseLabel": "What would you like to do?",
+    "types": {
+      "DEMO": {
+        "title": "Book a demo",
+        "body": "See how UniLink presents your university and reaches students. We will set up a short call."
+      },
+      "REPRESENTATIVE": {
+        "title": "Represent your university",
+        "body": "Apply to manage your university's profile, photos, faculties and fees on UniLink."
+      }
+    },
+    "fields": {
+      "fullName": "Full name",
+      "jobTitle": "Job title",
+      "email": "Email",
+      "workEmail": "Work email (at your university)",
+      "phone": "Phone",
+      "university": "University",
+      "universityPlaceholder": "Choose your university",
+      "universityOther": "My university is not listed",
+      "universityName": "University name",
+      "city": "City",
+      "preferredDate": "Preferred day",
+      "preferredSlot": "Preferred time",
+      "anyTime": "Any time",
+      "attendees": "Number of attendees",
+      "proofUrl": "Link that shows your role (optional)",
+      "proofUrlHint": "For example your staff page on the university website, or your LinkedIn profile.",
+      "messageDemo": "Anything we should know? (optional)",
+      "messageRep": "Tell us about your role (optional)",
+      "confirm": "I confirm I work at this university and am allowed to manage its information."
+    },
+    "slots": {
+      "MORNING": "Morning (9am to 12pm)",
+      "AFTERNOON": "Afternoon (12pm to 4pm)",
+      "EVENING": "Evening (4pm to 7pm)"
+    },
+    "errors": {
+      "fullName": "Enter your full name",
+      "jobTitle": "Enter your job title",
+      "email": "Enter a valid email address",
+      "phone": "Enter a valid phone number",
+      "university": "Choose or enter your university",
+      "city": "Enter the city",
+      "date": "Pick a day from today onwards",
+      "proofUrl": "Enter a link that starts with https://",
+      "confirm": "Please confirm you represent this university",
+      "rateLimited": "Too many requests from this connection. Please try again later.",
+      "tooManyOpen": "You already have requests waiting for a reply. We will be in touch soon.",
+      "generic": "Something went wrong. Please check the form and try again."
+    },
+    "submit": {
+      "DEMO": "Request a demo",
+      "REPRESENTATIVE": "Send application"
+    },
+    "submitting": "Sending...",
+    "privacy": "We only use these details to reply to your request.",
+    "success": {
+      "DEMO": {
+        "title": "Demo requested",
+        "body": "Thank you. Our team will contact you at {email} to confirm a time."
+      },
+      "REPRESENTATIVE": {
+        "title": "Application sent",
+        "body": "Thank you. We will review your application and reply to {email}."
+      }
+    },
+    "partnersSection": {
+      "title": "Work with us",
+      "body": "Book a demo for your team, or apply to represent your university and keep its profile up to date."
+    }
   }
 }

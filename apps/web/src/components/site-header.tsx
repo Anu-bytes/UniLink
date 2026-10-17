@@ -1,7 +1,9 @@
+import { ShieldCheck } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
+import { adminLevelOf } from "@/lib/admin-nav";
 import { AccountMenu } from "@/components/account-menu";
 import { Logo } from "@/components/logo";
 import { LanguageSwitcher } from "@/components/language-switcher";
@@ -12,6 +14,7 @@ import { TopNavLinks } from "@/components/top-nav-links";
 
 export async function SiteHeader() {
   const t = await getTranslations("Nav");
+  const tAdmin = await getTranslations("AdminAccess");
   const locale = await getLocale();
   const session = await auth();
 
@@ -22,6 +25,9 @@ export async function SiteHeader() {
         image: session.user.image ?? null,
       }
     : null;
+  // Admins get the console as their main call to action instead of the
+  // student one, plus the admin links in the account and mobile menus.
+  const adminLevel = adminLevelOf(session?.user?.role);
 
   // Open Sans has no Arabic glyphs, so Arabic falls back to an unstyled system
   // font. Use Cairo (--font-arabic) for Arabic; Open Sans for Latin locales.
@@ -60,13 +66,23 @@ export async function SiteHeader() {
 
             {user ? (
               <>
-                <Link
-                  href="/app/search"
-                  className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-[15px] font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:px-5"
-                >
-                  {t("searchPrograms")}
-                </Link>
-                <AccountMenu user={user} />
+                {adminLevel ? (
+                  <Link
+                    href="/admin"
+                    className="inline-flex h-11 items-center justify-center gap-2 whitespace-nowrap rounded-[8px] bg-[#F82C1F] px-4 text-[15px] font-bold text-white transition-colors hover:bg-[#C81F15] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#F82C1F] xl:px-5"
+                  >
+                    <ShieldCheck className="size-4" aria-hidden />
+                    {tAdmin("cta")}
+                  </Link>
+                ) : (
+                  <Link
+                    href="/app/search"
+                    className="inline-flex h-11 items-center justify-center whitespace-nowrap rounded-[8px] bg-[#1E6DEB] px-4 text-[15px] font-bold text-white transition-colors hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] xl:px-5"
+                  >
+                    {t("searchPrograms")}
+                  </Link>
+                )}
+                <AccountMenu user={user} adminLevel={adminLevel} />
               </>
             ) : (
               <>
@@ -99,6 +115,7 @@ export async function SiteHeader() {
             loginHref="/login"
             loginLabel={t("login")}
             user={user}
+            adminLevel={adminLevel}
           >
             <LanguageSwitcher />
           </MobileNav>

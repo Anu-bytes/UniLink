@@ -6,8 +6,15 @@ import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
+import { ADMIN_SHORTCUT_ICONS, adminShortcuts, type AdminLevel } from "@/lib/admin-nav";
 import { initialsAvatar } from "@/lib/format";
 import { cn } from "@/lib/utils";
+
+const ADMIN_AVATAR = (label: string) => ({
+  ...initialsAvatar(label || "UniLink"),
+  background: "#FFE4E1",
+  color: "#C81F15",
+});
 
 export type SessionUser = {
   name: string | null;
@@ -19,12 +26,15 @@ export type SessionUser = {
 export function Avatar({
   user,
   className,
+  admin = false,
 }: {
   user: SessionUser;
   className?: string;
+  /** Admin accounts are marked in red, so it is obvious which account is signed in. */
+  admin?: boolean;
 }) {
   const label = user.name ?? user.email ?? "";
-  const avatar = initialsAvatar(label || "UniLink");
+  const avatar = admin ? ADMIN_AVATAR(label) : initialsAvatar(label || "UniLink");
 
   if (user.image) {
     return (
@@ -33,7 +43,7 @@ export function Avatar({
       <img
         src={user.image}
         alt=""
-        className={cn("size-9 shrink-0 rounded-full object-cover", className)}
+        className={cn("size-9 shrink-0 rounded-full object-cover", admin && "ring-2 ring-[#F82C1F] ring-offset-1", className)}
       />
     );
   }
@@ -56,25 +66,33 @@ export function Avatar({
  * Signed-in account control for the marketing header. Replaces the Log in and
  * Register buttons, which previously showed even to authenticated visitors.
  */
-export function AccountMenu({ user }: { user: SessionUser }) {
+export function AccountMenu({
+  user,
+  adminLevel = null,
+}: {
+  user: SessionUser;
+  /** Set for admin accounts: adds their console links at the top. */
+  adminLevel?: AdminLevel | null;
+}) {
   const t = useTranslations("Account");
   const tApp = useTranslations("App");
+  const tAdmin = useTranslations("AdminAccess");
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  // Counts as open only on the route it was opened on, so navigating closes
+  // it without a reset effect.
+  const [openAt, setOpenAt] = useState<string | null>(null);
+  const open = openAt === pathname;
+  const setOpen = (next: boolean) => setOpenAt(next ? pathname : null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
 
     function onPointerDown(event: PointerEvent) {
-      if (!containerRef.current?.contains(event.target as Node)) setOpen(false);
+      if (!containerRef.current?.contains(event.target as Node)) setOpenAt(null);
     }
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") setOpenAt(null);
     }
 
     document.addEventListener("pointerdown", onPointerDown);
@@ -103,12 +121,15 @@ export function AccountMenu({ user }: { user: SessionUser }) {
     <div ref={containerRef} className="relative">
       <button
         type="button"
-        onClick={() => setOpen((previous) => !previous)}
+        onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-haspopup="menu"
-        className="flex min-h-11 items-center gap-2 rounded-full border border-slate-200 bg-white py-1 ps-1 pe-3 transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+        className={cn(
+          "flex min-h-11 items-center gap-2 rounded-full border bg-white py-1 ps-1 pe-3 transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+          adminLevel ? "border-[#F82C1F]/40 hover:bg-[#FFF0EE]" : "border-slate-200 hover:bg-slate-50",
+        )}
       >
-        <Avatar user={user} />
+        <Avatar user={user} admin={Boolean(adminLevel)} />
         <span className="hidden max-w-28 truncate text-sm font-semibold text-[#1F2A44] 2xl:block">
           {displayName}
         </span>
@@ -127,7 +148,7 @@ export function AccountMenu({ user }: { user: SessionUser }) {
           className="absolute end-0 top-[calc(100%+0.5rem)] z-50 w-64 rounded-xl border border-slate-200 bg-white p-2 shadow-xl"
         >
           <div className="flex items-center gap-3 border-b border-slate-100 px-3 pb-3 pt-2">
-            <Avatar user={user} className="size-10" />
+            <Avatar user={user} className="size-10" admin={Boolean(adminLevel)} />
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-[#1F2A44]">
                 {displayName}
@@ -139,6 +160,29 @@ export function AccountMenu({ user }: { user: SessionUser }) {
               ) : null}
             </div>
           </div>
+
+          {adminLevel ? (
+            <div className="border-b border-slate-100 pb-2">
+              <p className="px-3 pt-3 pb-1 text-[11px] font-bold uppercase tracking-wide text-[#C81F15]">
+                {tAdmin("menuHeading")}
+              </p>
+              {adminShortcuts(adminLevel).map((shortcut) => {
+                const Icon = ADMIN_SHORTCUT_ICONS[shortcut.key];
+                return (
+                  <Link
+                    key={shortcut.key}
+                    href={shortcut.href}
+                    role="menuitem"
+                    onClick={() => setOpen(false)}
+                    className="flex min-h-10 items-center gap-2.5 rounded-lg px-3 text-sm font-semibold text-[#3F4657] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
+                  >
+                    <Icon className="size-4 shrink-0" aria-hidden />
+                    {tAdmin(`links.${shortcut.key}`)}
+                  </Link>
+                );
+              })}
+            </div>
+          ) : null}
 
           {items.map((item) =>
             item.comingSoon ? (

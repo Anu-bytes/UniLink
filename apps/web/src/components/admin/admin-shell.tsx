@@ -12,6 +12,7 @@ import {
   ExternalLink,
   FileText,
   GraduationCap,
+  Handshake,
   Inbox,
   LayoutDashboard,
   Library,
@@ -27,6 +28,8 @@ import { useEffect, useRef, useState, type ComponentType } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { LanguageSwitcher } from "@/components/language-switcher";
+import { NotificationBell, type BellRequest } from "./notification-bell";
+import { QuickActionsMenu } from "./quick-actions-menu";
 import { useConfirmNavigation } from "./unsaved-changes";
 import { useSidebarPreference } from "./sidebar-preference";
 import { cn } from "@/lib/utils";
@@ -37,8 +40,8 @@ type NavItem = {
   href: string;
   labelKey: string;
   icon: ComponentType<{ className?: string }>;
-  /** Shows the number of changes waiting for review next to the label. */
-  badge?: "pending";
+  /** Shows a count next to the label: changes waiting for review, or new requests. */
+  badge?: "pending" | "requests";
 };
 
 type NavGroup = {
@@ -59,6 +62,7 @@ const NAV: Record<ShellLevel, NavGroup[]> = {
         { href: "/admin", labelKey: "overview", icon: LayoutDashboard },
         { href: "/admin/statistics", labelKey: "statistics", icon: BarChart3 },
         { href: "/admin/approvals", labelKey: "approvals", icon: ClipboardCheck, badge: "pending" },
+        { href: "/admin/requests", labelKey: "requests", icon: Handshake, badge: "requests" },
       ],
     },
     {
@@ -121,12 +125,17 @@ export function AdminShell({
   user,
   level,
   pendingCount,
+  newRequests = 0,
+  bellRequests = [],
 }: {
   children: React.ReactNode;
   user: { name: string | null; email: string | null; image: string | null; role: string };
   level: ShellLevel;
   /** Changes waiting for review: all of them for levels 2-3, your own for level 1. */
   pendingCount: number;
+  /** Super admins: demo requests and representative applications nobody has picked up. */
+  newRequests?: number;
+  bellRequests?: BellRequest[];
 }) {
   const t = useTranslations("Admin");
   const confirmNavigation = useConfirmNavigation();
@@ -195,7 +204,8 @@ export function AdminShell({
     return pathname.startsWith(href);
   }
 
-  const avatar = initialsAvatar(user.name ?? user.email ?? "UniLink");
+  // Admin accounts are marked in red, here as in the site header.
+  const avatar = { ...initialsAvatar(user.name ?? user.email ?? "UniLink"), background: "#FFE4E1", color: "#C81F15" };
 
   // The drawer always renders the expanded rail, whatever the desktop
   // preference is: a 248px panel showing icon-only items reads as broken.
@@ -252,6 +262,7 @@ export function AdminShell({
                 {group.items.map((item) => {
                   const active = isActive(item.href);
                   const label = t(`nav.${item.labelKey}`);
+                  const count = item.badge === "pending" ? pendingCount : item.badge === "requests" ? newRequests : 0;
                   return (
                     <Link
                       key={item.href}
@@ -269,7 +280,7 @@ export function AdminShell({
                     >
                       <span className="relative shrink-0">
                         <item.icon className="size-[18px]" />
-                        {isCollapsed && item.badge && pendingCount > 0 ? (
+                        {isCollapsed && count > 0 ? (
                           <span aria-hidden className="absolute -end-1.5 -top-1.5 size-2.5 rounded-full bg-[#F5A524] ring-2 ring-[#0B1220]" />
                         ) : null}
                       </span>
@@ -278,15 +289,15 @@ export function AdminShell({
                       ) : (
                         <span className="truncate">{label}</span>
                       )}
-                      {!isCollapsed && item.badge && pendingCount > 0 ? (
+                      {!isCollapsed && count > 0 ? (
                         <span
                           className={cn(
                             "ms-auto min-w-6 rounded-full px-1.5 py-0.5 text-center text-[11px] leading-none font-bold tabular-nums",
                             active ? "bg-white/20 text-white" : "bg-[#F5A524] text-[#0B1220]",
                           )}
                         >
-                          {pendingCount > 99 ? "99+" : pendingCount}
-                          <span className="sr-only"> {t("nav.pending")}</span>
+                          {count > 99 ? "99+" : count}
+                          <span className="sr-only"> {t(item.badge === "requests" ? "nav.newRequests" : "nav.pending")}</span>
                         </span>
                       ) : null}
                     </Link>
@@ -383,6 +394,15 @@ export function AdminShell({
           </button>
 
           <div className="ms-auto flex items-center gap-2 sm:gap-3">
+            <QuickActionsMenu level={level} />
+            {level >= 2 ? (
+              <NotificationBell
+                requests={bellRequests}
+                newRequests={level === 3 ? newRequests : 0}
+                pendingChanges={pendingCount}
+              />
+            ) : null}
+
             {/* Same control as the rest of the site, so switching language keeps
                 you on the admin page you were reading. */}
             <LanguageSwitcher onBeforeChange={confirmNavigation} />

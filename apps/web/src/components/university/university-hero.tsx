@@ -10,7 +10,6 @@ import {
   MapPin,
 } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ViewTransition } from "react";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityCompareButton } from "@/components/app/university-compare-button";
@@ -107,9 +106,6 @@ export async function UniversityHero({
           told in one glance instead of split across a plain gradient strip
           and a separate text column below it. */}
       <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6">
-        {/* Shared with the university's card in the directory and the
-            homepage slider: the card's photo flies into this banner. */}
-        <ViewTransition name={`uni-cover-${university.slug}`} share="ul-morph" default="none">
           <div className="relative isolate h-56 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
             {university.coverImageUrl ? (
               // eslint-disable-next-line @next/next/no-img-element -- cover
@@ -146,13 +142,11 @@ export async function UniversityHero({
             </div>
 
             <div className="absolute inset-x-4 bottom-4 flex items-end gap-3 sm:inset-x-6 sm:bottom-5 sm:items-center sm:gap-4">
-              <ViewTransition name={`uni-logo-${university.slug}`} share="ul-morph" default="none">
-                <UniversityLogo
-                  name={university.name}
-                  logoUrl={university.logoUrl}
-                  className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
-                />
-              </ViewTransition>
+              <UniversityLogo
+                name={university.name}
+                logoUrl={university.logoUrl}
+                className="size-14 shrink-0 ring-4 ring-white shadow-lg sm:size-16"
+              />
               <div className="min-w-0">
                 {/* On a phone the acronym sits above the name and the name may
                     wrap to two lines: a single truncated line cut most names
@@ -192,7 +186,6 @@ export async function UniversityHero({
               </div>
             </div>
           </div>
-        </ViewTransition>
       </div>
 
       {/* Stat bar right below the banner, so the headline facts (established,

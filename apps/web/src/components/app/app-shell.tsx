@@ -10,6 +10,7 @@ import {
   LogOut,
   Menu,
   Search,
+  ShieldCheck,
   User,
 } from "lucide-react";
 import { signOut } from "next-auth/react";
@@ -78,11 +79,15 @@ const NAV: NavItem[] = [
 export function AppShell({
   children,
   user,
+  isAdmin = false,
 }: {
   children: React.ReactNode;
   user: { name: string | null; email: string | null; image: string | null };
+  /** Admin accounts get a link to the admin console in the sidebar. */
+  isAdmin?: boolean;
 }) {
   const t = useTranslations("App");
+  const tAdmin = useTranslations("AdminAccess");
   const pathname = usePathname();
   const { count: savedCount } = useSavedCount();
 
@@ -153,7 +158,10 @@ export function AppShell({
     );
   }
 
-  const avatar = initialsAvatar(user.name ?? user.email ?? "UniLink");
+  // Admin accounts are marked in red, here as in the site header.
+  const avatar = isAdmin
+    ? { ...initialsAvatar(user.name ?? user.email ?? "UniLink"), background: "#FFE4E1", color: "#C81F15" }
+    : initialsAvatar(user.name ?? user.email ?? "UniLink");
 
   const sidebar = (
     <div className="flex h-full flex-col">
@@ -222,6 +230,20 @@ export function AppShell({
             out (the account dropdown also has one), not styled as another
             page inside the app. */}
         <div className="my-2 border-t border-slate-100" />
+        {isAdmin ? (
+          <Link
+            href="/admin"
+            onClick={() => setDrawerOpen(false)}
+            title={collapsed ? tAdmin("cta") : undefined}
+            className={cn(
+              "flex min-h-10 items-center gap-3 rounded-lg px-3 text-[15px] font-semibold text-[#0B1220] transition-colors hover:bg-slate-50 hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+              collapsed && "justify-center px-0",
+            )}
+          >
+            <ShieldCheck className="size-[18px] shrink-0" aria-hidden />
+            <span className={collapsed ? "sr-only" : "whitespace-nowrap"}>{tAdmin("cta")}</span>
+          </Link>
+        ) : null}
         <Link
           href="/"
           title={collapsed ? t("backToSite") : undefined}
@@ -292,8 +314,6 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header
-          // Pinned during page transitions (see components/page-transition.tsx).
-          style={{ viewTransitionName: "site-header" }}
           className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-slate-100 bg-white px-4 md:px-6"
         >
           <button

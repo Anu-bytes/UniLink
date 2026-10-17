@@ -2,6 +2,8 @@ import { Prisma } from "@prisma/client";
 import { unstable_cache } from "next/cache";
 import { cache } from "react";
 
+import { CATALOGUE_LISTS_TAG, UNIVERSITY_DETAIL_TAG } from "@/lib/cache-tags";
+import { CONTENT_SECTIONS, type ContentSectionKind } from "@/lib/content-blocks";
 import { headlineMinGrade, type AdmissionLimit } from "@/lib/admission-limits";
 import { arabicAlifVariants } from "@/lib/arabic-text";
 import {
@@ -189,7 +191,7 @@ const getLandingCatalogCached = unstable_cache(
     return data;
   },
   ["landing-catalog"],
-  { revalidate: 120 },
+  { revalidate: 120, tags: [CATALOGUE_LISTS_TAG] },
 );
 
 export async function getLandingCatalog(
@@ -626,7 +628,7 @@ export const getUniversityCities = unstable_cache(
     }));
   },
   ["university-cities"],
-  { revalidate: 300 },
+  { revalidate: 300, tags: [CATALOGUE_LISTS_TAG] },
 );
 
 /** One row of the instant-search index (header palette, home search bar). */
@@ -692,7 +694,7 @@ export const getUniversitySearchIndex = unstable_cache(
     }));
   },
   ["university-search-index"],
-  { revalidate: 300 },
+  { revalidate: 300, tags: [CATALOGUE_LISTS_TAG] },
 );
 
 export async function getPublishedPrograms(
@@ -808,9 +810,8 @@ export type UniversityDetailData = {
   updatedAt: Date | string;
   images: { id: string; url: string; alt: string | null }[];
   features: { id: string; title: string; body: string | null }[];
-  admissionRequirements: { id: string; title: string | null; body: string }[];
-  admissionCriteria: { id: string; title: string | null; body: string }[];
-  tuitionNotes: { id: string; title: string | null; body: string }[];
+  /** Free-text profile sections, in display order (kind, then hand-set order). */
+  sections: { id: string; section: ContentSectionKind; title: string | null; body: string }[];
   minimumScores: {
     id: string;
     system: string;
@@ -828,7 +829,8 @@ export type UniversityDetailData = {
  *
  * Two layers of caching, doing different jobs:
  *
- * - `unstable_cache` keeps the result across requests for a minute. This query
+ * - `unstable_cache` keeps the result across requests for up to an hour (an admin
+ *   edit clears it at once). This query
  *   is the heaviest in the app — every faculty, every published program, plus
  *   images, features, content blocks and minimum scores — and the page is
  *   `force-dynamic` because it reads the session, so without this every visitor
@@ -848,8 +850,12 @@ const loadUniversityDetail = unstable_cache(
   ): Promise<UniversityDetailData | null> {
     return getUniversityDetailUncached(locale, slug);
   },
-  ["university-detail"],
-  { revalidate: 60 },
+  // Bump the version when the returned shape changes: the data cache outlives
+  // deployments, and an entry in the old shape would otherwise be served.
+  ["university-detail", "v2"],
+  // An admin edit drops this cache at once (lib/admin-changes.ts), so the
+  // window only bounds changes made outside the console (scripts, imports).
+  { revalidate: 3600, tags: [UNIVERSITY_DETAIL_TAG] },
 );
 
 export const getUniversityDetail = cache(loadUniversityDetail);
@@ -859,11 +865,15 @@ async function getUniversityDetailUncached(
   slug: string,
 ): Promise<UniversityDetailData | null> {
   const university = await prisma.university.findFirst({
+    // One SQL statement for the university and all its relations, instead of
+    // a round trip per relation (12 queries). Same rows, about 4x faster on a
+    // cache miss.
+    relationLoadStrategy: "join",
     where: { slug, ...publishedUniversityWhere },
     include: {
       images: { orderBy: { sortOrder: "asc" } },
       features: { orderBy: { sortOrder: "asc" } },
-      contentBlocks: { orderBy: { sortOrder: "asc" } },
+      contentBlocks: { orderBy: [{ sortOrder: "asc" }, { id: "asc" }] },
       minimumScores: {
         orderBy: { system: "asc" },
         include: { faculty: { select: { name: true, nameAr: true } } },
@@ -886,14 +896,16 @@ async function getUniversityDetailUncached(
 
   if (!university) return null;
 
-  const blocksOf = (section: string) =>
+  const sections = CONTENT_SECTIONS.flatMap((kind) =>
     university.contentBlocks
-      .filter((block) => block.section === section)
+      .filter((block) => block.section === kind)
       .map((block) => ({
         id: block.id,
+        section: kind,
         title: localizedOrNull(locale, block.title, block.titleAr),
         body: localized(locale, block.body, block.bodyAr),
-      }));
+      })),
+  );
 
   return {
     id: university.id,
@@ -939,9 +951,7 @@ async function getUniversityDetailUncached(
       title: localized(locale, feature.title, feature.titleAr),
       body: localizedOrNull(locale, feature.body, feature.bodyAr),
     })),
-    admissionRequirements: blocksOf("ADMISSION_REQUIREMENTS"),
-    admissionCriteria: blocksOf("ADMISSION_CRITERIA"),
-    tuitionNotes: blocksOf("TUITION_NOTES"),
+    sections,
     minimumScores: university.minimumScores.map((score) => ({
       id: score.id,
       system: score.system,

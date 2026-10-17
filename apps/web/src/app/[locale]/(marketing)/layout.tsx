@@ -1,3 +1,4 @@
+import { AdminBar } from "@/components/admin-bar";
 import { CompareProvider } from "@/components/app/compare-context";
 import { CompareTray } from "@/components/app/compare-tray";
 import { BackToTop } from "@/components/back-to-top";
@@ -17,6 +18,7 @@ export default function MarketingLayout({
   return (
     <CompareProvider>
       <div className="flex min-h-full flex-1 flex-col">
+        <AdminBar />
         <SiteHeader />
         <PageTransition>
           <main className="flex-1">{children}</main>

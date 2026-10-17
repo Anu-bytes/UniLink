@@ -51,7 +51,6 @@ export function StickyHeaderShell({
 
   return (
     <header
-      style={{ viewTransitionName: "site-header" }}
       className={cn(
         // No backdrop-blur: the header is sticky and always on screen, so a
         // backdrop filter re-blurs the strip behind it on every scroll frame.

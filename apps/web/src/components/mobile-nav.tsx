@@ -7,6 +7,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { Link, usePathname } from "@/i18n/navigation";
 import { Avatar, type SessionUser } from "@/components/account-menu";
+import { ADMIN_SHORTCUT_ICONS, adminShortcuts, type AdminLevel } from "@/lib/admin-nav";
 import { isNavActive } from "@/lib/nav-active";
 import { cn } from "@/lib/utils";
 
@@ -29,6 +30,7 @@ export function MobileNav({
   loginHref,
   loginLabel,
   user,
+  adminLevel = null,
   children,
 }: {
   links: readonly NavLink[];
@@ -40,33 +42,34 @@ export function MobileNav({
   loginLabel: string;
   /** Present when signed in; swaps the auth buttons for account links. */
   user?: SessionUser | null;
+  /** Set for admin accounts: adds their console links. */
+  adminLevel?: AdminLevel | null;
   /** Locale switcher, rendered by the server component that owns it. */
   children?: React.ReactNode;
 }) {
   const tAccount = useTranslations("Account");
   const tApp = useTranslations("App");
+  const tAdmin = useTranslations("AdminAccess");
   const pathname = usePathname();
-  const [open, setOpen] = useState(false);
+  // Counts as open only on the route it was opened on, so it closes whenever
+  // the route changes. Tapping a link to the page you are already on does not
+  // change the pathname, so the links also close it directly.
+  const [openAt, setOpenAt] = useState<string | null>(null);
+  const open = openAt === pathname;
+  const setOpen = (next: boolean) => setOpenAt(next ? pathname : null);
   const containerRef = useRef<HTMLDivElement>(null);
-
-  // Close whenever the route changes. Tapping a link to the page you are
-  // already on does not change the pathname, so the links also close it
-  // directly rather than relying on this alone.
-  useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
 
   useEffect(() => {
     if (!open) return;
 
     function onPointerDown(event: PointerEvent) {
       if (!containerRef.current?.contains(event.target as Node)) {
-        setOpen(false);
+        setOpenAt(null);
       }
     }
 
     function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setOpen(false);
+      if (event.key === "Escape") setOpenAt(null);
     }
 
     document.addEventListener("pointerdown", onPointerDown);
@@ -83,7 +86,7 @@ export function MobileNav({
     <div ref={containerRef} className="relative lg:hidden">
       <button
         type="button"
-        onClick={() => setOpen((previous) => !previous)}
+        onClick={() => setOpen(!open)}
         aria-expanded={open}
         aria-controls="mobile-nav-panel"
         aria-label={open ? closeLabel : openLabel}
@@ -127,7 +130,7 @@ export function MobileNav({
             {user ? (
               <div className="mt-4">
                 <div className="flex items-center gap-3 rounded-xl bg-[#F7F9FE] p-3">
-                  <Avatar user={user} className="size-10" />
+                  <Avatar user={user} className="size-10" admin={Boolean(adminLevel)} />
                   <div className="min-w-0">
                     <p className="truncate text-sm font-semibold text-[#1F2A44]">
                       {user.name ?? user.email ?? tAccount("account")}
@@ -139,6 +142,28 @@ export function MobileNav({
                     ) : null}
                   </div>
                 </div>
+
+                {adminLevel ? (
+                  <nav className="mt-3 flex flex-col border-b border-slate-200 pb-2">
+                    <p className="px-3 pb-1 text-[11px] font-bold uppercase tracking-wide text-[#C81F15]">
+                      {tAdmin("menuHeading")}
+                    </p>
+                    {adminShortcuts(adminLevel).map((shortcut) => {
+                      const Icon = ADMIN_SHORTCUT_ICONS[shortcut.key];
+                      return (
+                        <Link
+                          key={shortcut.key}
+                          href={shortcut.href}
+                          onClick={close}
+                          className="inline-flex min-h-12 items-center gap-2.5 rounded-lg px-3 text-base font-semibold text-[#292E3E] transition-colors hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
+                        >
+                          <Icon className="size-4 shrink-0" aria-hidden />
+                          {tAdmin(`links.${shortcut.key}`)}
+                        </Link>
+                      );
+                    })}
+                  </nav>
+                ) : null}
 
                 <nav className="mt-2 flex flex-col">
                   {[

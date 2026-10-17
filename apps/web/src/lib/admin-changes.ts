@@ -15,12 +15,15 @@
 // Only the fields that actually differ from the record are stored, so
 // approving an old request cannot overwrite unrelated edits made since.
 
+import { revalidateTag } from "next/cache";
 import { NextResponse } from "next/server";
 import type { ChangeAction, Prisma } from "@prisma/client";
+import type { ZodTypeAny } from "zod";
 
 import { requireAdmin, type AdminActor } from "@/lib/admin";
 import { recordAudit } from "@/lib/admin-audit";
 import { currentApproval, runAsApproval } from "@/lib/admin-context";
+import { CATALOGUE_LISTS_TAG, UNIVERSITY_DETAIL_TAG } from "@/lib/cache-tags";
 import { prisma } from "@/lib/prisma";
 
 export type CatalogueEntity =
@@ -182,6 +185,21 @@ export function changedKeys(before: Record<string, unknown> | null, payload: Rec
 
 type Handler<C> = (request: Request, context: C) => Promise<Response>;
 
+/** Largest request body a catalogue write accepts (the longest field is 20k). */
+const MAX_BODY_BYTES = 200_000;
+/** Changes one university admin may have waiting for review at once. */
+const MAX_PENDING_PER_AUTHOR = 100;
+
+/**
+ * The public catalogue is cached (lib/catalog.ts). After a write lands, the
+ * profiles are dropped at once so an editor sees their change on reload, and
+ * the lists refresh in the background.
+ */
+function refreshCatalogueCaches() {
+  revalidateTag(UNIVERSITY_DETAIL_TAG, { expire: 0 });
+  revalidateTag(CATALOGUE_LISTS_TAG, "max");
+}
+
 const ACTION_VERB: Record<ChangeAction, "create" | "update" | "delete"> = {
   CREATE: "create",
   UPDATE: "update",
@@ -192,11 +210,32 @@ export function catalogueWrite<C extends { params: Promise<Params> }>(
   entity: CatalogueEntity,
   action: ChangeAction,
   handler: Handler<C>,
-  options: { superAdminOnly?: boolean } = {},
+  options: {
+    superAdminOnly?: boolean;
+    /**
+     * The handler's own body schema. A university admin's change is checked
+     * against it before it is queued, so the review queue never holds a
+     * request that could not be applied (or an oversized one).
+     */
+    validate?: ZodTypeAny;
+  } = {},
 ): Handler<C> {
   return async (request, context) => {
     // Replaying an approved change: run the original handler as-is.
-    if (currentApproval()) return handler(request, context);
+    if (currentApproval()) {
+      const response = await handler(request, context);
+      if (response.ok) refreshCatalogueCaches();
+      return response;
+    }
+
+    // Defence in depth on top of the SameSite session cookie: a browser marks
+    // a request another site triggered, and no admin edit ever comes from one.
+    if (request.headers.get("sec-fetch-site") === "cross-site") {
+      return NextResponse.json({ error: "Cross-site request refused" }, { status: 403 });
+    }
+    if (Number(request.headers.get("content-length") ?? 0) > MAX_BODY_BYTES) {
+      return NextResponse.json({ error: "Request is too large" }, { status: 413 });
+    }
 
     const guard = await requireAdmin({ minLevel: 1 });
     if (!guard.ok) return guard.response;
@@ -215,8 +254,13 @@ export function catalogueWrite<C extends { params: Promise<Params> }>(
     const params = (await context?.params) ?? {};
     let body: Record<string, unknown> | null = null;
     if (action !== "DELETE") {
+      // Read as text first: Content-Length can be absent (chunked uploads).
+      const raw = await request.clone().text().catch(() => "");
+      if (raw.length > MAX_BODY_BYTES) {
+        return NextResponse.json({ error: "Request is too large" }, { status: 413 });
+      }
       try {
-        const parsed: unknown = await request.clone().json();
+        const parsed: unknown = JSON.parse(raw);
         body = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? (parsed as Record<string, unknown>) : null;
       } catch {
         body = null;
@@ -242,6 +286,7 @@ export function catalogueWrite<C extends { params: Promise<Params> }>(
           summary: describeChange(action, entity, label, fields),
           metadata: fields.length ? { fields } : undefined,
         });
+        refreshCatalogueCaches();
       }
       return response;
     }
@@ -253,6 +298,26 @@ export function catalogueWrite<C extends { params: Promise<Params> }>(
     }
     if (action !== "DELETE" && !body) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
+    }
+    if (options.validate && body) {
+      const parsed = options.validate.safeParse(body);
+      if (!parsed.success) {
+        const issue = parsed.error.issues[0];
+        return NextResponse.json(
+          { error: issue?.message ?? "Invalid input", field: issue?.path?.[0] ?? null },
+          { status: 400 },
+        );
+      }
+      // Queue what the handler will actually apply (trimmed, cleaned), with
+      // any keys the schema does not know dropped.
+      body = parsed.data as Record<string, unknown>;
+    }
+    const waiting = await prisma.changeRequest.count({ where: { authorId: actor.id, status: "PENDING" } });
+    if (waiting >= MAX_PENDING_PER_AUTHOR) {
+      return NextResponse.json(
+        { error: `You have ${waiting} changes waiting for review. Wait for some to be reviewed first.` },
+        { status: 429 },
+      );
     }
 
     let payload = body;

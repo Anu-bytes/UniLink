@@ -60,6 +60,7 @@ export async function SiteFooter() {
       links: [
         { href: "/about", label: t("about") },
         { href: "/contact", label: t("contact") },
+        { href: "/work-with-us", label: t("workWithUs") },
         { href: "/#faq", label: t("faq") },
       ],
     },

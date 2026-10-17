@@ -1,7 +1,8 @@
 "use client";
 
-import { ViewTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Flame, Heart, MapPin } from "lucide-react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { ArrowRight, ChevronLeft, ChevronRight, Flame, Heart, Loader2, MapPin } from "lucide-react";
+import { useLinkStatus } from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
 import { Link } from "@/i18n/navigation";
@@ -502,6 +503,7 @@ function UniversityTile({
    */
   decorative?: boolean;
 }) {
+  const [opening, setOpening] = useState(false);
   const cover = university.coverImageUrl ? (
     <div
       role="img"
@@ -536,16 +538,20 @@ function UniversityTile({
         aria-label={university.name}
         tabIndex={decorative ? -1 : undefined}
         className="absolute inset-0 z-0 rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-      />
+      >
+        <PendingSignal onChange={setOpening} />
+      </Link>
+
+      {/* Feedback the moment the card is clicked, until the profile arrives.
+          Drawn above the card content, which the link itself sits under. */}
+      {opening ? (
+        <div className="pointer-events-none absolute inset-0 z-20 flex items-center justify-center rounded-2xl bg-white/55 backdrop-blur-[1px]">
+          <Loader2 className="size-7 animate-spin text-[#1E6DEB]" aria-hidden />
+        </div>
+      ) : null}
 
       <div className="pointer-events-none relative aspect-[16/10] w-full overflow-hidden">
-        {decorative ? cover : (
-          // Shared with the profile banner: the photo flies into it on
-          // navigation. Loop copies stay unnamed (names must be unique).
-          <ViewTransition name={`uni-cover-${university.slug}`} share="ul-morph" default="none">
-            {cover}
-          </ViewTransition>
-        )}
+        {cover}
 
         {/* Scrim so the type chip stays legible over any photograph. */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3A]/55 via-transparent to-transparent" />
@@ -581,15 +587,7 @@ function UniversityTile({
 
         {/* Only shown when a real logo exists; the initials fallback looked
             like a stray coloured blob over the photo. */}
-        {university.logoUrl ? (
-          decorative ? (
-            logo
-          ) : (
-            <ViewTransition name={`uni-logo-${university.slug}`} share="ul-morph" default="none">
-              {logo}
-            </ViewTransition>
-          )
-        ) : null}
+        {university.logoUrl ? logo : null}
       </div>
 
       <div className="pointer-events-none relative flex flex-1 flex-col p-4">
@@ -649,4 +647,17 @@ function UniversityTile({
       </div>
     </div>
   );
+}
+
+/**
+ * Reports the pending state of the <Link> it sits in. useLinkStatus only
+ * works inside the link, but the card's visible layers are drawn above it,
+ * so the card shows the overlay itself.
+ */
+function PendingSignal({ onChange }: { onChange: (pending: boolean) => void }) {
+  const { pending } = useLinkStatus();
+  useEffect(() => {
+    onChange(pending);
+  }, [pending, onChange]);
+  return null;
 }

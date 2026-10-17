@@ -16,11 +16,18 @@ import { UniversityPicker } from "./university-picker";
 const INPUT =
   "h-10 w-full rounded-lg border border-slate-200 bg-white px-3 text-[14px] outline-none focus:border-[#1E6DEB] focus:ring-2 focus:ring-[#1E6DEB]/20";
 
-export function AddAdminButton({ universities }: { universities: SelectOption[] }) {
+export function AddAdminButton({
+  universities,
+  defaultOpen = false,
+}: {
+  universities: SelectOption[];
+  /** Opens straight away, for the "Add an admin" quick action (?add=1). */
+  defaultOpen?: boolean;
+}) {
   const t = useTranslations("Admin.admins");
   const router = useRouter();
   const { toast } = useToast();
-  const [open, setOpen] = useState(false);
+  const [open, setOpen] = useState(defaultOpen);
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [role, setRole] = useState<(typeof LEVEL_ROLES)[number]>("UNIVERSITY_ADMIN");

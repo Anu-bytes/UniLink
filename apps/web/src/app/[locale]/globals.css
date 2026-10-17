@@ -1081,78 +1081,23 @@ html[lang="ar"] body {
 }
 
 /* ---------------------------------------------------------------------------
-   View transitions (React <ViewTransition>, see components/page-transition.tsx)
+   Page entrance (components/page-transition.tsx)
    --------------------------------------------------------------------------- */
 
-/* Clicks pass through to the live page while a transition plays. */
-::view-transition {
-  pointer-events: none;
+/* The new page rises in once it is on screen. CSS only: nothing waits for it,
+   unlike the view transition it replaced. */
+.ul-page-enter {
+  animation: ul-page-enter 280ms cubic-bezier(0.2, 0.8, 0.2, 1) backwards;
 }
-
-/* Everything outside the animated page (footer, tray, tab bar) switches
-   instantly instead of the browser's default whole-screen crossfade. */
-::view-transition-old(root) {
-  display: none;
-}
-::view-transition-new(root) {
-  animation: none;
-}
-
-/* The header is the fixed reference point: it never moves or fades. */
-::view-transition-group(site-header) {
-  animation: none;
-  z-index: 100;
-}
-::view-transition-old(site-header) {
-  display: none;
-}
-::view-transition-new(site-header) {
-  animation: none;
-}
-
-/* Page to page: the old page lifts away quickly, the new one rises in. */
-::view-transition-old(.ul-page-out) {
-  animation: ul-vt-out 160ms ease-in both;
-}
-::view-transition-new(.ul-page-in) {
-  animation: ul-vt-in 320ms cubic-bezier(0.2, 0.8, 0.2, 1) 70ms both;
-}
-@keyframes ul-vt-out {
-  to {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-}
-@keyframes ul-vt-in {
+@keyframes ul-page-enter {
   from {
     opacity: 0;
-    transform: translateY(16px);
-    filter: blur(4px);
+    transform: translateY(12px);
   }
 }
-
-/* Shared elements (a university's cover photo and logo) fly from the card
-   into the profile banner. The blur hides the scaling mid-flight. */
-::view-transition-group(.ul-morph) {
-  animation-duration: 460ms;
-  animation-timing-function: cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-::view-transition-image-pair(.ul-morph) {
-  animation-name: ul-vt-morph-blur;
-}
-@keyframes ul-vt-morph-blur {
-  40% {
-    filter: blur(3px);
-  }
-}
-
 @media (prefers-reduced-motion: reduce) {
-  ::view-transition-old(*),
-  ::view-transition-new(*),
-  ::view-transition-group(*),
-  ::view-transition-image-pair(*) {
-    animation-duration: 0s !important;
-    animation-delay: 0s !important;
+  .ul-page-enter {
+    animation: none;
   }
 }
 

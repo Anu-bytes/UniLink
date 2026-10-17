@@ -3,7 +3,7 @@ import { getTranslations } from "next-intl/server";
 import { Link } from "@/i18n/navigation";
 import { cn } from "@/lib/utils";
 
-export const UNIVERSITY_TABS = ["faculties", "scores", "gallery", "location"] as const;
+export const UNIVERSITY_TABS = ["faculties", "info", "scores", "gallery", "location"] as const;
 
 export type UniversityTab = (typeof UNIVERSITY_TABS)[number];
 
@@ -18,9 +18,12 @@ export function isUniversityTab(value: string | undefined): value is UniversityT
 export async function UniversityTabs({
   slug,
   active,
+  tabs = UNIVERSITY_TABS,
 }: {
   slug: string;
   active: UniversityTab;
+  /** The tabs this profile shows ("info" only when it has sections). */
+  tabs?: readonly UniversityTab[];
 }) {
   const t = await getTranslations("UniversityDetail");
 
@@ -29,10 +32,15 @@ export async function UniversityTabs({
       aria-label={t("breadcrumbUniversities")}
       className="border-b border-slate-100 px-4 py-3 md:px-6 md:py-5"
     >
-      {/* Phone: one full-width segmented control (four equal segments in a
+      {/* Phone: one full-width segmented control (equal segments in a
           tinted track). md+: the centred pill row. */}
-      <div className="mx-auto grid max-w-md grid-cols-4 gap-1 rounded-full bg-[#F1F4FA] p-1 md:flex md:max-w-none md:flex-wrap md:items-center md:justify-center md:gap-2 md:bg-transparent md:p-0">
-        {UNIVERSITY_TABS.map((tab) => {
+      <div
+        className={cn(
+          "mx-auto grid max-w-md gap-1 rounded-full bg-[#F1F4FA] p-1 md:flex md:max-w-none md:flex-wrap md:items-center md:justify-center md:gap-2 md:bg-transparent md:p-0",
+          tabs.length > 4 ? "grid-cols-5" : "grid-cols-4",
+        )}
+      >
+        {tabs.map((tab) => {
           const isActive = tab === active;
           return (
             <Link

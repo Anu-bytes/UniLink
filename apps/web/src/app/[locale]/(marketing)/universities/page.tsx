@@ -11,7 +11,6 @@ import {
 } from "lucide-react";
 import { after } from "next/server";
 import { getLocale, getTranslations } from "next-intl/server";
-import { ViewTransition } from "react";
 
 import { auth } from "@/auth";
 import { logSearch } from "@/lib/search-log";
@@ -233,10 +232,7 @@ async function UniversityCard({
           of (and swallow clicks meant for) the stretched Link above — only
           the compare toggle re-enables pointer events for itself. */}
       <div className="relative pointer-events-none">
-        {/* Shared with the profile banner: the photo flies from this card
-            into the banner on navigation (see globals.css .ul-morph). */}
-        <ViewTransition name={`uni-cover-${university.slug}`} share="ul-morph" default="none">
-          {university.coverImageUrl ? (
+        {university.coverImageUrl ? (
             <div
               role="img"
               aria-label={university.name}
@@ -248,7 +244,6 @@ async function UniversityCard({
           ) : (
             <div className="h-40 w-full bg-gradient-to-br from-[#E8EFFC] to-[#D5E2F8] sm:h-24" />
           )}
-        </ViewTransition>
 
         {/* Scrim so the badges stay legible over any photograph. */}
         <div className="absolute inset-0 bg-gradient-to-t from-[#0B1B3A]/45 via-transparent to-transparent sm:hidden" />
@@ -290,13 +285,11 @@ async function UniversityCard({
 
       <div className="pointer-events-none relative flex flex-1 flex-col p-3.5 sm:p-2.5">
         <div className="flex items-start gap-2.5 sm:gap-2">
-          <ViewTransition name={`uni-logo-${university.slug}`} share="ul-morph" default="none">
-            <UniversityLogo
-              name={university.name}
-              logoUrl={university.logoUrl}
-              className="size-11 shrink-0 sm:size-8"
-            />
-          </ViewTransition>
+          <UniversityLogo
+            name={university.name}
+            logoUrl={university.logoUrl}
+            className="size-11 shrink-0 sm:size-8"
+          />
           <div className="min-w-0 flex-1">
             <p className="text-[10px] font-bold uppercase tracking-wider text-[#1E6DEB] sm:text-[9px]">
               {tCatalog(`universityTypes.${university.type}`)}
