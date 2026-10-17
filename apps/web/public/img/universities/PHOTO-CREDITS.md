@@ -18,3 +18,5 @@ Each is resized from the original; follow the link for the original file and ful
 | `img/universities/zewail-city-of-science-technology-and-innovation/gallery-1.jpg` | Tasneemalinaguib | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:HIMS.jpg |
 | `img/universities/zewail-city-of-science-technology-and-innovation/gallery-2.jpg` | Tasneemalinaguib | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Zewail_City.jpg |
 | `img/universities/zewail-city-of-science-technology-and-innovation/gallery-3.jpg` | Tasneemalinaguib | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Zewail_City_Gates.jpg |
+| `img/universities/university-of-lancashire-egypt/cover.jpg` | DazzaDB1958 | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Building_B_EUE_campus_7-11-21.jpg |
+| `img/universities/university-of-lancashire-egypt/logo.png` | ET72 | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Shield_of_the_University_of_Central_Lancashire.svg |

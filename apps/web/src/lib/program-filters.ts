@@ -60,13 +60,16 @@ export const GOVERNORATE_DISTRICTS: Record<string, { ar: string; districts: stri
   Dakahlia: { ar: "الدقهلية", districts: ["Gamasa", "New Mansoura"] },
   Assiut: { ar: "أسيوط", districts: ["New Assiut"] },
   Minya: { ar: "المنيا", districts: ["New Minya"] },
-  Beheira: { ar: "البحيرة", districts: ["New Rashid"] },
+  Beheira: { ar: "البحيرة", districts: ["New Rashid", "Delengat"] },
   Matrouh: { ar: "مطروح", districts: ["New Alamein"] },
   Sharqia: { ar: "الشرقية", districts: ["10th of Ramadan City"] },
   Menoufia: { ar: "المنوفية", districts: ["Sadat City"] },
   Damietta: { ar: "دمياط", districts: ["New Damietta"] },
   Suez: { ar: "السويس", districts: ["Ain Sokhna"] },
   "North Sinai": { ar: "شمال سيناء", districts: ["Arish"] },
+  Sohag: { ar: "سوهاج", districts: ["New Sohag"] },
+  "New Valley": { ar: "الوادي الجديد", districts: ["Kharga"] },
+  Gharbia: { ar: "الغربية", districts: ["Tanta"] },
 };
 
 /**
