@@ -581,14 +581,18 @@ export async function getFacultyDetail(
   facultyId: string,
   userId: string | null = null,
 ) {
-  const [row, savedIds] = await Promise.all([
+  const [row, savedIds, profile] = await Promise.all([
     prisma.faculty.findFirst({
       where: { id: facultyId, university: { publishedAt: { not: null } } },
       include: facultyInclude,
     }),
     getSavedFacultyIds(userId),
+    // The viewer's certificate decides which published minimum applies, as on
+    // the faculty cards: without it the stricter (equivalent-certificate)
+    // limit was shown, so a card said 77% and its pop-up said 82%.
+    getMatchProfile(userId),
   ]);
 
   if (!row) return null;
-  return mapFaculty(locale, row, null, savedIds);
+  return mapFaculty(locale, row, profile, savedIds);
 }
