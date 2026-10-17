@@ -67,7 +67,7 @@ export function LoginForm({
     const target =
       callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
         ? callbackUrl
-        : `/${locale}`;
+        : `/${locale}/continue`;
 
     // `target` already carries its locale prefix, so use the plain router
     // rather than the locale-aware one, which would prefix it twice.

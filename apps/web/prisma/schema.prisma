@@ -2,7 +2,11 @@
 // Docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  // Lets a query with relationLoadStrategy: "join" load its relations in one
+  // SQL statement instead of one round trip per relation (the university
+  // profile, see lib/catalog.ts). Other queries are unaffected.
+  previewFeatures = ["relationJoins"]
 }
 
 datasource db {
@@ -59,6 +63,8 @@ model User {
   reviewedChanges     ChangeRequest[]             @relation("ChangeReviewer")
   auditLogs           AdminAuditLog[]
   searchLogs          SearchLog[]
+  partnerRequests     PartnerRequest[]            @relation("PartnerRequestApplicant")
+  reviewedRequests    PartnerRequest[]            @relation("PartnerRequestReviewer")
   createdAt           DateTime                    @default(now())
   updatedAt           DateTime                    @updatedAt
 }
@@ -283,6 +289,7 @@ model University {
   changeRequests  ChangeRequest[]
   viewDays        UniversityViewDaily[]
   searchLogs      SearchLog[]
+  partnerRequests PartnerRequest[]
   createdAt       DateTime                    @default(now())
   updatedAt       DateTime                    @updatedAt
 
@@ -728,4 +735,63 @@ model PartnershipLead {
   createdAt        DateTime @default(now())
 
   @@index([createdAt])
+}
+
+// Requests from the public "Work with us" page: a university booking a demo,
+// or someone applying to represent their university on UniLink (approving
+// one can grant them a university admin account). Everything here was typed
+// by a stranger and is only ever rendered as text.
+model PartnerRequest {
+  id             String               @id @default(cuid())
+  type           PartnerRequestType
+  status         PartnerRequestStatus @default(NEW)
+  fullName       String
+  email          String
+  phone          String
+  jobTitle       String
+  // The university picked from the catalogue, when it is one of ours.
+  universityId   String?
+  university     University?          @relation(fields: [universityId], references: [id], onDelete: SetNull)
+  // As shown on the form: the catalogue name, or what they typed.
+  universityName String
+  city           String?
+  // Demo only: the day and part of day they asked for, and how many attend.
+  preferredDate  DateTime?            @db.Date
+  preferredSlot  String?
+  attendees      Int?
+  // Representative only: a page proving the role (staff page, LinkedIn).
+  proofUrl       String?
+  message        String?
+  locale         String               @default("en")
+  // Set when the applicant was signed in.
+  userId         String?
+  user           User?                @relation("PartnerRequestApplicant", fields: [userId], references: [id], onDelete: SetNull)
+  // Review.
+  scheduledAt    DateTime?
+  internalNote   String?
+  reviewerId     String?
+  reviewer       User?                @relation("PartnerRequestReviewer", fields: [reviewerId], references: [id], onDelete: SetNull)
+  reviewedAt     DateTime?
+  // The admin account an approved representative received.
+  grantedUserId  String?
+  createdAt      DateTime             @default(now())
+  updatedAt      DateTime             @updatedAt
+
+  @@index([status, createdAt])
+  @@index([type, status, createdAt])
+  @@index([email, createdAt])
+}
+
+enum PartnerRequestType {
+  DEMO
+  REPRESENTATIVE
+}
+
+enum PartnerRequestStatus {
+  NEW
+  IN_REVIEW
+  SCHEDULED
+  APPROVED
+  DECLINED
+  CLOSED
 }

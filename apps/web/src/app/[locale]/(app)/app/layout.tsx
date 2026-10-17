@@ -2,11 +2,13 @@ import { redirect } from "next/navigation";
 import { getLocale } from "next-intl/server";
 
 import { auth } from "@/auth";
+import { AdminBar } from "@/components/admin-bar";
 import { AppShell } from "@/components/app/app-shell";
 import { CompareProvider } from "@/components/app/compare-context";
 import { CompareTray } from "@/components/app/compare-tray";
 import { SiteBottomNav } from "@/components/site-bottom-nav";
 import { SavedProvider } from "@/components/app/saved-context";
+import { adminLevelOf } from "@/lib/admin-nav";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -55,7 +57,9 @@ export default async function AppLayout({
       initialProgramCount={savedProgramCount}
     >
       <CompareProvider>
+        <AdminBar />
         <AppShell
+          isAdmin={adminLevelOf(account?.role) !== null}
           user={{
             name: session.user.name ?? null,
             email: session.user.email ?? null,

@@ -1,9 +1,9 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { z } from "zod";
-
 import { requireAdmin } from "@/lib/admin";
 import { catalogueWrite } from "@/lib/admin-changes";
+import { contentBlockCreateSchema as createSchema } from "@/lib/content-block-schemas";
+import { CONTENT_SECTIONS, MAX_SECTIONS_PER_UNIVERSITY } from "@/lib/content-blocks";
 import {
   emptyToNull,
   notFound,
@@ -16,22 +16,6 @@ import {
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-
-const CONTENT_SECTIONS = [
-  "ADMISSION_REQUIREMENTS",
-  "ADMISSION_CRITERIA",
-  "TUITION_NOTES",
-  "ABOUT_EXTRA",
-] as const;
-
-const createSchema = z.object({
-  section: z.enum(CONTENT_SECTIONS),
-  title: z.string().trim().max(200).nullish(),
-  titleAr: z.string().trim().max(200).nullish(),
-  body: z.string().trim().min(1, "Body is required").max(20000),
-  bodyAr: z.string().trim().max(20000).nullish(),
-  sortOrder: z.number().int().min(0).max(9999).optional(),
-});
 
 export async function GET(
   request: Request,
@@ -93,7 +77,7 @@ async function postHandler(
   if (!body.ok) return body.response;
   const input = body.data;
 
-  const [university, positions] = await prisma.$transaction([
+  const [university, positions, existing] = await prisma.$transaction([
     prisma.university.findUnique({
       where: { id: universityId },
       select: { id: true },
@@ -104,8 +88,15 @@ async function postHandler(
       where: { universityId, section: input.section },
       _max: { sortOrder: true },
     }),
+    prisma.universityContentBlock.count({ where: { universityId } }),
   ]);
   if (!university) return notFound("University");
+  if (existing >= MAX_SECTIONS_PER_UNIVERSITY) {
+    return NextResponse.json(
+      { error: `A profile can have at most ${MAX_SECTIONS_PER_UNIVERSITY} sections. Remove one first.` },
+      { status: 409 },
+    );
+  }
 
   try {
     const created = await prisma.universityContentBlock.create({
@@ -128,4 +119,4 @@ async function postHandler(
 
 // Writes go through the review queue: applied directly for a super admin,
 // queued for approval for a university admin. See lib/admin-changes.ts.
-export const POST = catalogueWrite("contentBlock", "CREATE", postHandler);
+export const POST = catalogueWrite("contentBlock", "CREATE", postHandler, { validate: createSchema });

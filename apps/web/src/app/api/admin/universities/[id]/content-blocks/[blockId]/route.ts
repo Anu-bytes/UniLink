@@ -1,31 +1,13 @@
 import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
-import { z } from "zod";
 
 import { requireAdmin } from "@/lib/admin";
 import { catalogueWrite } from "@/lib/admin-changes";
+import { contentBlockUpdateSchema as updateSchema } from "@/lib/content-block-schemas";
 import { emptyToNull, prismaErrorResponse, readJson } from "@/lib/admin-api";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
-
-const CONTENT_SECTIONS = [
-  "ADMISSION_REQUIREMENTS",
-  "ADMISSION_CRITERIA",
-  "TUITION_NOTES",
-  "ABOUT_EXTRA",
-] as const;
-
-const updateSchema = z
-  .object({
-    section: z.enum(CONTENT_SECTIONS),
-    title: z.string().trim().max(200).nullish(),
-    titleAr: z.string().trim().max(200).nullish(),
-    body: z.string().trim().min(1, "Body is required").max(20000),
-    bodyAr: z.string().trim().max(20000).nullish(),
-    sortOrder: z.number().int().min(0).max(9999),
-  })
-  .partial();
 
 async function patchHandler(
   request: Request,
@@ -84,5 +66,5 @@ async function deleteHandler(
 
 // Writes go through the review queue: applied directly for a super admin,
 // queued for approval for a university admin. See lib/admin-changes.ts.
-export const PATCH = catalogueWrite("contentBlock", "UPDATE", patchHandler);
+export const PATCH = catalogueWrite("contentBlock", "UPDATE", patchHandler, { validate: updateSchema });
 export const DELETE = catalogueWrite("contentBlock", "DELETE", deleteHandler);

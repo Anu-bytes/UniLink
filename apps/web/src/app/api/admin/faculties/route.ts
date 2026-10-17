@@ -213,4 +213,4 @@ async function postHandler(request: Request) {
 
 // Writes go through the review queue: applied directly for a super admin,
 // queued for approval for a university admin. See lib/admin-changes.ts.
-export const POST = catalogueWrite("faculty", "CREATE", postHandler);
+export const POST = catalogueWrite("faculty", "CREATE", postHandler, { validate: createSchema });

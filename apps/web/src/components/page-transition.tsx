@@ -1,22 +1,23 @@
 "use client";
 
-import { ViewTransition } from "react";
-
 import { usePathname } from "@/i18n/navigation";
 
 /**
- * Animates page-to-page navigation with the View Transitions API: the old
- * page fades up and away, the new one rises in (see .ul-page-* in
+ * Page-to-page entrance: the new page fades and rises in (.ul-page-enter in
  * globals.css). Keyed on the pathname, so only a real page change animates;
- * query-only updates (profile tabs, directory filters) swap in place without
- * the whole page flickering. Browsers without view transitions just
- * navigate normally.
+ * query-only updates (profile tabs, directory filters) swap in place.
+ *
+ * Plain CSS on purpose. This used React <ViewTransition> (the View
+ * Transitions API, with the card photo flying into the profile banner), but
+ * a view transition freezes the old page and waits for the new one's images
+ * before it starts: a university profile took about 2 seconds to appear
+ * after its data had already arrived, against about 0.2 without it.
  */
 export function PageTransition({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   return (
-    <ViewTransition key={pathname} enter="ul-page-in" exit="ul-page-out" default="none">
+    <div key={pathname} className="ul-page-enter flex flex-1 flex-col">
       {children}
-    </ViewTransition>
+    </div>
   );
 }

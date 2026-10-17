@@ -2,6 +2,7 @@ import { CheckCircle2, Clock3, Eye, Heart, PenLine, Send, Star } from "lucide-re
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Badge, EmptyState, PageHeader } from "@/components/admin";
+import { QuickActions } from "@/components/admin/home/quick-actions";
 import { RelativeDate } from "@/components/admin/overview/relative-date";
 import { UniversityLogo } from "@/components/university-logo";
 import { Link } from "@/i18n/navigation";
@@ -77,6 +78,10 @@ export async function UniversityAdminHome({ actor }: { actor: AdminActor }) {
           </li>
         ))}
       </ol>
+
+      <div className="mt-8">
+        <QuickActions level={1} />
+      </div>
 
       <h2 className="mt-8 text-[15px] font-semibold text-[#0F172A]">{t("yourUniversities")}</h2>
       {universities.length === 0 ? (

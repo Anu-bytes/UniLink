@@ -3,7 +3,7 @@ import { z } from "zod";
 
 import { auth } from "@/auth";
 import { prisma } from "@/lib/prisma";
-import { getRatingSummary, MAX_STARS, MIN_STARS } from "@/lib/university-ratings";
+import { getRatingSummary, MAX_STARS, MIN_STARS, refreshRatingCache } from "@/lib/university-ratings";
 
 // A signed-in student's 1-5 star rating of a university. One per student per
 // university: rating again replaces it, DELETE removes it. Both answer with
@@ -48,8 +48,9 @@ export async function POST(request: Request) {
     update: { stars: body.stars },
     create: { userId, universityId: university.id, stars: body.stars },
   });
+  refreshRatingCache(university.id);
 
-  return NextResponse.json(await getRatingSummary(university.id, userId));
+  return NextResponse.json(await getRatingSummary(university.id, userId, { fresh: true }));
 }
 
 export async function DELETE(request: Request) {
@@ -67,6 +68,7 @@ export async function DELETE(request: Request) {
   await prisma.universityRating.deleteMany({
     where: { userId, universityId: body.universityId },
   });
+  refreshRatingCache(body.universityId);
 
-  return NextResponse.json(await getRatingSummary(body.universityId, userId));
+  return NextResponse.json(await getRatingSummary(body.universityId, userId, { fresh: true }));
 }

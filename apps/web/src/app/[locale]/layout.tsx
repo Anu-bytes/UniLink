@@ -1,13 +1,14 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono, Open_Sans, Cairo } from "next/font/google";
 import { NextIntlClientProvider } from "next-intl";
-import { getMessages, getTranslations, setRequestLocale } from "next-intl/server";
+import { getTranslations, setRequestLocale } from "next-intl/server";
 import { notFound } from "next/navigation";
 import { hasLocale } from "next-intl";
 import { DirectionProvider } from "@base-ui/react/direction-provider";
 import { routing, type Locale } from "@/i18n/routing";
 import { BootSplash } from "@/components/boot-splash";
 import { SpotlightTracker } from "@/components/spotlight-tracker";
+import { siteMessages } from "@/lib/client-messages";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -64,7 +65,8 @@ export default async function LocaleLayout({
 
   setRequestLocale(locale);
 
-  const messages = await getMessages();
+  // Only what client components use; see lib/client-messages.ts.
+  const messages = await siteMessages();
   const t = await getTranslations("App");
   const dir = localeDirection[locale as Locale];
 

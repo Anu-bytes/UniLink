@@ -2,6 +2,8 @@ import {
   ArrowRight,
   Building2,
   LayoutDashboard,
+  Presentation,
+  ShieldCheck,
   TrendingUp,
   UserCheck,
 } from "lucide-react";
@@ -17,6 +19,7 @@ const cardIcons = [TrendingUp, LayoutDashboard, UserCheck, Building2];
 
 export default async function PartnersPage() {
   const t = await getTranslations("Partners.landing");
+  const tWork = await getTranslations("WorkWithUs");
 
   const cards = t.raw("whyChoose.cards") as { title: string; body: string }[];
   const steps = t.raw("howItWorks.steps") as {
@@ -132,6 +135,43 @@ export default async function PartnersPage() {
             >
               {t("whyChoose.cta")}
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* WORK WITH US: the two request forms */}
+      <section className="bg-[#F7F9FE]">
+        <div className="mx-auto max-w-7xl px-4 py-12 md:px-6 md:py-16">
+          <h2 className="text-center text-[clamp(1.5rem,3.5vw,2.25rem)] font-bold text-[#16233F]">
+            {tWork("partnersSection.title")}
+          </h2>
+          <p className="mx-auto mt-3 max-w-2xl text-center text-base leading-7 text-[#4A5568]">
+            {tWork("partnersSection.body")}
+          </p>
+          <div className="mx-auto mt-8 grid max-w-4xl gap-4 sm:grid-cols-2">
+            {(
+              [
+                { key: "DEMO", href: "/work-with-us", icon: Presentation },
+                { key: "REPRESENTATIVE", href: "/work-with-us?type=representative", icon: ShieldCheck },
+              ] as const
+            ).map((option) => (
+              <Link
+                key={option.key}
+                href={option.href}
+                className="group flex items-start gap-4 rounded-2xl border border-slate-200 bg-white p-5 transition-all hover:-translate-y-0.5 hover:border-[#1E6DEB]/40 hover:shadow-md focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+              >
+                <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-[#EEF3FF] text-[#1E6DEB]">
+                  <option.icon className="size-5" aria-hidden />
+                </span>
+                <span className="min-w-0">
+                  <span className="flex items-center gap-1.5 text-lg font-bold text-[#16233F]">
+                    {tWork(`types.${option.key}.title`)}
+                    <ArrowRight className="size-4 text-[#1E6DEB] transition-transform group-hover:translate-x-0.5 rtl:rotate-180" aria-hidden />
+                  </span>
+                  <span className="mt-1 block text-sm leading-6 text-[#5a6072]">{tWork(`types.${option.key}.body`)}</span>
+                </span>
+              </Link>
+            ))}
           </div>
         </div>
       </section>

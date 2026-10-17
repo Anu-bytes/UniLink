@@ -89,7 +89,7 @@ export async function TabTuition({
         </div>
       </div>
 
-      {university.tuitionNotes.map((note) => (
+      {university.sections.filter((note) => note.section === "TUITION_NOTES").map((note) => (
         <section key={note.id} className="rounded-2xl bg-[#F5F8FF] p-5 md:p-6">
           {note.title ? (
             <h3 className="font-bold text-[#1F2A44]">{note.title}</h3>

@@ -22,7 +22,7 @@ export function SocialAuthButtons({
   const target =
     callbackUrl && callbackUrl.startsWith("/") && !callbackUrl.startsWith("//")
       ? callbackUrl
-      : `/${locale}`;
+      : `/${locale}/continue`;
 
   return (
     <div className="grid gap-2">

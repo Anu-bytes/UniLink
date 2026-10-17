@@ -1,4 +1,5 @@
 import { notFound, redirect } from "next/navigation";
+import { NextIntlClientProvider } from "next-intl";
 import { getLocale } from "next-intl/server";
 
 import { auth } from "@/auth";
@@ -6,6 +7,7 @@ import { AdminShell } from "@/components/admin/admin-shell";
 import { ToastProvider } from "@/components/admin/toast";
 import { UnsavedChangesProvider } from "@/components/admin/unsaved-changes";
 import { getAdminActor } from "@/lib/admin";
+import { consoleMessages } from "@/lib/client-messages";
 import { prisma } from "@/lib/prisma";
 
 // Every page under here reads live counts and rows that a colleague may have
@@ -51,21 +53,39 @@ export default async function AdminLayout({
 
   // The number on the Approvals link: everything waiting for a reviewer or,
   // for a university admin, their own changes still waiting.
-  const pendingCount = await prisma.changeRequest.count({
-    where: { status: "PENDING", ...(actor.level === 1 ? { authorId: actor.id } : {}) },
-  });
+  // Super admins also hear about new demo requests and representative
+  // applications: the count on the Requests link and the latest few in the bell.
+  const [pendingCount, newRequests, latestRequests] = await Promise.all([
+    prisma.changeRequest.count({
+      where: { status: "PENDING", ...(actor.level === 1 ? { authorId: actor.id } : {}) },
+    }),
+    actor.level === 3 ? prisma.partnerRequest.count({ where: { status: "NEW" } }) : Promise.resolve(0),
+    actor.level === 3
+      ? prisma.partnerRequest.findMany({
+          where: { status: "NEW" },
+          orderBy: [{ createdAt: "desc" }, { id: "asc" }],
+          take: 6,
+          select: { id: true, type: true, universityName: true, fullName: true, createdAt: true },
+        })
+      : Promise.resolve([]),
+  ]);
 
+  // The console's own text only reaches the browser for admins, here.
   return (
-    <ToastProvider>
-      <UnsavedChangesProvider>
-        <AdminShell
-          user={{ name: actor.name, email: actor.email, image: actor.image, role: actor.role }}
-          level={actor.level}
-          pendingCount={pendingCount}
-        >
-          {children}
-        </AdminShell>
-      </UnsavedChangesProvider>
-    </ToastProvider>
+    <NextIntlClientProvider messages={await consoleMessages()}>
+      <ToastProvider>
+        <UnsavedChangesProvider>
+          <AdminShell
+            user={{ name: actor.name, email: actor.email, image: actor.image, role: actor.role }}
+            level={actor.level}
+            pendingCount={pendingCount}
+            newRequests={newRequests}
+            bellRequests={latestRequests.map((request) => ({ ...request, createdAt: request.createdAt.toISOString() }))}
+          >
+            {children}
+          </AdminShell>
+        </UnsavedChangesProvider>
+      </ToastProvider>
+    </NextIntlClientProvider>
   );
 }
