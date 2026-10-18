@@ -1,3 +1,5 @@
+import type { Prisma } from "@prisma/client";
+
 export type ContentCheck = { key: "nameAr" | "description" | "descriptionAr" | "image" | "logo" | "cover"; present: boolean };
 
 type ContentFields = { nameAr: string | null; description: string | null; descriptionAr: string | null };
@@ -20,3 +22,9 @@ export function catalogueChecks(record: ContentFields & { imageUrl?: string | nu
 export function admissionCoverage(facultyRules: number, universityRules: number) {
   return facultyRules > 0 ? "facultyRules" : universityRules > 0 ? "universityRules" : "noRules";
 }
+
+// The database side of catalogueChecks for universities: a profile missing any
+// of the checked texts or images. Empty strings count as missing, as above.
+export const UNIVERSITY_MISSING_CONTENT = {
+  OR: (["nameAr", "description", "descriptionAr", "logoUrl", "coverImageUrl"] as const).flatMap((key) => [{ [key]: null }, { [key]: "" }]),
+} satisfies Prisma.UniversityWhereInput;

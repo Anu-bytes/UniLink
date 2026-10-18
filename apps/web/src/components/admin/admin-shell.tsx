@@ -464,17 +464,9 @@ export function AdminShell({
                     ) : null}
                   </div>
                   <Link
-                    href="/app"
-                    onClick={() => setMenuOpen(false)}
-                    className="mt-1 flex min-h-11 items-center gap-2 rounded-lg px-3 text-[13.5px] font-semibold text-[#334155] transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
-                  >
-                    <LayoutDashboard className="size-4" aria-hidden />
-                    {t("nav.studentApp")}
-                  </Link>
-                  <Link
                     href="/"
                     onClick={() => setMenuOpen(false)}
-                    className="flex min-h-11 items-center gap-2 rounded-lg px-3 text-[13.5px] font-semibold text-[#334155] transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+                    className="mt-1 flex min-h-11 items-center gap-2 rounded-lg px-3 text-[13.5px] font-semibold text-[#334155] transition-colors hover:bg-slate-50 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
                   >
                     <ExternalLink className="size-4" aria-hidden />
                     {t("nav.backToSite")}

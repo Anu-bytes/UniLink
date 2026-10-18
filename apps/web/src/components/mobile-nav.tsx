@@ -165,6 +165,7 @@ export function MobileNav({
                   </nav>
                 ) : null}
 
+                {adminLevel ? null : (
                 <nav className="mt-2 flex flex-col">
                   {[
                     { href: "/app", label: tAccount("dashboard"), icon: LayoutDashboard },
@@ -197,6 +198,7 @@ export function MobileNav({
                     );
                   })}
                 </nav>
+                )}
 
                 <button
                   type="button"

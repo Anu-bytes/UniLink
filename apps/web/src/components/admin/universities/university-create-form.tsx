@@ -12,7 +12,6 @@ import {
   FormActions,
   FormSection,
   SelectInput,
-  TextArea,
   TextInput,
   useToast,
 } from "@/components/admin";
@@ -211,30 +210,13 @@ export function UniversityCreateForm() {
         title={t("universities.sections.description")}
         description={t("universities.sections.descriptionHint")}
       >
-        <Field
+        <BilingualField
+          multiline
           label={t("universities.fields.description")}
-          htmlFor={`${fieldId}-description`}
-          error={errorFor("description")}
-        >
-          <TextArea
-            id={`${fieldId}-description`}
-            dir="ltr"
-            value={form.description}
-            onChange={(event) => set("description", event.target.value)}
-          />
-        </Field>
-        <Field
-          label={t("universities.fields.descriptionAr")}
-          htmlFor={`${fieldId}-descriptionAr`}
-          error={errorFor("descriptionAr")}
-        >
-          <TextArea
-            id={`${fieldId}-descriptionAr`}
-            dir="rtl"
-            value={form.descriptionAr}
-            onChange={(event) => set("descriptionAr", event.target.value)}
-          />
-        </Field>
+          error={errorFor("description") ?? errorFor("descriptionAr")}
+          en={{ value: form.description, onChange: (event) => set("description", event.target.value) }}
+          ar={{ value: form.descriptionAr, onChange: (event) => set("descriptionAr", event.target.value) }}
+        />
       </FormSection>
 
       <FormActions>

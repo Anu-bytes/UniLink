@@ -1489,7 +1489,7 @@
       "people": "الأشخاص",
       "users": "المستخدمون",
       "applications": "الطلبات",
-      "growth": "النمو",
+      "growth": "محتوى الموقع",
       "leads": "طلبات الشراكة",
       "testimonials": "آراء الطلاب",
       "scholarships": "المنح",
@@ -1502,7 +1502,7 @@
       "collapse": "طي",
       "expand": "توسيع",
       "statistics": "الإحصائيات",
-      "approvals": "الموافقات",
+      "approvals": "تعديلات للمراجعة",
       "bulkEdit": "تعديل الكل مرة واحدة",
       "admins": "المشرفون",
       "myDashboard": "لوحتي",
@@ -1538,6 +1538,7 @@
       "breadcrumb": "مسار التنقل",
       "english": "الإنجليزية",
       "arabic": "العربية",
+      "notTranslated": "لم تُكتب بعد",
       "required": "مطلوب",
       "optional": "اختياري",
       "loading": "جارٍ التحميل",
@@ -1589,36 +1590,11 @@
       }
     },
     "overview": {
-      "attention": {
-        "title": "يحتاج إلى متابعة",
-        "description": "ابدأ بالطلبات التي تحتاج إلى قرار أو مراجعة أخيرة.",
-        "clear": "لا توجد طلبات قيد المراجعة أو مسودات جامعات تحتاج إلى إكمال.",
-        "submitted": "بانتظار المراجعة",
-        "reviewing": "مراجعات جارية",
-        "drafts": "مسودات الجامعات"
-      },
-      "title": "نظرة عامة",
-      "subtitle": "كل ما يجري في يونيلينك الآن.",
       "viewAll": "عرض الكل",
       "viewAllSection": "عرض كل {section}",
-      "stats": {
-        "universities": "الجامعات",
-        "universitiesHint": "{count} منشورة",
-        "programs": "البرامج",
-        "programsHint": "{count} منشور",
-        "students": "الطلاب",
-        "studentsHint": "{count} أكملوا التسجيل",
-        "applications": "الطلبات",
-        "applicationsHint": "{count} في انتظار المراجعة"
-      },
       "pipeline": {
         "title": "مسار الطلبات",
         "total": "{count} إجمالاً"
-      },
-      "recentApplications": {
-        "title": "أحدث الطلبات",
-        "emptyTitle": "لا توجد طلبات بعد",
-        "emptyDescription": "ستظهر هنا فور بدء الطلاب في التقديم."
       },
       "recentUsers": {
         "title": "أحدث التسجيلات",
@@ -1630,20 +1606,70 @@
         "emptyTitle": "لا توجد طلبات بعد",
         "emptyDescription": "تصل هنا الطلبات المرسلة من نموذج الشراكة في صفحة التواصل."
       },
-      "secondary": {
-        "title": "في أنحاء المنصة",
-        "faculties": "الكليات",
-        "scholarships": "المنح",
-        "testimonials": "آراء الطلاب",
-        "savedFaculties": "الكليات المحفوظة",
-        "newUsers": "تسجيلات جديدة",
-        "newLeads": "طلبات جديدة",
-        "last30Days": "آخر 30 يومًا"
-      },
       "relative": {
         "today": "اليوم",
         "yesterday": "أمس",
         "daysAgo": "قبل {days} أيام"
+      }
+    },
+    "dashboard": {
+      "greeting": {
+        "morning": "صباح الخير يا {name}",
+        "afternoon": "مساء الخير يا {name}",
+        "evening": "مساء الخير يا {name}"
+      },
+      "summaryBusy": "هذه المهام بانتظارك اليوم.",
+      "summaryClear": "أنجزت كل شيء. لا توجد مهام بانتظارك.",
+      "find": {
+        "label": "ابحث عن جامعة لتعديلها",
+        "placeholder": "ابحث عن جامعة",
+        "submit": "بحث"
+      },
+      "todo": {
+        "title": "بانتظارك",
+        "changes": {
+          "title": "تعديلات الجامعات للمراجعة",
+          "body": "تعديلات أرسلها مشرفو الجامعات وتنتظر الموافقة.",
+          "action": "مراجعة"
+        },
+        "requests": {
+          "title": "طلبات جديدة من الجامعات",
+          "body": "طلبات العروض التوضيحية وطلبات ممثلي الجامعات.",
+          "action": "فتح"
+        },
+        "applications": {
+          "title": "طلبات الطلاب",
+          "body": "طلبات مقدّمة تنتظر القرار.",
+          "action": "مراجعة"
+        },
+        "drafts": {
+          "title": "جامعات غير منشورة",
+          "body": "صفحات لا يراها الطلاب بعد.",
+          "action": "إكمال"
+        },
+        "incomplete": {
+          "title": "جامعات تنقصها بيانات",
+          "body": "الاسم أو الوصف أو الشعار أو صورة الغلاف ما زال فارغًا.",
+          "action": "إكمال"
+        },
+        "clearTitle": "لا توجد مهام",
+        "clearBody": "ستظهر هنا التعديلات الجديدة للمراجعة وطلبات الجامعات."
+      },
+      "create": {
+        "title": "إضافة جديد"
+      },
+      "glance": {
+        "title": "الدليل في لمحة",
+        "universities": "الجامعات",
+        "faculties": "الكليات",
+        "programs": "البرامج",
+        "students": "الطلاب",
+        "published": "{count} منشور"
+      },
+      "recent": {
+        "title": "جامعات عُدّلت مؤخرًا",
+        "subtitle": "أكمل من حيث توقفت.",
+        "all": "كل الجامعات"
       }
     },
     "universities": {
@@ -1670,7 +1696,11 @@
         "featured": "مميزة",
         "allFeatured": "كل الجامعات",
         "featuredOnly": "المميزة فقط",
-        "notFeatured": "غير المميزة"
+        "notFeatured": "غير المميزة",
+        "content": "المحتوى",
+        "allContent": "كل المحتوى",
+        "contentMissing": "تنقصها بيانات",
+        "contentComplete": "مكتملة"
       },
       "fields": {
         "name": "الاسم",
@@ -1686,9 +1716,9 @@
         "addressLine": "العنوان",
         "latitude": "خط العرض",
         "longitude": "خط الطول",
-        "description": "نبذة مختصرة (إنجليزي)",
+        "description": "نبذة مختصرة",
         "descriptionAr": "نبذة مختصرة (عربي)",
-        "aboutRich": "النبذة الكاملة (إنجليزي)",
+        "aboutRich": "النبذة الكاملة",
         "aboutRichAr": "النبذة الكاملة (عربي)",
         "logo": "الشعار",
         "coverImage": "صورة الغلاف",
@@ -1752,7 +1782,7 @@
         "added": "تمت إضافة الميزة",
         "removed": "تم حذف الميزة",
         "fieldTitle": "العنوان",
-        "fieldBody": "الشرح (إنجليزي)",
+        "fieldBody": "الشرح",
         "fieldBodyAr": "الشرح (عربي)",
         "moveUp": "تحريك لأعلى",
         "moveDown": "تحريك لأسفل",
@@ -1767,7 +1797,7 @@
         "added": "تمت إضافة الفقرة",
         "removed": "تم حذف الفقرة",
         "fieldTitle": "العنوان",
-        "fieldBody": "النص (إنجليزي)",
+        "fieldBody": "النص",
         "fieldBodyAr": "النص (عربي)",
         "moveUp": "تحريك لأعلى",
         "moveDown": "تحريك لأسفل",
@@ -1852,7 +1882,7 @@
         "universityPlaceholder": "اختر الجامعة",
         "name": "الاسم",
         "slug": "معرّف الرابط",
-        "description": "الوصف (بالإنجليزية)",
+        "description": "الوصف",
         "descriptionAr": "الوصف (بالعربية)",
         "image": "الصورة",
         "sortOrder": "ترتيب العرض"
@@ -1955,7 +1985,7 @@
         "studyLevelPlaceholder": "اختر المرحلة",
         "fieldOfStudy": "مجال الدراسة",
         "fieldOfStudyPlaceholder": "اختر المجال",
-        "description": "الوصف (بالإنجليزية)",
+        "description": "الوصف",
         "descriptionAr": "الوصف (بالعربية)",
         "durationMonths": "المدة بالأشهر",
         "durationLabel": "نص المدة",
@@ -2309,7 +2339,7 @@
         "studentName": "اسم الطالب",
         "location": "المكان",
         "avatar": "الصورة الشخصية",
-        "quote": "الرأي (إنجليزي)",
+        "quote": "الرأي",
         "quoteAr": "الرأي (عربي)",
         "sortOrder": "ترتيب العرض",
         "published": "منشور"
@@ -2385,7 +2415,7 @@
         "slug": "معرّف الرابط",
         "university": "الجامعة",
         "noUniversity": "غير مرتبطة بجامعة",
-        "description": "الوصف (بالإنجليزية)",
+        "description": "الوصف",
         "descriptionAr": "الوصف (بالعربية)",
         "fundingAmount": "قيمة المنحة",
         "currency": "العملة",
@@ -3143,26 +3173,26 @@
     "changedFields": "{count} حقل معدل",
     "noChanges": "لا توجد تغييرات بعد",
     "fields": {
-      "name": "الاسم (بالإنجليزية)",
+      "name": "الاسم",
       "nameAr": "الاسم (بالعربية)",
       "acronym": "الاختصار",
-      "city": "المدينة (بالإنجليزية)",
+      "city": "المدينة",
       "cityAr": "المدينة (بالعربية)",
-      "addressLine": "العنوان (بالإنجليزية)",
+      "addressLine": "العنوان",
       "addressLineAr": "العنوان (بالعربية)",
       "establishedYear": "سنة التأسيس",
       "websiteUrl": "الموقع الإلكتروني",
       "googleMapsUrl": "رابط خرائط جوجل",
       "type": "النوع",
-      "description": "الوصف (بالإنجليزية)",
+      "description": "الوصف",
       "descriptionAr": "الوصف (بالعربية)",
-      "programName": "اسم البرنامج (بالإنجليزية)",
+      "programName": "اسم البرنامج",
       "programNameAr": "اسم البرنامج (بالعربية)",
       "fee": "المصروفات",
       "period": "لكل",
       "minGrade": "الحد الأدنى %",
       "published": "منشور",
-      "facultyName": "اسم الكلية (بالإنجليزية)",
+      "facultyName": "اسم الكلية",
       "facultyNameAr": "اسم الكلية (بالعربية)"
     },
     "photos": {
@@ -3200,9 +3230,9 @@
       "full": "وصل هذا الملف إلى الحد الأقصى وهو {max} قسما",
       "empty": "لا توجد أقسام بعد.",
       "kind": "مكان الظهور",
-      "title": "العنوان (بالإنجليزية)",
+      "title": "العنوان",
       "titleAr": "العنوان (بالعربية)",
-      "body": "النص (بالإنجليزية)",
+      "body": "النص",
       "bodyAr": "النص (بالعربية)",
       "formatHint": "اترك سطرا فارغا بين الفقرات. الأسطر المتتالية تظهر كقائمة نقطية.",
       "untitled": "قسم بدون عنوان",
@@ -3233,7 +3263,7 @@
     },
     "links": {
       "dashboard": "لوحة التحكم",
-      "approvals": "الموافقات",
+      "approvals": "تعديلات للمراجعة",
       "myChanges": "تعديلاتي",
       "statistics": "الإحصائيات",
       "universities": "الجامعات",

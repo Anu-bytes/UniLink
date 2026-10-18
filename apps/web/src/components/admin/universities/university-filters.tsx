@@ -66,6 +66,18 @@ export function UniversityFilters() {
         ]}
         placeholder={t("universities.filters.allFeatured")}
       />
+
+      <SelectInput
+        aria-label={t("universities.filters.content")}
+        className="h-10 w-auto min-w-[9.5rem]"
+        value={searchParams.get("content") ?? ""}
+        onChange={(event) => setFilter("content", event.target.value)}
+        options={[
+          { value: "missing", label: t("universities.filters.contentMissing") },
+          { value: "complete", label: t("universities.filters.contentComplete") },
+        ]}
+        placeholder={t("universities.filters.allContent")}
+      />
     </>
   );
 }

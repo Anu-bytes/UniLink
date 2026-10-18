@@ -210,27 +210,49 @@ export function FormActions({ children }: { children: React.ReactNode }) {
   );
 }
 
+type BilingualSide<Multiline extends boolean> = Multiline extends true
+  ? React.ComponentProps<"textarea">
+  : React.ComponentProps<"input">;
+
 /**
- * The `name`/`nameAr` pair repeats across every table in the schema, so it
- * gets one control instead of two loose fields that drift apart.
+ * Every translated column (`name`/`nameAr`, `description`/`descriptionAr`...)
+ * is edited as one control: English and Arabic side by side under a single
+ * label, so both languages are filled in together and never drift apart.
+ * When only one side has text, the empty side says it still needs filling in.
  */
-export function BilingualField({
+export function BilingualField<Multiline extends boolean = false>({
   label,
   hint,
+  error,
   required,
+  multiline,
+  rows,
   en,
   ar,
 }: {
   label: React.ReactNode;
   hint?: React.ReactNode;
+  error?: string | null;
   required?: boolean;
-  en: React.ComponentProps<"input">;
-  ar: React.ComponentProps<"input">;
+  /** Long text: two text areas instead of two single-line inputs. */
+  multiline?: Multiline;
+  rows?: number;
+  en: BilingualSide<Multiline>;
+  ar: BilingualSide<Multiline>;
 }) {
   const t = useTranslations("Admin");
   const generatedId = useId();
   const enId = en.id ?? `${generatedId}-en`;
   const arId = ar.id ?? `${generatedId}-ar`;
+  const hintId = `${generatedId}-hint`;
+  const filled = (side: { value?: unknown }) => String(side.value ?? "").trim().length > 0;
+  const enFilled = filled(en);
+  const arFilled = filled(ar);
+
+  const sides = [
+    { key: "en", id: enId, dir: "ltr" as const, lang: "en", heading: t("common.english"), props: en, missing: arFilled && !enFilled },
+    { key: "ar", id: arId, dir: "rtl" as const, lang: "ar", heading: t("common.arabic"), props: ar, missing: enFilled && !arFilled },
+  ];
 
   return (
     <div className="space-y-1.5">
@@ -244,29 +266,44 @@ export function BilingualField({
       </p>
 
       <div className="grid gap-3 sm:grid-cols-2">
-        <div className="space-y-1">
-          <label
-            htmlFor={enId}
-            id={`${enId}-label`}
-            className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-[#64748B]"
-          >
-            {t("common.english")}
-          </label>
-          <TextInput dir="ltr" {...en} id={enId} aria-labelledby={`${generatedId}-label ${enId}-label`} aria-describedby={hint ? `${generatedId}-hint` : undefined} />
-        </div>
-        <div className="space-y-1">
-          <label
-            htmlFor={arId}
-            id={`${arId}-label`}
-            className="block text-[10px] font-semibold uppercase tracking-[0.14em] text-[#64748B]"
-          >
-            {t("common.arabic")}
-          </label>
-          <TextInput dir="rtl" {...ar} id={arId} aria-labelledby={`${generatedId}-label ${arId}-label`} aria-describedby={hint ? `${generatedId}-hint` : undefined} />
-        </div>
+        {sides.map((side) => {
+          const shared = {
+            dir: side.dir,
+            lang: side.lang,
+            id: side.id,
+            "aria-labelledby": `${generatedId}-label ${side.id}-label`,
+            "aria-describedby": hint || error ? hintId : undefined,
+            ...(error && side.key === "en" ? { "aria-invalid": true as const } : {}),
+          };
+          return (
+            <div key={side.key} className="min-w-0 space-y-1">
+              <label
+                htmlFor={side.id}
+                id={`${side.id}-label`}
+                className="flex items-center justify-between gap-2 text-[10.5px] font-semibold uppercase tracking-[0.12em] text-[#64748B]"
+              >
+                <span>{side.heading}</span>
+                {side.missing ? (
+                  <span className="rounded-full bg-[#FFF6E5] px-2 py-0.5 text-[10px] font-semibold normal-case tracking-normal text-[#B77714]">
+                    {t("common.notTranslated")}
+                  </span>
+                ) : null}
+              </label>
+              {multiline ? (
+                <TextArea rows={rows} {...(side.props as React.ComponentProps<"textarea">)} {...shared} />
+              ) : (
+                <TextInput {...(side.props as React.ComponentProps<"input">)} {...shared} />
+              )}
+            </div>
+          );
+        })}
       </div>
 
-      {hint ? <p id={`${generatedId}-hint`} className="text-[12.5px] text-[#64748B]">{hint}</p> : null}
+      {error ? (
+        <p id={hintId} role="alert" className="text-[12.5px] font-medium text-[#C81F15]">{error}</p>
+      ) : hint ? (
+        <p id={hintId} className="text-[12.5px] text-[#64748B]">{hint}</p>
+      ) : null}
     </div>
   );
 }

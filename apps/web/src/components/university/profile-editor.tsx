@@ -20,6 +20,7 @@ import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useMemo, useRef, useState } from "react";
 
 import { Link, useRouter } from "@/i18n/navigation";
+import { BilingualField } from "@/components/admin/form";
 import { ImageField } from "@/components/admin/image-field";
 import { ToastProvider, notePendingChange, useToast } from "@/components/admin/toast";
 import {
@@ -288,18 +289,15 @@ function SaveButton({ busy, disabled, onClick, label }: { busy: boolean; disable
   );
 }
 
-const DETAIL_FIELDS = [
-  ["name", "ltr"],
-  ["nameAr", "rtl"],
-  ["acronym", "ltr"],
-  ["city", "ltr"],
-  ["cityAr", "rtl"],
-  ["addressLine", "ltr"],
-  ["addressLineAr", "rtl"],
-  ["establishedYear", "ltr"],
-  ["websiteUrl", "ltr"],
-  ["googleMapsUrl", "ltr"],
+// Translated columns are edited in pairs, English and Arabic side by side.
+const BILINGUAL_DETAILS = [
+  ["name", "nameAr", "fields.name", false],
+  ["city", "cityAr", "fields.city", false],
+  ["addressLine", "addressLineAr", "fields.addressLine", false],
+  ["description", "descriptionAr", "fields.description", true],
 ] as const;
+
+const SINGLE_DETAILS = ["acronym", "establishedYear", "websiteUrl", "googleMapsUrl"] as const;
 
 function DetailsSection({ university }: { university: EditableUniversity }) {
   const t = useTranslations("ProfileEditor");
@@ -327,13 +325,24 @@ function DetailsSection({ university }: { university: EditableUniversity }) {
   const changed = (Object.keys(form) as (keyof typeof form)[]).filter((key) => form[key] !== initial[key]);
 
   return (
-    <div className="space-y-4">
-      <div className="grid gap-3 sm:grid-cols-2">
-        {DETAIL_FIELDS.map(([key, dir]) => (
+    <div className="space-y-5">
+      {BILINGUAL_DETAILS.map(([en, ar, label, multiline]) => (
+        <BilingualField
+          key={en}
+          multiline={multiline}
+          rows={5}
+          label={t(label)}
+          required={en === "name" || en === "city"}
+          en={{ value: form[en], maxLength: multiline ? 2000 : 200, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((previous) => ({ ...previous, [en]: event.target.value })) }}
+          ar={{ value: form[ar], maxLength: multiline ? 2000 : 200, onChange: (event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => setForm((previous) => ({ ...previous, [ar]: event.target.value })) }}
+        />
+      ))}
+      <div className="grid gap-3 border-t border-slate-200 pt-4 sm:grid-cols-2">
+        {SINGLE_DETAILS.map((key) => (
           <label key={key} className={cn("block", key === "websiteUrl" || key === "googleMapsUrl" ? "sm:col-span-2" : undefined)}>
             <span className={LABEL}>{t(`fields.${key}`)}</span>
             <input
-              dir={dir}
+              dir="ltr"
               type={key === "establishedYear" ? "number" : "text"}
               value={form[key]}
               onChange={(event) => setForm((previous) => ({ ...previous, [key]: event.target.value }))}
@@ -353,19 +362,6 @@ function DetailsSection({ university }: { university: EditableUniversity }) {
           </select>
         </label>
       </div>
-      {(["description", "descriptionAr"] as const).map((key) => (
-        <label key={key} className="block">
-          <span className={LABEL}>{t(`fields.${key}`)}</span>
-          <textarea
-            dir={key === "descriptionAr" ? "rtl" : "ltr"}
-            rows={5}
-            maxLength={2000}
-            value={form[key]}
-            onChange={(event) => setForm((previous) => ({ ...previous, [key]: event.target.value }))}
-            className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[14px] leading-6 outline-none focus:border-[#1E6DEB] focus:ring-2 focus:ring-[#1E6DEB]/15"
-          />
-        </label>
-      ))}
       <div className="flex items-center justify-between gap-3 border-t border-slate-200 pt-4">
         <p className="text-[12.5px] text-[#64748B]">{changed.length ? t("changedFields", { count: changed.length }) : t("noChanges")}</p>
         <SaveButton
@@ -518,10 +514,11 @@ function ProgramRow({ program, highlighted }: { program: EditableProgram; highli
       id={`edit-program-${program.id}`}
       className={cn("rounded-xl border bg-white p-3", highlighted ? "border-[#1E6DEB] ring-2 ring-[#1E6DEB]/20" : "border-slate-200")}
     >
-      <div className="grid gap-2 sm:grid-cols-2">
-        <input aria-label={t("fields.programName")} dir="ltr" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} className={INPUT} />
-        <input aria-label={t("fields.programNameAr")} dir="rtl" value={form.nameAr} onChange={(e) => setForm({ ...form, nameAr: e.target.value })} className={INPUT} />
-      </div>
+      <BilingualField
+        label={t("fields.programName")}
+        en={{ value: form.name, onChange: (e) => setForm({ ...form, name: e.target.value }) }}
+        ar={{ value: form.nameAr, onChange: (e) => setForm({ ...form, nameAr: e.target.value }) }}
+      />
       <div className="mt-2 grid grid-cols-2 gap-2 sm:grid-cols-4">
         <label className="block">
           <span className={LABEL}>{t("fields.fee")}</span>
@@ -589,10 +586,12 @@ function FacultiesSection({ university, mode }: { university: EditableUniversity
           <Plus className="size-4 text-[#1E6DEB]" aria-hidden />
           {t("faculties.add")}
         </h3>
-        <div className="grid gap-2 sm:grid-cols-2">
-          <input aria-label={t("fields.facultyName")} placeholder={t("fields.facultyName")} dir="ltr" maxLength={200} value={name} onChange={(e) => setName(e.target.value)} className={INPUT} />
-          <input aria-label={t("fields.facultyNameAr")} placeholder={t("fields.facultyNameAr")} dir="rtl" maxLength={200} value={nameAr} onChange={(e) => setNameAr(e.target.value)} className={INPUT} />
-        </div>
+        <BilingualField
+          label={t("fields.facultyName")}
+          required
+          en={{ value: name, maxLength: 200, onChange: (e) => setName(e.target.value) }}
+          ar={{ value: nameAr, maxLength: 200, onChange: (e) => setNameAr(e.target.value) }}
+        />
         <div className="flex items-center justify-between gap-3">
           <p className="text-[12px] text-[#64748B]">{mode === "direct" ? t("faculties.addHintDirect") : t("faculties.addHintReview")}</p>
           <SaveButton
@@ -631,10 +630,11 @@ function FacultyRow({ faculty, universityId }: { faculty: EditableUniversity["fa
   const dirty = name !== faculty.name || nameAr !== (faculty.nameAr ?? "");
   return (
     <div className="rounded-xl border border-slate-200 bg-white p-3">
-      <div className="grid gap-2 sm:grid-cols-2">
-        <input aria-label={t("fields.facultyName")} dir="ltr" value={name} onChange={(e) => setName(e.target.value)} className={INPUT} />
-        <input aria-label={t("fields.facultyNameAr")} dir="rtl" value={nameAr} onChange={(e) => setNameAr(e.target.value)} className={INPUT} />
-      </div>
+      <BilingualField
+        label={t("fields.facultyName")}
+        en={{ value: name, maxLength: 200, onChange: (e) => setName(e.target.value) }}
+        ar={{ value: nameAr, maxLength: 200, onChange: (e) => setNameAr(e.target.value) }}
+      />
       <div className="mt-1.5 flex items-center justify-between gap-3">
         <p className="text-[12px] text-[#94A3B8]">{t("faculties.programs", { count: faculty.programs.length })}</p>
         <Link
@@ -662,9 +662,6 @@ function FacultyRow({ faculty, universityId }: { faculty: EditableUniversity["fa
     </div>
   );
 }
-
-const TEXTAREA =
-  "w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[14px] leading-6 outline-none focus:border-[#1E6DEB] focus:ring-2 focus:ring-[#1E6DEB]/15";
 
 type SectionForm = { section: ContentSectionKind; title: string; titleAr: string; body: string; bodyAr: string };
 
@@ -697,24 +694,19 @@ function SectionFields({ form, onChange }: { form: SectionForm; onChange: (next:
           ))}
         </select>
       </label>
-      <div className="grid gap-2 sm:grid-cols-2">
-        <label className="block">
-          <span className={LABEL}>{t("sectionsTab.title")}</span>
-          <input dir="ltr" maxLength={MAX_SECTION_TITLE} value={form.title} onChange={(e) => onChange({ ...form, title: e.target.value })} className={INPUT} />
-        </label>
-        <label className="block">
-          <span className={LABEL}>{t("sectionsTab.titleAr")}</span>
-          <input dir="rtl" maxLength={MAX_SECTION_TITLE} value={form.titleAr} onChange={(e) => onChange({ ...form, titleAr: e.target.value })} className={INPUT} />
-        </label>
-      </div>
-      <label className="block">
-        <span className={LABEL}>{t("sectionsTab.body")}</span>
-        <textarea dir="ltr" rows={6} maxLength={MAX_SECTION_BODY} value={form.body} onChange={(e) => onChange({ ...form, body: e.target.value })} className={TEXTAREA} />
-      </label>
-      <label className="block">
-        <span className={LABEL}>{t("sectionsTab.bodyAr")}</span>
-        <textarea dir="rtl" rows={6} maxLength={MAX_SECTION_BODY} value={form.bodyAr} onChange={(e) => onChange({ ...form, bodyAr: e.target.value })} className={TEXTAREA} />
-      </label>
+      <BilingualField
+        label={t("sectionsTab.title")}
+        en={{ value: form.title, maxLength: MAX_SECTION_TITLE, onChange: (e) => onChange({ ...form, title: e.target.value }) }}
+        ar={{ value: form.titleAr, maxLength: MAX_SECTION_TITLE, onChange: (e) => onChange({ ...form, titleAr: e.target.value }) }}
+      />
+      <BilingualField
+        multiline
+        rows={6}
+        required
+        label={t("sectionsTab.body")}
+        en={{ value: form.body, maxLength: MAX_SECTION_BODY, onChange: (e) => onChange({ ...form, body: e.target.value }) }}
+        ar={{ value: form.bodyAr, maxLength: MAX_SECTION_BODY, onChange: (e) => onChange({ ...form, bodyAr: e.target.value }) }}
+      />
       <p className="text-[12px] leading-5 text-[#64748B]">{t("sectionsTab.formatHint")}</p>
     </div>
   );

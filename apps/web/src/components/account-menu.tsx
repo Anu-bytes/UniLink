@@ -184,7 +184,9 @@ export function AccountMenu({
             </div>
           ) : null}
 
-          {items.map((item) =>
+          {/* Admin accounts get their console links only: the student pages
+              (applications, saved, search) are not part of their job. */}
+          {(adminLevel ? [] : items).map((item) =>
             item.comingSoon ? (
               <span
                 key={item.href}
