@@ -20,3 +20,5 @@ Each is resized from the original; follow the link for the original file and ful
 | `img/universities/zewail-city-of-science-technology-and-innovation/gallery-3.jpg` | Tasneemalinaguib | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Zewail_City_Gates.jpg |
 | `img/universities/university-of-lancashire-egypt/cover.jpg` | DazzaDB1958 | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Building_B_EUE_campus_7-11-21.jpg |
 | `img/universities/university-of-lancashire-egypt/logo.png` | ET72 | CC BY-SA 4.0 | https://commons.wikimedia.org/wiki/File:Shield_of_the_University_of_Central_Lancashire.svg |
+| `img/universities/arab-academy-for-science-technology-and-maritime-transport/logo.png` | Joseph.w.s | CC BY-SA 3.0 | https://commons.wikimedia.org/wiki/File:AASTMT_Logo.png |
+| `img/universities/ahram-canadian-university/logo.png` | Ahmedadel9119 | CC BY 3.0 | https://commons.wikimedia.org/wiki/File:ACU_Logo.png |
