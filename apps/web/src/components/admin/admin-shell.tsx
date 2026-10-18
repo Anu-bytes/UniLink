@@ -22,6 +22,7 @@ import {
   Quote,
   Users,
 } from "lucide-react";
+import Image from "next/image";
 import { signOut } from "next-auth/react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState, type ComponentType } from "react";
@@ -138,6 +139,7 @@ export function AdminShell({
   bellRequests?: BellRequest[];
 }) {
   const t = useTranslations("Admin");
+  const tAccess = useTranslations("AdminAccess");
   const confirmNavigation = useConfirmNavigation();
   const pathname = usePathname();
 
@@ -223,19 +225,17 @@ export function AdminShell({
             aria-label="UniLink"
             className="flex items-center gap-2.5 rounded-lg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
-            <span
-              aria-hidden
-              className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-b from-[#3B85F5] to-[#1E6DEB] text-xs font-bold text-white"
-            >
-              UL
-            </span>
-            {isCollapsed ? null : (
-              <span className="flex items-center gap-2">
-                <span className="text-[15px] font-semibold tracking-[-0.01em] text-white">
-                  UniLink
-                </span>
-                <span className="rounded-full bg-white/10 px-2 py-0.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/70">
-                  {t("nav.tag")}
+            {isCollapsed ? (
+              // The mark's PNG has generous padding; the box crops it to the U.
+              <span aria-hidden className="flex size-9 shrink-0 items-center justify-center overflow-hidden">
+                <Image src="/logo/unilink-logo-mark-v2.png" alt="" width={500} height={500} className="size-9 max-w-none scale-[1.7]" priority />
+              </span>
+            ) : (
+              <span className="flex items-center gap-2.5">
+                <Image src="/logo/unilink-logo-full-v2.png" alt="UniLink" width={451} height={134} className="h-7 w-auto" priority />
+                <span aria-hidden className="h-6 w-px bg-white/15" />
+                <span className="whitespace-nowrap text-[13px] font-bold leading-tight text-[#FF5A4F]">
+                  {tAccess("cta")}
                 </span>
               </span>
             )}
@@ -243,16 +243,16 @@ export function AdminShell({
         </div>
 
         <nav
-          className="flex-1 overflow-y-auto px-3 py-2"
+          className="admin-rail-scroll min-h-0 flex-1 overflow-y-auto overscroll-contain px-3 py-1"
           aria-label={t("nav.tag")}
         >
           {NAV[level].map((group, index) => (
-            <div key={group.labelKey ?? "root"} className={index > 0 ? "mt-5" : undefined}>
+            <div key={group.labelKey ?? "root"} className={index > 0 ? "mt-3" : undefined}>
               {group.labelKey ? (
                 isCollapsed ? (
                   <div className="mx-2 mb-2 border-t border-white/[0.06]" />
                 ) : (
-                  <p className="px-3 pb-2 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">
+                  <p className="px-3 pb-1.5 text-[10px] font-semibold uppercase tracking-[0.14em] text-white/35">
                     {t(`nav.${group.labelKey}`)}
                   </p>
                 )
@@ -271,7 +271,7 @@ export function AdminShell({
                       aria-current={active ? "page" : undefined}
                       title={isCollapsed ? label : undefined}
                       className={cn(
-                        "flex min-h-10 items-center gap-3 rounded-lg px-3 text-[14px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+                        "flex min-h-9 items-center gap-3 rounded-lg px-3 text-[14px] transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
                         isCollapsed && "justify-center px-0",
                         active
                           ? "bg-[#1E6DEB] font-semibold text-white"

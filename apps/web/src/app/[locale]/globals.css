@@ -1292,3 +1292,27 @@ html[lang="ar"] body {
     animation: none;
   }
 }
+
+/* Admin sidebar: no light system scrollbar on the dark rail. A thin dark
+   thumb appears only while the pointer is over the menu. */
+.admin-rail-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: transparent transparent;
+}
+.admin-rail-scroll:hover,
+.admin-rail-scroll:focus-within {
+  scrollbar-color: rgb(255 255 255 / 0.18) transparent;
+}
+.admin-rail-scroll::-webkit-scrollbar {
+  width: 6px;
+}
+.admin-rail-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+.admin-rail-scroll::-webkit-scrollbar-thumb {
+  border-radius: 9999px;
+  background: transparent;
+}
+.admin-rail-scroll:hover::-webkit-scrollbar-thumb {
+  background: rgb(255 255 255 / 0.18);
+}
