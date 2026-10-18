@@ -13,7 +13,6 @@ import {
   FormSection,
   ImageField,
   NumberInput,
-  TextArea,
   TextInput,
   Toggle,
   useToast,
@@ -224,35 +223,15 @@ export function TestimonialForm({
           title={t("testimonials.sections.quote")}
           description={t("testimonials.sections.quoteHint")}
         >
-          <Field
+          <BilingualField
+            multiline
             label={t("testimonials.fields.quote")}
-            htmlFor={`${fieldId}-quote`}
             required
-            error={errorFor("quote")}
-          >
-            <TextArea
-              id={`${fieldId}-quote`}
-              dir="ltr"
-              value={form.quote}
-              onChange={(event) => set("quote", event.target.value)}
-              aria-invalid={errorFor("quote") ? true : undefined}
-            />
-          </Field>
-
-          <Field
-            label={t("testimonials.fields.quoteAr")}
-            htmlFor={`${fieldId}-quoteAr`}
-            error={errorFor("quoteAr")}
             hint={t("testimonials.hints.quoteAr")}
-          >
-            <TextArea
-              id={`${fieldId}-quoteAr`}
-              dir="rtl"
-              value={form.quoteAr}
-              onChange={(event) => set("quoteAr", event.target.value)}
-              aria-invalid={errorFor("quoteAr") ? true : undefined}
-            />
-          </Field>
+            error={errorFor("quote") ?? errorFor("quoteAr")}
+            en={{ value: form.quote, onChange: (event) => set("quote", event.target.value) }}
+            ar={{ value: form.quoteAr, onChange: (event) => set("quoteAr", event.target.value) }}
+          />
         </FormSection>
 
         <FormSection title={t("testimonials.sections.display")}>

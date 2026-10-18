@@ -14,7 +14,6 @@ import {
   ImageField,
   NumberInput,
   SelectInput,
-  TextArea,
   TextInput,
   useToast,
   type SelectOption,
@@ -273,31 +272,13 @@ export function FacultyForm({
         title={t("faculties.sections.description")}
         description={t("faculties.sections.descriptionHint")}
       >
-        <Field
+        <BilingualField
+          multiline
           label={t("faculties.fields.description")}
-          htmlFor={`${fieldId}-description`}
-          error={errorFor("description")}
-        >
-          <TextArea
-            id={`${fieldId}-description`}
-            dir="ltr"
-            value={form.description}
-            onChange={(event) => set("description", event.target.value)}
-          />
-        </Field>
-
-        <Field
-          label={t("faculties.fields.descriptionAr")}
-          htmlFor={`${fieldId}-descriptionAr`}
-          error={errorFor("descriptionAr")}
-        >
-          <TextArea
-            id={`${fieldId}-descriptionAr`}
-            dir="rtl"
-            value={form.descriptionAr}
-            onChange={(event) => set("descriptionAr", event.target.value)}
-          />
-        </Field>
+          error={errorFor("description") ?? errorFor("descriptionAr")}
+          en={{ value: form.description, onChange: (event) => set("description", event.target.value) }}
+          ar={{ value: form.descriptionAr, onChange: (event) => set("descriptionAr", event.target.value) }}
+        />
       </FormSection>
 
       <FormSection title={t("faculties.sections.media")}>

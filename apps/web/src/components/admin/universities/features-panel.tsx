@@ -4,15 +4,13 @@ import { useUnsavedChanges, useUnsavedDraft } from "@/components/admin/unsaved-c
 
 import { ChevronDown, ChevronUp, Loader2, Plus, Sparkles, Trash2, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useId, useState } from "react";
+import { useState } from "react";
 
 import {
   BilingualField,
   ConfirmDialog,
   EmptyState,
-  Field,
   FormSection,
-  TextArea,
   useToast,
 } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
@@ -204,7 +202,6 @@ function FeatureFields({
   const t = useTranslations("Admin");
   const router = useRouter();
   const { toast } = useToast();
-  const fieldId = useId();
 
   const [title, setTitle] = useState(feature.title);
   const [titleAr, setTitleAr] = useState(feature.titleAr ?? "");
@@ -248,30 +245,12 @@ function FeatureFields({
 
       {/* BilingualField pairs single-line inputs; the body runs to a paragraph,
           so its two languages are laid out by hand. */}
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field
-          label={t("universities.features.fieldBody")}
-          htmlFor={`${fieldId}-body`}
-        >
-          <TextArea
-            id={`${fieldId}-body`}
-            dir="ltr"
-            value={body}
-            onChange={(event) => setBody(event.target.value)}
-          />
-        </Field>
-        <Field
-          label={t("universities.features.fieldBodyAr")}
-          htmlFor={`${fieldId}-bodyAr`}
-        >
-          <TextArea
-            id={`${fieldId}-bodyAr`}
-            dir="rtl"
-            value={bodyAr}
-            onChange={(event) => setBodyAr(event.target.value)}
-          />
-        </Field>
-      </div>
+      <BilingualField
+        multiline
+        label={t("universities.features.fieldBody")}
+        en={{ value: body, onChange: (event) => setBody(event.target.value) }}
+        ar={{ value: bodyAr, onChange: (event) => setBodyAr(event.target.value) }}
+      />
 
       <div className="flex justify-end">
         <button
@@ -300,7 +279,6 @@ function FeatureCreateCard({
   const t = useTranslations("Admin");
   const router = useRouter();
   const { toast } = useToast();
-  const fieldId = useId();
 
   const [title, setTitle] = useState("");
   const [titleAr, setTitleAr] = useState("");
@@ -352,30 +330,12 @@ function FeatureCreateCard({
         ar={{ value: titleAr, onChange: (event) => setTitleAr(event.target.value) }}
       />
 
-      <div className="grid gap-4 sm:grid-cols-2">
-        <Field
-          label={t("universities.features.fieldBody")}
-          htmlFor={`${fieldId}-body`}
-        >
-          <TextArea
-            id={`${fieldId}-body`}
-            dir="ltr"
-            value={body}
-            onChange={(event) => setBody(event.target.value)}
-          />
-        </Field>
-        <Field
-          label={t("universities.features.fieldBodyAr")}
-          htmlFor={`${fieldId}-bodyAr`}
-        >
-          <TextArea
-            id={`${fieldId}-bodyAr`}
-            dir="rtl"
-            value={bodyAr}
-            onChange={(event) => setBodyAr(event.target.value)}
-          />
-        </Field>
-      </div>
+      <BilingualField
+        multiline
+        label={t("universities.features.fieldBody")}
+        en={{ value: body, onChange: (event) => setBody(event.target.value) }}
+        ar={{ value: bodyAr, onChange: (event) => setBodyAr(event.target.value) }}
+      />
 
       <div className="flex justify-end">
         <button

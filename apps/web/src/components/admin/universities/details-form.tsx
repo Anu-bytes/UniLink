@@ -13,7 +13,6 @@ import {
   FormSection,
   NumberInput,
   SelectInput,
-  TextArea,
   TextInput,
   Toggle,
   useToast,
@@ -380,60 +379,22 @@ export function UniversityDetailsForm({
         title={t("universities.sections.description")}
         description={t("universities.sections.descriptionHint")}
       >
-        <div className="grid gap-5 sm:grid-cols-2">
-          <Field
-            label={t("universities.fields.description")}
-            htmlFor={`${fieldId}-description`}
-            error={errorFor("description")}
-          >
-            <TextArea
-              id={`${fieldId}-description`}
-              dir="ltr"
-              value={form.description}
-              onChange={(event) => set("description", event.target.value)}
-            />
-          </Field>
-          <Field
-            label={t("universities.fields.descriptionAr")}
-            htmlFor={`${fieldId}-descriptionAr`}
-            error={errorFor("descriptionAr")}
-          >
-            <TextArea
-              id={`${fieldId}-descriptionAr`}
-              dir="rtl"
-              value={form.descriptionAr}
-              onChange={(event) => set("descriptionAr", event.target.value)}
-            />
-          </Field>
-          <Field
-            label={t("universities.fields.aboutRich")}
-            htmlFor={`${fieldId}-aboutRich`}
-            error={errorFor("aboutRich")}
-            hint={t("universities.hints.aboutRich")}
-          >
-            <TextArea
-              id={`${fieldId}-aboutRich`}
-              dir="ltr"
-              rows={10}
-              value={form.aboutRich}
-              onChange={(event) => set("aboutRich", event.target.value)}
-            />
-          </Field>
-          <Field
-            label={t("universities.fields.aboutRichAr")}
-            htmlFor={`${fieldId}-aboutRichAr`}
-            error={errorFor("aboutRichAr")}
-            hint={t("universities.hints.aboutRich")}
-          >
-            <TextArea
-              id={`${fieldId}-aboutRichAr`}
-              dir="rtl"
-              rows={10}
-              value={form.aboutRichAr}
-              onChange={(event) => set("aboutRichAr", event.target.value)}
-            />
-          </Field>
-        </div>
+        <BilingualField
+          multiline
+          label={t("universities.fields.description")}
+          error={errorFor("description") ?? errorFor("descriptionAr")}
+          en={{ value: form.description, onChange: (event) => set("description", event.target.value) }}
+          ar={{ value: form.descriptionAr, onChange: (event) => set("descriptionAr", event.target.value) }}
+        />
+        <BilingualField
+          multiline
+          rows={10}
+          label={t("universities.fields.aboutRich")}
+          hint={t("universities.hints.aboutRich")}
+          error={errorFor("aboutRich") ?? errorFor("aboutRichAr")}
+          en={{ value: form.aboutRich, onChange: (event) => set("aboutRich", event.target.value) }}
+          ar={{ value: form.aboutRichAr, onChange: (event) => set("aboutRichAr", event.target.value) }}
+        />
       </FormSection>
 
       <FormSection

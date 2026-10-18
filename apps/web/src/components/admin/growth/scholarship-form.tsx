@@ -13,7 +13,6 @@ import {
   FormSection,
   NumberInput,
   SelectInput,
-  TextArea,
   TextInput,
   Toggle,
   useToast,
@@ -271,33 +270,13 @@ export function ScholarshipForm({
         title={t("scholarships.sections.description")}
         description={t("scholarships.sections.descriptionHint")}
       >
-        <Field
+        <BilingualField
+          multiline
           label={t("scholarships.fields.description")}
-          htmlFor={`${fieldId}-description`}
-          error={errorFor("description")}
-        >
-          <TextArea
-            id={`${fieldId}-description`}
-            dir="ltr"
-            value={form.description}
-            onChange={(event) => set("description", event.target.value)}
-            aria-invalid={errorFor("description") ? true : undefined}
-          />
-        </Field>
-
-        <Field
-          label={t("scholarships.fields.descriptionAr")}
-          htmlFor={`${fieldId}-descriptionAr`}
-          error={errorFor("descriptionAr")}
-        >
-          <TextArea
-            id={`${fieldId}-descriptionAr`}
-            dir="rtl"
-            value={form.descriptionAr}
-            onChange={(event) => set("descriptionAr", event.target.value)}
-            aria-invalid={errorFor("descriptionAr") ? true : undefined}
-          />
-        </Field>
+          error={errorFor("description") ?? errorFor("descriptionAr")}
+          en={{ value: form.description, onChange: (event) => set("description", event.target.value) }}
+          ar={{ value: form.descriptionAr, onChange: (event) => set("descriptionAr", event.target.value) }}
+        />
       </FormSection>
 
       <FormSection

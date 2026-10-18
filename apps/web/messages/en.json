@@ -1489,8 +1489,8 @@
       "people": "People",
       "users": "Users",
       "applications": "Applications",
-      "growth": "Growth",
-      "leads": "Leads",
+      "growth": "Website",
+      "leads": "Partnership leads",
       "testimonials": "Testimonials",
       "scholarships": "Scholarships",
       "account": "Account",
@@ -1502,7 +1502,7 @@
       "collapse": "Collapse",
       "expand": "Expand",
       "statistics": "Statistics",
-      "approvals": "Approvals",
+      "approvals": "Edits to review",
       "bulkEdit": "Edit all at once",
       "admins": "Admins",
       "myDashboard": "My dashboard",
@@ -1510,7 +1510,7 @@
       "myCatalogue": "My universities",
       "myUniversities": "Universities",
       "pending": "waiting for review",
-      "requests": "Requests",
+      "requests": "University requests",
       "newRequests": "new requests"
     },
     "common": {
@@ -1538,6 +1538,7 @@
       "breadcrumb": "Breadcrumb",
       "english": "English",
       "arabic": "Arabic",
+      "notTranslated": "Not filled in yet",
       "required": "Required",
       "optional": "Optional",
       "loading": "Loading",
@@ -1589,36 +1590,11 @@
       }
     },
     "overview": {
-      "attention": {
-        "title": "Needs attention",
-        "description": "Start with the work that needs a decision or a final check.",
-        "clear": "No applications waiting and no university drafts to finish.",
-        "submitted": "Awaiting review",
-        "reviewing": "Reviews in progress",
-        "drafts": "University drafts"
-      },
-      "title": "Overview",
-      "subtitle": "Everything happening across UniLink right now.",
       "viewAll": "View all",
       "viewAllSection": "View all {section}",
-      "stats": {
-        "universities": "Universities",
-        "universitiesHint": "{count} published",
-        "programs": "Programs",
-        "programsHint": "{count} published",
-        "students": "Students",
-        "studentsHint": "{count} completed onboarding",
-        "applications": "Applications",
-        "applicationsHint": "{count} awaiting review"
-      },
       "pipeline": {
         "title": "Application pipeline",
         "total": "{count} in total"
-      },
-      "recentApplications": {
-        "title": "Latest applications",
-        "emptyTitle": "No applications yet",
-        "emptyDescription": "They will appear here as soon as students start applying."
       },
       "recentUsers": {
         "title": "Newest sign-ups",
@@ -1630,20 +1606,70 @@
         "emptyTitle": "No leads yet",
         "emptyDescription": "Requests from the partnership form on the contact page land here."
       },
-      "secondary": {
-        "title": "Elsewhere in the platform",
-        "faculties": "Faculties",
-        "scholarships": "Scholarships",
-        "testimonials": "Testimonials",
-        "savedFaculties": "Saved faculties",
-        "newUsers": "New sign-ups",
-        "newLeads": "New leads",
-        "last30Days": "Last 30 days"
-      },
       "relative": {
         "today": "Today",
         "yesterday": "Yesterday",
         "daysAgo": "{days} days ago"
+      }
+    },
+    "dashboard": {
+      "greeting": {
+        "morning": "Good morning, {name}",
+        "afternoon": "Good afternoon, {name}",
+        "evening": "Good evening, {name}"
+      },
+      "summaryBusy": "Here is what is waiting for you today.",
+      "summaryClear": "You are all caught up. Nothing is waiting for you.",
+      "find": {
+        "label": "Find a university to edit",
+        "placeholder": "Find a university",
+        "submit": "Find"
+      },
+      "todo": {
+        "title": "Waiting for you",
+        "changes": {
+          "title": "University edits to review",
+          "body": "Changes sent by university admins, waiting for approval.",
+          "action": "Review"
+        },
+        "requests": {
+          "title": "New requests from universities",
+          "body": "Demo requests and representative applications.",
+          "action": "Open"
+        },
+        "applications": {
+          "title": "Student applications",
+          "body": "Submitted applications waiting for a decision.",
+          "action": "Review"
+        },
+        "drafts": {
+          "title": "Unpublished universities",
+          "body": "Profiles that students cannot see yet.",
+          "action": "Finish"
+        },
+        "incomplete": {
+          "title": "Universities missing information",
+          "body": "A name, description, logo or cover photo is still empty.",
+          "action": "Fill in"
+        },
+        "clearTitle": "All caught up",
+        "clearBody": "New edits to review and requests from universities will show up here."
+      },
+      "create": {
+        "title": "Add something new"
+      },
+      "glance": {
+        "title": "Catalogue at a glance",
+        "universities": "Universities",
+        "faculties": "Faculties",
+        "programs": "Programs",
+        "students": "Students",
+        "published": "{count} published"
+      },
+      "recent": {
+        "title": "Recently updated universities",
+        "subtitle": "Pick up where you left off.",
+        "all": "All universities"
       }
     },
     "universities": {
@@ -1670,7 +1696,11 @@
         "featured": "Featured",
         "allFeatured": "All universities",
         "featuredOnly": "Featured only",
-        "notFeatured": "Not featured"
+        "notFeatured": "Not featured",
+        "content": "Content",
+        "allContent": "All content",
+        "contentMissing": "Missing information",
+        "contentComplete": "Complete"
       },
       "fields": {
         "name": "Name",
@@ -1686,9 +1716,9 @@
         "addressLine": "Address",
         "latitude": "Latitude",
         "longitude": "Longitude",
-        "description": "Short description (English)",
+        "description": "Short description",
         "descriptionAr": "Short description (Arabic)",
-        "aboutRich": "Full description (English)",
+        "aboutRich": "Full description",
         "aboutRichAr": "Full description (Arabic)",
         "logo": "Logo",
         "coverImage": "Cover image",
@@ -1752,7 +1782,7 @@
         "added": "Feature added",
         "removed": "Feature removed",
         "fieldTitle": "Title",
-        "fieldBody": "Body (English)",
+        "fieldBody": "Body",
         "fieldBodyAr": "Body (Arabic)",
         "moveUp": "Move up",
         "moveDown": "Move down",
@@ -1767,7 +1797,7 @@
         "added": "Block added",
         "removed": "Block removed",
         "fieldTitle": "Title",
-        "fieldBody": "Body (English)",
+        "fieldBody": "Body",
         "fieldBodyAr": "Body (Arabic)",
         "moveUp": "Move up",
         "moveDown": "Move down",
@@ -1852,7 +1882,7 @@
         "universityPlaceholder": "Select a university",
         "name": "Name",
         "slug": "Slug",
-        "description": "Description (English)",
+        "description": "Description",
         "descriptionAr": "Description (Arabic)",
         "image": "Image",
         "sortOrder": "Sort order"
@@ -1955,7 +1985,7 @@
         "studyLevelPlaceholder": "Select a level",
         "fieldOfStudy": "Field of study",
         "fieldOfStudyPlaceholder": "Select a field",
-        "description": "Description (English)",
+        "description": "Description",
         "descriptionAr": "Description (Arabic)",
         "durationMonths": "Duration in months",
         "durationLabel": "Duration label",
@@ -2309,7 +2339,7 @@
         "studentName": "Student name",
         "location": "Location",
         "avatar": "Photo",
-        "quote": "Quote (English)",
+        "quote": "Quote",
         "quoteAr": "Quote (Arabic)",
         "sortOrder": "Sort order",
         "published": "Published"
@@ -2385,7 +2415,7 @@
         "slug": "Slug",
         "university": "University",
         "noUniversity": "Not tied to a university",
-        "description": "Description (English)",
+        "description": "Description",
         "descriptionAr": "Description (Arabic)",
         "fundingAmount": "Funding amount",
         "currency": "Currency",
@@ -3143,26 +3173,26 @@
     "changedFields": "{count, plural, one {{count} field changed} other {{count} fields changed}}",
     "noChanges": "No changes yet",
     "fields": {
-      "name": "Name (English)",
+      "name": "Name",
       "nameAr": "Name (Arabic)",
       "acronym": "Acronym",
-      "city": "City (English)",
+      "city": "City",
       "cityAr": "City (Arabic)",
-      "addressLine": "Address (English)",
+      "addressLine": "Address",
       "addressLineAr": "Address (Arabic)",
       "establishedYear": "Founded",
       "websiteUrl": "Website",
       "googleMapsUrl": "Google Maps link",
       "type": "Type",
-      "description": "Description (English)",
+      "description": "Description",
       "descriptionAr": "Description (Arabic)",
-      "programName": "Program name (English)",
+      "programName": "Program name",
       "programNameAr": "Program name (Arabic)",
       "fee": "Fee",
       "period": "Per",
       "minGrade": "Min grade %",
       "published": "Published",
-      "facultyName": "Faculty name (English)",
+      "facultyName": "Faculty name",
       "facultyNameAr": "Faculty name (Arabic)"
     },
     "photos": {
@@ -3200,9 +3230,9 @@
       "full": "This profile has the maximum of {max} sections",
       "empty": "No sections yet.",
       "kind": "Where it appears",
-      "title": "Title (English)",
+      "title": "Title",
       "titleAr": "Title (Arabic)",
-      "body": "Text (English)",
+      "body": "Text",
       "bodyAr": "Text (Arabic)",
       "formatHint": "Leave a blank line between paragraphs. Lines right under each other show as a bulleted list.",
       "untitled": "Untitled section",
@@ -3233,14 +3263,14 @@
     },
     "links": {
       "dashboard": "Dashboard",
-      "approvals": "Approvals",
+      "approvals": "Edits to review",
       "myChanges": "My changes",
       "statistics": "Statistics",
       "universities": "Universities",
       "myUniversities": "My universities",
       "bulkEdit": "Edit all at once",
       "admins": "Admins",
-      "requests": "Requests"
+      "requests": "University requests"
     },
     "quick": {
       "button": "Quick actions",

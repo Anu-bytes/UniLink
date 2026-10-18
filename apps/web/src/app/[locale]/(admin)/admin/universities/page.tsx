@@ -13,7 +13,7 @@ import { Link } from "@/i18n/navigation";
 import { requireEditorPage, universityIdScope } from "@/lib/admin";
 import { prisma } from "@/lib/prisma";
 import { adminPage } from "@/lib/admin-validation";
-import { catalogueChecks } from "@/lib/admin-catalogue";
+import { UNIVERSITY_MISSING_CONTENT, catalogueChecks } from "@/lib/admin-catalogue";
 import type { Prisma, UniversityType } from "@prisma/client";
 
 // Mirrors DEFAULT_PER_PAGE in lib/admin-api, so ?page=3 addresses the same
@@ -54,6 +54,9 @@ export default async function AdminUniversitiesPage({
   const type = typeParam(firstParam(sp.type));
   const published = booleanParam(firstParam(sp.published));
   const featured = booleanParam(firstParam(sp.featured));
+  // "missing": a name, description, logo or cover still to fill in.
+  const content = firstParam(sp.content);
+  const contentFilter = content === "missing" ? UNIVERSITY_MISSING_CONTENT : content === "complete" ? { NOT: UNIVERSITY_MISSING_CONTENT } : null;
   const page = adminPage(firstParam(sp.page));
 
   // The same where the list endpoint builds, so the table and the API never
@@ -68,6 +71,7 @@ export default async function AdminUniversitiesPage({
       ? {}
       : { publishedAt: published ? { not: null } : null }),
     ...(featured === null ? {} : { isFeatured: featured }),
+    ...(contentFilter && q ? { AND: [contentFilter] } : (contentFilter ?? {})),
     ...(q
       ? {
           OR: [
@@ -159,7 +163,7 @@ export default async function AdminUniversitiesPage({
         <UniversityTable
           fullControl={actor.level === 3}
           rows={rows}
-          filtered={Boolean(q) || type !== null || published !== null || featured !== null}
+          filtered={Boolean(q) || type !== null || published !== null || featured !== null || contentFilter !== null}
         />
 
         {total > 0 ? (
