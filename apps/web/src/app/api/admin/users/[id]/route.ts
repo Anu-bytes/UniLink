@@ -2,7 +2,7 @@ import { Prisma } from "@prisma/client";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 
-import { requireAdmin } from "@/lib/admin";
+import { isAdminRole, requireAdmin } from "@/lib/admin";
 import {
   conflict,
   emptyToNull,
@@ -69,11 +69,6 @@ const updateSchema = z
   })
   .partial();
 
-/** How many ADMIN accounts are left, used by the two lockout guards below. */
-async function countAdmins() {
-  return prisma.user.count({ where: { role: "ADMIN" } });
-}
-
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> },
@@ -125,10 +120,13 @@ export async function PATCH(
       return conflict("You cannot change your own role");
     }
 
-    // Same lockout in slower motion: demote the last ADMIN and the
-    // organisation has no way back into the dashboard at all.
-    if (existing.role === "ADMIN" && (await countAdmins()) <= 1) {
-      return conflict("This is the last admin account and cannot be demoted");
+    // Admin access is granted and removed on the Admins page
+    // (/api/admin/admins), which issues a one-time password in place of one
+    // an unverified signup may have set, manages university assignments,
+    // keeps at least one active super admin and writes the audit log.
+    // Changing it here would skip all of that.
+    if (isAdminRole(input.role) || isAdminRole(existing.role)) {
+      return conflict("Admin access is managed on the Admins page");
     }
 
     data.role = input.role;
@@ -176,8 +174,10 @@ export async function DELETE(
     return conflict("You cannot delete your own account");
   }
 
-  if (user.role === "ADMIN" && (await countAdmins()) <= 1) {
-    return conflict("This is the last admin account and cannot be deleted");
+  // Same split as the role change above: the Admins page removes admins, with
+  // its own "last active super admin" check and an audit entry.
+  if (isAdminRole(user.role)) {
+    return conflict("Admin accounts are removed on the Admins page");
   }
 
   // The delete cascades to the student profile, every application and every

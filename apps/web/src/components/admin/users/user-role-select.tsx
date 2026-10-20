@@ -9,7 +9,7 @@ import { Field, SelectInput, useToast } from "@/components/admin";
 import { useRouter } from "@/i18n/navigation";
 
 import { adminWrite } from "./request";
-import { USER_ROLES } from "./tones";
+import { isNonAdminRole, NON_ADMIN_ROLES } from "./tones";
 import type { UserLock } from "./types";
 
 /**
@@ -64,6 +64,10 @@ export function UserRoleSelect({
     router.refresh();
   }
 
+  // Admin roles are managed on the Admins page: no admin role is offered, and
+  // an admin account (locked by lockFor) only shows the role it holds.
+  const options = isNonAdminRole(role) ? NON_ADMIN_ROLES : [role];
+
   return (
     <Field
       label={t("users.account.role")}
@@ -76,7 +80,7 @@ export function UserRoleSelect({
           value={value}
           disabled={pending || lock !== null}
           onChange={(event) => void change(event.target.value as UserRole)}
-          options={USER_ROLES.map((option) => ({
+          options={options.map((option) => ({
             value: option,
             label: tRole(option),
           }))}

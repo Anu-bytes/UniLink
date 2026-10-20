@@ -299,6 +299,15 @@ export function catalogueWrite<C extends { params: Promise<Params> }>(
     if (action !== "DELETE" && !body) {
       return NextResponse.json({ error: "Invalid request body" }, { status: 400 });
     }
+    // The scope above is the university the record sits in now. A body that
+    // names a different one (moving a faculty, say) targets that university
+    // too, so it has to be assigned to this admin as well.
+    const target = body?.universityId;
+    if (target !== undefined && target !== null && target !== scope.universityId) {
+      if (typeof target !== "string" || !actor.universityIds.includes(target)) {
+        return NextResponse.json({ error: "You can only edit the universities assigned to you" }, { status: 403 });
+      }
+    }
     if (options.validate && body) {
       const parsed = options.validate.safeParse(body);
       if (!parsed.success) {

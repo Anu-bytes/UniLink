@@ -91,13 +91,33 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   },
   callbacks: {
     // Google sign-in goes through here too: refuse disabled or banned accounts.
-    signIn: async ({ user }) => {
+    signIn: async ({ user, account, profile }) => {
       if (!user?.email) return true;
-      const account = await prisma.user.findFirst({
+      const existing = await prisma.user.findFirst({
         where: { email: { equals: user.email, mode: "insensitive" } },
-        select: { status: true },
+        select: { id: true, status: true, passwordHash: true, emailVerified: true },
       });
-      return !account || account.status === "ACTIVE";
+      if (existing && existing.status !== "ACTIVE") return false;
+
+      // Google links onto an existing account by email
+      // (allowDangerousEmailAccountLinking), but signup never proves the
+      // address, so a password on that account may belong to someone who
+      // registered this email before its owner did. The first verified Google
+      // sign-in is that proof: the unproven password is dropped and every open
+      // session ends, so only the owner keeps access. They can set a password
+      // again through "Forgot password".
+      if (
+        account?.provider === "google" &&
+        profile?.email_verified === true &&
+        existing?.passwordHash &&
+        !existing.emailVerified
+      ) {
+        await prisma.user.update({
+          where: { id: existing.id },
+          data: { passwordHash: null, emailVerified: new Date(), passwordChangedAt: new Date() },
+        });
+      }
+      return true;
     },
     jwt: async ({ token, user }) => {
       if (user) token.sub = user.id;
