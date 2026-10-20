@@ -52,8 +52,9 @@ export type GrantResult =
 /**
  * Give someone admin access. A new email gets a fresh account with a one-time
  * password (returned once, for the super admin to pass on); an existing
- * student or parent account is promoted and keeps its password. Used by "Add
- * admin" and by approving a university representative application.
+ * student or parent account is promoted and also gets a new one-time
+ * password (see below). Used by "Add admin" and by approving a university
+ * representative application.
  */
 export async function grantAdminAccess({
   name,
@@ -78,7 +79,7 @@ export async function grantAdminAccess({
 
   const existing = await prisma.user.findFirst({
     where: { email: { equals: email, mode: "insensitive" } },
-    select: { id: true, role: true },
+    select: { id: true, role: true, passwordHash: true },
   });
   if (existing && isAdminRole(existing.role)) {
     return { ok: false, status: 409, error: "This person is already an admin", field: "email" };
@@ -87,9 +88,24 @@ export async function grantAdminAccess({
   let userId: string;
   let password: string | null = null;
   if (existing) {
+    // Signup never proves the address belongs to whoever typed it, so an
+    // existing password may have been set by someone else who registered
+    // this email ahead of its owner. Keeping it would hand them the console.
+    // The password is replaced with a one-time one (and every open session
+    // ends), so only the person the super admin passes it to can sign in.
+    // An account with no password (Google only) has no such secret to drop.
+    if (existing.passwordHash) password = temporaryPassword();
     await prisma.user.update({
       where: { id: existing.id },
-      data: { role, status: "ACTIVE", statusReason: null, statusChangedAt: new Date() },
+      data: {
+        role,
+        status: "ACTIVE",
+        statusReason: null,
+        statusChangedAt: new Date(),
+        ...(password
+          ? { passwordHash: await bcrypt.hash(password, 10), passwordChangedAt: new Date() }
+          : {}),
+      },
     });
     userId = existing.id;
   } else {

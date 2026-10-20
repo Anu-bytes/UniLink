@@ -45,6 +45,15 @@ export async function POST(request: Request) {
   const { phone, firstName, lastName, accountRole, profile } = parsed.data;
   const userId = session.user.id;
 
+  const current = await prisma.user.findUnique({
+    where: { id: userId },
+    select: { role: true },
+  });
+  // The wizard only chooses between student and parent. Any other role was
+  // granted by an admin, and this route must not quietly undo it: that would
+  // also skip the "last active super admin" guard on the admins routes.
+  const roleIsWizardChoice = current?.role === "STUDENT" || current?.role === "PARENT";
+
   await prisma.$transaction(async (tx) => {
     await tx.user.update({
       where: { id: userId },
@@ -53,7 +62,7 @@ export async function POST(request: Request) {
         lastName,
         phone,
         name: `${firstName} ${lastName}`,
-        role: accountRole,
+        ...(roleIsWizardChoice ? { role: accountRole } : {}),
       },
     });
 

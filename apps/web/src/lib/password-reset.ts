@@ -197,7 +197,10 @@ export async function consumeResetTicket(
   await prisma.$transaction([
     prisma.user.update({
       where: { id: token.userId },
-      data: { passwordHash, passwordChangedAt: new Date() },
+      // Reaching this point took a code sent to the address, which proves it
+      // belongs to this user. Recording that keeps the new password from
+      // being dropped by the Google-linking check in src/auth.ts.
+      data: { passwordHash, passwordChangedAt: new Date(), emailVerified: new Date() },
     }),
     prisma.passwordResetToken.deleteMany({ where: { userId: token.userId } }),
   ]);

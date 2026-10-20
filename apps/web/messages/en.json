@@ -2126,6 +2126,7 @@
         "withoutProfile": "Onboarding incomplete"
       },
       "locks": {
+        "adminAccount": "This account has admin access. Change or remove it on the Admins page.",
         "self": "This is your own account, so you cannot change its role or delete it.",
         "lastAdmin": "This is the last admin account. Changing its role or deleting it would leave nobody able to open the admin console."
       },
@@ -2635,7 +2636,7 @@
       "copied": "Copied",
       "copy": "Copy",
       "passwordWarning": "Ask them to sign in and change it. You can issue a new one from their page at any time.",
-      "promotedBody": "{email} already had an account, so they keep their password and can sign in to the console now.",
+      "promotedBody": "{email} already had an account that signs in with Google, so they can sign in to the console now.",
       "name": "Full name",
       "email": "Email",
       "level": "Admin level",

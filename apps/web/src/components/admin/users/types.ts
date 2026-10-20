@@ -14,12 +14,14 @@ import type {
  * reason on the server lets the console disable the control and say why
  * instead of letting an admin click into a rejection.
  */
-export type UserLock = "self" | "lastAdmin" | null;
+export type UserLock = "self" | "lastAdmin" | "adminAccount" | null;
 
 /**
- * `self` outranks `lastAdmin`: an admin looking at their own row cannot act on
+ * `self` outranks the rest: an admin looking at their own row cannot act on
  * it whether or not anyone else holds the role, and "this is your account" is
- * the more useful sentence of the two.
+ * the most useful sentence. Any other admin account is managed on the Admins
+ * page (the users API refuses both actions on it), which keeps the
+ * last-super-admin and audit rules in one place.
  */
 export function lockFor(
   user: { id: string; role: UserRole },
@@ -28,6 +30,9 @@ export function lockFor(
 ): UserLock {
   if (user.id === actorId) return "self";
   if (user.role === "ADMIN" && adminCount <= 1) return "lastAdmin";
+  if (user.role === "ADMIN" || user.role === "REVIEWER" || user.role === "UNIVERSITY_ADMIN") {
+    return "adminAccount";
+  }
   return null;
 }
 
