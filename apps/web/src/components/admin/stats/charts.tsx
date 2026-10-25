@@ -82,7 +82,7 @@ function YAxis({ max, width, inner }: { max: number; width: number; inner: numbe
 }
 
 /** Columns from one baseline, 4px rounded tops, value on hover. */
-export function ColumnChart({ points, unit, label }: { points: Point[]; unit: Granularity; label: string }) {
+export function ColumnChart({ points, unit, label, color = SERIES }: { points: Point[]; unit: Granularity; label: string; color?: string }) {
   const locale = useLocale();
   const { ref, width } = useWidth<HTMLDivElement>();
   const [hover, setHover] = useState<number | null>(null);
@@ -108,7 +108,7 @@ export function ColumnChart({ points, unit, label }: { points: Point[]; unit: Gr
               {h > 0 ? (
                 <path
                   d={`M${x},${y + h} V${y + r} Q${x},${y} ${x + r},${y} H${x + barWidth - r} Q${x + barWidth},${y} ${x + barWidth},${y + r} V${y + h} Z`}
-                  fill={SERIES}
+                  fill={color}
                   opacity={hover === null || hover === index ? 1 : 0.45}
                 />
               ) : null}
@@ -218,6 +218,60 @@ export function TableToggle({ points, unit, valueLabel }: { points: Point[]; uni
           </table>
         </div>
       ) : null}
+    </div>
+  );
+}
+
+export type ActivityMetric = "views" | "searches" | "signups" | "saves";
+const METRIC_COLORS: Record<ActivityMetric, string> = { views: "#1E6DEB", searches: "#F5A524", signups: "#16A34A", saves: "#E11D48" };
+
+/** Site activity over the chosen window, one metric at a time. */
+export function ActivityChart({
+  points,
+  unit,
+}: {
+  points: ({ bucket: string } & Record<ActivityMetric, number>)[];
+  unit: "day" | "week" | "month";
+}) {
+  const t = useTranslations("Admin.stats.analytics");
+  const locale = useLocale();
+  const [metric, setMetric] = useState<ActivityMetric>("views");
+  const series = points.map((point) => ({ bucket: point.bucket, value: point[metric] }));
+  const total = series.reduce((sum, point) => sum + point.value, 0);
+  const best = series.reduce((top, point) => (point.value > top.value ? point : top), { bucket: "", value: 0 });
+  return (
+    <div>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-3">
+        <div role="radiogroup" aria-label={t("activity.metric")} className="inline-flex flex-wrap rounded-lg border border-slate-200 bg-white p-0.5">
+          {(["views", "searches", "signups", "saves"] as const).map((option) => (
+            <button
+              key={option}
+              type="button"
+              role="radio"
+              aria-checked={metric === option}
+              onClick={() => setMetric(option)}
+              className={cn(
+                "inline-flex min-h-8 items-center gap-1.5 rounded-md px-3 text-[12.5px] font-semibold transition-colors",
+                metric === option ? "bg-[#0B1220] text-white" : "text-[#64748B] hover:text-[#0F172A]",
+              )}
+            >
+              <span aria-hidden className="size-2 rounded-full" style={{ background: METRIC_COLORS[option] }} />
+              {t(`metrics.${option}`)}
+            </button>
+          ))}
+        </div>
+        <p className="text-[13px] text-[#64748B]">
+          {t("activity.total")}: <span className="font-semibold text-[#0F172A]">{formatNumber(locale, total)}</span>
+          {best.value > 0 ? (
+            <>
+              {" Â· "}
+              {t("activity.best")}: <span className="font-semibold text-[#0F172A]">{bucketLabel(locale, best.bucket, unit, true)}</span>
+            </>
+          ) : null}
+        </p>
+      </div>
+      <ColumnChart points={series} unit={unit} label={t(`metrics.${metric}`)} color={METRIC_COLORS[metric]} />
+      <TableToggle points={series} unit={unit} valueLabel={t(`metrics.${metric}`)} />
     </div>
   );
 }

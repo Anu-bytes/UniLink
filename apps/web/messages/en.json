@@ -35,11 +35,10 @@
     "programs": "Programs",
     "universities": "Universities",
     "specializations": "Specializations",
-    "scholarships": "Scholarships",
-    "articles": "Articles",
     "company": "Company",
     "about": "About us",
     "contact": "Contact",
+    "becomePartner": "Become a partner",
     "faq": "FAQ",
     "careers": "Careers",
     "legal": "Legal",
@@ -2825,6 +2824,211 @@
         "noLogo": "Universities without a logo",
         "noDescription": "Universities missing a description",
         "programsNoFee": "Programs without a fee"
+      },
+      "export": {
+        "button": "Download Excel",
+        "unitLabel": "Group by",
+        "units": {
+          "day": "Daily",
+          "week": "Weekly",
+          "month": "Monthly",
+          "year": "Yearly"
+        },
+        "range": {
+          "day": "last {count} days",
+          "week": "last {count} weeks",
+          "month": "last {count} months",
+          "year": "last {count} years"
+        },
+        "generated": "Generated {date} (Cairo time), covering the {range}.",
+        "sheets": {
+          "summary": "Summary",
+          "activity": "{unit} activity",
+          "universities": "Universities",
+          "searches": "Searches and saves"
+        },
+        "summaryTitle": "UniLink statistics",
+        "activityTitle": "UniLink {unit} activity",
+        "universitiesTitle": "Universities: most viewed, searched, saved and rated",
+        "searchesTitle": "What students search for and save",
+        "weekOf": "Week of",
+        "total": "Total",
+        "measure": "Measure",
+        "value": "Value",
+        "new": "New",
+        "empty": "No data yet",
+        "columns": {
+          "period": "Period",
+          "students": "New students",
+          "parents": "New parents",
+          "signups": "Total sign-ups",
+          "profiles": "Completed profiles",
+          "views": "Profile views",
+          "searches": "Searches",
+          "noResults": "Searches with no results",
+          "savedUniversities": "Universities saved",
+          "savedPrograms": "Programs saved",
+          "ratings": "Ratings",
+          "university": "University",
+          "program": "Program",
+          "term": "Search term",
+          "saves": "Saves",
+          "rating": "Average rating",
+          "ratingCount": "Ratings"
+        },
+        "audience": {
+          "title": "Audience today",
+          "students": "Student accounts",
+          "parents": "Parent accounts",
+          "withProfile": "Completed student profiles",
+          "active7": "Signed in during the last 7 days",
+          "active30": "Signed in during the last 30 days",
+          "savedTotal": "Universities saved (all time)",
+          "ratings": "Ratings given (all time)"
+        },
+        "signups": {
+          "title": "Sign-ups compared with the period before",
+          "window": "Window",
+          "now": "This period",
+          "before": "Period before",
+          "change": "Change",
+          "day": "Today vs yesterday",
+          "week": "Last 7 days",
+          "month": "Last 30 days",
+          "year": "Last 12 months"
+        },
+        "inRange": {
+          "title": "Activity in the {range}"
+        },
+        "gaps": {
+          "title": "Catalogue checklist (published universities)",
+          "item": "Missing",
+          "noLogo": "Universities without a logo",
+          "noCover": "Universities without a cover photo",
+          "noGallery": "Universities without gallery photos",
+          "noDescription": "Universities missing an English or Arabic description",
+          "programsNoFee": "Published programs without a fee"
+        },
+        "rank": {
+          "viewed": "Most viewed profiles, {range}",
+          "searched": "Most searched universities, {range}",
+          "saved": "Most saved universities (all time)",
+          "rated": "Best rated universities (at least 2 ratings)",
+          "terms": "Top search terms, {range}",
+          "zero": "Searches that found nothing, {range}",
+          "programs": "Most saved programs (all time)"
+        },
+        "note": "Sign-ups count student and parent accounts. Days are counted in Cairo time; weeks start on Monday."
+      },
+      "analytics": {
+        "nav": {
+          "label": "Sections",
+          "overview": "Overview",
+          "users": "Users",
+          "universities": "Universities",
+          "searches": "Searches and saves"
+        },
+        "overview": {
+          "title": "How the website is doing",
+          "subtitle": "{period}, compared with the period before."
+        },
+        "kpi": {
+          "views": "University profile views",
+          "searches": "Searches",
+          "successRate": "Searches that found results",
+          "successRateHint": "Share of searches with at least one result",
+          "saves": "Saves (universities, faculties, programs)"
+        },
+        "activity": {
+          "title": "Activity",
+          "subtitle": {
+            "day": "Per day, {period}",
+            "week": "Per week, {period}",
+            "month": "Per month since the start"
+          },
+          "metric": "What to show",
+          "total": "Total",
+          "best": "Busiest"
+        },
+        "metrics": {
+          "views": "Profile views",
+          "searches": "Searches",
+          "signups": "Sign-ups",
+          "saves": "Saves"
+        },
+        "users": {
+          "title": "How users are doing",
+          "subtitle": "How far students and parents get after signing up, and who they are."
+        },
+        "funnel": {
+          "title": "User journey",
+          "subtitle": "Student and parent accounts, all time",
+          "registered": "Signed up",
+          "profile": "Completed their profile",
+          "active": "Signed in during the last 30 days",
+          "searched": "Searched while signed in",
+          "saved": "Saved something",
+          "rated": "Rated a university",
+          "share": "{value} of sign-ups"
+        },
+        "who": {
+          "systems": "Students by certificate",
+          "fields": "Fields they want to study",
+          "budgets": "Budget per year",
+          "language": "Search language",
+          "subtitle": "From the onboarding answers",
+          "languageSubtitle": "All searches, all time"
+        },
+        "languages": {
+          "ar": "Arabic",
+          "en": "English",
+          "unknown": "Not recorded"
+        },
+        "universities": {
+          "title": "Which universities are doing well",
+          "subtitle": "Every published profile, {period}: views, saves, searches and ratings, with what needs attention.",
+          "topTitle": "Most viewed profiles",
+          "topSubtitle": "{period}, against the period before",
+          "topAllTime": "All time"
+        },
+        "table": {
+          "title": "University scorecard",
+          "subtitle": "Click a university to edit its profile.",
+          "filter": "Filter by status",
+          "university": "University",
+          "views": "Views",
+          "saves": "Saves",
+          "saveRate": "Save rate",
+          "saveRateHint": "Saves per 100 profile views",
+          "searches": "Found in search",
+          "rating": "Rating",
+          "status": "Status",
+          "empty": "No universities in this group."
+        },
+        "health": {
+          "all": "All",
+          "well": "Doing well",
+          "attention": "Needs attention",
+          "steady": "Steady"
+        },
+        "reasons": {
+          "noViews": "No profile views",
+          "falling": "Views falling",
+          "noSaves": "Views but no saves",
+          "lowRating": "Low rating",
+          "incomplete": "{missing} profile items missing",
+          "rising": "Views rising",
+          "popular": "Popular and saved",
+          "loved": "Highly rated"
+        },
+        "searches": {
+          "title": "Searches and saves",
+          "subtitle": "What students look for, what they cannot find, and what they keep."
+        },
+        "thisPeriod": "This period",
+        "previousPeriod": "Period before",
+        "new": "New",
+        "noViews": "No profile views in this period yet."
       }
     },
     "home": {

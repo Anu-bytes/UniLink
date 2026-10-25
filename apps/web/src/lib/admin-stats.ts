@@ -19,11 +19,11 @@ function cairoDate(date = new Date()) {
 }
 
 /** The bucket keys a series should have, oldest first, ending with the current one. */
-function bucketKeys(unit: Granularity): string[] {
+export function bucketKeys(unit: Granularity, span = SPAN[unit]): string[] {
   const [y, m, d] = cairoDate().split("-").map(Number);
   const today = Date.UTC(y, m - 1, d);
   const keys: string[] = [];
-  for (let i = SPAN[unit] - 1; i >= 0; i--) {
+  for (let i = span - 1; i >= 0; i--) {
     if (unit === "day") keys.push(new Date(today - i * DAY_MS).toISOString().slice(0, 10));
     else if (unit === "week") {
       const weekday = (new Date(today).getUTCDay() + 6) % 7; // Monday = 0, matching date_trunc
@@ -262,7 +262,7 @@ export async function mostSavedPrograms(take = 8): Promise<RankedProgram[]> {
 export async function audienceTotals() {
   const since7 = sinceDays(7)!;
   const since30 = sinceDays(30)!;
-  const [students, parents, withProfile, active7, active30, applications, savedTotal, ratings] = await prisma.$transaction([
+  const [students, parents, withProfile, active7, active30, applications, savedTotal, ratings] = await Promise.all([ // parallel: a batched transaction runs these one by one
     prisma.user.count({ where: { role: "STUDENT" } }),
     prisma.user.count({ where: { role: "PARENT" } }),
     prisma.studentProfile.count(),
@@ -278,7 +278,7 @@ export async function audienceTotals() {
 /** Catalogue gaps worth fixing: shown as a checklist with links. */
 export async function catalogueGaps() {
   const published = { publishedAt: { not: null } } satisfies Prisma.UniversityWhereInput;
-  const [noCover, noGallery, noDescription, noLogo, programsNoFee, programsTotal] = await prisma.$transaction([
+  const [noCover, noGallery, noDescription, noLogo, programsNoFee, programsTotal] = await Promise.all([
     prisma.university.count({ where: { ...published, coverImageUrl: null } }),
     prisma.university.count({ where: { ...published, images: { none: {} } } }),
     prisma.university.count({ where: { ...published, OR: [{ description: null }, { descriptionAr: null }] } }),
