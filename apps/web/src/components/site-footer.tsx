@@ -57,9 +57,9 @@ export async function SiteFooter() {
       title: t("info"),
       links: [
         { href: "/about", label: t("about") },
-        // /contact is the partnership request form.
-        { href: "/contact", label: t("becomePartner") },
-        { href: "/work-with-us", label: t("workWithUs") },
+        // One way in for universities: a demo or representing their profile,
+        // both landing in the admin requests inbox.
+        { href: "/work-with-us", label: t("becomePartner") },
         { href: "/#faq", label: t("faq") },
       ],
     },
