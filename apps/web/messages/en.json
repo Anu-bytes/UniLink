@@ -2909,15 +2909,37 @@
           "programsNoFee": "Published programs without a fee"
         },
         "rank": {
-          "viewed": "Most viewed profiles, {range}",
-          "searched": "Most searched universities, {range}",
-          "saved": "Most saved universities (all time)",
-          "rated": "Best rated universities (at least 2 ratings)",
-          "terms": "Top search terms, {range}",
           "zero": "Searches that found nothing, {range}",
           "programs": "Most saved programs (all time)"
         },
-        "note": "Sign-ups count student and parent accounts. Days are counted in Cairo time; weeks start on Monday."
+        "note": "Sign-ups count student and parent accounts. Days are counted in Cairo time; weeks start on Monday.",
+        "tiles": {
+          "periodTitle": "At a glance: the {range}",
+          "newVsBefore": "New against the period before",
+          "flat": "Same as the period before",
+          "vsBefore": "{change} against the period before",
+          "parents": "{count} parent accounts",
+          "active7": "Active in the last 7 days",
+          "active30": "{count} in the last 30 days",
+          "ratings": "{count} ratings given"
+        },
+        "journey": {
+          "step": "Step",
+          "users": "Users",
+          "share": "Share of sign-ups"
+        },
+        "scorecard": {
+          "before": "Period before",
+          "saveRate": "Save rate",
+          "foundInSearch": "Found in search",
+          "status": "Status",
+          "why": "Why"
+        },
+        "charts": {
+          "searches": "Searches and searches with no results",
+          "topViewed": "Most viewed profiles",
+          "topTerms": "Top search terms"
+        }
       },
       "analytics": {
         "nav": {
@@ -2927,16 +2949,19 @@
           "universities": "Universities",
           "searches": "Searches and saves"
         },
-        "overview": {
-          "title": "How the website is doing",
-          "subtitle": "{period}, compared with the period before."
-        },
         "kpi": {
           "views": "University profile views",
           "searches": "Searches",
           "successRate": "Searches that found results",
           "successRateHint": "Share of searches with at least one result",
-          "saves": "Saves (universities, faculties, programs)"
+          "saves": "Saves (universities, faculties, programs)",
+          "signups": "New sign-ups",
+          "searchesHint": "{value} found results",
+          "completed": "Completed profiles",
+          "noResults": "Searches with no results",
+          "noResultsHint": "What students could not find",
+          "searchers": "Signed-in searchers",
+          "searchersHint": "Different accounts that searched"
         },
         "activity": {
           "title": "Activity",
@@ -2954,10 +2979,6 @@
           "searches": "Searches",
           "signups": "Sign-ups",
           "saves": "Saves"
-        },
-        "users": {
-          "title": "How users are doing",
-          "subtitle": "How far students and parents get after signing up, and who they are."
         },
         "funnel": {
           "title": "User journey",
@@ -2984,8 +3005,6 @@
           "unknown": "Not recorded"
         },
         "universities": {
-          "title": "Which universities are doing well",
-          "subtitle": "Every published profile, {period}: views, saves, searches and ratings, with what needs attention.",
           "topTitle": "Most viewed profiles",
           "topSubtitle": "{period}, against the period before",
           "topAllTime": "All time"
@@ -2993,7 +3012,6 @@
         "table": {
           "title": "University scorecard",
           "subtitle": "Click a university to edit its profile.",
-          "filter": "Filter by status",
           "university": "University",
           "views": "Views",
           "saves": "Saves",
@@ -3002,7 +3020,9 @@
           "searches": "Found in search",
           "rating": "Rating",
           "status": "Status",
-          "empty": "No universities in this group."
+          "empty": "No universities in this group.",
+          "showing": "{count} of {total} universities.",
+          "showAll": "Show all"
         },
         "health": {
           "all": "All",
@@ -3020,14 +3040,29 @@
           "popular": "Popular and saved",
           "loved": "Highly rated"
         },
-        "searches": {
-          "title": "Searches and saves",
-          "subtitle": "What students look for, what they cannot find, and what they keep."
-        },
         "thisPeriod": "This period",
         "previousPeriod": "Period before",
         "new": "New",
-        "noViews": "No profile views in this period yet."
+        "noViews": "No profile views in this period yet.",
+        "highlights": {
+          "title": "What stands out",
+          "subtitle": "{period}",
+          "topViewed": "Most viewed profile",
+          "riser": "Biggest rise in views",
+          "topTerm": "Top search",
+          "missing": "Most wanted, not found",
+          "none": "Not enough data yet",
+          "allFound": "Every search found something",
+          "views": "{count} views",
+          "rise": "+{count} views on the period before",
+          "searches": "{count} searches",
+          "attention": "{count, plural, =0 {No profiles need attention} one {# profile needs attention} other {# profiles need attention}}"
+        },
+        "healthHint": {
+          "well": "Views rising, popular and saved, or highly rated",
+          "attention": "No views, falling, not saved, low rated or incomplete",
+          "steady": "No strong signal either way"
+        }
       }
     },
     "home": {

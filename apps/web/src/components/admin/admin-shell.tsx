@@ -338,13 +338,17 @@ export function AdminShell({
           aria-expanded={!collapsed}
           aria-label={collapsed ? t("nav.openMenu") : t("nav.closeMenu")}
           title={collapsed ? t("nav.openMenu") : t("nav.closeMenu")}
-          className={cn(
-            "absolute start-full top-[76px] flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white text-[#334155] shadow-md transition-[margin,background-color] hover:bg-[#EEF3FF] hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
-            collapsed ? "ms-2" : "-ms-3.5",
-          )}
+          // A tab on the rail's edge, centred on the screen: it reads as part
+          // of the menu, and stays at the screen edge once the menu is hidden.
+          className="group absolute start-full top-1/2 flex h-16 w-5 -translate-y-1/2 items-center justify-center rounded-e-xl border border-s-0 border-white/10 bg-[#0B1220] text-white/85 shadow-[0_4px_14px_rgba(11,18,32,0.28)] transition-[width,background-color,color] duration-150 hover:w-6 hover:bg-[#1E6DEB] hover:text-white focus-visible:w-6 focus-visible:bg-[#1E6DEB] focus-visible:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
         >
           <ChevronLeft
-            className={cn("size-4 transition-transform rtl:rotate-180", collapsed && "rotate-180 rtl:rotate-0")}
+            className={cn(
+              "size-4 transition-transform duration-200 rtl:rotate-180",
+              collapsed
+                ? "rotate-180 group-hover:translate-x-0.5 rtl:rotate-0 rtl:group-hover:-translate-x-0.5"
+                : "group-hover:-translate-x-0.5 rtl:group-hover:translate-x-0.5",
+            )}
             aria-hidden
           />
         </button>

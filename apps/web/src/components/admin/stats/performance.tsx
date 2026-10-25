@@ -94,32 +94,20 @@ export async function PerformanceTable({
 }) {
   const t = await getTranslations("Admin.stats.analytics");
   const locale = await getLocale();
-  const counts = { all: rows.length, well: 0, attention: 0, steady: 0 } as Record<Health | "all", number>;
-  for (const row of rows) counts[row.health] += 1;
   const shown = filter === "all" ? rows : rows.filter((row) => row.health === filter);
 
+  // The group cards above the table are the filter; this line says which one is on.
   return (
     <div>
-      <div role="tablist" aria-label={t("table.filter")} className="mb-3 flex flex-wrap gap-2">
-        {(["all", "attention", "well", "steady"] as const).map((option) => (
-          <Link
-            key={option}
-            href={hrefFor(option)}
-            scroll={false}
-            role="tab"
-            aria-selected={filter === option}
-            className={cn(
-              "inline-flex min-h-8 items-center gap-1.5 rounded-full border px-3 text-[12.5px] font-semibold transition-colors",
-              filter === option ? "border-[#0B1220] bg-[#0B1220] text-white" : "border-slate-200 bg-white text-[#475569] hover:border-slate-300",
-            )}
-          >
-            {t(`health.${option}`)}
-            <span className={cn("rounded-full px-1.5 text-[11px] tabular-nums", filter === option ? "bg-white/20" : "bg-slate-100")}>
-              {formatNumber(locale, counts[option])}
-            </span>
+      {filter !== "all" ? (
+        <p className="mb-3 flex flex-wrap items-center gap-2 text-[13px] text-[#475569]">
+          <span className={cn("inline-flex rounded-full px-2 py-0.5 text-[12px] font-semibold", HEALTH_STYLE[filter])}>{t(`health.${filter}`)}</span>
+          {t("table.showing", { count: shown.length, total: rows.length })}
+          <Link href={hrefFor("all")} scroll={false} className="font-semibold text-[#1E6DEB] hover:underline">
+            {t("table.showAll")}
           </Link>
-        ))}
-      </div>
+        </p>
+      ) : null}
       <div className="max-h-[560px] overflow-auto rounded-xl border border-slate-100">
         <table className="w-full min-w-[760px] text-[13px]">
           <thead className="sticky top-0 z-10 bg-[#F8FAFC] text-[12px] text-[#64748B]">
