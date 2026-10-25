@@ -19,6 +19,7 @@ import { UniversityCompareToggle } from "@/components/app/university-compare-tog
 import { UniversitySaveToggle } from "@/components/app/university-save-toggle";
 import { UniversityLogo } from "@/components/university-logo";
 import { AcronymBadge } from "@/components/university/acronym-badge";
+import { NearbyLauncher } from "@/components/nearby/nearby-launcher";
 import { AdvancedSearchPromo } from "@/components/university/advanced-search-promo";
 import { UniversityDirectoryFiltersBar } from "@/components/university/directory-filters";
 import {
@@ -26,6 +27,7 @@ import {
   getUniversityCities,
   type UniversityCardData,
 } from "@/lib/catalog";
+import { getNearbyCatalog } from "@/lib/nearby";
 
 export const dynamic = "force-dynamic";
 
@@ -45,7 +47,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
 
   const { q, type, city, page } = await searchParams;
   const requested = Number.parseInt(page ?? "1", 10);
-  const [session, directory, cities] = await Promise.all([
+  const [session, directory, cities, nearby] = await Promise.all([
     auth(),
     getPublishedUniversities(
       locale,
@@ -57,6 +59,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
       Number.isFinite(requested) && requested > 0 ? requested : 1,
     ),
     getUniversityCities(locale),
+    getNearbyCatalog(locale),
   ]);
 
   const universities = directory.results;
@@ -115,6 +118,9 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
               <MapPin className="size-4" aria-hidden />
               {tDirectory("cityCount", { count: cities.length })}
             </span>
+          </div>
+          <div className="mt-4 flex justify-center">
+            <NearbyLauncher fields={nearby.fields} levels={nearby.levels} guest={!session} />
           </div>
         </div>
       </section>

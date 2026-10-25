@@ -3633,5 +3633,141 @@
       "title": "Work with us",
       "body": "Book a demo for your team, or apply to represent your university and keep its profile up to date."
     }
+  },
+  "Nearby": {
+    "meta": {
+      "title": "Find the nearest university",
+      "description": "Find the universities and faculties nearest to you that teach the program you want, on a live map."
+    },
+    "eyebrow": "Find nearest",
+    "km": "{value} km",
+    "m": "{value} m",
+    "privacy": "Your location stays on your device. UniLink never sends or stores it.",
+    "summary": "{count, plural, =0 {We found no universities} one {We found # university} other {We found # universities}}{hasField, select, yes { offering {field}} other {}}{hasRadius, select, yes { within {radius} km of you} other { near you}}",
+    "nearest": "The nearest is {name}, {distance} away.",
+    "launcher": {
+      "button": "Find the nearest university",
+      "title": "Find the nearest university",
+      "subtitle": "Choose what you want to study and we will show the closest campuses on the map.",
+      "close": "Close",
+      "fieldLabel": "What do you want to study?",
+      "fieldSearch": "Search fields, like Pharmacy",
+      "anyField": "Any field",
+      "noField": "No field matches that.",
+      "levelLabel": "Study level",
+      "typeLabel": "University type",
+      "any": "Any",
+      "radiusLabel": "How far can you go?",
+      "anyDistance": "Any",
+      "startLabel": "Start from",
+      "startLocate": "My current location",
+      "startLocateHint": "Your browser asks for permission first.",
+      "startPick": "A point I choose",
+      "startPickHint": "Tap your home, school or area on the map.",
+      "reset": "Clear choices",
+      "submit": "Show on map"
+    },
+    "levels": {
+      "BACHELOR": "Bachelor's",
+      "MASTER": "Master's",
+      "DOCTORATE": "Doctorate",
+      "DIPLOMA": "Diploma",
+      "CERTIFICATE": "Certificate"
+    },
+    "types": {
+      "PRIVATE": "Private",
+      "NATIONAL": "National"
+    },
+    "status": {
+      "locating": "Finding your location…",
+      "denied": "Location access is off. Tap the map to set your starting point instead.",
+      "unavailable": "We couldn't get your location. Tap the map to set your starting point.",
+      "pick": "Tap anywhere on the map to set your starting point."
+    },
+    "noOrigin": {
+      "title": "Set a starting point to see what is near you",
+      "hint": "Use your location or tap the map. Until then the list is in A to Z order."
+    },
+    "panel": {
+      "edit": "Edit",
+      "allUniversities": "All universities",
+      "useLocation": "Use my location",
+      "pickPoint": "Pick on the map",
+      "movePoint": "Move my point",
+      "backToMap": "Map"
+    },
+    "intro": {
+      "explore": "Explore the map",
+      "showNearest": "Show the nearest"
+    },
+    "card": {
+      "nearest": "Nearest to you",
+      "programs": "{count, plural, =0 {No matching programs} one {# matching program} other {# matching programs}}",
+      "away": "away",
+      "details": "Programs and directions",
+      "otherPrograms": "Other programs",
+      "noPrograms": "No published programs yet.",
+      "view": "View university",
+      "directions": "Directions",
+      "straightLine": "Distance in a straight line. The road trip may be longer."
+    },
+    "empty": {
+      "title": "Nothing within this distance",
+      "nearestOutside": "The nearest is {name}, {distance} away.",
+      "widen": "Show any distance"
+    },
+    "unmapped": {
+      "title": "{count, plural, one {# more university is not on the map yet} other {# more universities are not on the map yet}}",
+      "hint": "They match your choices but their campus location is not on file yet."
+    },
+    "map": {
+      "label": "Map of universities near you",
+      "you": "You",
+      "dragHint": "Drag to move your starting point",
+      "zoomIn": "Zoom in",
+      "zoomOut": "Zoom out",
+      "fitAll": "Show all results"
+    },
+    "section": {
+      "new": "New",
+      "titleLead": "Find the universities",
+      "titleHighlight": "closest to you",
+      "subtitle": "Pick what you want to study and see every campus that teaches it on a live map, sorted by how far it is from you.",
+      "point1Title": "Your choices",
+      "point1": "Field, study level, university type and distance.",
+      "point2Title": "Real distances",
+      "point2": "Numbered pins, the nearest first, with directions.",
+      "point3Title": "Private",
+      "point3": "Your location never leaves your device.",
+      "live": "Live map"
+    },
+    "access": {
+      "member": "Unlimited searches with your account",
+      "guest": "Try it once for free.",
+      "guestUsed": "You have used your free search.",
+      "guestActive": "This is your free search.",
+      "signup": "Sign up free"
+    },
+    "art": {
+      "found": "We found 5 universities near you",
+      "nearest": "The nearest is 3.2 km away"
+    },
+    "gate": {
+      "badge": "Free search used",
+      "title": "Keep finding universities near you",
+      "subtitle": "Your free search is done. Create a free UniLink account to search the map as often as you like.",
+      "perks": [
+        "Unlimited searches for any field, level and distance",
+        "Save universities and programs you like",
+        "Compare programs side by side"
+      ],
+      "signup": "Create a free account",
+      "login": "Log in",
+      "free": "It's free and takes less than a minute."
+    },
+    "locked": {
+      "title": "Want to change your search?",
+      "text": "Your free search covers one set of choices. Sign up free to change the field, level or distance as often as you like."
+    }
   }
 }
