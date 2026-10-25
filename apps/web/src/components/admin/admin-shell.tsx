@@ -308,42 +308,47 @@ export function AdminShell({
           ))}
         </nav>
 
-        <div className="p-3">
-          <button
-            type="button"
-            onClick={toggleCollapsed}
-            className={cn(
-              "hidden min-h-9 w-full items-center gap-1.5 rounded-lg px-3 text-[13px] text-white/45 transition-colors hover:bg-white/[0.06] hover:text-white focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] lg:flex",
-              isCollapsed && "justify-center px-0",
-            )}
-          >
-            <ChevronLeft
-              className={cn(
-                "size-4 shrink-0 transition-transform rtl:rotate-180",
-                isCollapsed && "rotate-180 rtl:rotate-0",
-              )}
-              aria-hidden
-            />
-            <span className={isCollapsed ? "sr-only" : undefined}>
-              {isCollapsed ? t("nav.expand") : t("nav.collapse")}
-            </span>
-          </button>
-        </div>
+        <div className="h-3" />
       </div>
     );
   }
 
   return (
     <div className="flex min-h-full flex-1 bg-[#F7F8FA]">
-      {/* Desktop rail */}
-      <aside
+      {/* Desktop rail. The arrow on its edge hides it completely and stays
+          at the screen edge to bring it back; the choice is remembered. */}
+      <div
         className={cn(
-          "sticky top-0 hidden h-dvh shrink-0 border-e border-white/[0.06] bg-[#0B1220] transition-[width] duration-200 lg:block",
-          collapsed ? "w-[68px]" : "w-[248px]",
+          "sticky top-0 z-40 hidden h-dvh shrink-0 transition-[width] duration-200 lg:block",
+          collapsed ? "w-0" : "w-[248px]",
         )}
       >
-        {renderSidebar(collapsed)}
-      </aside>
+        <aside
+          inert={collapsed}
+          className={cn(
+            "h-full overflow-hidden bg-[#0B1220] transition-opacity duration-200",
+            collapsed ? "opacity-0" : "border-e border-white/[0.06] opacity-100",
+          )}
+        >
+          <div className="h-full w-[248px]">{renderSidebar(false)}</div>
+        </aside>
+        <button
+          type="button"
+          onClick={toggleCollapsed}
+          aria-expanded={!collapsed}
+          aria-label={collapsed ? t("nav.openMenu") : t("nav.closeMenu")}
+          title={collapsed ? t("nav.openMenu") : t("nav.closeMenu")}
+          className={cn(
+            "absolute start-full top-[76px] flex size-7 items-center justify-center rounded-full border border-slate-200 bg-white text-[#334155] shadow-md transition-[margin,background-color] hover:bg-[#EEF3FF] hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+            collapsed ? "ms-2" : "-ms-3.5",
+          )}
+        >
+          <ChevronLeft
+            className={cn("size-4 transition-transform rtl:rotate-180", collapsed && "rotate-180 rtl:rotate-0")}
+            aria-hidden
+          />
+        </button>
+      </div>
 
       {/* Mobile drawer */}
       {drawerOpen ? (

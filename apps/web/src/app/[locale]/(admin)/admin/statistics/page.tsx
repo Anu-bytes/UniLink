@@ -1,9 +1,11 @@
 import {
   CalendarDays,
   CalendarRange,
+  Eye,
   Heart,
   ImageOff,
   Search,
+  SearchCheck,
   Star,
   UserCheck,
   UserPlus,
@@ -12,10 +14,21 @@ import {
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { PageHeader, StatCard, StatCardGrid } from "@/components/admin";
-import { LineChart, RegistrationsChart, TableToggle } from "@/components/admin/stats/charts";
+import { ActivityChart, LineChart, RegistrationsChart, TableToggle } from "@/components/admin/stats/charts";
+import { ComparisonBars, PerformanceTable } from "@/components/admin/stats/performance";
+import { ExportStatsButton } from "@/components/admin/stats/export-button";
 import { RankedList, StatPanel, type RankedRow } from "@/components/admin/stats/ranked-list";
 import { Link } from "@/i18n/navigation";
 import { requireAdminPage } from "@/lib/admin";
+import {
+  activitySeries,
+  siteKpis,
+  studentBreakdowns,
+  universityPerformance,
+  userFunnel,
+  type Health,
+  type Kpi,
+} from "@/lib/admin-analytics";
 import {
   audienceTotals,
   catalogueGaps,
@@ -33,6 +46,7 @@ import {
   zeroResultTerms,
   type RankedUniversity,
 } from "@/lib/admin-stats";
+import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { formatNumber } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
@@ -52,6 +66,18 @@ export default async function StatisticsPage({
   const raw = Array.isArray(sp.period) ? sp.period[0] : sp.period;
   const period: Period = (PERIODS as readonly string[]).includes(raw ?? "") ? (raw as Period) : "30";
   const days = period === "all" ? null : Number(period);
+  const rawHealth = Array.isArray(sp.health) ? sp.health[0] : sp.health;
+  const health: Health | "all" = rawHealth === "well" || rawHealth === "attention" || rawHealth === "steady" ? rawHealth : "all";
+  const ta = await getTranslations("Admin.stats.analytics");
+  const tOnboarding = await getTranslations("Onboarding.options");
+  const tEnums = await getTranslations("Admin.enums");
+  const [kpis, activity, funnel, breakdowns, performance] = await Promise.all([
+    siteKpis(days),
+    activitySeries(days),
+    userFunnel(),
+    studentBreakdowns(),
+    universityPerformance(days),
+  ]);
 
   const [
     totals,
@@ -111,6 +137,23 @@ export default async function StatisticsPage({
 
   const totalViews = views.reduce((sum, point) => sum + point.value, 0);
   const periodLabel = t(`periods.${period}`);
+  const kpiHint = (kpi: Kpi) => (kpi.previous === null ? periodLabel : `${delta(kpi.value, kpi.previous)} ${t("vsPrevious")}`);
+  const kpiTone = (kpi: Kpi) => (kpi.previous === null ? "default" : deltaTone(kpi.value, kpi.previous));
+  const percent = (value: number) => `${formatNumber(locale, Math.round(value * 100))}%`;
+  const ofRegistered = (value: number) => (funnel.registered ? ta("funnel.share", { value: percent(value / funnel.registered) }) : undefined);
+  const healthHref = (option: Health | "all") => {
+    const query = new URLSearchParams();
+    if (period !== "30") query.set("period", period);
+    if (option !== "all") query.set("health", option);
+    const qs = query.toString();
+    return `/admin/statistics${qs ? `?${qs}` : ""}#universities`;
+  };
+  const sectionTitle = (id: string, title: string, subtitle: string) => (
+    <div id={id} className="mt-10 scroll-mt-20 border-b border-slate-200 pb-2">
+      <h2 className="text-[18px] font-semibold text-[#0F172A]">{title}</h2>
+      <p className="text-[13px] text-[#64748B]">{subtitle}</p>
+    </div>
+  );
 
   return (
     <div className="mx-auto w-full max-w-[1280px] px-4 py-6 md:px-6 md:py-8">
@@ -118,6 +161,8 @@ export default async function StatisticsPage({
         title={t("title")}
         description={t("subtitle")}
         actions={
+          <div className="flex flex-wrap items-center gap-3">
+          <ExportStatsButton />
           <div role="radiogroup" aria-label={t("periodLabel")} className="inline-flex rounded-lg border border-slate-200 bg-white p-0.5">
             {PERIODS.map((option) => (
               <Link
@@ -135,9 +180,39 @@ export default async function StatisticsPage({
               </Link>
             ))}
           </div>
+          </div>
         }
       />
 
+      {/* Jump between the four parts of the page. */}
+      <nav aria-label={ta("nav.label")} className="sticky top-16 z-30 -mx-4 mt-5 flex gap-1 overflow-x-auto border-b border-slate-200 bg-[#F7F8FA]/95 px-4 py-2 backdrop-blur md:-mx-6 md:px-6">
+        {(["overview", "users", "universities", "searches"] as const).map((key) => (
+          <a key={key} href={`#${key}`} className="inline-flex min-h-8 shrink-0 items-center rounded-full px-3 text-[13px] font-semibold text-[#475569] hover:bg-white hover:text-[#0F172A]">
+            {ta(`nav.${key}`)}
+          </a>
+        ))}
+      </nav>
+
+      {sectionTitle("overview", ta("overview.title"), ta("overview.subtitle", { period: periodLabel }))}
+      <div className="mt-5">
+        <StatCardGrid>
+          <StatCard label={ta("kpi.views")} value={formatNumber(locale, kpis.views.value)} icon={Eye} tone={kpiTone(kpis.views)} hint={kpiHint(kpis.views)} />
+          <StatCard label={ta("kpi.searches")} value={formatNumber(locale, kpis.searches.value)} icon={Search} tone={kpiTone(kpis.searches)} hint={kpiHint(kpis.searches)} />
+          <StatCard
+            label={ta("kpi.successRate")}
+            value={kpis.searches.value ? percent(kpis.successRate.value) : "-"}
+            icon={SearchCheck}
+            tone={kpis.successRate.value >= 0.9 || !kpis.searches.value ? "positive" : kpis.successRate.value < 0.7 ? "danger" : "warning"}
+            hint={ta("kpi.successRateHint")}
+          />
+          <StatCard label={ta("kpi.saves")} value={formatNumber(locale, kpis.saves.value)} icon={Heart} tone={kpiTone(kpis.saves)} hint={kpiHint(kpis.saves)} />
+        </StatCardGrid>
+      </div>
+      <StatPanel className="mt-5" title={ta("activity.title")} subtitle={ta(`activity.subtitle.${activity.unit}`, { period: periodLabel })}>
+        <ActivityChart points={activity.points} unit={activity.unit} />
+      </StatPanel>
+
+      {sectionTitle("users", ta("users.title"), ta("users.subtitle"))}
       {/* Sign-ups: the headline the page leads with. */}
       <div className="mt-6">
         <StatCardGrid>
@@ -159,6 +234,64 @@ export default async function StatisticsPage({
           <StatCard label={t("audience.searches")} value={formatNumber(locale, searches)} icon={Search} hint={periodLabel} />
           <StatCard label={t("audience.saves")} value={formatNumber(locale, audience.savedTotal)} icon={Heart} hint={t("audience.ratings", { count: audience.ratings })} />
         </StatCardGrid>
+      </div>
+
+      <div className="mt-5 grid gap-5 lg:grid-cols-2">
+        <StatPanel title={ta("funnel.title")} subtitle={ta("funnel.subtitle")}>
+          <RankedList
+            empty={t("noData")}
+            rows={(["registered", "profile", "active", "searched", "saved", "rated"] as const).map((key) => ({
+              key,
+              label: ta(`funnel.${key}`),
+              value: funnel[key],
+              note: key === "registered" ? undefined : ofRegistered(funnel[key]),
+              noteTone: "muted" as const,
+            }))}
+          />
+        </StatPanel>
+        <StatPanel title={ta("who.systems")} subtitle={ta("who.subtitle")}>
+          <RankedList
+            empty={t("noData")}
+            rows={breakdowns.systems.map((row) => ({ key: row.key, label: tOnboarding(`highSchoolSystem.${row.key}`), value: row.value }))}
+          />
+        </StatPanel>
+      </div>
+      <div className="mt-5 grid gap-5 lg:grid-cols-3">
+        <StatPanel title={ta("who.fields")} subtitle={ta("who.subtitle")}>
+          <RankedList
+            empty={t("noData")}
+            rows={breakdowns.fields.map((row) => {
+              const field = FIELDS_OF_STUDY.find((option) => option.value === row.key);
+              return { key: row.key, label: field ? (locale === "ar" ? field.ar : field.en) : row.key, value: row.value };
+            })}
+          />
+        </StatPanel>
+        <StatPanel title={ta("who.budgets")} subtitle={ta("who.subtitle")}>
+          <RankedList
+            empty={t("noData")}
+            rows={breakdowns.budgets.map((row) => ({ key: row.key, label: tEnums(`budgetBands.${row.key}`), value: row.value }))}
+          />
+        </StatPanel>
+        <StatPanel title={ta("who.language")} subtitle={ta("who.languageSubtitle")}>
+          <RankedList
+            empty={t("noData")}
+            rows={breakdowns.searchLanguage.map((row) => ({
+              key: row.key,
+              label: ta(`languages.${row.key === "ar" || row.key === "en" ? row.key : "unknown"}`),
+              value: row.value,
+            }))}
+          />
+        </StatPanel>
+      </div>
+
+      {sectionTitle("universities", ta("universities.title"), ta("universities.subtitle", { period: periodLabel }))}
+      <div className="mt-5 grid gap-5 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
+        <StatPanel title={ta("universities.topTitle")} subtitle={period === "all" ? ta("universities.topAllTime") : ta("universities.topSubtitle", { period: periodLabel })}>
+          <ComparisonBars rows={performance} hasPrevious={period !== "all"} />
+        </StatPanel>
+        <StatPanel title={ta("table.title")} subtitle={ta("table.subtitle")}>
+          <PerformanceTable rows={performance} filter={health} hrefFor={healthHref} />
+        </StatPanel>
       </div>
 
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
@@ -190,6 +323,7 @@ export default async function StatisticsPage({
         </StatPanel>
       </div>
 
+      {sectionTitle("searches", ta("searches.title"), ta("searches.subtitle"))}
       <div className="mt-5 grid gap-5 lg:grid-cols-2">
         <StatPanel title={t("terms.title")} subtitle={periodLabel}>
           <RankedList

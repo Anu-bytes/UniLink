@@ -51,15 +51,14 @@ export async function SiteFooter() {
       links: [
         { href: "/universities", label: t("universities") },
         { href: "/programs", label: t("specializations") },
-        { href: "/programs", label: t("scholarships") },
-        { href: "/about", label: t("articles") },
       ],
     },
     {
       title: t("info"),
       links: [
         { href: "/about", label: t("about") },
-        { href: "/contact", label: t("contact") },
+        // /contact is the partnership request form.
+        { href: "/contact", label: t("becomePartner") },
         { href: "/work-with-us", label: t("workWithUs") },
         { href: "/#faq", label: t("faq") },
       ],
