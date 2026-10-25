@@ -11,6 +11,7 @@ import {
   type LucideIcon,
 } from "lucide-react";
 import Image from "next/image";
+import { cookies } from "next/headers";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
@@ -20,11 +21,15 @@ import { HeroStats } from "@/components/hero-stats";
 import { HeroSearch } from "@/components/hero-search";
 import { HeroWords } from "@/components/hero-words";
 import { HowItWorks } from "@/components/how-it-works";
+import { NearbyLauncher } from "@/components/nearby/nearby-launcher";
+import { NearbySection } from "@/components/nearby/nearby-section";
 import { MotionSection } from "@/components/motion-section";
 import { Reveal } from "@/components/reveal";
 import { TestimonialsCarousel } from "@/components/testimonials-carousel";
 import { UniversityLogoMarquee } from "@/components/university-logo-marquee";
 import { getLandingCatalog, getUniversitySearchIndex, withDisplayOffsets } from "@/lib/catalog";
+import { getNearbyCatalog } from "@/lib/nearby";
+import { NEARBY_TRIAL_COOKIE, readTrial } from "@/lib/nearby-trial";
 
 export const dynamic = "force-dynamic";
 
@@ -66,9 +71,15 @@ export default async function HomePage() {
   const locale = await getLocale();
   const session = await auth();
   const isAuthenticated = Boolean(session?.user?.id);
-  const [catalog, searchIndex] = await Promise.all([
+  const nearbyAccess = isAuthenticated
+    ? "member"
+    : readTrial((await cookies()).get(NEARBY_TRIAL_COOKIE)?.value) === "none"
+      ? "guest"
+      : "guestUsed";
+  const [catalog, searchIndex, nearby] = await Promise.all([
     getLandingCatalog(locale),
     getUniversitySearchIndex(locale),
+    getNearbyCatalog(locale),
   ]);
 
   const heroWords = t.raw("hero.words") as string[];
@@ -133,6 +144,9 @@ export default async function HomePage() {
               style={{ "--i": 8 } as React.CSSProperties}
             >
               <HeroSearch isAuthenticated={isAuthenticated} />
+              <div className="mt-4 flex justify-center lg:justify-start">
+                <NearbyLauncher fields={nearby.fields} levels={nearby.levels} guest={!isAuthenticated} />
+              </div>
             </div>
 
             <div
@@ -173,6 +187,9 @@ export default async function HomePage() {
         title={t("logoStrip.title", { count: searchIndex.length })}
         viewLabel={(name) => t("logoStrip.viewProfile", { name })}
       />
+
+      {/* FIND NEAREST: the map search, with its own launch button */}
+      <NearbySection fields={nearby.fields} levels={nearby.levels} access={nearbyAccess} />
 
 
       {/* FEATURED UNIVERSITIES */}

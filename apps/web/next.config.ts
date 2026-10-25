@@ -42,8 +42,9 @@ const securityHeaders = [
   { key: "X-Frame-Options", value: "DENY" },
   // Don't leak the full URL (which can carry query params) to other origins.
   { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
-  // Nothing on this site needs the camera/mic/geolocation APIs.
-  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
+  // No camera or mic anywhere. Geolocation only for this site itself (the
+  // /nearby map), never for an embedded frame.
+  { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=(self)" },
   // HSTS: force HTTPS on repeat visits once served over it.
   {
     key: "Strict-Transport-Security",
