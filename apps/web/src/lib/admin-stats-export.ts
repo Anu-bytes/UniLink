@@ -1,26 +1,24 @@
 // The Excel export behind /admin/statistics: the same figures as the page,
-// laid out as a workbook (summary, activity per period, rankings, searches).
+// laid out as a workbook: a dashboard summary, activity per period with
+// charts, the university scorecard, and searches.
 
 import { Prisma } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
+import { siteKpis, universityPerformance, userFunnel, type Health, type Kpi } from "@/lib/admin-analytics";
 import {
   audienceTotals,
   bucketKeys,
   catalogueGaps,
-  mostSaved,
   mostSavedPrograms,
-  mostSearched,
   registrationTotals,
-  topRated,
   topSearchTerms,
-  topViewed,
   zeroResultTerms,
   type Granularity,
-  type RankedUniversity,
 } from "@/lib/admin-stats";
 import { prisma } from "@/lib/prisma";
-import { buildWorkbook, columnName, type Cell, type Sheet } from "@/lib/xlsx";
+import { buildWorkbook, columnName, type Cell, type CellStyle, type Sheet } from "@/lib/xlsx";
+import { XLSX_LOGO } from "@/lib/xlsx-logo";
 
 const TZ = "Africa/Cairo";
 
@@ -73,231 +71,329 @@ function periodLabel(locale: string, unit: Granularity, key: string, weekOf: str
   return key.slice(0, 4);
 }
 
-const title = (text: string): Cell => ({ value: text, style: "title" });
-const subtitle = (text: string): Cell => ({ value: text, style: "subtitle" });
+const LOGO = Buffer.from(XLSX_LOGO.png, "base64");
+const BRAND = { blue: "1E6DEB", green: "16A34A", amber: "F5A524", red: "C81F15" };
+
+/** Rows 1-4 of every sheet: logo, title, subtitle with a blue underline, a spacer. */
+function banner(title: string, subtitle: string, width: number): Cell[][] {
+  return [
+    [],
+    [{ value: title, style: "title" }],
+    Array.from({ length: width }, (_, i): Cell => ({ value: i === 0 ? subtitle : null, style: "subtitle" })),
+    [],
+  ];
+}
+const BANNER_HEIGHTS: Record<number, number> = { 1: 46, 2: 30, 3: 20, 4: 12 };
+const bannerMerges = (width: number) => [`A2:${columnName(width - 1)}2`, `A3:${columnName(width - 1)}3`];
+
 const section = (text: string): Cell => ({ value: text, style: "section" });
 const header = (text: string, start = false): Cell => ({ value: text, style: start ? "headerStart" : "header" });
+const zebra = (r: number, even: CellStyle, odd: CellStyle) => (r % 2 ? odd : even);
+
+/** Taller rows for section titles, table headers and tiles. */
+function heightsFor(rows: Cell[][]) {
+  const heights: Record<number, number> = { ...BANNER_HEIGHTS };
+  rows.forEach((row, i) => {
+    if (i < 4) return;
+    const style = row[0] && typeof row[0] === "object" ? row[0].style : undefined;
+    if (style === "section") heights[i + 1] = 28;
+    if (style === "header" || style === "headerStart") heights[i + 1] = 30;
+    if (style === "tileLabel" || style === "tileHint") heights[i + 1] = 24;
+    if (style === "tileValue" || style === "tileValuePercent") heights[i + 1] = 38;
+  });
+  return heights;
+}
 
 export async function buildStatisticsWorkbook(unit: Granularity, locale: "en" | "ar") {
   const t = await getTranslations({ locale, namespace: "Admin.stats.export" });
+  const ta = await getTranslations({ locale, namespace: "Admin.stats.analytics" });
   const rtl = locale === "ar";
   const keys = bucketKeys(unit, EXPORT_SPAN[unit]);
   const from = keys[0];
   const days = SPAN_DAYS[unit];
 
   const metrics: Metric[] = ["students", "parents", "profiles", "views", "searches", "noResults", "savedUniversities", "savedPrograms", "ratings"];
-  const [seriesMaps, totals, audience, gaps, viewed, searched, saved, rated, savedPrograms, terms, zero] = await Promise.all([
+  const [seriesMaps, totals, audience, gaps, kpis, funnel, performance, savedPrograms, terms, zero] = await Promise.all([
     Promise.all(metrics.map((metric) => (metric === "views" ? viewSeries(unit, from) : countSeries(metric, unit, from)))),
     registrationTotals(),
     audienceTotals(),
     catalogueGaps(),
-    topViewed(days, 25),
-    mostSearched(days, 25),
-    mostSaved(25),
-    topRated(25),
+    siteKpis(days),
+    userFunnel(),
+    universityPerformance(days),
     mostSavedPrograms(25),
     topSearchTerms(days, 40),
     zeroResultTerms(days, 25),
   ]);
   const series = Object.fromEntries(metrics.map((metric, i) => [metric, seriesMaps[i]])) as Record<Metric, Map<string, number>>;
-  const emptyRow = (): Cell[] => [null, { value: t("empty"), style: "muted" }];
   const nameOf = (entry: { name: string; nameAr: string | null }) => (rtl ? (entry.nameAr ?? entry.name) : entry.name);
+  const emptyRow = (): Cell[] => [null, { value: t("empty"), style: "muted" }];
 
-  const generated = new Intl.DateTimeFormat(locale, {
-    dateStyle: "long",
-    timeStyle: "short",
-    numberingSystem: "latn",
-    timeZone: TZ,
-  }).format(new Date());
+  const generated = new Intl.DateTimeFormat(locale, { dateStyle: "long", timeStyle: "short", numberingSystem: "latn", timeZone: TZ }).format(new Date());
   const unitName = t(`units.${unit}`);
   const range = t(`range.${unit}`, { count: EXPORT_SPAN[unit] });
   const intro = t("generated", { date: generated, range });
-
-  // ---- Activity: one row per period, with a total row. ----
-  const columns: { metric: "period" | "signups" | Metric; label: string }[] = [
-    { metric: "period", label: t("columns.period") },
-    { metric: "students", label: t("columns.students") },
-    { metric: "parents", label: t("columns.parents") },
-    { metric: "signups", label: t("columns.signups") },
-    { metric: "profiles", label: t("columns.profiles") },
-    { metric: "views", label: t("columns.views") },
-    { metric: "searches", label: t("columns.searches") },
-    { metric: "noResults", label: t("columns.noResults") },
-    { metric: "savedUniversities", label: t("columns.savedUniversities") },
-    { metric: "savedPrograms", label: t("columns.savedPrograms") },
-    { metric: "ratings", label: t("columns.ratings") },
-  ];
-  const last = columnName(columns.length - 1);
-  const firstData = 5;
-  const lastData = firstData + keys.length - 1;
-  // Newest first: the period people open the sheet for is at the top.
-  const ordered = [...keys].reverse();
-  const activityRows: Cell[][] = [
-    [title(t("activityTitle", { unit: unitName }))],
-    [subtitle(intro)],
-    [],
-    columns.map((column, i) => header(column.label, i === 0)),
-    ...ordered.map((key, r) => {
-      const alt = r % 2 === 1;
-      return columns.map((column): Cell => {
-        if (column.metric === "period") return { value: periodLabel(locale, unit, key, t("weekOf")), style: alt ? "textAlt" : "text" };
-        const value =
-          column.metric === "signups"
-            ? (series.students.get(key) ?? 0) + (series.parents.get(key) ?? 0)
-            : (series[column.metric].get(key) ?? 0);
-        return { value, style: alt ? "numberAlt" : "number" };
-      });
-    }),
-    columns.map((column, i): Cell => {
-      if (i === 0) return { value: t("total"), style: "totalLabel" };
-      const col = columnName(i);
-      const sum = ordered.reduce((acc, key) => {
-        if (column.metric === "signups") return acc + (series.students.get(key) ?? 0) + (series.parents.get(key) ?? 0);
-        return acc + (series[column.metric as Metric].get(key) ?? 0);
-      }, 0);
-      return { value: sum, formula: `SUM(${col}${firstData}:${col}${lastData})`, style: "total" };
-    }),
-  ];
-  const activity: Sheet = {
-    name: t("sheets.activity", { unit: unitName }),
-    columns: [unit === "week" ? 26 : 22, 13, 13, 14, 15, 14, 12, 16, 16, 15, 11],
-    rows: activityRows,
-    merges: [`A1:${last}1`, `A2:${last}2`],
-    heights: { 1: 34, 2: 20, 4: 36 },
-    freeze: { rows: 4, columns: 1 },
-    autoFilter: `A4:${last}${lastData}`,
-    dataBars: [
-      { range: `D${firstData}:D${lastData}`, color: "1E6DEB" },
-      { range: `F${firstData}:F${lastData}`, color: "16A34A" },
-      { range: `G${firstData}:G${lastData}`, color: "F5A524" },
-    ],
-    rightToLeft: rtl,
+  const logo = { png: LOGO, width: XLSX_LOGO.width, height: XLSX_LOGO.height, at: { col: 0, row: 0 } };
+  const pct = (value: number) => `${Math.round(value * 100)}%`;
+  const changeText = (kpi: Kpi) => {
+    if (kpi.previous === null) return range;
+    if (kpi.previous === 0) return kpi.value > 0 ? t("tiles.newVsBefore") : t("tiles.flat");
+    const change = Math.round(((kpi.value - kpi.previous) / kpi.previous) * 100);
+    return change === 0 ? t("tiles.flat") : t("tiles.vsBefore", { change: `${change > 0 ? "▲" : "▼"} ${Math.abs(change)}%` });
   };
 
-  // ---- Summary ----
-  const change = (value: number, previous: number): Cell =>
-    previous === 0 ? { value: value > 0 ? t("new") : "", style: "muted" } : { value: (value - previous) / previous, style: "percent" };
-  const periodTotal = (metric: Metric) => [...series[metric].values()].reduce((a, b) => a + b, 0);
+  // ---- Summary: two rows of tiles, then three short tables. ----
+  const tiles = (items: { label: string; value: number; percent?: boolean; hint: string }[]): Cell[][] => [
+    items.map((item): Cell => ({ value: item.label, style: "tileLabel" })),
+    items.map((item): Cell => ({ value: item.value, style: item.percent ? "tileValuePercent" : "tileValue" })),
+    items.map((item): Cell => ({ value: item.hint, style: "tileHint" })),
+  ];
+  const signupWindows = [
+    ["day", totals.day],
+    ["week", totals.week],
+    ["month", totals.month],
+    ["year", totals.year],
+  ] as const;
+  const journey = ["registered", "profile", "active", "searched", "saved", "rated"] as const;
+  const gapRows = [
+    ["noLogo", gaps.noLogo],
+    ["noCover", gaps.noCover],
+    ["noGallery", gaps.noGallery],
+    ["noDescription", gaps.noDescription],
+    ["programsNoFee", gaps.programsNoFee],
+  ] as const;
+  const blank = (r: number): Cell => ({ value: null, style: zebra(r, "text", "textAlt") });
   const summaryRows: Cell[][] = [
-    [title(t("summaryTitle"))],
-    [subtitle(intro)],
+    ...banner(t("summaryTitle"), intro, 4),
+    [section(t("tiles.periodTitle", { range }))],
+    ...tiles([
+      { label: ta("kpi.views"), value: kpis.views.value, hint: changeText(kpis.views) },
+      { label: ta("kpi.searches"), value: kpis.searches.value, hint: changeText(kpis.searches) },
+      { label: ta("kpi.successRate"), value: kpis.successRate.value, percent: true, hint: ta("kpi.successRateHint") },
+      { label: ta("kpi.signups"), value: kpis.signups.value, hint: changeText(kpis.signups) },
+    ]),
     [],
     [section(t("audience.title"))],
-    [header(t("measure"), true), header(t("value"))],
-    ...([
-      ["students", audience.students],
-      ["parents", audience.parents],
-      ["withProfile", audience.withProfile],
-      ["active7", audience.active7],
-      ["active30", audience.active30],
-      ["savedTotal", audience.savedTotal],
-      ["ratings", audience.ratings],
-    ] as const).map(([key, value], r): Cell[] => [
-      { value: t(`audience.${key}`), style: r % 2 ? "textAlt" : "text" },
-      { value, style: r % 2 ? "numberAlt" : "number" },
+    ...tiles([
+      { label: t("audience.students"), value: audience.students, hint: t("tiles.parents", { count: audience.parents }) },
+      { label: t("tiles.active7"), value: audience.active7, hint: t("tiles.active30", { count: audience.active30 }) },
+      {
+        label: t("audience.withProfile"),
+        value: funnel.profile,
+        hint: funnel.registered ? ta("funnel.share", { value: pct(funnel.profile / funnel.registered) }) : "",
+      },
+      { label: t("audience.savedTotal"), value: audience.savedTotal, hint: t("tiles.ratings", { count: audience.ratings }) },
     ]),
     [],
     [section(t("signups.title"))],
     [header(t("signups.window"), true), header(t("signups.now")), header(t("signups.before")), header(t("signups.change"))],
-    ...([
-      ["day", totals.day],
-      ["week", totals.week],
-      ["month", totals.month],
-      ["year", totals.year],
-    ] as const).map(([key, entry]): Cell[] => [
-      { value: t(`signups.${key}`), style: "text" },
-      { value: entry.value, style: "number" },
-      { value: entry.previous, style: "number" },
-      change(entry.value, entry.previous),
+    ...signupWindows.map(([key, entry], r): Cell[] => [
+      { value: t(`signups.${key}`), style: zebra(r, "text", "textAlt") },
+      { value: entry.value, style: zebra(r, "number", "numberAlt") },
+      { value: entry.previous, style: zebra(r, "number", "numberAlt") },
+      entry.previous === 0
+        ? { value: entry.value > 0 ? t("new") : "", style: zebra(r, "text", "textAlt") }
+        : { value: (entry.value - entry.previous) / entry.previous, style: zebra(r, "change", "changeAlt") },
     ]),
     [],
-    [section(t("inRange.title", { range }))],
-    [header(t("measure"), true), header(t("value"))],
-    ...(["views", "searches", "noResults", "savedUniversities", "savedPrograms", "ratings"] as const).map((metric, r): Cell[] => [
-      { value: t(`columns.${metric}`), style: r % 2 ? "textAlt" : "text" },
-      { value: periodTotal(metric), style: r % 2 ? "numberAlt" : "number" },
+    [section(ta("funnel.title"))],
+    [header(t("journey.step"), true), header(t("journey.users")), header(t("journey.share")), header("")],
+    ...journey.map((key, r): Cell[] => [
+      { value: ta(`funnel.${key}`), style: zebra(r, "text", "textAlt") },
+      { value: funnel[key], style: zebra(r, "number", "numberAlt") },
+      { value: funnel.registered ? funnel[key] / funnel.registered : 0, style: zebra(r, "percent", "percentAlt") },
+      blank(r),
     ]),
-    [{ value: t("columns.signups"), style: "totalLabel" }, { value: periodTotal("students") + periodTotal("parents"), style: "total" }],
     [],
     [section(t("gaps.title"))],
-    [header(t("gaps.item"), true), header(t("value"))],
-    ...([
-      ["noLogo", gaps.noLogo],
-      ["noCover", gaps.noCover],
-      ["noGallery", gaps.noGallery],
-      ["noDescription", gaps.noDescription],
-      ["programsNoFee", gaps.programsNoFee],
-    ] as const).map(([key, value], r): Cell[] => [
-      { value: t(`gaps.${key}`), style: r % 2 ? "textAlt" : "text" },
-      { value, style: r % 2 ? "numberAlt" : "number" },
-    ]),
+    [header(t("gaps.item"), true), header(t("value")), header(""), header("")],
+    ...gapRows.map(([key, value], r): Cell[] => [{ value: t(`gaps.${key}`), style: zebra(r, "text", "textAlt") }, { value, style: zebra(r, "number", "numberAlt") }, blank(r), blank(r)]),
     [],
     [{ value: t("note"), style: "muted" }],
   ];
   const summary: Sheet = {
     name: t("sheets.summary"),
-    columns: [44, 16, 16, 14],
+    columns: [34, 26, 26, 26],
     rows: summaryRows,
-    merges: ["A1:D1", "A2:D2", `A${summaryRows.length}:D${summaryRows.length}`],
-    heights: { 1: 34, 2: 20 },
+    merges: [...bannerMerges(4), `A${summaryRows.length}:D${summaryRows.length}`],
+    heights: heightsFor(summaryRows),
+    logo,
     rightToLeft: rtl,
   };
 
-  // ---- Universities: four ranked blocks. ----
-  const rankBlock = (heading: string, valueLabel: string, list: RankedUniversity[], withCount = false): Cell[][] => [
-    [section(heading)],
-    [header("#"), header(t("columns.university"), true), header(valueLabel), ...(withCount ? [header(t("columns.ratingCount"))] : [])],
-    ...(list.length
-      ? list.map((entry, r): Cell[] => [
-          { value: r + 1, style: r % 2 ? "numberAlt" : "number" },
-          { value: nameOf(entry), style: r % 2 ? "textAlt" : "text" },
-          { value: entry.value, style: withCount ? (r % 2 ? "decimalAlt" : "decimal") : r % 2 ? "numberAlt" : "number" },
-          ...(withCount ? [{ value: entry.count ?? 0, style: r % 2 ? ("numberAlt" as const) : ("number" as const) }] : []),
-        ])
-      : [emptyRow()]),
-    [],
+  // ---- Activity: one row per period, oldest first so the charts read in time order. ----
+  const columns: { metric: "period" | "signups" | Metric; label: string }[] = [
+    { metric: "period", label: t("columns.period") },
+    { metric: "views", label: t("columns.views") },
+    { metric: "searches", label: t("columns.searches") },
+    { metric: "noResults", label: t("columns.noResults") },
+    { metric: "students", label: t("columns.students") },
+    { metric: "parents", label: t("columns.parents") },
+    { metric: "signups", label: t("columns.signups") },
+    { metric: "profiles", label: t("columns.profiles") },
+    { metric: "savedUniversities", label: t("columns.savedUniversities") },
+    { metric: "savedPrograms", label: t("columns.savedPrograms") },
+    { metric: "ratings", label: t("columns.ratings") },
   ];
-  const universityRows: Cell[][] = [
-    [title(t("universitiesTitle"))],
-    [subtitle(intro)],
-    [],
-    ...rankBlock(t("rank.viewed", { range }), t("columns.views"), viewed),
-    ...rankBlock(t("rank.searched", { range }), t("columns.searches"), searched),
-    ...rankBlock(t("rank.saved"), t("columns.saves"), saved),
-    ...rankBlock(t("rank.rated"), t("columns.rating"), rated, true),
+  const valueOf = (metric: "signups" | Metric, key: string) =>
+    metric === "signups" ? (series.students.get(key) ?? 0) + (series.parents.get(key) ?? 0) : (series[metric].get(key) ?? 0);
+  const width = columns.length;
+  const headerRow = 5;
+  const firstData = headerRow + 1;
+  const lastData = firstData + keys.length - 1;
+  const activityRows: Cell[][] = [
+    ...banner(t("activityTitle", { unit: unitName }), intro, width),
+    columns.map((column, i) => header(column.label, i === 0)),
+    ...keys.map((key, r) =>
+      columns.map((column): Cell =>
+        column.metric === "period"
+          ? { value: periodLabel(locale, unit, key, t("weekOf")), style: zebra(r, "text", "textAlt") }
+          : { value: valueOf(column.metric, key), style: zebra(r, "number", "numberAlt") },
+      ),
+    ),
+    columns.map((column, i): Cell => {
+      if (i === 0) return { value: t("total"), style: "totalLabel" };
+      const col = columnName(i);
+      const sum = keys.reduce((acc, key) => acc + valueOf(column.metric as "signups" | Metric, key), 0);
+      return { value: sum, formula: `SUM(${col}${firstData}:${col}${lastData})`, style: "total" };
+    }),
   ];
+  // Charts sit to the side of the table, after a narrow gap column.
+  const chartCol = width + 1;
+  const chartRows = 17;
+  const categories = `A${firstData}:A${lastData}`;
+  const activity: Sheet = {
+    name: t("sheets.activity", { unit: unitName }),
+    columns: [unit === "week" ? 26 : unit === "day" ? 22 : 18, 13, 12, 14, 12, 12, 13, 14, 15, 14, 11, 3],
+    rows: activityRows,
+    merges: bannerMerges(width),
+    heights: heightsFor(activityRows),
+    freeze: { rows: headerRow, columns: 1 },
+    autoFilter: `A${headerRow}:${columnName(width - 1)}${lastData}`,
+    logo,
+    charts: [
+      {
+        title: t("columns.views"),
+        categories,
+        series: [{ name: t("columns.views"), values: `B${firstData}:B${lastData}`, color: BRAND.blue }],
+        from: { col: chartCol, row: headerRow - 1 },
+        to: { col: chartCol + 9, row: headerRow - 1 + chartRows },
+      },
+      {
+        title: t("columns.signups"),
+        categories,
+        series: [{ name: t("columns.signups"), values: `G${firstData}:G${lastData}`, color: BRAND.green }],
+        from: { col: chartCol, row: headerRow + chartRows },
+        to: { col: chartCol + 9, row: headerRow + chartRows * 2 },
+      },
+      {
+        title: t("charts.searches"),
+        categories,
+        series: [
+          { name: t("columns.searches"), values: `C${firstData}:C${lastData}`, color: BRAND.amber },
+          { name: t("columns.noResults"), values: `D${firstData}:D${lastData}`, color: BRAND.red },
+        ],
+        from: { col: chartCol, row: headerRow + chartRows * 2 + 1 },
+        to: { col: chartCol + 9, row: headerRow + chartRows * 3 + 1 },
+      },
+    ],
+    rightToLeft: rtl,
+  };
+
+  // ---- Universities: the scorecard, as on the page. ----
+  const statusStyle: Record<Health, CellStyle> = { well: "statusWell", attention: "statusAttention", steady: "statusSteady" };
+  const uniColumns = [
+    "#",
+    t("columns.university"),
+    t("columns.views"),
+    t("scorecard.before"),
+    t("signups.change"),
+    t("columns.saves"),
+    t("scorecard.saveRate"),
+    t("scorecard.foundInSearch"),
+    t("columns.rating"),
+    t("columns.ratingCount"),
+    t("scorecard.status"),
+    t("scorecard.why"),
+  ];
+  const uniWidth = uniColumns.length;
+  const uniFirst = headerRow + 1;
+  const uniRows: Cell[][] = [
+    ...banner(t("universitiesTitle"), intro, uniWidth),
+    uniColumns.map((label, i) => header(label, i === 1 || i === uniWidth - 1)),
+    ...performance.map((row, r): Cell[] => {
+      const before = row.previousViews;
+      const change: Cell =
+        before === null
+          ? blank(r)
+          : before === 0
+            ? { value: row.views > 0 ? t("new") : "", style: zebra(r, "text", "textAlt") }
+            : { value: (row.views - before) / before, style: zebra(r, "change", "changeAlt") };
+      return [
+        { value: r + 1, style: zebra(r, "number", "numberAlt") },
+        { value: nameOf(row), style: "label" },
+        { value: row.views, style: zebra(r, "number", "numberAlt") },
+        { value: before, style: zebra(r, "number", "numberAlt") },
+        change,
+        { value: row.saves, style: zebra(r, "number", "numberAlt") },
+        { value: row.views ? row.saves / row.views : null, style: zebra(r, "percent", "percentAlt") },
+        { value: row.searches, style: zebra(r, "number", "numberAlt") },
+        { value: row.rating, style: zebra(r, "decimal", "decimalAlt") },
+        { value: row.ratingCount, style: zebra(r, "number", "numberAlt") },
+        { value: ta(`health.${row.health}`), style: statusStyle[row.health] },
+        { value: row.reasons.map((reason) => ta(`reasons.${reason}`, { missing: row.missing })).join(" · "), style: zebra(r, "text", "textAlt") },
+      ];
+    }),
+  ];
+  const uniLast = uniFirst + performance.length - 1;
+  const top = Math.min(10, performance.filter((row) => row.views > 0).length);
   const universities: Sheet = {
     name: t("sheets.universities"),
-    columns: [6, 48, 14, 14],
-    rows: universityRows,
-    merges: ["A1:D1", "A2:D2"],
-    heights: { 1: 34, 2: 20 },
+    columns: [6, 40, 11, 13, 12, 10, 11, 13, 10, 10, 16, 40, 3],
+    rows: uniRows,
+    merges: bannerMerges(uniWidth),
+    heights: heightsFor(uniRows),
+    freeze: { rows: headerRow, columns: 2 },
+    autoFilter: `A${headerRow}:${columnName(uniWidth - 1)}${Math.max(uniLast, uniFirst)}`,
+    dataBars: performance.length ? [{ range: `C${uniFirst}:C${uniLast}`, color: BRAND.blue }] : [],
+    logo,
+    charts: top
+      ? [
+          {
+            title: t("charts.topViewed"),
+            direction: "bar",
+            categories: `B${uniFirst}:B${uniFirst + top - 1}`,
+            series: [{ name: t("columns.views"), values: `C${uniFirst}:C${uniFirst + top - 1}`, color: BRAND.blue }],
+            from: { col: uniWidth + 1, row: headerRow - 1 },
+            to: { col: uniWidth + 8, row: headerRow + 20 },
+          },
+        ]
+      : [],
     rightToLeft: rtl,
   };
 
-  // ---- Searches and saved programs ----
+  // ---- Searches and saves ----
+  const termFirst = headerRow + 1;
   const searchRows: Cell[][] = [
-    [title(t("searchesTitle"))],
-    [subtitle(intro)],
-    [],
-    [section(t("rank.terms", { range }))],
+    ...banner(t("searchesTitle"), intro, 4),
     [header("#"), header(t("columns.term"), true), header(t("columns.searches")), header(t("columns.noResults"))],
     ...(terms.length
       ? terms.map((term, r): Cell[] => [
-          { value: r + 1, style: r % 2 ? "numberAlt" : "number" },
-          { value: term.term, style: r % 2 ? "textAlt" : "text" },
-          { value: term.value, style: r % 2 ? "numberAlt" : "number" },
-          { value: term.zero, style: r % 2 ? "numberAlt" : "number" },
+          { value: r + 1, style: zebra(r, "number", "numberAlt") },
+          { value: term.term, style: zebra(r, "text", "textAlt") },
+          { value: term.value, style: zebra(r, "number", "numberAlt") },
+          { value: term.zero, style: zebra(r, "number", "numberAlt") },
         ])
       : [emptyRow()]),
     [],
     [section(t("rank.zero", { range }))],
-    [header("#"), header(t("columns.term"), true), header(t("columns.searches"))],
+    [header("#"), header(t("columns.term"), true), header(t("columns.searches")), header("")],
     ...(zero.length
       ? zero.map((term, r): Cell[] => [
-          { value: r + 1, style: r % 2 ? "numberAlt" : "number" },
-          { value: term.term, style: r % 2 ? "textAlt" : "text" },
-          { value: term.value, style: r % 2 ? "numberAlt" : "number" },
+          { value: r + 1, style: zebra(r, "number", "numberAlt") },
+          { value: term.term, style: zebra(r, "text", "textAlt") },
+          { value: term.value, style: zebra(r, "number", "numberAlt") },
+          blank(r),
         ])
       : [emptyRow()]),
     [],
@@ -305,19 +401,33 @@ export async function buildStatisticsWorkbook(unit: Granularity, locale: "en" | 
     [header("#"), header(t("columns.program"), true), header(t("columns.saves")), header(t("columns.university"), true)],
     ...(savedPrograms.length
       ? savedPrograms.map((program, r): Cell[] => [
-          { value: r + 1, style: r % 2 ? "numberAlt" : "number" },
-          { value: rtl ? (program.nameAr ?? program.name) : program.name, style: r % 2 ? "textAlt" : "text" },
-          { value: program.value, style: r % 2 ? "numberAlt" : "number" },
-          { value: rtl ? (program.universityAr ?? program.university) : program.university, style: r % 2 ? "textAlt" : "text" },
+          { value: r + 1, style: zebra(r, "number", "numberAlt") },
+          { value: rtl ? (program.nameAr ?? program.name) : program.name, style: zebra(r, "text", "textAlt") },
+          { value: program.value, style: zebra(r, "number", "numberAlt") },
+          { value: rtl ? (program.universityAr ?? program.university) : program.university, style: zebra(r, "text", "textAlt") },
         ])
       : [emptyRow()]),
   ];
+  const topTerms = Math.min(10, terms.length);
   const searches: Sheet = {
     name: t("sheets.searches"),
-    columns: [6, 40, 14, 40],
+    columns: [6, 40, 14, 40, 3],
     rows: searchRows,
-    merges: ["A1:D1", "A2:D2"],
-    heights: { 1: 34, 2: 20 },
+    merges: bannerMerges(4),
+    heights: heightsFor(searchRows),
+    logo,
+    charts: topTerms
+      ? [
+          {
+            title: t("charts.topTerms"),
+            direction: "bar",
+            categories: `B${termFirst}:B${termFirst + topTerms - 1}`,
+            series: [{ name: t("columns.searches"), values: `C${termFirst}:C${termFirst + topTerms - 1}`, color: BRAND.amber }],
+            from: { col: 5, row: headerRow - 1 },
+            to: { col: 12, row: headerRow + 18 },
+          },
+        ]
+      : [],
     rightToLeft: rtl,
   };
 
