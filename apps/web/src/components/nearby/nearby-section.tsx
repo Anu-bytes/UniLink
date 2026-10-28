@@ -75,7 +75,6 @@ export async function NearbySection({ catalog, access }: { catalog: NearbyCatalo
                   km,
                 }}
               />
-              <figcaption className="mt-3 text-center text-xs text-slate-400">{t("preview.caption")}</figcaption>
             </figure>
           ) : null}
         </Reveal>

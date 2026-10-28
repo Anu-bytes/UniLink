@@ -3770,8 +3770,7 @@
     },
     "preview": {
       "from": "Tahrir Square",
-      "context": "Example starting point: Tahrir Square, Cairo",
-      "caption": "Example with real campuses and distances, measured from Tahrir Square."
+      "context": "Example starting point: Tahrir Square, Cairo"
     },
     "gate": {
       "title": "Keep finding universities near you",
