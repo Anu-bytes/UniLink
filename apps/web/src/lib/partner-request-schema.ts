@@ -71,7 +71,7 @@ export const representativeRequestSchema = z.object({
     .refine((value) => value === "" || isSafeHttpUrl(value), "Enter a link starting with https://")
     .optional()
     .transform((value) => value || null),
-  confirm: z.literal(true, { errorMap: () => ({ message: "Please confirm you represent this university" }) }),
+  confirm: z.literal(true, { error: "Please confirm you represent this university" }),
 });
 
 export const partnerRequestSchema = z.discriminatedUnion("type", [demoRequestSchema, representativeRequestSchema]);

@@ -61,7 +61,11 @@ export async function readJson<S extends z.ZodTypeAny>(
     const issue = parsed.error.issues[0];
     return {
       ok: false,
-      response: badRequest(issue?.message ?? "Invalid input", issue?.path?.[0]),
+      // Zod 4 path keys may be symbols; only names and indexes identify a field.
+      response: badRequest(
+        issue?.message ?? "Invalid input",
+        typeof issue?.path?.[0] === "symbol" ? undefined : (issue?.path?.[0] as string | number | undefined),
+      ),
     };
   }
 
