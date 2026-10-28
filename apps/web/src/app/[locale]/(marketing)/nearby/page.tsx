@@ -44,7 +44,7 @@ export default async function NearbyPage({
     }
     if (trial !== "active") {
       // Spent (or cookies refused): no catalogue is sent to the browser.
-      return <NearbyGate callbackUrl={`/${locale}${nearbyHref(filters)}`} />;
+      return <NearbyGate catalog={catalog} callbackUrl={`/${locale}${nearbyHref(filters)}`} />;
     }
   }
 

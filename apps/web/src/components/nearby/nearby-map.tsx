@@ -3,7 +3,7 @@
 import "leaflet/dist/leaflet.css";
 
 import L from "leaflet";
-import { Minus, Plus, Scan } from "lucide-react";
+import { LocateFixed, Minus, Plus, Scan } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
@@ -11,7 +11,7 @@ import { createPortal } from "react-dom";
 import { UniversityLogo } from "@/components/university-logo";
 import { cn } from "@/lib/utils";
 
-export type MapPoint = { lat: number; lng: number };
+export type MapPoint = { lat: number; lng: number; /** metres, GPS only */ accuracy?: number };
 
 export type MapUniversity = {
   slug: string;
@@ -19,22 +19,45 @@ export type MapUniversity = {
   logoUrl: string | null;
   lat: number;
   lng: number;
-  /** 1 for the nearest; null while there is no starting point. */
-  rank: number | null;
+  nearest: boolean;
   distanceLabel: string | null;
 };
+
+/** Space the panel / bottom sheet covers, so framing keeps results visible. */
+export type MapInsets = { top: number; bottom: number; start: number };
 
 // Egypt, for the first frame before there is a starting point.
 const EGYPT_CENTER: L.LatLngTuple = [27.2, 30.8];
 const EGYPT_ZOOM = 6;
 
 // OpenStreetMap's own tiles: no key needed. globals.css (.ul-map) greys them
-// out so the blue and red pins carry the page.
+// out so the pins carry the page.
 const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
 const ATTRIBUTION =
-  '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a> contributors';
+  '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
 
-const PIN_SIZE: L.PointTuple = [52, 64];
+const PIN: L.PointTuple = [44, 52];
+const BRAND = "#1E6DEB";
+
+const reducedMotion = () =>
+  typeof window !== "undefined" && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+/** rAF tween from 0 to 1 with ease-out; returns a cancel function. */
+function tween(duration: number, step: (t: number) => void) {
+  if (reducedMotion()) {
+    step(1);
+    return () => {};
+  }
+  let frame = 0;
+  const start = performance.now();
+  const tick = (now: number) => {
+    const p = Math.min(1, (now - start) / duration);
+    step(1 - Math.pow(1 - p, 3));
+    if (p < 1) frame = requestAnimationFrame(tick);
+  };
+  frame = requestAnimationFrame(tick);
+  return () => cancelAnimationFrame(frame);
+}
 
 /**
  * The Leaflet map behind /nearby. Leaflet owns the map; each university pin
@@ -47,20 +70,30 @@ export function NearbyMap({
   origin,
   radiusKm,
   selected,
+  hovered,
   picking,
+  locating,
   focusKey,
+  insets,
   onSelect,
+  onHover,
   onOriginChange,
+  onLocate,
 }: {
   universities: MapUniversity[];
   origin: MapPoint | null;
   radiusKm: number | null;
   selected: string | null;
+  hovered: string | null;
   picking: boolean;
+  locating: boolean;
   /** Changes whenever the map should re-frame the results (new search, new origin). */
   focusKey: string;
+  insets: MapInsets;
   onSelect: (slug: string | null) => void;
+  onHover: (slug: string | null) => void;
   onOriginChange: (point: MapPoint) => void;
+  onLocate: () => void;
 }) {
   const t = useTranslations("Nearby");
   const containerRef = useRef<HTMLDivElement>(null);
@@ -68,19 +101,26 @@ export function NearbyMap({
   const markersRef = useRef(new Map<string, L.Marker>());
   const [pinElements, setPinElements] = useState<Map<string, HTMLDivElement>>(new Map());
   const originMarkerRef = useRef<L.Marker | null>(null);
+  const accuracyRef = useRef<L.Circle | null>(null);
   const circleRef = useRef<L.Circle | null>(null);
   const lineRef = useRef<L.Polyline | null>(null);
   const lineLabelRef = useRef<L.Tooltip | null>(null);
 
-  // Latest callbacks, so Leaflet handlers bound once never call stale ones.
-  const onSelectRef = useRef(onSelect);
-  const onOriginChangeRef = useRef(onOriginChange);
-  const pickingRef = useRef(picking);
+  // Latest values for handlers Leaflet binds once.
+  const live = useRef({ onSelect, onHover, onOriginChange, picking, insets });
   useEffect(() => {
-    onSelectRef.current = onSelect;
-    onOriginChangeRef.current = onOriginChange;
-    pickingRef.current = picking;
+    live.current = { onSelect, onHover, onOriginChange, picking, insets };
   });
+
+  const padding = () => {
+    const { top, bottom, start } = live.current.insets;
+    const rtl = document.documentElement.dir === "rtl";
+    return {
+      // Room for a pin's name label, which sits above it and can be wide.
+      paddingTopLeft: L.point(rtl ? 110 : start + 110, top + 70),
+      paddingBottomRight: L.point(rtl ? start + 110 : 110, bottom + 40),
+    };
+  };
 
   // Create the map once.
   useEffect(() => {
@@ -93,7 +133,8 @@ export function NearbyMap({
       maxZoom: 19,
       zoomControl: false,
       attributionControl: false,
-      worldCopyJump: false,
+      zoomSnap: 0.25,
+      wheelPxPerZoomLevel: 90,
       maxBounds: L.latLngBounds([15, 18], [38, 44]),
       maxBoundsViscosity: 0.8,
     });
@@ -101,16 +142,16 @@ export function NearbyMap({
     L.control.attribution({ position: "bottomleft", prefix: false }).addAttribution(ATTRIBUTION).addTo(map);
 
     map.on("click", (event: L.LeafletMouseEvent) => {
-      if (pickingRef.current) {
-        onOriginChangeRef.current({ lat: event.latlng.lat, lng: event.latlng.lng });
+      if (live.current.picking) {
+        live.current.onOriginChange({ lat: event.latlng.lat, lng: event.latlng.lng });
       } else {
-        onSelectRef.current(null);
+        live.current.onSelect(null);
       }
     });
     mapRef.current = map;
 
     // The panel beside the map can resize it (mobile sheet, window resize).
-    const observer = new ResizeObserver(() => map.invalidateSize());
+    const observer = new ResizeObserver(() => map.invalidateSize({ pan: false }));
     observer.observe(container);
     const markers = markersRef.current;
 
@@ -120,13 +161,14 @@ export function NearbyMap({
       mapRef.current = null;
       markers.clear();
       originMarkerRef.current = null;
+      accuracyRef.current = null;
       circleRef.current = null;
       lineRef.current = null;
       lineLabelRef.current = null;
     };
   }, []);
 
-  // Keep one marker per university in the results.
+  // One marker per university in the results; new ones pop in.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -143,85 +185,101 @@ export function NearbyMap({
         changed = true;
       }
     }
-    for (const university of universities) {
+    universities.forEach((university, index) => {
       const existing = markers.get(university.slug);
       if (existing) {
         existing.setLatLng([university.lat, university.lng]);
-        continue;
+        return;
       }
       const element = document.createElement("div");
       element.className = "ul-pin-root";
+      element.style.setProperty("--pin-delay", `${Math.min(index, 12) * 35}ms`);
       const marker = L.marker([university.lat, university.lng], {
-        icon: L.divIcon({
-          html: element,
-          className: "ul-pin-icon",
-          iconSize: PIN_SIZE,
-          iconAnchor: [PIN_SIZE[0] / 2, PIN_SIZE[1]],
-        }),
+        icon: L.divIcon({ html: element, className: "ul-pin-icon", iconSize: PIN, iconAnchor: [PIN[0] / 2, PIN[1]] }),
         keyboard: true,
         title: university.name,
-        riseOnHover: true,
+        alt: university.name,
       });
       marker.on("click", (event) => {
         L.DomEvent.stopPropagation(event);
-        onSelectRef.current(university.slug);
+        live.current.onSelect(university.slug);
       });
+      marker.on("mouseover", () => live.current.onHover(university.slug));
+      marker.on("mouseout", () => live.current.onHover(null));
       marker.addTo(map);
       markers.set(university.slug, marker);
       elements.set(university.slug, element);
       changed = true;
-    }
+    });
     if (changed) setPinElements(elements);
     // pinElements is the output of this effect, not an input.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [universities]);
 
-  // Selected pin sits on top of its neighbours.
+  // The active pin sits on top of its neighbours.
   useEffect(() => {
     for (const [slug, marker] of markersRef.current) {
-      marker.setZIndexOffset(slug === selected ? 1000 : 0);
+      marker.setZIndexOffset(slug === selected ? 2000 : slug === hovered ? 1000 : 0);
     }
-  }, [selected, pinElements]);
+  }, [selected, hovered, pinElements]);
 
-  // The visitor's own point: a pulsing dot that can be dragged to move it.
+  // The visitor's own point: a blue dot (draggable) and, from GPS, its accuracy.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
     if (!origin) {
       originMarkerRef.current?.remove();
       originMarkerRef.current = null;
+      accuracyRef.current?.remove();
+      accuracyRef.current = null;
       return;
     }
     if (!originMarkerRef.current) {
       const element = document.createElement("div");
       element.className = "ul-me";
-      const dot = document.createElement("span");
-      dot.className = "ul-me-dot";
-      const halo = document.createElement("span");
-      halo.className = "ul-me-halo";
-      const label = document.createElement("span");
-      label.className = "ul-me-label";
-      label.textContent = t("map.you");
-      element.append(halo, dot, label);
+      element.innerHTML = '<span class="ul-me-halo"></span><span class="ul-me-dot"></span>';
       const marker = L.marker([origin.lat, origin.lng], {
-        icon: L.divIcon({ html: element, className: "ul-me-icon", iconSize: [24, 24], iconAnchor: [12, 12] }),
+        icon: L.divIcon({ html: element, className: "ul-me-icon", iconSize: [22, 22], iconAnchor: [11, 11] }),
         draggable: true,
         autoPan: true,
-        zIndexOffset: 2000,
+        zIndexOffset: 3000,
         title: t("map.dragHint"),
+        alt: t("map.you"),
       });
+      marker.bindTooltip(t("map.you"), { direction: "top", offset: [0, -12], className: "ul-tip" });
+      marker.on("dragstart", () => element.classList.add("is-dragging"));
+      marker.on("dragend", () => element.classList.remove("is-dragging"));
       marker.on("drag", () => {
         const point = marker.getLatLng();
-        onOriginChangeRef.current({ lat: point.lat, lng: point.lng });
+        live.current.onOriginChange({ lat: point.lat, lng: point.lng });
       });
       marker.addTo(map);
       originMarkerRef.current = marker;
     } else {
       originMarkerRef.current.setLatLng([origin.lat, origin.lng]);
     }
+
+    if (origin.accuracy && origin.accuracy > 30) {
+      const radius = Math.min(origin.accuracy, 5000);
+      if (!accuracyRef.current) {
+        accuracyRef.current = L.circle([origin.lat, origin.lng], {
+          radius,
+          color: BRAND,
+          weight: 0,
+          fillColor: BRAND,
+          fillOpacity: 0.1,
+          interactive: false,
+        }).addTo(map);
+      } else {
+        accuracyRef.current.setLatLng([origin.lat, origin.lng]).setRadius(radius);
+      }
+    } else {
+      accuracyRef.current?.remove();
+      accuracyRef.current = null;
+    }
   }, [origin, t]);
 
-  // The search radius around the visitor.
+  // The search radius, which grows or shrinks smoothly when the slider moves.
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -230,24 +288,30 @@ export function NearbyMap({
       circleRef.current = null;
       return;
     }
+    const target = radiusKm * 1000;
     if (!circleRef.current) {
-      circleRef.current = L.circle([origin.lat, origin.lng], {
-        radius: radiusKm * 1000,
-        color: "#1E6DEB",
+      const circle = L.circle([origin.lat, origin.lng], {
+        radius: 1,
+        color: BRAND,
         weight: 1.5,
-        dashArray: "6 6",
-        fillColor: "#1E6DEB",
+        opacity: 0.55,
+        fillColor: BRAND,
         fillOpacity: 0.05,
         interactive: false,
+        className: "ul-radius",
       }).addTo(map);
-    } else {
-      circleRef.current.setLatLng([origin.lat, origin.lng]);
-      circleRef.current.setRadius(radiusKm * 1000);
+      circleRef.current = circle;
+      return tween(650, (p) => circle.setRadius(Math.max(1, target * p)));
     }
+    const circle = circleRef.current;
+    circle.setLatLng([origin.lat, origin.lng]);
+    const from = circle.getRadius();
+    return tween(260, (p) => circle.setRadius(from + (target - from) * p));
   }, [origin, radiusKm]);
 
-  // A dashed line from the visitor to the chosen university, with the distance on it.
+  // A line from the visitor to the chosen university that draws itself in.
   const selectedUniversity = universities.find((u) => u.slug === selected) ?? null;
+  const routeKey = selectedUniversity && origin ? selectedUniversity.slug : null;
   useEffect(() => {
     const map = mapRef.current;
     if (!map) return;
@@ -255,74 +319,77 @@ export function NearbyMap({
     lineRef.current = null;
     lineLabelRef.current?.remove();
     lineLabelRef.current = null;
-    if (!origin || !selectedUniversity) return;
+    if (!routeKey || !origin || !selectedUniversity) return;
     const from = L.latLng(origin.lat, origin.lng);
     const to = L.latLng(selectedUniversity.lat, selectedUniversity.lng);
-    lineRef.current = L.polyline([from, to], {
-      color: "#F82C1F",
-      weight: 3,
-      opacity: 0.9,
-      dashArray: "2 9",
+    const line = L.polyline([from, from], {
+      color: "#0F172A",
+      weight: 2.5,
+      opacity: 0.75,
+      dashArray: "1 7",
       lineCap: "round",
       interactive: false,
-      className: "ul-route",
     }).addTo(map);
-    if (selectedUniversity.distanceLabel) {
-      lineLabelRef.current = L.tooltip({
-        permanent: true,
-        direction: "center",
-        className: "ul-route-label",
-        interactive: false,
-      })
+    lineRef.current = line;
+    const cancel = tween(550, (p) => {
+      line.setLatLngs([from, L.latLng(from.lat + (to.lat - from.lat) * p, from.lng + (to.lng - from.lng) * p)]);
+      if (p === 1 && selectedUniversity.distanceLabel) {
+        lineLabelRef.current = L.tooltip({ permanent: true, direction: "center", className: "ul-route-label", interactive: false })
+          .setLatLng(L.latLng((from.lat + to.lat) / 2, (from.lng + to.lng) / 2))
+          .setContent(selectedUniversity.distanceLabel)
+          .addTo(map);
+      }
+    });
+    return cancel;
+    // Redraw on a new selection only; dragging the origin moves it below.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [routeKey]);
+
+  // While the origin is dragged, the line and its label follow without redrawing.
+  useEffect(() => {
+    if (!lineRef.current || !origin || !selectedUniversity) return;
+    const from = L.latLng(origin.lat, origin.lng);
+    const to = L.latLng(selectedUniversity.lat, selectedUniversity.lng);
+    lineRef.current.setLatLngs([from, to]);
+    if (lineLabelRef.current && selectedUniversity.distanceLabel) {
+      lineLabelRef.current
         .setLatLng(L.latLng((from.lat + to.lat) / 2, (from.lng + to.lng) / 2))
-        .setContent(selectedUniversity.distanceLabel)
-        .addTo(map);
+        .setContent(selectedUniversity.distanceLabel);
     }
   }, [origin, selectedUniversity]);
 
   // Frame the results whenever the search or the starting point changes.
-  const universitiesRef = useRef(universities);
+  const latest = useRef({ universities, origin, radiusKm });
   useEffect(() => {
-    universitiesRef.current = universities;
-  }, [universities]);
+    latest.current = { universities, origin, radiusKm };
+  });
   useEffect(() => {
     const map = mapRef.current;
-    if (!map) return;
-    const list = universitiesRef.current;
-    const points: L.LatLngExpression[] = [];
-    if (origin) {
-      points.push([origin.lat, origin.lng]);
-      // The nearest few, so the view stays local rather than the whole country.
-      const nearest = [...list].sort((a, b) => (a.rank ?? 99) - (b.rank ?? 99)).slice(0, 5);
-      for (const u of nearest) points.push([u.lat, u.lng]);
-    } else {
-      for (const u of list) points.push([u.lat, u.lng]);
+    if (!map || focusKey === "initial-empty") return;
+    const { universities: list, origin: from, radiusKm: radius } = latest.current;
+    const options = { ...padding(), maxZoom: 14, duration: reducedMotion() ? 0 : 1 };
+    if (from && radius) {
+      // The whole search circle, so every result inside it is on screen.
+      map.flyToBounds(L.latLng(from.lat, from.lng).toBounds(radius * 2000), options);
+      return;
     }
-    if (origin && radiusKm && list.length === 0) {
-      // Nothing inside the radius: show the whole circle that was searched.
-      map.flyToBounds(L.latLng(origin.lat, origin.lng).toBounds(radiusKm * 2000), { padding: [30, 30], duration: 1 });
-    } else if (points.length === 0) {
-      map.flyTo(EGYPT_CENTER, EGYPT_ZOOM, { duration: 0.8 });
-    } else if (points.length === 1) {
-      map.flyTo(points[0]!, 12, { duration: 1 });
-    } else {
-      map.flyToBounds(L.latLngBounds(points), { padding: [60, 60], maxZoom: 13, duration: 1.1 });
-    }
+    const points: L.LatLngExpression[] = from ? [[from.lat, from.lng]] : [];
+    // With a start point, the nearest few keep the view local.
+    const nearest = from ? list.slice(0, 6) : list;
+    for (const u of nearest) points.push([u.lat, u.lng]);
+    if (points.length === 0) map.flyTo(EGYPT_CENTER, EGYPT_ZOOM, { duration: options.duration });
+    else if (points.length === 1) map.flyTo(points[0]!, 12, { duration: options.duration });
+    else map.flyToBounds(L.latLngBounds(points), options);
     // Only a new focusKey re-frames; dragging the origin must not.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [focusKey]);
 
-  // Fly to a university when it is chosen from the list.
+  // Bring a chosen university (and the visitor) into view.
   useEffect(() => {
     const map = mapRef.current;
     if (!map || !selectedUniversity) return;
     const target = L.latLng(selectedUniversity.lat, selectedUniversity.lng);
-    if (origin) {
-      const bounds = L.latLngBounds([target, L.latLng(origin.lat, origin.lng)]);
-      map.flyToBounds(bounds, { padding: [90, 90], maxZoom: 14, duration: 0.9 });
-    } else {
-      map.flyTo(target, Math.max(map.getZoom(), 12), { duration: 0.9 });
-    }
+    const bounds = origin ? L.latLngBounds([target, L.latLng(origin.lat, origin.lng)]) : L.latLngBounds([target, target]);
+    map.flyToBounds(bounds, { ...padding(), maxZoom: origin ? 14 : 15, duration: reducedMotion() ? 0 : 0.8 });
     // Moving the origin while a university is open should not keep flying.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [selectedUniversity?.slug]);
@@ -332,39 +399,55 @@ export function NearbyMap({
     if (!map) return;
     const points: L.LatLngExpression[] = universities.map((u) => [u.lat, u.lng]);
     if (origin) points.push([origin.lat, origin.lng]);
-    if (points.length > 1) map.flyToBounds(L.latLngBounds(points), { padding: [50, 50], duration: 0.9 });
+    if (points.length > 1) map.flyToBounds(L.latLngBounds(points), { ...padding(), duration: 0.8 });
   }
 
   return (
     // The picking class sits on the wrapper: Leaflet manages the container's
     // own classes, and React re-rendering them would wipe Leaflet's.
-    <div className={cn("relative h-full w-full", picking && "ul-map-picking")}>
-      <div
-        ref={containerRef}
-        className="ul-map h-full w-full bg-[#EEF1F5]"
-        role="application"
-        aria-label={t("map.label")}
-      />
+    <div
+      className={cn("relative h-full w-full", picking && "ul-map-picking")}
+      // Lifts Leaflet's bottom controls (the attribution) above the bottom sheet.
+      style={{ "--map-inset-bottom": `${insets.bottom}px` } as React.CSSProperties}
+    >
+      <div ref={containerRef} className="ul-map h-full w-full bg-[#ECEFF3]" role="application" aria-label={t("map.label")} />
 
-      <div className="absolute end-3 top-[76px] z-[500] flex flex-col lg:top-3 overflow-hidden rounded-xl bg-white shadow-[0_8px_24px_-12px_rgba(15,23,42,0.45)] ring-1 ring-black/5">
-        <MapButton label={t("map.zoomIn")} onClick={() => mapRef.current?.zoomIn()}>
-          <Plus className="size-4" aria-hidden />
-        </MapButton>
-        <span className="h-px bg-slate-100" />
-        <MapButton label={t("map.zoomOut")} onClick={() => mapRef.current?.zoomOut()}>
-          <Minus className="size-4" aria-hidden />
-        </MapButton>
-        <span className="h-px bg-slate-100" />
-        <MapButton label={t("map.fitAll")} onClick={fitAll}>
-          <Scan className="size-4" aria-hidden />
-        </MapButton>
+      {/* Phones (a sheet below): only locate and fit, just above the sheet;
+          pinch zooms. Desktop: the full stack, top corner. */}
+      <div
+        className="pointer-events-none absolute end-3 z-[500] flex flex-col gap-2 transition-[bottom] duration-[420ms] ease-[cubic-bezier(0.32,0.72,0,1)]"
+        style={insets.bottom ? { bottom: insets.bottom + 12 } : { top: insets.top + 12 }}
+      >
+        <div
+          className={cn(
+            "pointer-events-auto flex-col overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(15,23,42,0.12),0_0_0_1px_rgba(15,23,42,0.06)]",
+            insets.bottom ? "hidden" : "flex",
+          )}
+        >
+          <MapButton label={t("map.zoomIn")} onClick={() => mapRef.current?.zoomIn()}>
+            <Plus className="size-[18px]" aria-hidden />
+          </MapButton>
+          <span className="mx-2 h-px bg-slate-100" />
+          <MapButton label={t("map.zoomOut")} onClick={() => mapRef.current?.zoomOut()}>
+            <Minus className="size-[18px]" aria-hidden />
+          </MapButton>
+        </div>
+        <div className="pointer-events-auto flex flex-col overflow-hidden rounded-xl bg-white shadow-[0_2px_8px_rgba(15,23,42,0.12),0_0_0_1px_rgba(15,23,42,0.06)]">
+          <MapButton label={t("map.locate")} onClick={onLocate} active={locating}>
+            <LocateFixed className={cn("size-[18px]", locating && "animate-pulse text-[#1E6DEB]")} aria-hidden />
+          </MapButton>
+          <span className="mx-2 h-px bg-slate-100" />
+          <MapButton label={t("map.fitAll")} onClick={fitAll}>
+            <Scan className="size-[18px]" aria-hidden />
+          </MapButton>
+        </div>
       </div>
 
       {universities.map((university) => {
         const element = pinElements.get(university.slug);
         if (!element) return null;
         return createPortal(
-          <Pin university={university} selected={university.slug === selected} />,
+          <Pin university={university} selected={university.slug === selected} hovered={university.slug === hovered} />,
           element,
           university.slug,
         );
@@ -373,33 +456,43 @@ export function NearbyMap({
   );
 }
 
-function MapButton({ label, onClick, children }: { label: string; onClick: () => void; children: React.ReactNode }) {
+function MapButton({
+  label,
+  onClick,
+  active = false,
+  children,
+}: {
+  label: string;
+  onClick: () => void;
+  active?: boolean;
+  children: React.ReactNode;
+}) {
   return (
     <button
       type="button"
       onClick={onClick}
       title={label}
       aria-label={label}
-      className="flex size-10 items-center justify-center text-[#1F2A44] transition-colors hover:bg-[#EEF4FF] hover:text-[#1E6DEB] focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#1E6DEB]"
+      aria-pressed={active || undefined}
+      className="flex size-10 items-center justify-center text-slate-600 transition-colors hover:bg-slate-50 hover:text-slate-900 focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-[#1E6DEB] active:bg-slate-100"
     >
       {children}
     </button>
   );
 }
 
-function Pin({ university, selected }: { university: MapUniversity; selected: boolean }) {
-  const nearest = university.rank === 1;
+function Pin({ university, selected, hovered }: { university: MapUniversity; selected: boolean; hovered: boolean }) {
   return (
-    <div className={cn("ul-pin", selected && "ul-pin-selected", nearest && "ul-pin-nearest")}>
-      {nearest ? <span className="ul-pin-pulse" aria-hidden /> : null}
+    <div className={cn("ul-pin", selected && "is-selected", hovered && "is-hovered", university.nearest && "is-nearest")}>
       <span className="ul-pin-head">
-        <UniversityLogo name={university.name} logoUrl={university.logoUrl} className="size-full border-0 p-1" />
+        <UniversityLogo name={university.name} logoUrl={university.logoUrl} className="size-full border-0 p-[5px]" />
       </span>
       <span className="ul-pin-tail" aria-hidden />
-      {university.rank !== null && university.rank <= 9 ? (
-        <span className="ul-pin-rank">{university.rank}</span>
-      ) : null}
-      {selected ? <span className="ul-pin-name">{university.name}</span> : null}
+      {university.nearest ? <span className="ul-pin-dot" aria-hidden /> : null}
+      <span className="ul-pin-label" aria-hidden>
+        <span className="ul-pin-name">{university.name}</span>
+        {university.distanceLabel ? <span className="ul-pin-distance">{university.distanceLabel}</span> : null}
+      </span>
     </div>
   );
 }

@@ -4,7 +4,15 @@
 export const NEARBY_LEVELS = ["BACHELOR", "MASTER", "DOCTORATE", "DIPLOMA", "CERTIFICATE"] as const;
 export type NearbyLevel = (typeof NEARBY_LEVELS)[number];
 
+/** Quick picks beside the distance slider. */
 export const NEARBY_RADII = [10, 25, 50, 100] as const;
+export const NEARBY_RADIUS_MIN = 5;
+export const NEARBY_RADIUS_MAX = 150;
+
+/** A whole number of kilometres the slider can produce. */
+export function isNearbyRadius(value: number) {
+  return Number.isInteger(value) && value >= NEARBY_RADIUS_MIN && value <= NEARBY_RADIUS_MAX;
+}
 
 /** Filters as they travel in the /nearby URL. The visitor's location never does. */
 export type NearbyFilters = {
@@ -26,14 +34,14 @@ export function parseNearbyFilters(
     return typeof value === "string" ? value : undefined;
   };
   const field = one("field");
-  const level = one("level");
   const type = one("type");
   const radius = Number(one("radius"));
   return {
     field: field && fields.includes(field) ? field : null,
-    level: NEARBY_LEVELS.includes(level as NearbyLevel) ? (level as NearbyLevel) : null,
+    // Study level is no longer a filter on the map; old links drop it.
+    level: null,
     type: type === "NATIONAL" || type === "PRIVATE" ? type : null,
-    radius: (NEARBY_RADII as readonly number[]).includes(radius) ? radius : null,
+    radius: isNearbyRadius(radius) ? radius : null,
     start: one("start") === "pick" ? "pick" : "locate",
   };
 }

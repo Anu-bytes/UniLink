@@ -189,7 +189,7 @@ export default async function HomePage() {
       />
 
       {/* FIND NEAREST: the map search, with its own launch button */}
-      <NearbySection fields={nearby.fields} levels={nearby.levels} access={nearbyAccess} />
+      <NearbySection catalog={nearby} access={nearbyAccess} />
 
 
       {/* FEATURED UNIVERSITIES */}

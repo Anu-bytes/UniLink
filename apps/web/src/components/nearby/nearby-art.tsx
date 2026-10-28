@@ -1,138 +1,243 @@
-import { GraduationCap, LocateFixed, Navigation } from "lucide-react";
+import { ChevronDown, LocateFixed, Minus, Plus } from "lucide-react";
 
+import { UniversityLogo } from "@/components/university-logo";
+import type { NearbyUniversity } from "@/lib/nearby";
 import { cn } from "@/lib/utils";
 
+/** Tahrir Square: the example starting point for the homepage preview. */
+export const PREVIEW_ORIGIN = { lat: 30.0444, lng: 31.2357 };
+
+export type PreviewItem = {
+  slug: string;
+  name: string;
+  logoUrl: string | null;
+  city: string;
+  km: number;
+  /** Position over the drawn map, in % of its box. */
+  x: number;
+  y: number;
+};
+
+function km(a: { lat: number; lng: number }, b: { lat: number; lng: number }) {
+  const rad = Math.PI / 180;
+  const h =
+    Math.sin(((b.lat - a.lat) * rad) / 2) ** 2 +
+    Math.cos(a.lat * rad) * Math.cos(b.lat * rad) * Math.sin(((b.lng - a.lng) * rad) / 2) ** 2;
+  return 2 * 6371 * Math.asin(Math.sqrt(h));
+}
+
 /**
- * A drawn (not live) UniLink map: streets, a search circle around "you",
- * university pins dropping in and a dashed route to the nearest. Used on the
- * homepage section and behind the sign-in prompt, so no map tiles or real
- * locations are involved.
+ * The nearest mapped universities to the example point, laid out by their
+ * real coordinates so the preview matches what the live map would show.
  */
-export function NearbyArt({
-  youLabel,
-  distanceLabel,
-  foundLabel,
-  nearestLabel,
+export function previewItems(universities: NearbyUniversity[], count = 4): { items: PreviewItem[]; origin: { x: number; y: number } } {
+  const near = universities
+    .filter((u) => u.lat !== null && u.lng !== null)
+    .map((u) => ({ u, km: km(PREVIEW_ORIGIN, { lat: u.lat!, lng: u.lng! }) }))
+    .sort((a, b) => a.km - b.km)
+    .slice(0, count);
+
+  const lats = [PREVIEW_ORIGIN.lat, ...near.map((n) => n.u.lat!)];
+  const lngs = [PREVIEW_ORIGIN.lng, ...near.map((n) => n.u.lng!)];
+  const minLat = Math.min(...lats);
+  const maxLat = Math.max(...lats);
+  const minLng = Math.min(...lngs);
+  const maxLng = Math.max(...lngs);
+  // Keep a margin so pins and their labels stay inside the frame.
+  const project = (lat: number, lng: number) => ({
+    x: 14 + ((lng - minLng) / (maxLng - minLng || 1)) * 72,
+    y: 20 + (1 - (lat - minLat) / (maxLat - minLat || 1)) * 60,
+  });
+
+  return {
+    origin: project(PREVIEW_ORIGIN.lat, PREVIEW_ORIGIN.lng),
+    items: near.map(({ u, km: distance }) => ({
+      slug: u.slug,
+      name: u.name,
+      logoUrl: u.logoUrl,
+      city: u.city,
+      km: distance,
+      ...project(u.lat!, u.lng!),
+    })),
+  };
+}
+
+/**
+ * A still, product-accurate preview of the /nearby screen: filter pills, the
+ * results list and the map with pins, the visitor's dot and the route to the
+ * nearest. Motion is CSS only (pins settle, the radius sweeps).
+ */
+export function NearbyPreview({
+  items,
+  origin,
+  labels,
   className,
 }: {
-  youLabel: string;
-  distanceLabel: string;
-  foundLabel: string;
-  nearestLabel: string;
+  items: PreviewItem[];
+  origin: { x: number; y: number };
+  labels: {
+    from: string;
+    field: string;
+    distance: string;
+    count: string;
+    context: string;
+    you: string;
+    nearest: string;
+    km: (value: number) => string;
+  };
   className?: string;
 }) {
-  // Pins as % positions over the drawing; the first one is the nearest.
-  const pins = [
-    { x: 66, y: 34, delay: 0.15 },
-    { x: 24, y: 26, delay: 0.3 },
-    { x: 80, y: 66, delay: 0.45 },
-    { x: 30, y: 74, delay: 0.6 },
-    { x: 52, y: 20, delay: 0.75 },
-  ];
+  const nearest = items[0];
 
   return (
     <div
       aria-hidden
       className={cn(
-        "ul-art relative aspect-[4/3] w-full overflow-hidden rounded-[28px] bg-[#EEF3FB] ring-1 ring-[#DCE6F7]",
+        "overflow-hidden rounded-2xl bg-white shadow-[0_30px_70px_-30px_rgba(15,23,42,0.45),0_0_0_1px_rgba(15,23,42,0.07)]",
         className,
       )}
     >
-      <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice" className="absolute inset-0 size-full">
-        {/* City blocks */}
-        <g fill="#E3EBF8">
-          <rect x="18" y="20" width="70" height="44" rx="8" />
-          <rect x="104" y="20" width="96" height="44" rx="8" />
-          <rect x="216" y="20" width="58" height="62" rx="8" />
-          <rect x="292" y="20" width="92" height="40" rx="8" />
-          <rect x="18" y="82" width="54" height="80" rx="8" />
-          <rect x="292" y="78" width="92" height="70" rx="8" />
-          <rect x="18" y="180" width="80" height="50" rx="8" />
-          <rect x="250" y="168" width="60" height="58" rx="8" />
-          <rect x="326" y="166" width="58" height="114" rx="8" />
-          <rect x="18" y="248" width="120" height="40" rx="8" />
-          <rect x="156" y="244" width="76" height="44" rx="8" />
-        </g>
-        {/* Park */}
-        <rect x="112" y="186" width="96" height="40" rx="12" fill="#DDF1E6" />
-        {/* River */}
-        <path d="M-10 150 C 70 130, 120 170, 190 150 S 320 120, 410 150" fill="none" stroke="#CFE0FB" strokeWidth="16" strokeLinecap="round" />
-        {/* Streets */}
-        <g fill="none" stroke="#FFFFFF" strokeLinecap="round">
-          <path d="M0 72 H400" strokeWidth="9" />
-          <path d="M0 238 H400" strokeWidth="9" />
-          <path d="M96 0 V300" strokeWidth="9" />
-          <path d="M284 0 V300" strokeWidth="9" />
-          <path d="M210 0 V140 M240 160 V300" strokeWidth="6" />
-          <path d="M0 174 H90 M110 178 H400" strokeWidth="5" />
-        </g>
-        {/* Search radius around the visitor */}
-        <circle cx="168" cy="150" r="112" fill="#1E6DEB" fillOpacity="0.06" stroke="#1E6DEB" strokeOpacity="0.45" strokeWidth="1.5" strokeDasharray="6 6" className="ul-art-radius" />
-        {/* Route to the nearest pin */}
-        <path d="M168 150 C 200 130, 236 118, 264 108" fill="none" stroke="#F82C1F" strokeWidth="3" strokeDasharray="2 8" strokeLinecap="round" className="ul-route" />
-      </svg>
+      {/* Toolbar */}
+      <div className="flex items-center gap-2 border-b border-slate-200 px-4 py-2.5">
+        <Pill active icon={<LocateFixed className="size-3.5" />}>
+          {labels.from}
+        </Pill>
+        <span className="mx-0.5 h-4 w-px bg-slate-200" />
+        <Pill active>{labels.field}</Pill>
+        <Pill>{labels.distance}</Pill>
+      </div>
 
-      {/* The visitor */}
-      <span className="absolute left-[42%] top-1/2 -translate-x-1/2 -translate-y-1/2">
-        <span className="ul-me-halo absolute -inset-4 rounded-full" />
-        <span className="relative flex size-6 items-center justify-center rounded-full border-[3px] border-white bg-[#1E6DEB] shadow-[0_4px_12px_-2px_rgba(30,109,235,0.8)]" />
-        <span className="absolute left-1/2 top-[calc(100%+6px)] -translate-x-1/2 whitespace-nowrap rounded-full bg-[#1E6DEB] px-2 py-0.5 text-[11px] font-extrabold text-white shadow-[0_6px_14px_-6px_rgba(30,109,235,0.9)]">
-          {youLabel}
-        </span>
-      </span>
+      <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+        {/* List */}
+        <div className="border-e border-slate-200">
+          <div className="border-b border-slate-100 px-4 py-3">
+            <p className="text-[13px] font-semibold text-slate-900">{labels.count}</p>
+            <p className="mt-0.5 truncate text-[11px] text-slate-500">{labels.context}</p>
+          </div>
+          <ul className="divide-y divide-slate-100">
+            {items.map((item, index) => (
+              <li
+                key={item.slug}
+                className={cn("ul-rise flex items-center gap-2.5 px-4 py-2.5", index === 0 && "bg-slate-50")}
+                style={{ "--rise-delay": `${300 + index * 90}ms` } as React.CSSProperties}
+              >
+                <UniversityLogo name={item.name} logoUrl={item.logoUrl} className="size-8 border-slate-200 p-0.5" />
+                <span className="min-w-0 flex-1">
+                  <span className="block truncate text-[12px] font-medium text-slate-900">{item.name}</span>
+                  <span className="block truncate text-[10.5px] text-slate-500">{item.city}</span>
+                </span>
+                <span className="shrink-0 text-[12px] font-semibold tabular-nums text-slate-900">{labels.km(item.km)}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
 
-      {/* Distance chip on the route */}
-      <span className="ul-art-chip absolute left-[54%] top-[34%] -translate-x-1/2 rounded-full bg-[#F82C1F] px-2.5 py-0.5 text-[11px] font-extrabold text-white shadow-[0_8px_18px_-8px_rgba(248,44,31,0.9)]">
-        {distanceLabel}
-      </span>
+        {/* Map */}
+        <div className="relative min-h-[300px] overflow-hidden bg-[#ECEFF3] sm:min-h-[340px]">
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full">
+            <g fill="#E3E7EC">
+              <rect x="4" y="6" width="22" height="14" rx="1.5" />
+              <rect x="30" y="4" width="18" height="20" rx="1.5" />
+              <rect x="56" y="8" width="26" height="12" rx="1.5" />
+              <rect x="6" y="30" width="16" height="22" rx="1.5" />
+              <rect x="62" y="30" width="30" height="16" rx="1.5" />
+              <rect x="8" y="62" width="24" height="16" rx="1.5" />
+              <rect x="40" y="70" width="20" height="24" rx="1.5" />
+              <rect x="68" y="58" width="26" height="30" rx="1.5" />
+            </g>
+            <path d="M38 -5 C 44 20, 36 40, 44 60 S 40 90, 46 110" fill="none" stroke="#D6E2F2" strokeWidth="4" />
+            <g fill="none" stroke="#FFFFFF" strokeLinecap="round">
+              <path d="M0 26 H100 M0 56 H100 M0 86 H100" strokeWidth="1.6" />
+              <path d="M28 0 V100 M54 0 V100 M86 0 V100" strokeWidth="1.6" />
+              <path d="M0 8 L100 70" strokeWidth="1" />
+            </g>
+          </svg>
 
-      {pins.map((pin, index) => (
-        <span
-          key={index}
-          className="ul-art-pin absolute -translate-x-1/2 -translate-y-full"
-          style={{ left: `${pin.x}%`, top: `${pin.y}%`, animationDelay: `${pin.delay}s` }}
-        >
-          <span className="relative flex flex-col items-center">
-            {index === 0 ? <span className="ul-pin-pulse !left-0 !top-0 !size-10" /> : null}
+          {/* Radius sweep and route, drawn in % of the box. */}
+          <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full overflow-visible">
+            <circle cx={origin.x} cy={origin.y} r="38" fill="#1E6DEB" fillOpacity="0.05" stroke="#1E6DEB" strokeOpacity="0.4" strokeWidth="0.3" vectorEffect="non-scaling-stroke" />
+            <circle cx={origin.x} cy={origin.y} r="38" fill="#1E6DEB" fillOpacity="0.08" className="ul-art-sweep" />
+            {nearest ? (
+              <line
+                x1={origin.x}
+                y1={origin.y}
+                x2={nearest.x}
+                y2={nearest.y - 4}
+                stroke="#0F172A"
+                strokeOpacity="0.7"
+                strokeWidth="2"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                className="ul-art-route"
+              />
+            ) : null}
+          </svg>
+
+          {nearest ? (
             <span
-              className={cn(
-                "relative flex size-10 items-center justify-center rounded-full bg-white shadow-[0_10px_20px_-8px_rgba(15,23,42,0.5)]",
-                index === 0 ? "ring-[3px] ring-[#F82C1F]" : "ring-[3px] ring-[#1E6DEB]",
-              )}
+              className="ul-rise absolute -translate-x-1/2 -translate-y-1/2 rounded-md border border-slate-900/5 bg-white px-1.5 py-0.5 text-[10.5px] font-semibold text-slate-900 shadow-sm"
+              style={{
+                // A third of the way along, clear of the pin's own label.
+                left: `${origin.x + (nearest.x - origin.x) * 0.38}%`,
+                top: `${origin.y + (nearest.y - 4 - origin.y) * 0.38}%`,
+                "--rise-delay": "900ms",
+              } as React.CSSProperties}
             >
-              <GraduationCap className={cn("size-5", index === 0 ? "text-[#F82C1F]" : "text-[#1E6DEB]")} />
+              {labels.km(nearest.km)}
             </span>
-            <span
-              className={cn(
-                "-mt-px h-0 w-0 border-x-[7px] border-t-[10px] border-x-transparent",
-                index === 0 ? "border-t-[#F82C1F]" : "border-t-[#1E6DEB]",
-              )}
-            />
-            <span
-              className={cn(
-                "absolute -end-1.5 -top-1.5 flex size-5 items-center justify-center rounded-full text-[10px] font-extrabold text-white ring-2 ring-white",
-                index === 0 ? "bg-[#F82C1F]" : "bg-[#1E6DEB]",
-              )}
-            >
-              {index + 1}
-            </span>
-          </span>
-        </span>
-      ))}
+          ) : null}
 
-      {/* Floating result card */}
-      <div className="ul-art-card absolute inset-x-4 bottom-4 flex items-center gap-3 rounded-2xl bg-white/95 p-3 shadow-[0_18px_40px_-20px_rgba(15,23,42,0.6)] ring-1 ring-black/5 sm:inset-x-auto sm:end-4 sm:w-[300px]">
-        <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white">
-          <LocateFixed className="size-5" />
-        </span>
-        <span className="min-w-0">
-          <span className="block text-[13px] font-extrabold leading-snug text-[#16233F]">{foundLabel}</span>
-          <span className="mt-0.5 flex items-center gap-1 truncate text-[11px] font-semibold text-[#F82C1F]">
-            <Navigation className="size-3 shrink-0" />
-            {nearestLabel}
+          {/* The visitor */}
+          <span className="absolute size-[18px] -translate-x-1/2 -translate-y-1/2" style={{ left: `${origin.x}%`, top: `${origin.y}%` }}>
+            <span className="ul-me-halo" />
+            <span className="ul-me-dot" />
           </span>
-        </span>
+
+          {items.map((item, index) => (
+            <span
+              key={item.slug}
+              className="absolute -translate-x-1/2 -translate-y-full"
+              style={{ left: `${item.x}%`, top: `${item.y}%` }}
+            >
+              <span
+                className={cn("ul-art-pin ul-pin !h-auto !w-auto", index === 0 && "is-selected")}
+                style={{ "--pin-delay": `${200 + index * 110}ms` } as React.CSSProperties}
+              >
+                <span className="ul-pin-head !size-9">
+                  <UniversityLogo name={item.name} logoUrl={item.logoUrl} className="size-full border-0 p-1" />
+                </span>
+                <span className="ul-pin-tail" />
+                {index === 0 ? (
+                  <span className="ul-pin-label !max-w-[180px] !text-[11px]">
+                    <span className="ul-pin-name">{labels.nearest}</span>
+                  </span>
+                ) : null}
+              </span>
+            </span>
+          ))}
+
+          <div className="absolute end-2.5 top-2.5 flex flex-col overflow-hidden rounded-lg bg-white shadow-[0_2px_8px_rgba(15,23,42,0.12),0_0_0_1px_rgba(15,23,42,0.06)]">
+            <span className="flex size-7 items-center justify-center text-slate-500"><Plus className="size-3.5" /></span>
+            <span className="mx-1.5 h-px bg-slate-100" />
+            <span className="flex size-7 items-center justify-center text-slate-500"><Minus className="size-3.5" /></span>
+          </div>
+        </div>
       </div>
     </div>
+  );
+}
+
+function Pill({ active = false, icon, children }: { active?: boolean; icon?: React.ReactNode; children: React.ReactNode }) {
+  return (
+    <span
+      className={cn(
+        "inline-flex h-7 items-center gap-1 whitespace-nowrap rounded-full border px-2.5 text-[11.5px] font-medium",
+        active ? "border-[#1E6DEB]/30 bg-[#EFF5FF] text-[#1E6DEB]" : "border-slate-200 text-slate-600",
+      )}
+    >
+      {icon}
+      <span className="max-w-[120px] truncate">{children}</span>
+      <ChevronDown className="size-3 opacity-60" />
+    </span>
   );
 }

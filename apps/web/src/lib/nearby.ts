@@ -15,6 +15,12 @@ export type NearbyProgram = {
   field: string;
   level: NearbyLevel;
   faculty: string | null;
+  /** Tuition as stored (EGP unless `currency` says otherwise); null when unknown. */
+  fee: number | null;
+  currency: string;
+  feePeriod: "YEAR" | "TERM" | "TOTAL";
+  durationMonths: number | null;
+  durationLabel: string | null;
 };
 
 export type NearbyUniversity = {
@@ -25,6 +31,8 @@ export type NearbyUniversity = {
   governorate: string | null;
   type: "NATIONAL" | "PRIVATE";
   logoUrl: string | null;
+  /** The profile's cover photo, or its first gallery image. */
+  coverUrl: string | null;
   /** Null when the campus has no coordinates on file yet. */
   lat: number | null;
   lng: number | null;
@@ -67,6 +75,8 @@ export const getNearbyCatalog = unstable_cache(
         cityAr: true,
         type: true,
         logoUrl: true,
+        coverImageUrl: true,
+        images: { orderBy: { sortOrder: "asc" }, take: 1, select: { url: true } },
         latitude: true,
         longitude: true,
         programs: {
@@ -78,6 +88,12 @@ export const getNearbyCatalog = unstable_cache(
             slug: true,
             fieldOfStudy: true,
             studyLevel: true,
+            tuitionFee: true,
+            currency: true,
+            tuitionPeriod: true,
+            durationMonths: true,
+            durationLabel: true,
+            durationLabelAr: true,
             faculty: { select: { name: true, nameAr: true } },
           },
         },
@@ -98,6 +114,11 @@ export const getNearbyCatalog = unstable_cache(
           field: program.fieldOfStudy,
           level: program.studyLevel,
           faculty: program.faculty ? localized(locale, program.faculty.name, program.faculty.nameAr) : null,
+          fee: program.tuitionFee === null ? null : Number(program.tuitionFee),
+          currency: program.currency,
+          feePeriod: program.tuitionPeriod,
+          durationMonths: program.durationMonths,
+          durationLabel: program.durationLabel ? localized(locale, program.durationLabel, program.durationLabelAr) : null,
         };
       });
       for (const field of fieldsHere) fieldCounts.set(field, (fieldCounts.get(field) ?? 0) + 1);
@@ -116,6 +137,7 @@ export const getNearbyCatalog = unstable_cache(
         governorate: governorateOf(locale, row.city),
         type: row.type,
         logoUrl: safeImageUrl(row.logoUrl),
+        coverUrl: safeImageUrl(row.coverImageUrl ?? row.images[0]?.url ?? null),
         lat: hasPoint ? row.latitude : null,
         lng: hasPoint ? row.longitude : null,
         programs,

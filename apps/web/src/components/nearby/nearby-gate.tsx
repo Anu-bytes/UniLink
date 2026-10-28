@@ -1,69 +1,74 @@
-import { ArrowRight, Check, Lock } from "lucide-react";
+import { Check, Lock } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 
-import { NearbyArt } from "@/components/nearby/nearby-art";
+import { NearbyPreview, previewItems } from "@/components/nearby/nearby-art";
 import { Link } from "@/i18n/navigation";
+import type { NearbyCatalog } from "@/lib/nearby";
 
 /** Shown to a guest whose one free "Find nearest" search is used up. */
-export async function NearbyGate({ callbackUrl }: { callbackUrl: string }) {
+export async function NearbyGate({ catalog, callbackUrl }: { catalog: NearbyCatalog; callbackUrl: string }) {
   const t = await getTranslations("Nearby");
   const perks = t.raw("gate.perks") as string[];
+  const { items, origin } = previewItems(catalog.universities);
+  const km = (value: number) => t("km", { value: value < 10 ? value.toFixed(1) : Math.round(value) });
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-b from-[#F6F9FF] to-white">
-      <div className="mx-auto grid max-w-6xl items-center gap-10 px-4 py-12 md:px-6 md:py-16 lg:grid-cols-2 lg:gap-14">
-        <div className="relative order-2 lg:order-1">
-          <NearbyArt
-            youLabel={t("map.you")}
-            distanceLabel={t("km", { value: "3.2" })}
-            foundLabel={t("art.found")}
-            nearestLabel={t("art.nearest")}
-            className="blur-[1.5px] saturate-[0.85]"
-          />
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="flex size-16 items-center justify-center rounded-2xl bg-white text-[#1E6DEB] shadow-[0_20px_40px_-18px_rgba(15,23,42,0.6)] ring-1 ring-black/5">
-              <Lock className="size-7" aria-hidden />
-            </span>
-          </div>
-        </div>
-
-        <div className="order-1 text-center lg:order-2 lg:text-start">
-          <span className="inline-flex items-center gap-1.5 rounded-full bg-[#FFF0EE] px-3 py-1 text-xs font-bold text-[#C81F15]">
-            {t("gate.badge")}
+    <section className="bg-[#F8FAFC]">
+      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-2 lg:gap-16">
+        <div>
+          <span className="inline-flex size-10 items-center justify-center rounded-xl bg-white text-slate-600 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_0_0_1px_rgba(15,23,42,0.06)]">
+            <Lock className="size-[18px]" aria-hidden />
           </span>
-          <h1 className="mt-4 text-[clamp(1.6rem,3.6vw,2.4rem)] font-extrabold leading-tight tracking-tight text-[#16233F]">
+          <h1 className="mt-5 text-[clamp(1.6rem,3.2vw,2.25rem)] font-semibold leading-tight tracking-tight text-slate-900">
             {t("gate.title")}
           </h1>
-          <p className="mx-auto mt-3 max-w-lg text-base leading-7 text-[#5a6072] lg:mx-0">{t("gate.subtitle")}</p>
+          <p className="mt-3 max-w-lg text-base leading-7 text-slate-600">{t("gate.subtitle")}</p>
 
-          <ul className="mx-auto mt-6 max-w-md space-y-2.5 text-start lg:mx-0">
+          <ul className="mt-6 space-y-3">
             {perks.map((perk) => (
-              <li key={perk} className="flex items-start gap-2.5 text-[15px] text-[#1F2A44]">
-                <span className="mt-0.5 flex size-5 shrink-0 items-center justify-center rounded-full bg-[#E7F6EE] text-[#0F7B45]">
-                  <Check className="size-3.5" aria-hidden />
-                </span>
+              <li key={perk} className="flex items-start gap-3 text-[15px] leading-6 text-slate-700">
+                <Check className="mt-1 size-4 shrink-0 text-[#1E6DEB]" aria-hidden />
                 {perk}
               </li>
             ))}
           </ul>
 
-          <div className="mt-8 flex flex-col items-center gap-3 sm:flex-row sm:justify-center lg:justify-start">
+          <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
               href="/signup"
-              className="inline-flex h-12 w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E6DEB] to-[#2F7BF5] px-7 text-[15px] font-bold text-white shadow-[0_12px_26px_-12px_rgba(30,109,235,0.95)] transition-all hover:-translate-y-0.5 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] sm:w-auto rtl:bg-gradient-to-l"
+              className="inline-flex h-11 items-center justify-center rounded-lg bg-[#1E6DEB] px-6 text-[15px] font-semibold text-white shadow-[0_1px_2px_rgba(15,23,42,0.1)] transition-colors hover:bg-[#1857C4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
             >
               {t("gate.signup")}
-              <ArrowRight className="size-4 rtl:rotate-180" aria-hidden />
             </Link>
             <Link
               href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
-              className="inline-flex h-12 w-full items-center justify-center rounded-xl border border-slate-200 bg-white px-7 text-[15px] font-bold text-[#1F2A44] transition-colors hover:border-[#1E6DEB] hover:text-[#1E6DEB] sm:w-auto"
+              className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-200 bg-white px-6 text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
             >
               {t("gate.login")}
             </Link>
           </div>
-          <p className="mt-4 text-xs text-[#98A0B4]">{t("gate.free")}</p>
+          <p className="mt-4 text-sm text-slate-500">{t("gate.free")}</p>
         </div>
+
+        {items.length ? (
+          <div className="relative">
+            <NearbyPreview
+              items={items}
+              origin={origin}
+              className="pointer-events-none select-none opacity-60 blur-[2px]"
+              labels={{
+                from: t("preview.from"),
+                field: t("controls.anyField"),
+                distance: t("controls.anyDistance"),
+                count: t("list.count", { count: items.length }),
+                context: t("preview.context"),
+                you: t("map.you"),
+                nearest: t("card.nearest"),
+                km,
+              }}
+            />
+          </div>
+        ) : null}
       </div>
     </section>
   );
