@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { auth } from "@/auth";
-import { NEARBY_LEVELS, NEARBY_RADII } from "@/lib/nearby-filters";
+import { isNearbyRadius } from "@/lib/nearby-filters";
 import {
   NEARBY_TRIAL_COOKIE,
   TRIAL_COOKIE_MAX_AGE,
@@ -25,12 +25,10 @@ export async function GET(request: NextRequest) {
   const forward = new URLSearchParams();
   const field = params.get("field");
   if (field && /^[a-z_]{2,40}$/.test(field)) forward.set("field", field);
-  const level = params.get("level");
-  if (level && (NEARBY_LEVELS as readonly string[]).includes(level)) forward.set("level", level);
   const type = params.get("type");
   if (type === "NATIONAL" || type === "PRIVATE") forward.set("type", type);
   const radius = Number(params.get("radius"));
-  if ((NEARBY_RADII as readonly number[]).includes(radius)) forward.set("radius", String(radius));
+  if (isNearbyRadius(radius)) forward.set("radius", String(radius));
   if (params.get("start") === "pick") forward.set("start", "pick");
 
   const session = await auth();
