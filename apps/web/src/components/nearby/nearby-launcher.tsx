@@ -81,6 +81,8 @@ export function NearbyLauncher({
     setSubmitting(true);
     if (guest) {
       const query = nearbyHref(filters).split("?")[1];
+      // A route handler, not a page: it must be a full request so its cookie is set.
+      // eslint-disable-next-line @next/next/no-location-assign-relative-destination
       window.location.assign(`/api/nearby/start?locale=${locale}${query ? `&${query}` : ""}`);
     } else {
       router.push(nearbyHref(filters));

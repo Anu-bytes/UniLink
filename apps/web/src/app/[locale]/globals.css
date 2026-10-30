@@ -1379,6 +1379,49 @@ html[lang="ar"] body {
 .ul-map .leaflet-control-attribution a {
   color: #475569;
 }
+/* Outside Egypt: frosted and blurred (the clip path is set from JS). */
+.ul-frost {
+  position: absolute;
+  /* Anchored to the pane's origin; without this an RTL page anchors it right. */
+  top: 0;
+  left: 0;
+  pointer-events: none;
+  background: rgb(241 245 249 / 0.45);
+  -webkit-backdrop-filter: blur(6px) saturate(0.6);
+  backdrop-filter: blur(6px) saturate(0.6);
+}
+/* Place labels drawn over the frost (Palestine). */
+.ul-place-icon {
+  background: none;
+  border: 0;
+}
+.ul-place {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  transform: translate(-50%, -50%);
+  white-space: nowrap;
+  border-radius: 9999px;
+  background: rgb(255 255 255 / 0.92);
+  padding: 4px 10px 4px 6px;
+  font-size: 12px;
+  font-weight: 600;
+  color: #1e293b;
+  box-shadow:
+    0 2px 8px rgb(15 23 42 / 0.18),
+    0 0 0 1px rgb(15 23 42 / 0.06);
+  width: max-content;
+}
+[dir="rtl"] .ul-place {
+  padding: 4px 6px 4px 10px;
+}
+.ul-place svg {
+  width: 22px;
+  height: 11px;
+  flex-shrink: 0;
+  border-radius: 2px;
+  box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+}
 .ul-radius {
   transition: stroke-opacity 0.2s;
 }
