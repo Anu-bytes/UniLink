@@ -3,29 +3,9 @@ import { getTranslations } from "next-intl/server";
 
 import { Paragraphs } from "@/components/university/prose";
 
-// Fixed order, must match the length and order of Privacy.sections in both
-// messages/en.json and messages/ar.json — each slug is zipped by index with
-// the translated section to build a stable anchor id that both locales share.
-const SECTION_SLUGS = [
-  "introduction",
-  "controller",
-  "data-we-collect",
-  "how-we-collect",
-  "how-we-use",
-  "legal-bases",
-  "cookies",
-  "sharing",
-  "transfers",
-  "retention",
-  "your-rights",
-  "children",
-  "security",
-  "third-party",
-  "changes",
-  "contact",
-] as const;
-
-type Section = { heading: string; body: string };
+// Each section carries its own `id`, used for its anchor and shared by both
+// languages so a link to #data-sharing works on either.
+type Section = { id: string; heading: string; body: string };
 
 export default async function PrivacyPage() {
   const t = await getTranslations("Privacy");
@@ -63,9 +43,9 @@ export default async function PrivacyPage() {
           <p className="text-sm font-bold text-[#1F2A44]">{t("tocTitle")}</p>
           <ol className="mt-3 space-y-2 text-sm">
             {sections.map((section, index) => (
-              <li key={SECTION_SLUGS[index]}>
+              <li key={section.id}>
                 <a
-                  href={`#${SECTION_SLUGS[index]}`}
+                  href={`#${section.id}`}
                   className="text-[#5a6072] transition-colors hover:text-[#1E6DEB]"
                 >
                   {index + 1}. {section.heading}
@@ -81,8 +61,8 @@ export default async function PrivacyPage() {
           <ol className="mt-10 space-y-12">
             {sections.map((section, index) => (
               <li
-                key={SECTION_SLUGS[index]}
-                id={SECTION_SLUGS[index]}
+                key={section.id}
+                id={section.id}
                 className="scroll-mt-24"
               >
                 <h2 className="text-xl font-bold text-[#1F2A44] md:text-2xl">

@@ -9,8 +9,11 @@ import { GoogleIcon } from "@/components/social-icons";
 export function SocialAuthButtons({
   googleLabel,
   callbackUrl,
+  onBeforeSignIn,
 }: {
   googleLabel: string;
+  /** Return false to stop the sign-in, e.g. while the terms box is unticked. */
+  onBeforeSignIn?: () => boolean;
   /** Where the auth gate wanted to send the visitor before it redirected
    * here, same prop as LoginForm's. */
   callbackUrl?: string;
@@ -30,7 +33,10 @@ export function SocialAuthButtons({
         type="button"
         variant="outline"
         className="gap-2"
-        onClick={() => signIn("google", { callbackUrl: target })}
+        onClick={() => {
+          if (onBeforeSignIn && !onBeforeSignIn()) return;
+          void signIn("google", { callbackUrl: target });
+        }}
       >
         <GoogleIcon />
         {googleLabel}

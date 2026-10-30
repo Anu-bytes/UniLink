@@ -161,7 +161,7 @@ export const accountSchema = z.object({
     .regex(/[A-Z]/, "Password must contain an uppercase letter")
     .regex(/[0-9]/, "Password must contain a number"),
   acceptTerms: z.literal(true, {
-    message: "You must accept the terms to continue",
+    message: "You must accept the Terms of Service and Privacy Policy to continue",
   }),
 });
 

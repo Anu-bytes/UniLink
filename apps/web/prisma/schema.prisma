@@ -45,6 +45,11 @@ model User {
   statusReason        String?
   statusChangedAt     DateTime?
   lastLoginAt         DateTime?
+  // When, and which version of, the Terms of Service and Privacy Policy the
+  // user accepted (LEGAL_VERSION in src/lib/legal.ts). Null for accounts
+  // created before acceptance was recorded.
+  termsAcceptedAt     DateTime?
+  termsVersion        String?
   accounts            Account[]
   sessions            Session[]
   studentProfile      StudentProfile?

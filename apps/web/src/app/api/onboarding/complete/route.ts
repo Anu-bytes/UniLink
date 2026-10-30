@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { auth } from "@/auth";
 import { googleWizardAccountSchema } from "@/lib/onboarding-schema";
+import { legalAcceptance } from "@/lib/legal";
 import { prisma } from "@/lib/prisma";
 
 export const dynamic = "force-dynamic";
@@ -63,6 +64,8 @@ export async function POST(request: Request) {
         phone,
         name: `${firstName} ${lastName}`,
         ...(roleIsWizardChoice ? { role: accountRole } : {}),
+        // acceptTerms is required by googleWizardAccountSchema above.
+        ...legalAcceptance(),
       },
     });
 
