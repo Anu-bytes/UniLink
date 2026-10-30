@@ -23,7 +23,10 @@ const csp = [
   // narrowed to next.config's images.remotePatterns without breaking them.
   "img-src 'self' https: data: blob:",
   "font-src 'self' data:",
-  `connect-src 'self'${isDev ? " ws: wss:" : ""}`,
+  // tiles.openfreemap.org: the /nearby map's vector style, tiles and fonts.
+  `connect-src 'self' https://tiles.openfreemap.org${isDev ? " ws: wss:" : ""}`,
+  // MapLibre's web worker (public/vendor) and the blob URLs it may use.
+  "worker-src 'self' blob:",
   // The only <iframe> on the site is the campus map embed on a university's
   // Location tab (tab-location.tsx). No frame-src falls back to
   // default-src 'self', which blocks it.
