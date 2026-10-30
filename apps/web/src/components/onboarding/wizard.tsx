@@ -49,6 +49,7 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
     email: string;
     phone: string;
     password: string;
+    acceptTerms: true;
   }) {
     setError(null);
     setPhase("submitting");
@@ -60,13 +61,12 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
       lastName,
       accountRole,
       password,
-      acceptTerms: _t,
+      acceptTerms,
       ...profile
     } = {
       ...data,
       ...account,
     };
-    void _t;
 
     try {
       const res = await fetch("/api/register", {
@@ -79,6 +79,8 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
           lastName,
           accountRole,
           password,
+          // The server refuses to register without it, and records it.
+          acceptTerms,
           profile,
         }),
       });

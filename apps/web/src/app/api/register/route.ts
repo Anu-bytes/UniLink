@@ -3,9 +3,16 @@ import { NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
 
+import { legalAcceptance } from "@/lib/legal";
 import { prisma } from "@/lib/prisma";
 import { ACCOUNT_ROLES, profileSchema } from "@/lib/onboarding-schema";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
+
+// Both signup paths refuse to create an account unless the Terms of Service
+// and Privacy Policy were accepted; the acceptance is stored on the user.
+const acceptTerms = z.literal(true, {
+  error: "You must accept the Terms of Service and Privacy Policy",
+});
 
 // Base (email-only) signup, still used by the simple signup form. Password
 // stays at min 8 here for backward compatibility; the onboarding path below
@@ -19,6 +26,7 @@ const baseSchema = z.object({
     .regex(/[A-Z]/, "Password must contain an uppercase letter")
     .regex(/[0-9]/, "Password must contain a number"),
   name: z.string().trim().min(1).optional(),
+  acceptTerms,
 });
 
 // Onboarding wizard payload: base credentials + the collected profile. The
@@ -33,6 +41,7 @@ const onboardingSchema = z.object({
   // way.
   accountRole: z.enum(ACCOUNT_ROLES),
   password: z.string().min(10, "Password must be at least 10 characters"),
+  acceptTerms,
   profile: profileSchema,
 });
 
@@ -85,7 +94,7 @@ async function registerBasic(body: unknown) {
   const passwordHash = await bcrypt.hash(password, 10);
   try {
     const user = await prisma.user.create({
-      data: { email, name, passwordHash },
+      data: { email, name, passwordHash, ...legalAcceptance() },
       select: { id: true, email: true },
     });
     return NextResponse.json(user, { status: 201 });
@@ -135,6 +144,7 @@ async function registerWithProfile(body: unknown) {
           name: `${firstName} ${lastName}`,
           passwordHash,
           role: accountRole,
+          ...legalAcceptance(),
         },
         select: { id: true, email: true },
       });

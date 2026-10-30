@@ -61,6 +61,20 @@ export default async function LoginPage({
 
         <div className="mt-6 space-y-5">
           <SocialAuthButtons googleLabel={t("google")} callbackUrl={callbackUrl} />
+          <p className="-mt-2 text-center text-xs leading-5 text-muted-foreground">
+            {t.rich("googleTerms", {
+              terms: (chunks) => (
+                <Link href="/terms" target="_blank" className="font-medium text-brand-blue hover:underline">
+                  {chunks}
+                </Link>
+              ),
+              privacy: (chunks) => (
+                <Link href="/privacy" target="_blank" className="font-medium text-brand-blue hover:underline">
+                  {chunks}
+                </Link>
+              ),
+            })}
+          </p>
 
           <div className="flex items-center gap-3">
             <Separator className="flex-1" />

@@ -7,6 +7,7 @@ import { z } from "zod";
 
 import type { UserRole } from "@prisma/client";
 
+import { legalAcceptance } from "@/lib/legal";
 import { prisma } from "@/lib/prisma";
 import { clientIp, rateLimit } from "@/lib/rate-limit";
 
@@ -81,6 +82,15 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     }),
   ],
   events: {
+    // Only OAuth sign-ups create users here (credentials accounts come from
+    // /api/register). Both Google buttons sit with the terms: the signup one
+    // is held back until the box is ticked, the login one states it.
+    createUser: async ({ user }) => {
+      if (!user?.id) return;
+      await prisma.user
+        .update({ where: { id: user.id }, data: legalAcceptance() })
+        .catch(() => undefined);
+    },
     // Shown as "last sign-in" on the admin accounts page.
     signIn: async ({ user }) => {
       if (!user?.id) return;

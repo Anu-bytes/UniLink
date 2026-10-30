@@ -30,6 +30,7 @@ export function AccountStep({
     email: string;
     phone: string;
     password: string;
+    acceptTerms: true;
   }) => void;
   /** Called instead of `onFinish` once `signedInEmail` is set — there is no
    * password to collect since Google already signed the visitor in. */
@@ -72,6 +73,7 @@ export function AccountStep({
       email: valid.email,
       phone: valid.phone,
       password: valid.password,
+      acceptTerms: valid.acceptTerms,
     });
   }
 
@@ -85,13 +87,14 @@ export function AccountStep({
 
   const terms = t.rich("terms", {
     terms: (chunks) => (
-      <Link href="/terms" className="font-medium text-brand-blue hover:underline">
+      <Link href="/terms" target="_blank" className="font-medium text-brand-blue hover:underline">
         {chunks}
       </Link>
     ),
     privacy: (chunks) => (
       <Link
         href="/privacy"
+        target="_blank"
         className="font-medium text-brand-blue hover:underline"
       >
         {chunks}

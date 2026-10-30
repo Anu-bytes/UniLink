@@ -8,12 +8,17 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { PasswordRequirements } from "@/components/password-requirements";
+import { Separator } from "@/components/ui/separator";
+import { SocialAuthButtons } from "@/components/social-auth-buttons";
 
 export function SignupForm({
   labels,
   termsContent,
 }: {
   labels: {
+    google: string;
+    orContinueWith: string;
+    termsRequired: string;
     emailLabel: string;
     emailPlaceholder: string;
     passwordLabel: string;
@@ -33,16 +38,27 @@ export function SignupForm({
   const [password, setPassword] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  // Mandatory for both ways of signing up; checked again by /api/register.
+  const [accepted, setAccepted] = useState(false);
+  const [termsError, setTermsError] = useState(false);
+
+  function requireTerms() {
+    if (accepted) return true;
+    setTermsError(true);
+    document.getElementById("signup-terms")?.focus();
+    return false;
+  }
 
   async function onSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
     setError(null);
+    if (!requireTerms()) return;
     setLoading(true);
 
     const response = await fetch("/api/register", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email, password }),
+      body: JSON.stringify({ email, password, acceptTerms: accepted }),
     });
 
     if (!response.ok) {
@@ -73,7 +89,43 @@ export function SignupForm({
   }
 
   return (
-    <form className="space-y-4" onSubmit={onSubmit}>
+    <form className="space-y-4" onSubmit={onSubmit} noValidate>
+      <div
+        className={
+          termsError
+            ? "rounded-lg border border-destructive/50 bg-destructive/5 p-3"
+            : "rounded-lg border border-slate-200 bg-slate-50 p-3"
+        }
+      >
+        <label className="flex items-start gap-2.5 text-sm leading-6 text-slate-700">
+          <Checkbox
+            id="signup-terms"
+            checked={accepted}
+            onCheckedChange={(value) => {
+              setAccepted(value === true);
+              if (value === true) setTermsError(false);
+            }}
+            aria-invalid={termsError || undefined}
+            aria-describedby={termsError ? "signup-terms-error" : undefined}
+            className="mt-1"
+          />
+          <span>{termsContent}</span>
+        </label>
+        {termsError ? (
+          <p id="signup-terms-error" className="mt-1.5 ps-7 text-sm text-destructive" role="alert">
+            {labels.termsRequired}
+          </p>
+        ) : null}
+      </div>
+
+      <SocialAuthButtons googleLabel={labels.google} onBeforeSignIn={requireTerms} />
+
+      <div className="flex items-center gap-3">
+        <Separator className="flex-1" />
+        <span className="text-xs text-muted-foreground">{labels.orContinueWith}</span>
+        <Separator className="flex-1" />
+      </div>
+
       <div className="space-y-1.5">
         <Label htmlFor="signup-email">{labels.emailLabel}</Label>
         <Input
@@ -102,11 +154,6 @@ export function SignupForm({
         />
         <PasswordRequirements password={password} labels={labels.requirements} />
       </div>
-
-      <label className="flex items-start gap-2 text-sm text-muted-foreground">
-        <Checkbox name="terms" required className="mt-0.5" />
-        <span>{termsContent}</span>
-      </label>
 
       {error ? (
         <p className="text-sm text-destructive" role="alert">
