@@ -9,6 +9,7 @@ import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { UniversityLogo } from "@/components/university-logo";
+import { EGYPT_OUTLINE } from "@/lib/egypt-outline";
 import { cn } from "@/lib/utils";
 
 export type MapPoint = { lat: number; lng: number; /** metres, GPS only */ accuracy?: number };
@@ -37,6 +38,67 @@ const ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
 
 const PIN: L.PointTuple = [44, 52];
+
+// Where the "Palestine" label sits: over the West Bank, clear of the pins
+// on Egypt's Sinai coast.
+const PALESTINE: L.LatLngTuple = [31.95, 35.25];
+
+/** The flag of Palestine: black, white and green bands, red triangle at the hoist. */
+const PALESTINE_FLAG_SVG =
+  '<svg viewBox="0 0 6 3" aria-hidden="true"><rect width="6" height="1" fill="#000"/><rect y="1" width="6" height="1" fill="#fff"/><rect y="2" width="6" height="1" fill="#007A3D"/><path d="M0 0L2 1.5L0 3Z" fill="#CE1126"/></svg>';
+
+/**
+ * A frosted, blurred sheet over everything outside Egypt. It is a Leaflet
+ * layer in its own pane between the tiles and the pins, so pins, the route
+ * and the search circle stay sharp even where they cross the border. The
+ * sheet covers three viewports (one spare on each side, for panning and
+ * zooming out) with Egypt cut out by an even-odd clip path, and it scales
+ * with the tiles during a zoom animation the way Leaflet's image overlays do.
+ */
+const FrostLayer = L.Layer.extend({
+  onAdd(this: L.Layer & { _el: HTMLDivElement; _reset: () => void }, map: L.Map) {
+    this._el = L.DomUtil.create("div", "ul-frost leaflet-zoom-animated", map.getPane("frost"));
+    this._reset();
+    return this;
+  },
+  onRemove(this: { _el: HTMLDivElement }) {
+    this._el.remove();
+    return this;
+  },
+  getEvents(this: { _reset: () => void; _animateZoom: (event: L.ZoomAnimEvent) => void }) {
+    return { zoom: this._reset, viewreset: this._reset, moveend: this._reset, resize: this._reset, zoomanim: this._animateZoom };
+  },
+  _reset(this: L.Layer & { _el: HTMLDivElement; _map: L.Map; _bounds: L.LatLngBounds }) {
+    const map = this._map;
+    const size = map.getSize();
+    const topLeft = map.containerPointToLayerPoint([-size.x, -size.y]).round();
+    const span = size.multiplyBy(3);
+    this._bounds = L.latLngBounds(map.layerPointToLatLng(topLeft), map.layerPointToLatLng(topLeft.add(span)));
+    const holes = EGYPT_OUTLINE.map(
+      (ring) =>
+        "M" +
+        ring
+          .map(([lat, lng]) => {
+            const point = map.latLngToLayerPoint([lat, lng]).subtract(topLeft);
+            return `${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
+          })
+          .join("L") +
+        "Z",
+    ).join("");
+    L.DomUtil.setPosition(this._el, topLeft);
+    this._el.style.width = `${span.x}px`;
+    this._el.style.height = `${span.y}px`;
+    this._el.style.clipPath = `path(evenodd, "M0 0H${span.x}V${span.y}H0Z${holes}")`;
+  },
+  _animateZoom(this: { _el: HTMLDivElement; _map: L.Map; _bounds: L.LatLngBounds }, event: L.ZoomAnimEvent) {
+    const map = this._map as L.Map & {
+      _latLngBoundsToNewLayerBounds: (bounds: L.LatLngBounds, zoom: number, center: L.LatLng) => L.Bounds;
+    };
+    const scale = map.getZoomScale(event.zoom);
+    const offset = map._latLngBoundsToNewLayerBounds(this._bounds, event.zoom, event.center).min!;
+    L.DomUtil.setTransform(this._el, offset, scale);
+  },
+});
 const BRAND = "#1E6DEB";
 
 const reducedMotion = () =>
@@ -150,6 +212,32 @@ export function NearbyMap({
     });
     mapRef.current = map;
 
+    // Everything outside Egypt sits under a frosted, blurred layer that
+    // lives between the base map and the pins (see FrostLayer), with a thin
+    // outline along the border and a Palestine label on top.
+    map.createPane("frost").style.zIndex = "250";
+    new FrostLayer().addTo(map);
+    L.polygon(EGYPT_OUTLINE.map((ring) => ring.map(([lat, lng]) => L.latLng(lat, lng))), {
+      color: BRAND,
+      weight: 1.5,
+      opacity: 0.35,
+      fill: false,
+      interactive: false,
+    }).addTo(map);
+    const palestine = document.createElement("div");
+    palestine.className = "ul-place";
+    palestine.innerHTML = PALESTINE_FLAG_SVG;
+    const name = document.createElement("span");
+    name.textContent = t("map.palestine");
+    palestine.append(name);
+    L.marker(PALESTINE, {
+      icon: L.divIcon({ html: palestine, className: "ul-place-icon", iconSize: [0, 0] }),
+      interactive: false,
+      keyboard: false,
+      // Under any university pin it might meet.
+      zIndexOffset: -1000,
+    }).addTo(map);
+
     // The panel beside the map can resize it (mobile sheet, window resize).
     const observer = new ResizeObserver(() => map.invalidateSize({ pan: false }));
     observer.observe(container);
@@ -166,6 +254,8 @@ export function NearbyMap({
       lineRef.current = null;
       lineLabelRef.current = null;
     };
+    // Created once; a language switch loads a new page, so `t` never changes here.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // One marker per university in the results; new ones pop in.
@@ -411,6 +501,7 @@ export function NearbyMap({
       style={{ "--map-inset-bottom": `${insets.bottom}px` } as React.CSSProperties}
     >
       <div ref={containerRef} className="ul-map h-full w-full bg-[#ECEFF3]" role="application" aria-label={t("map.label")} />
+
 
       {/* Phones (a sheet below): only locate and fit, just above the sheet;
           pinch zooms. Desktop: the full stack, top corner. */}
