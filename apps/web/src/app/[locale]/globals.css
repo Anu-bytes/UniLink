@@ -1357,7 +1357,7 @@ html[lang="ar"] body {
 .ul-map {
   font-family: inherit;
 }
-.ul-map .leaflet-tile-pane {
+.ul-map .ul-fallback-tiles {
   filter: grayscale(1) sepia(0.1) hue-rotate(180deg) saturate(0.85) brightness(1.05) contrast(0.9);
 }
 .ul-map-picking .ul-map,
@@ -1415,12 +1415,34 @@ html[lang="ar"] body {
 [dir="rtl"] .ul-place {
   padding: 4px 6px 4px 10px;
 }
-.ul-place svg {
+.ul-place-flag {
   width: 22px;
   height: 11px;
   flex-shrink: 0;
   border-radius: 2px;
   box-shadow: 0 0 0 1px rgb(0 0 0 / 0.12);
+}
+.ul-place-heart {
+  width: 14px;
+  height: 14px;
+  flex-shrink: 0;
+  animation: ul-heartbeat 1.6s ease-in-out infinite;
+}
+@keyframes ul-heartbeat {
+  0%,
+  60%,
+  100% {
+    transform: scale(1);
+  }
+  15%,
+  40% {
+    transform: scale(1.2);
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .ul-place-heart {
+    animation: none;
+  }
 }
 .ul-radius {
   transition: stroke-opacity 0.2s;

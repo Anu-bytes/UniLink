@@ -1,15 +1,19 @@
 "use client";
 
 import "leaflet/dist/leaflet.css";
+import "maplibre-gl/dist/maplibre-gl.css";
 
+import { maplibreGL } from "@maplibre/maplibre-gl-leaflet";
 import L from "leaflet";
 import { LocateFixed, Minus, Plus, Scan } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { setWorkerUrl } from "maplibre-gl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 
 import { UniversityLogo } from "@/components/university-logo";
 import { EGYPT_OUTLINE } from "@/lib/egypt-outline";
+import { MAP_ATTRIBUTION, loadMapStyle } from "@/lib/map-style";
 import { cn } from "@/lib/utils";
 
 export type MapPoint = { lat: number; lng: number; /** metres, GPS only */ accuracy?: number };
@@ -31,10 +35,14 @@ export type MapInsets = { top: number; bottom: number; start: number };
 const EGYPT_CENTER: L.LatLngTuple = [27.2, 30.8];
 const EGYPT_ZOOM = 6;
 
-// OpenStreetMap's own tiles: no key needed. globals.css (.ul-map) greys them
-// out so the pins carry the page.
-const TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
-const ATTRIBUTION =
+// The basemap is drawn from vector tiles (lib/map-style.ts), so place names
+// can be relabelled. MapLibre runs its tile work in a web worker, served from
+// public/vendor at the exact version installed (package.json pins it).
+setWorkerUrl("/vendor/maplibre-gl-worker-6.16.0.mjs");
+
+// Fallback if the vector style cannot be loaded: OpenStreetMap's own tiles.
+const FALLBACK_TILES = "https://tile.openstreetmap.org/{z}/{x}/{y}.png";
+const FALLBACK_ATTRIBUTION =
   '&copy; <a href="https://www.openstreetmap.org/copyright" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>';
 
 const PIN: L.PointTuple = [44, 52];
@@ -45,7 +53,11 @@ const PALESTINE: L.LatLngTuple = [31.95, 35.25];
 
 /** The flag of Palestine: black, white and green bands, red triangle at the hoist. */
 const PALESTINE_FLAG_SVG =
-  '<svg viewBox="0 0 6 3" aria-hidden="true"><rect width="6" height="1" fill="#000"/><rect y="1" width="6" height="1" fill="#fff"/><rect y="2" width="6" height="1" fill="#007A3D"/><path d="M0 0L2 1.5L0 3Z" fill="#CE1126"/></svg>';
+  '<svg class="ul-place-flag" viewBox="0 0 6 3" aria-hidden="true"><rect width="6" height="1" fill="#000"/><rect y="1" width="6" height="1" fill="#fff"/><rect y="2" width="6" height="1" fill="#007A3D"/><path d="M0 0L2 1.5L0 3Z" fill="#CE1126"/></svg>';
+
+/** A small red heart beside the Palestine tag. */
+const HEART_SVG =
+  '<svg class="ul-place-heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="#E11D48" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 
 /**
  * A frosted, blurred sheet over everything outside Egypt. It is a Leaflet
@@ -158,6 +170,7 @@ export function NearbyMap({
   onLocate: () => void;
 }) {
   const t = useTranslations("Nearby");
+  const locale = useLocale();
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<L.Map | null>(null);
   const markersRef = useRef(new Map<string, L.Marker>());
@@ -200,8 +213,18 @@ export function NearbyMap({
       maxBounds: L.latLngBounds([15, 18], [38, 44]),
       maxBoundsViscosity: 0.8,
     });
-    L.tileLayer(TILES, { maxZoom: 19 }).addTo(map);
-    L.control.attribution({ position: "bottomleft", prefix: false }).addAttribution(ATTRIBUTION).addTo(map);
+    const attribution = L.control.attribution({ position: "bottomleft", prefix: false }).addTo(map);
+    loadMapStyle(locale)
+      .then((style) => {
+        if (mapRef.current !== map) return;
+        maplibreGL({ style, attributionControl: false }).addTo(map);
+        attribution.addAttribution(MAP_ATTRIBUTION);
+      })
+      .catch(() => {
+        if (mapRef.current !== map) return;
+        L.tileLayer(FALLBACK_TILES, { maxZoom: 19, className: "ul-fallback-tiles" }).addTo(map);
+        attribution.addAttribution(FALLBACK_ATTRIBUTION);
+      });
 
     map.on("click", (event: L.LeafletMouseEvent) => {
       if (live.current.picking) {
@@ -230,6 +253,7 @@ export function NearbyMap({
     const name = document.createElement("span");
     name.textContent = t("map.palestine");
     palestine.append(name);
+    palestine.insertAdjacentHTML("beforeend", HEART_SVG);
     L.marker(PALESTINE, {
       icon: L.divIcon({ html: palestine, className: "ul-place-icon", iconSize: [0, 0] }),
       interactive: false,

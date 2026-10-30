@@ -29,6 +29,7 @@
   "dependencies": {
     "@auth/prisma-adapter": "^2.10.0",
     "@base-ui/react": "^1.6.0",
+    "@maplibre/maplibre-gl-leaflet": "^0.1.4",
     "@prisma/client": "^6.5.0",
     "@supabase/supabase-js": "^2.45.0",
     "bcryptjs": "^2.4.3",
@@ -36,6 +37,7 @@
     "clsx": "^2.1.1",
     "leaflet": "^1.9.4",
     "lucide-react": "^1.23.0",
+    "maplibre-gl": "6.16.0",
     "next": "~16.4.3",
     "next-auth": "^5.0.0-beta.29",
     "next-intl": "^4.13.1",
