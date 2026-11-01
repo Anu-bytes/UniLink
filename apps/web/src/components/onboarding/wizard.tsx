@@ -6,6 +6,7 @@ import { signIn } from "next-auth/react";
 
 import { cn } from "@/lib/utils";
 import { WIZARD_STEPS, TOTAL_STEPS } from "@/lib/onboarding-schema";
+import { onboardingErrorKey } from "@/lib/onboarding-errors";
 import { useWizard } from "./wizard-context";
 import { WizardProgress } from "./wizard-progress";
 import { FindingMatches } from "./finding-matches";
@@ -20,6 +21,12 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
 
   const [phase, setPhase] = useState<Phase>("form");
   const [error, setError] = useState<string | null>(null);
+
+  /** The server's (English) error in the page's language. */
+  function serverError(message: string | undefined) {
+    const key = onboardingErrorKey(message);
+    return key ? t(`errors.${key}`) : t("account.genericError");
+  }
 
   // Carries the query typed into the homepage's live-preview search box (if
   // any) through the whole wizard, so finishing registration lands the
@@ -89,7 +96,7 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
         const body = (await res.json().catch(() => ({}))) as {
           error?: string;
         };
-        setError(body.error ?? t("account.genericError"));
+        setError(serverError(body.error));
         setPhase("form");
         return;
       }
@@ -159,7 +166,7 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
         const body = (await res.json().catch(() => ({}))) as {
           error?: string;
         };
-        setError(body.error ?? t("account.genericError"));
+        setError(serverError(body.error));
         setPhase("form");
         return;
       }

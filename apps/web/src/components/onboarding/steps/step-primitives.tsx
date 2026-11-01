@@ -10,15 +10,18 @@ import {
   MessageSquareText,
   Wallet,
 } from "lucide-react";
+import { useTranslations } from "next-intl";
 import type { z } from "zod";
 
+import { onboardingErrorKey } from "@/lib/onboarding-errors";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
 
 // -----------------------------------------------------------------------------
 // useStepForm — a tiny dependency-free replacement for react-hook-form. Holds
 // the step's values, validates them against the step's Zod schema on submit,
-// and maps issues to a { field -> message } record. Same schemas as the API.
+// and maps issues to a { field -> message } record, in the page's language
+// (see lib/onboarding-errors.ts). Same schemas as the API.
 // -----------------------------------------------------------------------------
 
 export function useStepForm<S extends z.ZodTypeAny>(
@@ -29,6 +32,7 @@ export function useStepForm<S extends z.ZodTypeAny>(
     ...(initial as Record<string, unknown>),
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const tErrors = useTranslations("Onboarding.errors");
 
   function setValue(name: string, value: unknown) {
     setValues((prev) => ({ ...prev, [name]: value }));
@@ -49,7 +53,9 @@ export function useStepForm<S extends z.ZodTypeAny>(
     const mapped: Record<string, string> = {};
     for (const issue of result.error.issues) {
       const key = String(issue.path[0] ?? "form");
-      if (!mapped[key]) mapped[key] = issue.message;
+      if (mapped[key]) continue;
+      const messageKey = onboardingErrorKey(issue.message, key);
+      mapped[key] = tErrors(messageKey ?? "generic");
     }
     setErrors(mapped);
     return null;
