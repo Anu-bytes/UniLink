@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { after } from "next/server";
 import { notFound } from "next/navigation";
-import { getLocale } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { auth } from "@/auth";
 import { NextIntlClientProvider } from "next-intl";
@@ -45,9 +45,10 @@ export async function generateMetadata({
   const university = await getUniversityDetail(locale, slug);
 
   if (!university) return {};
+  const tBrand = await getTranslations({ locale, namespace: "Brand" });
 
   return {
-    title: `${university.name} | UniLink`,
+    title: `${university.name} | ${tBrand("name")}`,
     description: university.description ?? undefined,
     openGraph: {
       title: university.name,

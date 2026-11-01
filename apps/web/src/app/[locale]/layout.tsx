@@ -39,11 +39,18 @@ export function generateStaticParams() {
   return routing.locales.map((locale) => ({ locale }));
 }
 
-export const metadata: Metadata = {
-  title: "UniLink | Your guide to universities in Egypt",
-  description:
-    "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt — programs, admission requirements, tuition fees, and scholarships in one place.",
-};
+export async function generateMetadata({
+  params,
+}: {
+  params: Promise<{ locale: string }>;
+}): Promise<Metadata> {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: "Brand" });
+  return {
+    title: `${t("name")} | ${t("tagline")}`,
+    description: t("description"),
+  };
+}
 
 const localeDirection: Record<Locale, "rtl" | "ltr"> = {
   ar: "rtl",

@@ -11,6 +11,7 @@ import Image from "next/image";
 import { getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
+import { ComingSoonBanner } from "@/components/partners/coming-soon-banner";
 import { EnrollmentDevices } from "@/components/partners/enrollment-devices";
 import { PartnerLogosSlider } from "@/components/partners/partner-logos-slider";
 import { Reveal } from "@/components/reveal";
@@ -31,6 +32,8 @@ export default async function PartnersPage() {
 
   return (
     <div className="font-[family-name:var(--font-open-sans)] text-[#292E3E]">
+      <ComingSoonBanner />
+
       {/* HERO */}
       <section className="relative overflow-hidden bg-gradient-to-br from-[#F7F9FE] to-white">
         <div

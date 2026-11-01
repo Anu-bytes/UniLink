@@ -1741,3 +1741,66 @@ html[lang="ar"] body {
 .ul-no-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
+/* Partners page "Coming soon" band (components/partners/coming-soon-banner.tsx).
+   Each headline word rises out of its own clipped box, then a red light
+   sweeps through the navy text; the ribbon below scrolls one copy's width. */
+@keyframes ul-soon-rise {
+  from {
+    transform: translateY(105%);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes ul-soon-shine {
+  0%,
+  35% {
+    background-position: 100% 0;
+  }
+  75%,
+  100% {
+    background-position: 0% 0;
+  }
+}
+@keyframes ul-soon-fade {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes ul-soon-ribbon {
+  to {
+    transform: translateX(-50%);
+  }
+}
+.ul-soon-word {
+  background-image: linear-gradient(100deg, #16233f 0%, #16233f 42%, #f82c1f 50%, #ff8a00 53%, #16233f 62%, #16233f 100%);
+  background-size: 260% 100%;
+  background-position: 100% 0;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation:
+    ul-soon-rise 0.9s cubic-bezier(0.2, 0.8, 0.2, 1) both,
+    ul-soon-shine 4s ease-in-out infinite;
+}
+.ul-soon-fade {
+  animation: ul-soon-fade 0.7s ease-out both;
+}
+.ul-soon-ribbon {
+  animation: ul-soon-ribbon 40s linear infinite;
+}
+@media (prefers-reduced-motion: reduce) {
+  .ul-soon-word,
+  .ul-soon-fade,
+  .ul-soon-ribbon {
+    animation: none;
+  }
+}
