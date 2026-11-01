@@ -3,6 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { EmptyState } from "@/components/admin";
 import { countryName, flagEmoji, flagSrc } from "@/lib/countries";
+import { cityLabel } from "@/lib/egypt-governorates";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import { formatNumber } from "@/lib/format";
 
@@ -98,6 +99,8 @@ export async function ProfileCard({ profile }: { profile: UserProfile | null }) 
             {countryName(profile.nationality, locale)}
           </span>
         </FieldRow>
+
+        <FieldRow label={t("city")}>{cityLabel(profile.city, locale) ?? <NotSet label={tCommon("notSet")} />}</FieldRow>
 
         <FieldRow label={t("intake")}>
           {t("intakeValue", {

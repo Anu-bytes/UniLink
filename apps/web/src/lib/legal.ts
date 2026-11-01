@@ -1,7 +1,7 @@
 // The current Terms of Service and Privacy Policy. Bump the version whenever
 // either document changes materially: it is stored with each user's
 // acceptance (User.termsVersion), so we can tell who accepted which text.
-export const LEGAL_VERSION = "2026-10-30";
+export const LEGAL_VERSION = "2026-11-01";
 
 /** Stamp for a user record at the moment they accept the current documents. */
 export function legalAcceptance() {

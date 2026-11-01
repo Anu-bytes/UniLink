@@ -7,7 +7,7 @@ import { useState } from "react";
 
 import { DistanceControl, FieldList } from "@/components/nearby/nearby-controls";
 import type { NearbyField } from "@/lib/nearby";
-import type { NearbyFilters, NearbyLevel } from "@/lib/nearby-filters";
+import { NEARBY_BUDGETS, type NearbyBudget, type NearbyFilters, type NearbyLevel } from "@/lib/nearby-filters";
 import { cn } from "@/lib/utils";
 
 export type OriginSource = "gps" | "pin" | null;
@@ -46,7 +46,7 @@ export function NearbyToolbar({
 }) {
   const t = useTranslations("Nearby");
   const fieldLabel = fields.find((field) => field.value === filters.field)?.label;
-  const hasFilters = Boolean(filters.field || filters.level || filters.type || filters.radius);
+  const hasFilters = Boolean(filters.field || filters.level || filters.type || filters.budget || filters.radius);
 
   const originLabel = locating
     ? t("toolbar.locating")
@@ -161,6 +161,29 @@ export function NearbyToolbar({
 
       <ToolbarPopover
         floating={floating}
+        active={Boolean(filters.budget)}
+        label={filters.budget ? t(`budgets.${filters.budget}`) : t("controls.budget")}
+        locked={locked}
+        onLocked={onLocked}
+        width={240}
+      >
+        {(close) => (
+          <OptionList
+            value={filters.budget ?? "ANY"}
+            options={[
+              { value: "ANY", label: t("controls.anyBudget") },
+              ...NEARBY_BUDGETS.map((budget) => ({ value: budget, label: t(`budgets.${budget}`) })),
+            ]}
+            onChange={(value) => {
+              onChange({ ...filters, budget: value === "ANY" ? null : (value as NearbyBudget) });
+              close();
+            }}
+          />
+        )}
+      </ToolbarPopover>
+
+      <ToolbarPopover
+        floating={floating}
         active={Boolean(filters.radius)}
         label={filters.radius ? t("toolbar.within", { km: filters.radius }) : t("controls.anyDistance")}
         locked={locked}
@@ -178,7 +201,7 @@ export function NearbyToolbar({
       {hasFilters && !locked ? (
         <button
           type="button"
-          onClick={() => onChange({ ...filters, field: null, level: null, type: null, radius: null })}
+          onClick={() => onChange({ ...filters, field: null, level: null, type: null, budget: null, radius: null })}
           className={cn(
             "inline-flex h-9 shrink-0 items-center gap-1 rounded-full px-3 text-[13px] font-medium text-slate-500 transition-colors hover:text-slate-900",
             floating && "bg-white shadow-[0_2px_8px_rgba(15,23,42,0.12),0_0_0_1px_rgba(15,23,42,0.06)]",

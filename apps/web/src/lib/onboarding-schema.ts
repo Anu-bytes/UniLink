@@ -40,7 +40,8 @@ export const INTAKE_SEASONS = ["WINTER", "SPRING", "SUMMER", "FALL"] as const;
 export const ACCOUNT_ROLES = ["STUDENT", "PARENT"] as const;
 
 export const BUDGET_BANDS = [
-  "UNDER_100K",
+  "UNDER_50K",
+  "B50_100K",
   "B100_200K",
   "B200_300K",
   "B300_500K",
@@ -73,13 +74,14 @@ export const studyLevelSchema = z.object({
   studyLevel: z.enum(STUDY_LEVELS),
 });
 
-// First step: name + country. firstName/lastName live on the User; nationality
-// (the country code) is a StudentProfile field.
+// First step: name, country and city. firstName/lastName live on the User;
+// nationality (the country code) and city are StudentProfile fields.
 export const personalInfoSchema = z.object({
   accountRole: z.enum(ACCOUNT_ROLES, { message: "Select who is signing up" }),
   firstName: z.string().trim().min(1, "Enter your first name").max(50),
   lastName: z.string().trim().min(1, "Enter your last name").max(50),
   nationality: z.string().length(2, "Select your country"),
+  city: z.string().trim().min(1, "Enter your city").max(80),
 });
 
 export const academicsSchema = z
@@ -195,6 +197,9 @@ export const profileSchema = z.object({
   gradeValue: z.string().trim().min(1),
   fieldsOfStudy: fieldSchema.shape.fieldsOfStudy,
   nationality: nationalitySchema.shape.nationality,
+  // Required by the wizard's first step; optional here so a sign-up already
+  // in progress when the field was added can still finish.
+  city: z.string().trim().max(80).optional(),
   budgetBand: financialsSchema.shape.budgetBand,
 });
 
@@ -332,6 +337,7 @@ export const academicsEditSchema = z
       .max(currentYear + 6),
     gradeValue: z.string().trim().min(1, "Enter your expected grade"),
     nationality: z.string().length(2, "Select your nationality"),
+    city: z.string().trim().max(80).nullable().optional(),
     bio: z.string().trim().max(500).nullable().optional(),
   })
   .superRefine((data, ctx) => {

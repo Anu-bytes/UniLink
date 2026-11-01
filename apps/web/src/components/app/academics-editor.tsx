@@ -7,6 +7,7 @@ import { useState } from "react";
 
 import { ProfileCard, ProfileField } from "@/components/app/profile-card";
 import { COUNTRIES } from "@/lib/countries";
+import { EGYPT_GOVERNORATES, cityLabel, isGovernorate } from "@/lib/egypt-governorates";
 import { formatNumber } from "@/lib/format";
 import {
   academicsEditSchema,
@@ -23,6 +24,9 @@ const EDIT_GRADUATION_YEARS: readonly number[] = Array.from(
   (_, i) => currentYear - 10 + i,
 );
 
+/** The "Other" choice in the governorate list; never stored. */
+const OTHER_CITY = "__other";
+
 export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
   const t = useTranslations("AppProfile");
   const tCatalog = useTranslations("Catalog");
@@ -38,9 +42,15 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
   const [error, setError] = useState<string | null>(null);
 
   const country = COUNTRIES.find((entry) => entry.code === saved.nationality);
+  // In Egypt the city is a governorate from the list, unless "Other" was
+  // chosen to type it.
+  const [cityOther, setCityOther] = useState(
+    Boolean(initial.city) && !isGovernorate(initial.city),
+  );
 
   function startEditing() {
     setDraft(saved);
+    setCityOther(Boolean(saved.city) && !isGovernorate(saved.city));
     setError(null);
     setEditing(true);
   }
@@ -173,12 +183,13 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
               </span>
               <select
                 value={draft.nationality}
-                onChange={(event) =>
-                  setDraft((previous) => ({
-                    ...previous,
-                    nationality: event.target.value,
-                  }))
-                }
+                onChange={(event) => {
+                  const nationality = event.target.value;
+                  if (nationality === draft.nationality) return;
+                  // A city only makes sense within its country.
+                  setCityOther(false);
+                  setDraft((previous) => ({ ...previous, nationality, city: null }));
+                }}
                 className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#1E6DEB]"
               >
                 {COUNTRIES.map((entry) => (
@@ -187,6 +198,44 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
                   </option>
                 ))}
               </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-[#5a6072]">
+                {t("city")}
+              </span>
+              {draft.nationality === "EG" && !cityOther ? (
+                <select
+                  value={draft.city ?? ""}
+                  onChange={(event) => {
+                    if (event.target.value === OTHER_CITY) {
+                      setCityOther(true);
+                      setDraft((previous) => ({ ...previous, city: null }));
+                      return;
+                    }
+                    setDraft((previous) => ({ ...previous, city: event.target.value || null }));
+                  }}
+                  className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#1E6DEB]"
+                >
+                  <option value="">{t("notSet")}</option>
+                  {EGYPT_GOVERNORATES.map((governorate) => (
+                    <option key={governorate.value} value={governorate.value}>
+                      {isArabic ? governorate.ar : governorate.value}
+                    </option>
+                  ))}
+                  <option value={OTHER_CITY}>{t("cityOther")}</option>
+                </select>
+              ) : (
+                <input
+                  value={draft.city ?? ""}
+                  maxLength={80}
+                  autoComplete="address-level2"
+                  onChange={(event) =>
+                    setDraft((previous) => ({ ...previous, city: event.target.value }))
+                  }
+                  className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#1E6DEB]"
+                />
+              )}
             </label>
 
             <label className="block">
@@ -300,6 +349,11 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
           <ProfileField
             label={t("nationality")}
             value={country ? (isArabic ? country.nameAr : country.name) : null}
+            emptyLabel={t("notSet")}
+          />
+          <ProfileField
+            label={t("city")}
+            value={cityLabel(saved.city, locale)}
             emptyLabel={t("notSet")}
           />
           <ProfileField

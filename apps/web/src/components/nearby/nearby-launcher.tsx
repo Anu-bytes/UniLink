@@ -7,10 +7,10 @@ import { useEffect, useRef, useState } from "react";
 import { DistanceControl, FieldList, Segmented } from "@/components/nearby/nearby-controls";
 import { useRouter } from "@/i18n/navigation";
 import type { NearbyField } from "@/lib/nearby";
-import { nearbyHref, type NearbyFilters, type NearbyLevel } from "@/lib/nearby-filters";
+import { NEARBY_BUDGETS, nearbyHref, type NearbyFilters, type NearbyLevel } from "@/lib/nearby-filters";
 import { cn } from "@/lib/utils";
 
-const EMPTY: NearbyFilters = { field: null, level: null, type: null, radius: null, start: "locate" };
+const EMPTY: NearbyFilters = { field: null, level: null, type: null, budget: null, radius: null, start: "locate" };
 
 /**
  * The "Find nearest" button and the form behind it. Submitting opens /nearby
@@ -159,6 +159,32 @@ export function NearbyLauncher({
                   value={filters.type ?? "ANY"}
                   onChange={(value) => update("type", value === "ANY" ? null : (value as "PRIVATE" | "NATIONAL"))}
                 />
+            </section>
+
+            <section>
+              <h3 className="mb-2 text-[13px] font-medium text-slate-700">{t("controls.budget")}</h3>
+              <div role="radiogroup" aria-label={t("controls.budget")} className="flex flex-wrap gap-2">
+                {[null, ...NEARBY_BUDGETS].map((budget) => {
+                  const active = filters.budget === budget;
+                  return (
+                    <button
+                      key={budget ?? "ANY"}
+                      type="button"
+                      role="radio"
+                      aria-checked={active}
+                      onClick={() => update("budget", budget)}
+                      className={cn(
+                        "h-8 rounded-full border px-3 text-[13px] font-medium transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+                        active
+                          ? "border-[#1E6DEB]/30 bg-[#EFF5FF] text-[#1E6DEB]"
+                          : "border-slate-200 bg-white text-slate-700 hover:border-slate-300 hover:bg-slate-50",
+                      )}
+                    >
+                      {budget ? t(`budgets.${budget}`) : t("controls.any")}
+                    </button>
+                  );
+                })}
+              </div>
             </section>
 
             <section>

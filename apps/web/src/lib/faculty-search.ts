@@ -12,6 +12,7 @@ import {
   type SearchFilters,
 } from "@/lib/program-filters";
 import { getMatchProfile } from "@/lib/program-search";
+import { isNearStudent } from "@/lib/egypt-governorates";
 
 export type FacultyResult = {
   id: string;
@@ -41,6 +42,8 @@ export type FacultyResult = {
   tags: string[];
   /** Best match across the faculty's programs, so the card can rank. */
   match: MatchResult | null;
+  /** In or around the governorate the student lives in. */
+  nearYou: boolean;
   saved: boolean;
 };
 
@@ -351,6 +354,7 @@ function mapFaculty(
     minGradePercent: grades.length ? Math.min(...grades) : null,
     tags: [...new Set(row.programs.flatMap((p) => p.tags as string[]))],
     match: best,
+    nearYou: isNearStudent(profile?.city, row.university.city),
     saved: savedIds.has(row.id),
   };
 }
@@ -371,8 +375,22 @@ function sortFaculties(results: FacultyResult[], sort: SearchFilters["sort"]) {
       results.sort((a, b) => a.name.localeCompare(b.name));
       break;
     default:
-      results.sort((a, b) => (b.match?.score ?? 0) - (a.match?.score ?? 0));
+      results.sort(byMatchThenNear);
   }
+}
+
+const BAND_RANK: Record<MatchResult["band"], number> = { PERFECT: 3, STRONG: 2, GOOD: 1, POSSIBLE: 0 };
+
+/**
+ * Best match first. Within the same match band, universities near the
+ * student come first, so an equally good option close to home is not
+ * buried under one across the country.
+ */
+function byMatchThenNear(a: FacultyResult, b: FacultyResult) {
+  const band = (a.match ? BAND_RANK[a.match.band] : -1) - (b.match ? BAND_RANK[b.match.band] : -1);
+  if (band !== 0) return -band;
+  if (a.nearYou !== b.nearYou) return a.nearYou ? -1 : 1;
+  return (b.match?.score ?? 0) - (a.match?.score ?? 0);
 }
 
 /**
@@ -511,7 +529,7 @@ export async function getRecommendedFaculties(
 
   const scored = rows
     .map((row) => mapFaculty(locale, row, profile, savedIds))
-    .sort((a, b) => (b.match?.score ?? 0) - (a.match?.score ?? 0));
+    .sort(byMatchThenNear);
 
   const picked: FacultyResult[] = [];
   const usedUniversities = new Set<string>();

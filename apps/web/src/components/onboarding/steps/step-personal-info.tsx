@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import { useWizard } from "../wizard-context";
 import { StepShell, Field, useStepForm } from "./step-primitives";
 import { CountryCombobox } from "./country-select";
+import { CityField } from "./city-select";
 
 const ROLE_ICONS: Record<(typeof ACCOUNT_ROLES)[number], typeof UserRound> = {
   STUDENT: UserRound,
@@ -79,6 +80,7 @@ export function StepPersonalInfo() {
     firstName: data.firstName,
     lastName: data.lastName,
     nationality: data.nationality,
+    city: data.city,
   });
 
   function submit(e: React.FormEvent<HTMLFormElement>) {
@@ -139,9 +141,27 @@ export function StepPersonalInfo() {
       >
         <CountryCombobox
           value={form.values.nationality as string | undefined}
-          onChange={(code) => form.setValue("nationality", code)}
+          onChange={(code) => {
+            form.setValue("nationality", code);
+            // A city only makes sense within its country.
+            if (code !== form.values.nationality) form.setValue("city", undefined);
+          }}
           placeholder={t("personalInfo.countryPlaceholder")}
           clearLabel={t("common.clear")}
+        />
+      </Field>
+
+      <Field label={t("personalInfo.cityLabel")} error={form.errors.city}>
+        <CityField
+          country={form.values.nationality as string | undefined}
+          value={form.values.city as string | undefined}
+          onChange={(city) => form.setValue("city", city)}
+          searchPlaceholder={t("personalInfo.cityPlaceholder")}
+          textPlaceholder={t("personalInfo.cityTextPlaceholder")}
+          clearLabel={t("common.clear")}
+          noMatch={t("personalInfo.cityNoMatch")}
+          otherLabel={t("personalInfo.cityOther")}
+          backToListLabel={t("personalInfo.cityBackToList")}
         />
       </Field>
     </StepShell>

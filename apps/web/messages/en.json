@@ -205,7 +205,7 @@
       ],
       "title": "Welcome back",
       "badge": "Welcome back",
-      "headline": "Continue your study abroad journey",
+      "headline": "Continue your journey to the right university with UniLink",
       "formTitle": "Log in to your account",
       "subtitle": "Log in to continue your application journey.",
       "showPassword": "Show password",
@@ -225,7 +225,7 @@
     },
     "signup": {
       "title": "Create your account",
-      "subtitle": "Start your study abroad journey in minutes.",
+      "subtitle": "Start your journey to the right university in minutes.",
       "emailLabel": "Email",
       "emailPlaceholder": "you@example.com",
       "passwordLabel": "Password",
@@ -295,7 +295,7 @@
     "personalInfo": {
       "name": "Personal Information",
       "heading": "Tell us a bit about yourself",
-      "help": "We'll use your name and country to personalize your matches and unlock country-specific scholarships and visa guides.",
+      "help": "We'll use your name, country and city to personalize your matches and suggest universities near you.",
       "accountRoleLabel": "I'm signing up as a",
       "accountRole": {
         "STUDENT": "Student",
@@ -306,7 +306,13 @@
       "lastNameLabel": "Last name",
       "lastNamePlaceholder": "Last name",
       "countryLabel": "Country",
-      "countryPlaceholder": "Search your country…"
+      "countryPlaceholder": "Search your country…",
+      "cityLabel": "City",
+      "cityPlaceholder": "Search your city or governorate…",
+      "cityTextPlaceholder": "Your city",
+      "cityNoMatch": "No governorate matches your search.",
+      "cityOther": "Other (type your city)",
+      "cityBackToList": "Choose from the list"
     },
     "studyLevel": {
       "name": "Study Level",
@@ -398,7 +404,8 @@
         "FALL": "Fall"
       },
       "budgetBand": {
-        "UNDER_100K": "Under 100,000 EGP",
+        "UNDER_50K": "0 – 50,000 EGP",
+        "B50_100K": "50,000 – 100,000 EGP",
         "B100_200K": "100,000 – 200,000 EGP",
         "B200_300K": "200,000 – 300,000 EGP",
         "B300_500K": "300,000 – 500,000 EGP",
@@ -736,7 +743,7 @@
     "title": "Privacy Policy",
     "subtitle": "What data UniLink collects, how it is used, with whom it is shared, and the choices and rights you have.",
     "lastUpdated": "Last updated: {date}",
-    "lastUpdatedDate": "October 30, 2026",
+    "lastUpdatedDate": "November 1, 2026",
     "tocTitle": "On this page",
     "backToTop": "Back to top",
     "intro": "This Privacy Policy explains how UniLink collects, uses, stores, shares, licenses and protects personal data when you use our website, applications and related services. It forms part of our Terms of Service. By ticking the acceptance box when you register, or by using the Service, you confirm that you have read this Policy and that you give the consents described in it, including consent to the sharing of your data with universities, partners and service providers. Please read it carefully.",
@@ -803,8 +810,8 @@
       },
       {
         "id": "sharing",
-        "heading": "Who We Share Your Data With",
-        "body": "With your consent given by accepting this Policy, we may share your personal data with the following recipients:\n• Institutions: universities, faculties and colleges you show interest in, or whose programs match your profile, preferences or searches, so that they can contact you, provide information, assess eligibility and offer you admission opportunities, scholarships and events.\n• Partners: education agencies, scholarship and financing providers, test and training providers, and other partners offering products or services relevant to students, for their own marketing and service purposes, and advertising, marketing and research partners who help us and our partners reach and understand students.\n• Service providers: companies that process data on our behalf, such as hosting and cloud providers, database and file-storage providers, email and messaging services, sign-in and security services, analytics, customer support, and professional advisers such as lawyers, auditors and consultants.\n• Affiliates: companies that control, are controlled by, or are under common control with UniLink.\n• Business transferees: any actual or prospective buyer, investor, lender, successor or merger partner, and their advisers, in connection with a sale, merger, financing, reorganization or transfer of all or part of our business or assets.\n• Authorities and others: courts, regulators, law-enforcement and other competent authorities where required by law, and others where needed to establish, exercise or defend legal claims or to protect rights, safety and property.\n• Others with your direction: anyone else, where you ask us to share your data or use a feature designed to share it, such as publishing a review.\n\nPublic content, such as reviews and ratings you publish, may be visible to other Users and the public. Recipients that receive your data for their own purposes process it under their own privacy policies, and we encourage you to read them."
+        "heading": "Sharing Your Information",
+        "body": "UniLink may share certain user data with partner universities and educational institutions, and may provide this data, or access to it, as part of its commercial services for universities.\n\nThese services include leads: giving universities the details of prospective students whose profiles match their programs or who show interest in them, so that the universities can contact those students about admission, scholarships and events.\n\nWith your consent given by accepting this Policy, we may also share your personal data with the following recipients:\n• Institutions: universities, faculties and colleges you show interest in, or whose programs match your profile, preferences or searches, so that they can contact you, provide information, assess eligibility and offer you admission opportunities, scholarships and events.\n• Partners: education agencies, scholarship and financing providers, test and training providers, and other partners offering products or services relevant to students, for their own marketing and service purposes, and advertising, marketing and research partners who help us and our partners reach and understand students.\n• Service providers: companies that process data on our behalf, such as hosting and cloud providers, database and file-storage providers, email and messaging services, sign-in and security services, analytics, customer support, and professional advisers such as lawyers, auditors and consultants.\n• Affiliates: companies that control, are controlled by, or are under common control with UniLink.\n• Business transferees: any actual or prospective buyer, investor, lender, successor or merger partner, and their advisers, in connection with a sale, merger, financing, reorganization or transfer of all or part of our business or assets.\n• Authorities and others: courts, regulators, law-enforcement and other competent authorities where required by law, and others where needed to establish, exercise or defend legal claims or to protect rights, safety and property.\n• Others with your direction: anyone else, where you ask us to share your data or use a feature designed to share it, such as publishing a review.\n\nPublic content, such as reviews and ratings you publish, may be visible to other Users and the public. Recipients that receive your data for their own purposes process it under their own privacy policies, and we encourage you to read them."
       },
       {
         "id": "sharing-safeguards",
@@ -1375,7 +1382,8 @@
       "applied": "Application started",
       "compare": "Compare",
       "comparing": "Comparing",
-      "details": "Details"
+      "details": "Details",
+      "nearYou": "Near you"
     },
     "bands": {
       "PERFECT": "Perfect Match",
@@ -1412,7 +1420,8 @@
     },
     "clearSearch": "Clear search",
     "tuitionRanges": {
-      "under100": "Under 100k",
+      "upTo50": "0 to 50k",
+      "from50to100": "50k to 100k",
       "from100to200": "100k to 200k",
       "from200to300": "200k to 300k",
       "from300to500": "300k to 500k",
@@ -1548,7 +1557,8 @@
     "noProfileBody": "Finish the onboarding questions so we can match programs to your grades, budget and preferred fields.",
     "completeProfile": "Complete profile",
     "budgetBands": {
-      "UNDER_100K": "Under EGP 100,000 per year",
+      "UNDER_50K": "Up to EGP 50,000 per year",
+      "B50_100K": "EGP 50,000 to 100,000 per year",
       "B100_200K": "EGP 100,000 to 200,000 per year",
       "B200_300K": "EGP 200,000 to 300,000 per year",
       "B300_500K": "EGP 300,000 to 500,000 per year",
@@ -1579,7 +1589,9 @@
     "completeness": "Profile completeness",
     "completenessHint": "A fuller profile gives sharper match scores on the search page.",
     "academicsHint": "These affect which programs you qualify for. You can update them anytime.",
-    "preferencesHint": "These drive your match scores."
+    "preferencesHint": "These drive your match scores.",
+    "city": "City",
+    "cityOther": "Other (type your city)"
   },
   "Account": {
     "account": "Account",
@@ -1749,7 +1761,8 @@
         "UNIVERSITY_ADMIN": "University admin"
       },
       "budgetBands": {
-        "UNDER_100K": "Under 100,000 EGP",
+        "UNDER_50K": "0-50,000 EGP",
+        "B50_100K": "50,000-100,000 EGP",
         "B100_200K": "100,000-200,000 EGP",
         "B200_300K": "200,000-300,000 EGP",
         "B300_500K": "300,000-500,000 EGP",
@@ -2331,7 +2344,8 @@
         "empty": {
           "title": "No profile yet",
           "description": "This account never finished onboarding, so there are no answers to show."
-        }
+        },
+        "city": "City"
       },
       "activity": {
         "title": "Activity",
@@ -3842,7 +3856,9 @@
       "anyDistance": "Any distance",
       "start": "Start from",
       "startLocate": "My location",
-      "startPick": "Choose on map"
+      "startPick": "Choose on map",
+      "budget": "Yearly budget",
+      "anyBudget": "Any budget"
     },
     "toolbar": {
       "locating": "Locating…",
@@ -3963,6 +3979,14 @@
     "locked": {
       "title": "Change your search",
       "text": "Your free search covers one set of choices. Create a free account to change the field, level, type or distance as often as you like."
+    },
+    "budgets": {
+      "upTo50": "0 to 50k EGP",
+      "from50to100": "50k to 100k EGP",
+      "from100to200": "100k to 200k EGP",
+      "from200to300": "200k to 300k EGP",
+      "from300to500": "300k to 500k EGP",
+      "over500": "Over 500k EGP"
     }
   }
 }

@@ -1,4 +1,4 @@
-import { ArrowRight, Star } from "lucide-react";
+import { ArrowRight, MapPin, Star } from "lucide-react";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -67,7 +67,14 @@ export async function RecommendedFacultyCard({
               <Star className="size-3 fill-current" aria-hidden />
               {t(`bands.${faculty.match.band}`)}
             </span>
-          ) : (
+          ) : null}
+          {faculty.nearYou ? (
+            <span className="inline-flex items-center gap-0.5 text-[11px] font-semibold text-[#5a6072]">
+              <MapPin className="size-3" aria-hidden />
+              {t("card.nearYou")}
+            </span>
+          ) : null}
+          {faculty.match ? null : (
             <span className="truncate text-[11px] font-semibold text-[#5a6072]">
               {tFaculty("tuitionRange")}: {tuitionLabel}
             </span>

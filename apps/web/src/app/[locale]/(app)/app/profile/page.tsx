@@ -75,6 +75,7 @@ export default async function ProfilePage() {
                 graduationYear: profile.graduationYear,
                 gradeValue: profile.gradeValue,
                 nationality: profile.nationality,
+                city: profile.city,
                 bio: profile.bio,
               }}
             />
