@@ -104,9 +104,10 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   ]);
 
   if (!university || !program) return {};
+  const tBrand = await getTranslations({ locale, namespace: "Brand" });
 
   return {
-    title: `${program.name} | ${university.name} | UniLink`,
+    title: `${program.name} | ${university.name} | ${tBrand("name")}`,
     description: program.description ?? university.description ?? undefined,
   };
 }

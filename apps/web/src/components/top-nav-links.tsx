@@ -14,7 +14,8 @@ export function TopNavLinks({
   links,
   sizeClassName,
 }: {
-  links: readonly { href: string; label: string }[];
+  /** `badge`: a short tag after the label, e.g. "Soon". */
+  links: readonly { href: string; label: string; badge?: string }[];
   sizeClassName: string;
 }) {
   const pathname = usePathname();
@@ -40,6 +41,11 @@ export function TopNavLinks({
             )}
           >
             {link.label}
+            {link.badge ? (
+              <span className="ms-1.5 rounded-full bg-[#FFF0EE] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#C81F15]">
+                {link.badge}
+              </span>
+            ) : null}
           </Link>
         );
       })}

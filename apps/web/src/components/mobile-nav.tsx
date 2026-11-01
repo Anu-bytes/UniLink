@@ -11,7 +11,7 @@ import { ADMIN_SHORTCUT_ICONS, adminShortcuts, type AdminLevel } from "@/lib/adm
 import { isNavActive } from "@/lib/nav-active";
 import { cn } from "@/lib/utils";
 
-type NavLink = { href: string; label: string };
+type NavLink = { href: string; label: string; badge?: string };
 
 /**
  * Mobile navigation menu.
@@ -119,6 +119,11 @@ export function MobileNav({
                   )}
                 >
                   {link.label}
+                  {link.badge ? (
+                    <span className="ms-1.5 rounded-full bg-[#FFF0EE] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#C81F15]">
+                      {link.badge}
+                    </span>
+                  ) : null}
                 </Link>
               );
             })}

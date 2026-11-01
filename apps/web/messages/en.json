@@ -23,7 +23,8 @@
       "search": "Search",
       "saved": "Saved",
       "account": "Account"
-    }
+    },
+    "soon": "Soon"
   },
   "Footer": {
     "tagline": "A smart platform to discover and compare universities in Egypt.",
@@ -598,6 +599,13 @@
       "band": {
         "title": "Ready to take your recruitment to the next level of quality, efficiency, and control",
         "cta": "Partner with us today"
+      },
+      "comingSoon": {
+        "eyebrow": "Partner services",
+        "title": "Coming soon",
+        "body": "We are getting UniLink's services for universities ready. They are not available yet: leave your details and we will contact you first when they launch.",
+        "cta": "Tell me when it launches",
+        "ribbon": "Partner services coming soon"
       }
     }
   },
@@ -4012,5 +4020,10 @@
       "from300to500": "300k to 500k EGP",
       "over500": "Over 500k EGP"
     }
+  },
+  "Brand": {
+    "name": "UniLink",
+    "tagline": "Your guide to universities in Egypt",
+    "description": "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt: programs, admission requirements, tuition fees, and scholarships in one place."
   }
 }

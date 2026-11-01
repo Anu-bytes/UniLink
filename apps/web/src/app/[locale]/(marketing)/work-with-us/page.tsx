@@ -7,7 +7,8 @@ import { prisma } from "@/lib/prisma";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("WorkWithUs");
-  return { title: `${t("title")} | UniLink`, description: t("subtitle") };
+  const tBrand = await getTranslations("Brand");
+  return { title: `${t("title")} | ${tBrand("name")}`, description: t("subtitle") };
 }
 
 /**

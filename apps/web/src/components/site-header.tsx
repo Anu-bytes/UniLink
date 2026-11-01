@@ -47,7 +47,7 @@ export async function SiteHeader() {
   const links = [
     { href: "/", label: t("home") },
     { href: "/students", label: t("students") },
-    { href: "/partners", label: t("partners") },
+    { href: "/partners", label: t("partners"), badge: t("soon") },
     { href: "/about", label: t("about") },
   ] as const;
 

@@ -44,6 +44,7 @@ const socials = [
 
 export async function SiteFooter() {
   const t = await getTranslations("Footer");
+  const tBrand = await getTranslations("Brand");
 
   const columns = [
     {
@@ -129,7 +130,7 @@ export async function SiteFooter() {
 
       <div className="border-t border-white/10">
         <div className="mx-auto max-w-7xl px-4 py-4 text-center text-xs leading-5 text-slate-400 md:px-6">
-          © {new Date().getFullYear()} UniLink. {t("rights")}
+          © {new Date().getFullYear()} {tBrand("name")}. {t("rights")}
         </div>
       </div>
     </footer>

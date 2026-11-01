@@ -14,7 +14,8 @@ export const dynamic = "force-dynamic";
 
 export async function generateMetadata(): Promise<Metadata> {
   const t = await getTranslations("Nearby.meta");
-  return { title: `${t("title")} | UniLink`, description: t("description") };
+  const tBrand = await getTranslations("Brand");
+  return { title: `${t("title")} | ${tBrand("name")}`, description: t("description") };
 }
 
 export default async function NearbyPage({
