@@ -44,6 +44,7 @@ export async function PATCH(request: Request) {
     graduationYear,
     gradeValue,
     nationality,
+    city,
     bio,
   } = parsed.data;
 
@@ -61,6 +62,7 @@ export async function PATCH(request: Request) {
       graduationYear,
       gradeValue,
       nationality,
+      city: city?.trim() ? city.trim() : null,
       bio: bio?.trim() ? bio.trim() : null,
     },
   });

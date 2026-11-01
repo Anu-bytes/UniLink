@@ -22,7 +22,13 @@ import { NearbyToolbar, type OriginSource } from "@/components/nearby/nearby-too
 import { useMediaQuery } from "@/hooks/use-media-query";
 import { Link } from "@/i18n/navigation";
 import type { NearbyCatalog } from "@/lib/nearby";
-import { NEARBY_RADIUS_MAX, nearbyHref, type NearbyFilters } from "@/lib/nearby-filters";
+import {
+  NEARBY_RADIUS_MAX,
+  filtersPrograms,
+  nearbyHref,
+  programMatches,
+  type NearbyFilters,
+} from "@/lib/nearby-filters";
 import { cn } from "@/lib/utils";
 
 // Leaflet touches `window` on import, so the map only ever loads in the browser.
@@ -96,11 +102,8 @@ export function NearbyExplorer({
     const rows: ResultRow[] = [];
     for (const university of catalog.universities) {
       if (filters.type && university.type !== filters.type) continue;
-      const programs = university.programs.filter(
-        (program) =>
-          (!filters.field || program.field === filters.field) && (!filters.level || program.level === filters.level),
-      );
-      if ((filters.field || filters.level) && programs.length === 0) continue;
+      const programs = university.programs.filter((program) => programMatches(program, filters));
+      if (filtersPrograms(filters) && programs.length === 0) continue;
       const distance =
         origin && university.lat !== null && university.lng !== null
           ? haversine(origin, { lat: university.lat, lng: university.lng })
@@ -108,7 +111,7 @@ export function NearbyExplorer({
       rows.push({ university, programs, distance });
     }
     return rows;
-  }, [catalog.universities, filters.type, filters.field, filters.level, origin]);
+  }, [catalog.universities, filters, origin]);
 
   const byDistance = useMemo(
     () => matches.filter((row) => row.university.lat !== null).sort((a, b) => (a.distance ?? 0) - (b.distance ?? 0)),
@@ -162,12 +165,8 @@ export function NearbyExplorer({
           if (university.lat === null || university.lng === null) return false;
           if (nextFilters.type && university.type !== nextFilters.type) return false;
           if (
-            (nextFilters.field || nextFilters.level) &&
-            !university.programs.some(
-              (program) =>
-                (!nextFilters.field || program.field === nextFilters.field) &&
-                (!nextFilters.level || program.level === nextFilters.level),
-            )
+            filtersPrograms(nextFilters) &&
+            !university.programs.some((program) => programMatches(program, nextFilters))
           )
             return false;
           return true;
@@ -259,7 +258,11 @@ export function NearbyExplorer({
       return;
     }
     const radiusOnly =
-      next.field === filters.field && next.level === filters.level && next.type === filters.type && next.radius !== filters.radius;
+      next.field === filters.field &&
+      next.level === filters.level &&
+      next.type === filters.type &&
+      next.budget === filters.budget &&
+      next.radius !== filters.radius;
     setFilters(next);
     // Dragging the distance slider re-frames quietly; other changes announce.
     setFocusKey(`filters-${nextId()}`);
@@ -280,12 +283,13 @@ export function NearbyExplorer({
     fieldLabel,
     filters.level ? t(`levels.${filters.level}`) : null,
     filters.type ? t(`types.${filters.type}`) : null,
+    filters.budget ? t(`budgets.${filters.budget}`) : null,
     origin ? (filters.radius ? t("list.within", { km: filters.radius }) : t("list.anyDistance")) : t("list.noOrigin"),
   ]
     .filter(Boolean)
     .join(" · ");
 
-  const listKey = `${filters.field}-${filters.level}-${filters.type}-${filters.radius}-${originSource}-${sort}`;
+  const listKey = `${filters.field}-${filters.level}-${filters.type}-${filters.budget}-${filters.radius}-${originSource}-${sort}`;
 
   const emptyAction =
     nearestOutside && filters.radius ? (

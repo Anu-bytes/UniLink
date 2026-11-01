@@ -183,6 +183,10 @@ model StudentProfile {
   englishTest           EnglishTest      @default(NONE)
   englishScore          Float? // null when englishTest = NONE
   nationality           String // ISO 3166-1 alpha-2 country code
+  // Where the student lives: in Egypt a governorate's English name (see
+  // lib/egypt-governorates.ts), elsewhere free text. Null on profiles made
+  // before it was asked.
+  city                  String?
   intakeSeason          IntakeSeason
   intakeYear            Int
   budgetBand            BudgetBand // bucketed tuition budget in EGP
@@ -233,7 +237,8 @@ enum IntakeSeason {
 }
 
 enum BudgetBand {
-  UNDER_100K
+  UNDER_50K
+  B50_100K
   B100_200K
   B200_300K
   B300_500K

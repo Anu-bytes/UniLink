@@ -207,7 +207,8 @@ export const PAGE_SIZE = 12;
  * the drawer's numeric inputs drive the same two fields.
  */
 export const TUITION_RANGES = [
-  { key: "under100", min: undefined, max: 100_000 },
+  { key: "upTo50", min: undefined, max: 50_000 },
+  { key: "from50to100", min: 50_000, max: 100_000 },
   { key: "from100to200", min: 100_000, max: 200_000 },
   { key: "from200to300", min: 200_000, max: 300_000 },
   { key: "from300to500", min: 300_000, max: 500_000 },
@@ -232,7 +233,8 @@ export function tuitionRangeKeyOf(
 
 /** Upper bound in EGP per year for each onboarding budget band. */
 export const BUDGET_BAND_CEILING: Record<string, number> = {
-  UNDER_100K: 100_000,
+  UNDER_50K: 50_000,
+  B50_100K: 100_000,
   B100_200K: 200_000,
   B200_300K: 300_000,
   B300_500K: 500_000,

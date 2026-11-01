@@ -82,6 +82,7 @@ export async function POST(request: Request) {
         gradeValue: profile.gradeValue,
         fieldsOfStudy: profile.fieldsOfStudy,
         nationality: profile.nationality,
+        city: profile.city ?? null,
         intakeSeason: "FALL",
         intakeYear: new Date().getFullYear(),
         budgetBand: profile.budgetBand,
@@ -93,6 +94,7 @@ export async function POST(request: Request) {
         gradeValue: profile.gradeValue,
         fieldsOfStudy: profile.fieldsOfStudy,
         nationality: profile.nationality,
+        city: profile.city ?? null,
         budgetBand: profile.budgetBand,
       },
     });

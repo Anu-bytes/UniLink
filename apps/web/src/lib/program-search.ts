@@ -181,6 +181,7 @@ export async function getMatchProfile(
       englishScore: true,
       intakeSeason: true,
       intakeYear: true,
+      city: true,
     },
   });
 
@@ -196,6 +197,7 @@ export async function getMatchProfile(
     englishScore: profile.englishScore,
     intakeSeason: profile.intakeSeason,
     intakeYear: profile.intakeYear,
+    city: profile.city,
   };
 }
 

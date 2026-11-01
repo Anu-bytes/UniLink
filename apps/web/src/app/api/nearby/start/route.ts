@@ -1,7 +1,7 @@
 import { NextResponse, type NextRequest } from "next/server";
 
 import { auth } from "@/auth";
-import { isNearbyRadius } from "@/lib/nearby-filters";
+import { isNearbyBudget, isNearbyRadius } from "@/lib/nearby-filters";
 import {
   NEARBY_TRIAL_COOKIE,
   TRIAL_COOKIE_MAX_AGE,
@@ -27,6 +27,8 @@ export async function GET(request: NextRequest) {
   if (field && /^[a-z_]{2,40}$/.test(field)) forward.set("field", field);
   const type = params.get("type");
   if (type === "NATIONAL" || type === "PRIVATE") forward.set("type", type);
+  const budget = params.get("budget");
+  if (isNearbyBudget(budget)) forward.set("budget", budget);
   const radius = Number(params.get("radius"));
   if (isNearbyRadius(radius)) forward.set("radius", String(radius));
   if (params.get("start") === "pick") forward.set("start", "pick");

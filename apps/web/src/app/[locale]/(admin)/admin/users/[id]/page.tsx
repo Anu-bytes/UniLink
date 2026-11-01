@@ -60,6 +60,7 @@ export default async function AdminUserPage({
             englishTest: true,
             englishScore: true,
             nationality: true,
+            city: true,
             intakeSeason: true,
             intakeYear: true,
             budgetBand: true,

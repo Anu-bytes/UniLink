@@ -28,6 +28,11 @@ export type MatchProfile = {
   englishScore: number | null;
   intakeSeason: string;
   intakeYear: number;
+  /**
+   * Where the student lives (a governorate in Egypt). Not part of the score,
+   * which is about fit; it puts nearby universities first when ranking.
+   */
+  city: string | null;
 };
 
 export type MatchProgram = {
