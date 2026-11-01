@@ -450,6 +450,30 @@
         "intake": "Checking intake availability",
         "ranking": "Ranking by your fit score"
       }
+    },
+    "errors": {
+      "generic": "Please check this field.",
+      "accountRole": "Choose whether you are a student or a parent.",
+      "firstName": "Enter your first name.",
+      "lastName": "Enter your last name.",
+      "country": "Select your country.",
+      "city": "Enter your city.",
+      "highSchoolSystem": "Select your high school system.",
+      "highSchoolSystemOther": "Please specify your high school system.",
+      "graduationYear": "Select your expected graduation year.",
+      "grade": "Enter your expected grade.",
+      "fieldsMin": "Select at least one field of study.",
+      "fieldsMax": "Choose up to 3 fields of study.",
+      "budgetBand": "Select your yearly budget.",
+      "email": "Enter a valid email.",
+      "phone": "Enter a valid phone number.",
+      "passwordLength": "Password must be at least 10 characters.",
+      "passwordLower": "Password must contain a lowercase letter.",
+      "passwordUpper": "Password must contain an uppercase letter.",
+      "passwordNumber": "Password must contain a number.",
+      "terms": "You must accept the Terms of Service and Privacy Policy to continue.",
+      "tooMany": "Too many attempts. Please try again in a minute.",
+      "emailTaken": "An account with this email already exists."
     }
   },
   "Students": {
