@@ -443,6 +443,7 @@
       "title": "Finding your matches",
       "subtitle": "We're checking your eligibility against 4,200+ programs across top destinations.",
       "cta": "View my matched programs",
+      "ctaMap": "Back to the map",
       "preparing": "Preparing your matches…",
       "checks": {
         "filtering": "Filtering by destination and field",

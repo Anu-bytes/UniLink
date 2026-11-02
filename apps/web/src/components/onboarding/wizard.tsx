@@ -7,6 +7,7 @@ import { signIn } from "next-auth/react";
 import { cn } from "@/lib/utils";
 import { WIZARD_STEPS, TOTAL_STEPS } from "@/lib/onboarding-schema";
 import { onboardingErrorKey } from "@/lib/onboarding-errors";
+import { isNearbyReturn } from "@/lib/nearby-filters";
 import { useWizard } from "./wizard-context";
 import { WizardProgress } from "./wizard-progress";
 import { FindingMatches } from "./finding-matches";
@@ -38,6 +39,13 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
     if (typeof window === "undefined") return;
     initialQuery.current = new URLSearchParams(window.location.search).get("q");
   }, []);
+  // Set when registration started from the "Find nearest" map. Only read
+  // after submitting, so the server render (no window) never differs.
+  const [returnTo] = useState(() => {
+    if (typeof window === "undefined") return null;
+    const callbackUrl = new URLSearchParams(window.location.search).get("callbackUrl");
+    return isNearbyReturn(callbackUrl) ? callbackUrl : null;
+  });
 
   // Track direction of travel so the step transition slides the right way.
   const prevStep = useRef(step);
@@ -187,13 +195,17 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
     // only just set by signIn, and /app is gated on that cookie in the proxy.
     // A soft navigation can reach the gate before the cookie is visible to it,
     // which bounces the new account straight back to /login.
+    if (returnTo) {
+      window.location.assign(returnTo);
+      return;
+    }
     const query = initialQuery.current;
     const suffix = query ? `?q=${encodeURIComponent(query)}` : "";
     window.location.assign(`/${locale}/app/search${suffix}`);
   }
 
   if (phase === "submitting" || phase === "done") {
-    return <FindingMatches ready={phase === "done"} onView={handleView} />;
+    return <FindingMatches ready={phase === "done"} onView={handleView} toMap={Boolean(returnTo)} />;
   }
 
   const stepKey = WIZARD_STEPS[step].key;

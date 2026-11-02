@@ -95,3 +95,18 @@ export function programMatches(
   }
   return true;
 }
+
+/**
+ * Where a guest goes to register or sign in from the map. Both carry the map
+ * URL back: the login form follows it, and the registration wizard offers a
+ * way back to the map at the end (see isNearbyReturn).
+ */
+export function nearbyAuthHrefs(returnTo: string) {
+  const back = encodeURIComponent(returnTo);
+  return { signup: `/onboarding?callbackUrl=${back}`, login: `/login?callbackUrl=${back}` };
+}
+
+/** A return address the registration wizard may follow: this site's map only. */
+export function isNearbyReturn(url: string | null | undefined): url is string {
+  return Boolean(url && /^\/(?:ar|en)\/nearby(?:[?#]|$)/.test(url));
+}
