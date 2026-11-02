@@ -4,11 +4,13 @@ import { getTranslations } from "next-intl/server";
 import { NearbyPreview, previewItems } from "@/components/nearby/nearby-art";
 import { Link } from "@/i18n/navigation";
 import type { NearbyCatalog } from "@/lib/nearby";
+import { nearbyAuthHrefs } from "@/lib/nearby-filters";
 
 /** Shown to a guest whose one free "Find nearest" search is used up. */
 export async function NearbyGate({ catalog, callbackUrl }: { catalog: NearbyCatalog; callbackUrl: string }) {
   const t = await getTranslations("Nearby");
   const perks = t.raw("gate.perks") as string[];
+  const auth = nearbyAuthHrefs(callbackUrl);
   const { items, origin } = previewItems(catalog.universities);
   const km = (value: number) => t("km", { value: value < 10 ? value.toFixed(1) : Math.round(value) });
 
@@ -35,13 +37,13 @@ export async function NearbyGate({ catalog, callbackUrl }: { catalog: NearbyCata
 
           <div className="mt-8 flex flex-col gap-3 sm:flex-row">
             <Link
-              href="/signup"
+              href={auth.signup}
               className="inline-flex h-11 items-center justify-center rounded-lg bg-[#1E6DEB] px-6 text-[15px] font-semibold text-white shadow-[0_1px_2px_rgba(15,23,42,0.1)] transition-colors hover:bg-[#1857C4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
             >
               {t("gate.signup")}
             </Link>
             <Link
-              href={`/login?callbackUrl=${encodeURIComponent(callbackUrl)}`}
+              href={auth.login}
               className="inline-flex h-11 items-center justify-center rounded-lg border border-slate-200 bg-white px-6 text-[15px] font-semibold text-slate-800 transition-colors hover:bg-slate-50"
             >
               {t("gate.login")}

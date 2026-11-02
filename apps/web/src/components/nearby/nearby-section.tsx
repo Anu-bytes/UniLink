@@ -1,10 +1,11 @@
 import { Check } from "lucide-react";
-import { getTranslations } from "next-intl/server";
+import { getLocale, getTranslations } from "next-intl/server";
 
 import { NearbyPreview, previewItems } from "@/components/nearby/nearby-art";
 import { NearbyLauncher } from "@/components/nearby/nearby-launcher";
 import { Reveal } from "@/components/reveal";
 import { Link } from "@/i18n/navigation";
+import { nearbyAuthHrefs } from "@/lib/nearby-filters";
 import type { NearbyCatalog } from "@/lib/nearby";
 
 export type NearbyAccess = "member" | "guest" | "guestUsed";
@@ -12,6 +13,7 @@ export type NearbyAccess = "member" | "guest" | "guestUsed";
 /** The homepage feature block for "Find nearest", with its launch button. */
 export async function NearbySection({ catalog, access }: { catalog: NearbyCatalog; access: NearbyAccess }) {
   const t = await getTranslations("Nearby");
+  const auth = nearbyAuthHrefs(`/${await getLocale()}/nearby`);
   const { items, origin } = previewItems(catalog.universities);
   const km = (value: number) => t("km", { value: value < 10 ? value.toFixed(1) : Math.round(value) });
   const points = [t("section.point1"), t("section.point2"), t("section.point3")];
@@ -49,8 +51,12 @@ export async function NearbySection({ catalog, access }: { catalog: NearbyCatalo
               ) : (
                 <>
                   {access === "guest" ? t("access.guest") : t("access.guestUsed")}{" "}
-                  <Link href="/signup" className="font-semibold text-[#1E6DEB] hover:underline">
+                  <Link href={auth.signup} className="font-semibold text-[#1E6DEB] hover:underline">
                     {t("access.signup")}
+                  </Link>{" "}
+                  <span aria-hidden>·</span>{" "}
+                  <Link href={auth.login} className="font-semibold text-slate-700 hover:underline">
+                    {t("gate.login")}
                   </Link>
                 </>
               )}

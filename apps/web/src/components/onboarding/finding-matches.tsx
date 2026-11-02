@@ -24,9 +24,12 @@ const CHECK_KEYS = [
 export function FindingMatches({
   ready,
   onView,
+  toMap = false,
 }: {
   ready: boolean;
   onView: () => void;
+  /** Registration started from the map, so the button goes back there. */
+  toMap?: boolean;
 }) {
   const t = useTranslations("Onboarding.matches");
   const [revealed, setRevealed] = useState(0);
@@ -86,7 +89,7 @@ export function FindingMatches({
           ready && "duration-500 animate-in fade-in-0 slide-in-from-bottom-2",
         )}
       >
-        {ready ? t("cta") : t("preparing")}
+        {ready ? t(toMap ? "ctaMap" : "cta") : t("preparing")}
       </Button>
     </div>
   );

@@ -2,7 +2,7 @@
 
 import { Lock, MapPin, X } from "lucide-react";
 import dynamic from "next/dynamic";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useCallback, useEffect, useMemo, useRef, useState, useSyncExternalStore } from "react";
 
 import { useFormatDistance } from "@/components/nearby/nearby-controls";
@@ -25,6 +25,7 @@ import type { NearbyCatalog } from "@/lib/nearby";
 import {
   NEARBY_RADIUS_MAX,
   filtersPrograms,
+  nearbyAuthHrefs,
   nearbyHref,
   programMatches,
   type NearbyFilters,
@@ -62,6 +63,7 @@ export function NearbyExplorer({
   guest?: boolean;
 }) {
   const t = useTranslations("Nearby");
+  const locale = useLocale();
   const formatDistance = useFormatDistance();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   // False while server-rendering and hydrating, true after: the list waits
@@ -328,11 +330,15 @@ export function NearbyExplorer({
     />
   );
 
+  const authHrefs = nearbyAuthHrefs(`/${locale}${nearbyHref(filters)}`);
   const guestNote = guest ? (
     <div className="flex items-center gap-3 border-t border-slate-100 bg-slate-50 px-5 py-3 text-[12.5px] text-slate-600">
       <Lock className="size-3.5 shrink-0 text-slate-400" aria-hidden />
       <span className="min-w-0 flex-1">{t("access.guestActive")}</span>
-      <Link href="/signup" className="shrink-0 font-semibold text-[#1E6DEB] hover:underline">
+      <Link href={authHrefs.login} className="shrink-0 font-semibold text-slate-700 hover:underline">
+        {t("gate.login")}
+      </Link>
+      <Link href={authHrefs.signup} className="shrink-0 font-semibold text-[#1E6DEB] hover:underline">
         {t("access.signup")}
       </Link>
     </div>
@@ -480,12 +486,18 @@ export function NearbyExplorer({
         </div>
       </div>
 
-      {locked ? <LockedDialog onClose={() => setLocked(false)} /> : null}
+      {locked ? <LockedDialog hrefs={authHrefs} onClose={() => setLocked(false)} /> : null}
     </div>
   );
 }
 
-function LockedDialog({ onClose }: { onClose: () => void }) {
+function LockedDialog({
+  hrefs,
+  onClose,
+}: {
+  hrefs: { signup: string; login: string };
+  onClose: () => void;
+}) {
   const t = useTranslations("Nearby");
   const ref = useRef<HTMLDialogElement>(null);
   useEffect(() => {
@@ -511,13 +523,13 @@ function LockedDialog({ onClose }: { onClose: () => void }) {
         <p className="mt-1.5 text-sm leading-6 text-slate-500">{t("locked.text")}</p>
         <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <Link
-            href={`/login?callbackUrl=${encodeURIComponent(window.location.pathname + window.location.search)}`}
+            href={hrefs.login}
             className="inline-flex h-10 items-center justify-center rounded-lg border border-slate-200 px-4 text-sm font-semibold text-slate-800 transition-colors hover:bg-slate-50"
           >
             {t("gate.login")}
           </Link>
           <Link
-            href="/signup"
+            href={hrefs.signup}
             className="inline-flex h-10 items-center justify-center rounded-lg bg-[#1E6DEB] px-4 text-sm font-semibold text-white transition-colors hover:bg-[#1857C4]"
           >
             {t("gate.signup")}
