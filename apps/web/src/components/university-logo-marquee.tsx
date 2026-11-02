@@ -32,6 +32,9 @@ export function UniversityLogoMarquee({
   );
   if (withLogos.length < 6) return null;
   const track = [...withLogos, ...withLogos];
+  // A fixed pace per logo (about 35px a second on desktop), so the strip
+  // stays slow and readable however many universities are listed.
+  const duration = `${withLogos.length * 5}s`;
 
   return (
     // No visible heading: the strip speaks for itself. The title stays as the
@@ -41,7 +44,10 @@ export function UniversityLogoMarquee({
         dir="ltr"
         className="group relative overflow-hidden [mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)] [-webkit-mask-image:linear-gradient(to_right,transparent,black_10%,black_90%,transparent)]"
       >
-        <ul className="ul-marquee flex w-max items-center gap-4 [animation-duration:70s] group-hover:[animation-play-state:paused] md:gap-6">
+        <ul
+          className="ul-marquee flex w-max items-center gap-4 group-hover:[animation-play-state:paused] md:gap-6"
+          style={{ animationDuration: duration }}
+        >
           {track.map((university, index) => {
             const clone = index >= withLogos.length;
             return (

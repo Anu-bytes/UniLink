@@ -107,7 +107,7 @@
       "partners": {
         "eyebrow": "Our Coverage",
         "featuredTitle": "Featured Universities",
-        "title": "Private, Public, and Specialized Universities Across Egypt",
+        "title": "Private and National Universities Across Egypt",
         "allCities": "All",
         "filterLabel": "Filter universities by city",
         "prev": "Previous universities",
@@ -165,8 +165,8 @@
             "a": "Yes. Browsing universities, programs, fees, and scholarships is completely free."
           },
           {
-            "q": "Which universities do you cover?",
-            "a": "Private, public, and specialized universities across Egypt."
+            "q": "Which universities are on UniLink?",
+            "a": "We currently focus on private and national universities across Egypt. Public (government) universities are not covered at the moment."
           },
           {
             "q": "Does UniLink help with studying abroad?",
@@ -4025,6 +4025,6 @@
   "Brand": {
     "name": "UniLink",
     "tagline": "Your guide to universities in Egypt",
-    "description": "UniLink is your comprehensive guide to private, public, and specialized universities in Egypt: programs, admission requirements, tuition fees, and scholarships in one place."
+    "description": "UniLink is your comprehensive guide to private and national universities in Egypt: programs, admission requirements, tuition fees, and scholarships in one place."
   }
 }
