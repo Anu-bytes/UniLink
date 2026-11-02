@@ -262,8 +262,8 @@ async function UniversityCard({
             </span>
           ) : null}
           {university.isTrending ? (
-            <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-bold text-[#C81F15] sm:px-1.5 sm:text-[10px]">
-              <Flame className="size-3 text-[#F82C1F] sm:size-2.5" aria-hidden />
+            <span className="inline-flex items-center gap-1 rounded-full bg-white/95 px-2 py-0.5 text-[11px] font-bold text-[#B77714] sm:px-1.5 sm:text-[10px]">
+              <Flame className="size-3 text-[#F5A524] sm:size-2.5" aria-hidden />
               {tDetail("trending")}
             </span>
           ) : null}

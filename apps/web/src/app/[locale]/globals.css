@@ -651,7 +651,7 @@ html[lang="ar"] body {
   @keyframes ul-blink-warm {
     0%,
     100% {
-      background-color: #f82c1f;
+      background-color: #f5a524;
       opacity: 1;
       transform: scale(1);
     }
@@ -1781,7 +1781,7 @@ html[lang="ar"] body {
   }
 }
 .ul-soon-word {
-  background-image: linear-gradient(100deg, #16233f 0%, #16233f 42%, #f82c1f 50%, #ff8a00 53%, #16233f 62%, #16233f 100%);
+  background-image: linear-gradient(100deg, #16233f 0%, #16233f 42%, #f5a524 50%, #ff8a00 53%, #16233f 62%, #16233f 100%);
   background-size: 260% 100%;
   background-position: 100% 0;
   -webkit-background-clip: text;

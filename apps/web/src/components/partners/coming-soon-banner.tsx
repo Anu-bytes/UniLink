@@ -28,10 +28,10 @@ export async function ComingSoonBanner() {
       <div aria-hidden className="ul-dots pointer-events-none absolute -inset-8 opacity-[0.07]" />
 
       <div className="relative mx-auto max-w-7xl px-4 pb-8 pt-10 text-center md:px-6 md:pb-10 md:pt-14">
-        <p className="ul-soon-fade inline-flex items-center gap-2 rounded-full border border-[#F82C1F]/20 bg-[#FFF5F4] px-3.5 py-1.5 text-[13px] font-semibold text-[#C81F15]">
+        <p className="ul-soon-fade inline-flex items-center gap-2 rounded-full border border-[#F5A524]/30 bg-[#FFF6E5] px-3.5 py-1.5 text-[13px] font-semibold text-[#B77714]">
           <span className="relative flex size-2">
-            <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#F82C1F] opacity-60" />
-            <span className="relative inline-flex size-2 rounded-full bg-[#F82C1F]" />
+            <span className="absolute inline-flex size-full animate-ping rounded-full bg-[#F5A524] opacity-60" />
+            <span className="relative inline-flex size-2 rounded-full bg-[#F5A524]" />
           </span>
           {t("eyebrow")}
         </p>
@@ -60,7 +60,7 @@ export async function ComingSoonBanner() {
         <div className="ul-soon-fade mt-7 flex justify-center [animation-delay:500ms]">
           <Link
             href="/work-with-us"
-            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#16233F]/15 bg-white px-6 text-[15px] font-bold text-[#16233F] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#F82C1F]/40 hover:text-[#C81F15] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="inline-flex h-12 items-center justify-center gap-2 rounded-full border border-[#16233F]/15 bg-white px-6 text-[15px] font-bold text-[#16233F] shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:border-[#F5A524]/60 hover:text-[#B77714] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
           >
             <BellRing className="size-4" aria-hidden />
             {t("cta")}
@@ -73,7 +73,7 @@ export async function ComingSoonBanner() {
           {[...ribbon, ...ribbon].map((text, index) => (
             <span key={index} className="inline-flex items-center gap-10">
               {text}
-              <span className="size-1.5 rounded-full bg-[#F82C1F]" />
+              <span className="size-1.5 rounded-full bg-[#F5A524]" />
             </span>
           ))}
         </div>

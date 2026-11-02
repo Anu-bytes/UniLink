@@ -131,8 +131,8 @@ export async function UniversityHero({
                 </span>
               ) : null}
               {university.isTrending ? (
-                <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#C81F15] shadow-sm backdrop-blur-sm sm:text-sm">
-                  <Flame className="size-3.5 text-[#F82C1F]" aria-hidden />
+                <span className="inline-flex min-h-8 items-center gap-1.5 rounded-full bg-white/90 px-3 text-xs font-bold text-[#B77714] shadow-sm backdrop-blur-sm sm:text-sm">
+                  <Flame className="size-3.5 text-[#F5A524]" aria-hidden />
                   {t("trending")}
                 </span>
               ) : null}

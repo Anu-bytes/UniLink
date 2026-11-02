@@ -153,7 +153,6 @@ export function FilterBar({
         </button>
 
         <UniversityTypeToggle
-          tone="blue"
           value={activeType}
           onChange={(type) =>
             push({ ...filters, universityTypes: type ? [type] : undefined })

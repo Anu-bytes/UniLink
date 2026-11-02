@@ -8,17 +8,10 @@ import { cn } from "@/lib/utils";
 
 type UniversityTypeValue = (typeof UNIVERSITY_TYPES)[number];
 
-const TONES = {
-  blue: {
-    ring: "focus-visible:outline-[#1E6DEB]",
-    active: "bg-[#1E6DEB] text-white",
-    border: "border-[#1E6DEB]/35",
-  },
-  red: {
-    ring: "focus-visible:outline-[#F82C1F]",
-    active: "bg-[#F82C1F] text-white",
-    border: "border-[#F82C1F]/35",
-  },
+const COLORS = {
+  ring: "focus-visible:outline-[#1E6DEB]",
+  active: "bg-[#1E6DEB] text-white",
+  border: "border-[#1E6DEB]/35",
 } as const;
 
 /**
@@ -29,14 +22,11 @@ const TONES = {
 export function UniversityTypeToggle({
   value,
   onChange,
-  tone,
 }: {
   value: UniversityTypeValue | "";
   onChange: (value: UniversityTypeValue | "") => void;
-  tone: keyof typeof TONES;
 }) {
   const t = useTranslations("Search.filters");
-  const colors = TONES[tone];
 
   // `value` comes from the URL, so it only changes after the results have
   // reloaded on the server. Show the click straight away, and drop the local
@@ -59,7 +49,7 @@ export function UniversityTypeToggle({
       aria-label={t("universityType")}
       className={cn(
         "inline-flex h-10 items-stretch overflow-hidden rounded-lg border-2 bg-white shadow-sm",
-        colors.border,
+        COLORS.border,
       )}
     >
       {options.map((option, index) => {
@@ -77,9 +67,9 @@ export function UniversityTypeToggle({
             }}
             className={cn(
               "px-3.5 text-sm font-semibold whitespace-nowrap transition-colors focus-visible:outline-2 focus-visible:-outline-offset-2",
-              colors.ring,
+              COLORS.ring,
               index > 0 && "border-s border-slate-200",
-              active ? colors.active : "text-[#1F2A44] hover:bg-slate-50",
+              active ? COLORS.active : "text-[#1F2A44] hover:bg-slate-50",
             )}
           >
             {option.label}
