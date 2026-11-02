@@ -46,7 +46,7 @@ export function SearchModeSwitch({
         className={cn(
           "absolute inset-y-1.5 start-1.5 w-[calc(50%-6px)] rounded-full transition-all duration-500 ease-[cubic-bezier(0.34,1.56,0.64,1)]",
           isUniversities
-            ? "translate-x-full bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] shadow-[0_6px_16px_-4px_rgba(30,109,235,0.55)] rtl:-translate-x-full"
+            ? "translate-x-full bg-gradient-to-br from-[#0F766E] to-[#14A394] shadow-[0_6px_16px_-4px_rgba(15,118,110,0.55)] rtl:-translate-x-full"
             : "translate-x-0 bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] shadow-[0_6px_16px_-4px_rgba(30,109,235,0.55)]",
         )}
       />
@@ -71,7 +71,7 @@ export function SearchModeSwitch({
           "relative z-10 flex items-center justify-center gap-1.5 rounded-full px-4 py-2.5 text-sm font-bold transition-colors duration-300 sm:px-6",
           isUniversities
             ? "text-white"
-            : "text-[#5a6072] hover:text-[#1E6DEB]",
+            : "text-[#5a6072] hover:text-[#0F766E]",
         )}
       >
         <Building2 className="size-4 shrink-0" aria-hidden />

@@ -78,6 +78,7 @@ export function UniversityFilterBar({
       data-pending={isPending || undefined}
     >
       <UniversityTypeToggle
+        tone="teal"
         value={UNIVERSITY_TYPES.find((value) => value === type) ?? ""}
         onChange={(value) => push({ type: value })}
       />
@@ -102,7 +103,7 @@ export function UniversityFilterBar({
             setActiveCities([]);
             push({ type: "", cities: [] });
           }}
-          className="inline-flex min-h-10 items-center gap-1 px-2 text-sm font-semibold text-[#5a6072] hover:text-[#1E6DEB]"
+          className="inline-flex min-h-10 items-center gap-1 px-2 text-sm font-semibold text-[#5a6072] hover:text-[#0F766E]"
         >
           <X className="size-4" aria-hidden />
           {t("clearAll")}
@@ -171,19 +172,19 @@ function CityMultiSelect({
         aria-haspopup="listbox"
         aria-expanded={open}
         className={cn(
-          "flex h-10 max-w-52 cursor-pointer items-center gap-2 rounded-lg border-2 ps-9 pe-8 text-sm font-semibold shadow-sm outline-none transition-colors focus-visible:border-[#1E6DEB] focus-visible:ring-2 focus-visible:ring-[#1E6DEB]/25",
+          "flex h-10 max-w-52 cursor-pointer items-center gap-2 rounded-lg border-2 ps-9 pe-8 text-sm font-semibold shadow-sm outline-none transition-colors focus-visible:border-[#0F766E] focus-visible:ring-2 focus-visible:ring-[#0F766E]/25",
           active
-            ? "border-[#1E6DEB] bg-[#EEF3FF] text-[#1E6DEB]"
-            : "border-[#1E6DEB]/35 bg-white text-[#1F2A44] hover:border-[#1E6DEB]/60 hover:bg-[#F5F8FF]",
+            ? "border-[#0F766E] bg-[#E6F4F2] text-[#0F766E]"
+            : "border-[#0F766E]/35 bg-white text-[#1F2A44] hover:border-[#0F766E]/60 hover:bg-[#F2FAF9]",
         )}
       >
         <MapPin
-          className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#1E6DEB]"
+          className="pointer-events-none absolute start-3 top-1/2 size-4 -translate-y-1/2 text-[#0F766E]"
           aria-hidden
         />
         <span className="truncate">{triggerText}</span>
         <ChevronDown
-          className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-[#1E6DEB]"
+          className="pointer-events-none absolute end-2.5 top-1/2 size-4 -translate-y-1/2 text-[#0F766E]"
           aria-hidden
         />
       </button>
@@ -217,7 +218,7 @@ function CityMultiSelect({
                   disabled
                     ? "cursor-not-allowed text-[#C3C8D4]"
                     : isSelected
-                      ? "text-[#1E6DEB]"
+                      ? "text-[#0F766E]"
                       : "text-[#1F2A44] hover:bg-slate-50",
                 )}
               >
@@ -225,7 +226,7 @@ function CityMultiSelect({
                   className={cn(
                     "flex size-4 shrink-0 items-center justify-center rounded border",
                     isSelected
-                      ? "border-[#1E6DEB] bg-[#1E6DEB] text-white"
+                      ? "border-[#0F766E] bg-[#0F766E] text-white"
                       : "border-slate-300",
                   )}
                 >

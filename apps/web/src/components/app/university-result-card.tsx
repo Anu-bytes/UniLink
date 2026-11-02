@@ -42,7 +42,7 @@ export async function UniversityResultCard({
               {university.acronym ? (
                 <AcronymBadge acronym={university.acronym} size="md" />
               ) : null}
-              <p className="truncate text-[10px] font-bold uppercase tracking-wider text-[#1E6DEB]">
+              <p className="truncate text-[10px] font-bold uppercase tracking-wider text-[#0F766E]">
                 {tCatalog(`universityTypes.${university.type}`)}
               </p>
             </div>
@@ -86,7 +86,7 @@ export async function UniversityResultCard({
         <div className="mt-auto space-y-2 pt-4">
           <Link
             href={`/universities/${university.slug}`}
-            className="group/cta inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#1E6DEB] text-sm font-bold text-white transition-colors hover:bg-[#1857C4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]"
+            className="group/cta inline-flex h-10 w-full items-center justify-center gap-1.5 rounded-md bg-[#0F766E] text-sm font-bold text-white transition-colors hover:bg-[#115E59] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#0F766E]"
           >
             {t("viewProfile")}
             <ArrowRight

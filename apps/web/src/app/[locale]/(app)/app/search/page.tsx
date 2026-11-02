@@ -372,14 +372,14 @@ async function UniversitiesSearchView({
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="flex items-center gap-2.5 text-xl font-bold text-[#1F2A44] md:text-2xl">
-                <span aria-hidden className="h-6 w-1.5 rounded-full bg-[#1E6DEB]" />
+                <span aria-hidden className="h-6 w-1.5 rounded-full bg-[#0F766E]" />
                 {t("universitiesResultsTitle")}
               </h2>
               <p className="mt-1 text-sm text-[#5a6072]">
                 {t("universitiesResultsSubtitle")}
               </p>
             </div>
-            <p className="rounded-full bg-[#EEF3FF] px-3 py-1.5 text-sm font-bold text-[#1E6DEB]">
+            <p className="rounded-full bg-[#E6F4F2] px-3 py-1.5 text-sm font-bold text-[#0F766E]">
               {tDir("resultCount", { count: page.total })}
             </p>
           </div>
@@ -410,7 +410,7 @@ async function UniversitiesSearchView({
               />
             </>
           ) : (
-            <div className="mt-5 rounded-xl bg-[#F5F8FF] px-6 py-14 text-center">
+            <div className="mt-5 rounded-xl bg-[#F2FAF9] px-6 py-14 text-center">
               <h3 className="text-lg font-bold text-[#1F2A44]">
                 {t("universitiesEmptyTitle")}
               </h3>
@@ -421,8 +421,8 @@ async function UniversitiesSearchView({
           )}
         </section>
       ) : (
-        <div className="mt-10 rounded-xl border border-dashed border-slate-200 bg-[#F5F8FF] px-6 py-16 text-center">
-          <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#EEF3FF] text-[#1E6DEB]">
+        <div className="mt-10 rounded-xl border border-dashed border-slate-200 bg-[#F2FAF9] px-6 py-16 text-center">
+          <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#E6F4F2] text-[#0F766E]">
             <Building2 className="size-6" aria-hidden />
           </span>
           <h3 className="mt-4 text-lg font-bold text-[#1F2A44]">
@@ -437,7 +437,7 @@ async function UniversitiesSearchView({
   );
 }
 
-/** Same visual language as SearchPagination (faculty mode), red instead of
+/** Same visual language as SearchPagination (faculty mode), teal instead of
  * blue, and building its own href since a university search's URL state
  * (`mode` + `q` + `page`) doesn't fit SearchFilters, which that component is
  * built around. */
@@ -477,7 +477,7 @@ async function UniversityPagination({
         <Link
           href={hrefFor(page - 1)}
           scroll={false}
-          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#1E6DEB]/30 hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
+          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#0F766E]/30 hover:bg-[#E6F4F2] hover:text-[#0F766E]"
         >
           <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
           {t("previous")}
@@ -497,7 +497,7 @@ async function UniversityPagination({
         <Link
           href={hrefFor(page + 1)}
           scroll={false}
-          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-[#1E6DEB] bg-[#1E6DEB] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1857C4]"
+          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-[#0F766E] bg-[#0F766E] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#115E59]"
         >
           {t("next")}
           <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />
