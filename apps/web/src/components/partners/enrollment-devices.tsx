@@ -37,8 +37,8 @@ export function EnrollmentDevices() {
                 Applications
               </p>
             </div>
-            <div className="rounded-xl bg-[#FFF0EE] p-3">
-              <ArrowUpRight className="size-4 text-[#F82C1F]" />
+            <div className="rounded-xl bg-[#EEF3FF] p-3">
+              <ArrowUpRight className="size-4 text-[#1E6DEB]" />
               <p className="mt-2 text-lg font-bold text-[#16233F]">72%</p>
               <p className="text-[10px] font-medium text-[#5a6072]">
                 Enrolled

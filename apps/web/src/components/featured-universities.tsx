@@ -564,8 +564,8 @@ function UniversityTile({
           <span className="absolute end-3 top-3 inline-flex items-center gap-1 rounded-full bg-white/95 px-2.5 py-1 text-[11px] font-bold shadow-sm">
             {university.isTrending ? (
               <>
-                <Flame className="size-3 text-[#F82C1F]" aria-hidden />
-                <span className="text-[#C81F15]">{trendingLabel}</span>
+                <Flame className="size-3 text-[#F5A524]" aria-hidden />
+                <span className="text-[#B77714]">{trendingLabel}</span>
               </>
             ) : (
               <>

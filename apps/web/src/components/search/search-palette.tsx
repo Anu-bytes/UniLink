@@ -288,7 +288,7 @@ export function SearchPalette({
 
               {!trimmed && entries ? (
                 <p className="flex items-center gap-1.5 px-3 pb-1.5 pt-2 text-[11px] font-bold uppercase tracking-wider text-[#98A0B4]">
-                  <Flame className="size-3.5 text-[#F82C1F]" aria-hidden />
+                  <Flame className="size-3.5 text-[#F5A524]" aria-hidden />
                   {t("trending")}
                 </p>
               ) : null}

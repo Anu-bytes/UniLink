@@ -50,9 +50,9 @@ export function UniversitySearchBar({
   return (
     <form
       onSubmit={submit}
-      className="flex items-center gap-1.5 rounded-2xl bg-white p-2 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)] ring-1 ring-black/5 transition-shadow focus-within:ring-2 focus-within:ring-[#F82C1F]"
+      className="flex items-center gap-1.5 rounded-2xl bg-white p-2 shadow-[0_20px_40px_-24px_rgba(15,23,42,0.35)] ring-1 ring-black/5 transition-shadow focus-within:ring-2 focus-within:ring-[#1E6DEB]"
     >
-      <span className="ms-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#FFF0EE] text-[#F82C1F]">
+      <span className="ms-1 flex size-9 shrink-0 items-center justify-center rounded-full bg-[#EEF3FF] text-[#1E6DEB]">
         <Search className="size-4" aria-hidden />
       </span>
 
@@ -81,7 +81,7 @@ export function UniversitySearchBar({
 
       <button
         type="submit"
-        className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#F82C1F] px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#C81F15]"
+        className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1E6DEB] px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#1857C4]"
       >
         <Search className="size-5 sm:hidden" aria-hidden />
         <span className="hidden sm:inline">{t("searchLabel")}</span>

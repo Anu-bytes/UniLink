@@ -372,14 +372,14 @@ async function UniversitiesSearchView({
           <div className="flex flex-wrap items-end justify-between gap-3">
             <div>
               <h2 className="flex items-center gap-2.5 text-xl font-bold text-[#1F2A44] md:text-2xl">
-                <span aria-hidden className="h-6 w-1.5 rounded-full bg-[#F82C1F]" />
+                <span aria-hidden className="h-6 w-1.5 rounded-full bg-[#1E6DEB]" />
                 {t("universitiesResultsTitle")}
               </h2>
               <p className="mt-1 text-sm text-[#5a6072]">
                 {t("universitiesResultsSubtitle")}
               </p>
             </div>
-            <p className="rounded-full bg-[#FFF0EE] px-3 py-1.5 text-sm font-bold text-[#F82C1F]">
+            <p className="rounded-full bg-[#EEF3FF] px-3 py-1.5 text-sm font-bold text-[#1E6DEB]">
               {tDir("resultCount", { count: page.total })}
             </p>
           </div>
@@ -421,8 +421,8 @@ async function UniversitiesSearchView({
           )}
         </section>
       ) : (
-        <div className="mt-10 rounded-xl border border-dashed border-slate-200 bg-[#FFF7F6] px-6 py-16 text-center">
-          <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#FFF0EE] text-[#F82C1F]">
+        <div className="mt-10 rounded-xl border border-dashed border-slate-200 bg-[#F5F8FF] px-6 py-16 text-center">
+          <span className="mx-auto flex size-14 items-center justify-center rounded-full bg-[#EEF3FF] text-[#1E6DEB]">
             <Building2 className="size-6" aria-hidden />
           </span>
           <h3 className="mt-4 text-lg font-bold text-[#1F2A44]">
@@ -477,7 +477,7 @@ async function UniversityPagination({
         <Link
           href={hrefFor(page - 1)}
           scroll={false}
-          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#F82C1F]/30 hover:bg-[#FFF0EE] hover:text-[#F82C1F]"
+          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#1E6DEB]/30 hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
         >
           <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
           {t("previous")}
@@ -497,7 +497,7 @@ async function UniversityPagination({
         <Link
           href={hrefFor(page + 1)}
           scroll={false}
-          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-[#F82C1F] bg-[#F82C1F] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#C81F15]"
+          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-[#1E6DEB] bg-[#1E6DEB] px-4 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-[#1857C4]"
         >
           {t("next")}
           <ChevronRight className="size-4 rtl:rotate-180" aria-hidden />

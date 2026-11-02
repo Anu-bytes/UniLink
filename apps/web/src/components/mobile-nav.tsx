@@ -120,7 +120,7 @@ export function MobileNav({
                 >
                   {link.label}
                   {link.badge ? (
-                    <span className="ms-1.5 rounded-full bg-[#FFF0EE] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#C81F15]">
+                    <span className="ms-1.5 rounded-full bg-[#FFF6E5] px-1.5 py-0.5 text-[10px] font-bold leading-none text-[#B77714]">
                       {link.badge}
                     </span>
                   ) : null}

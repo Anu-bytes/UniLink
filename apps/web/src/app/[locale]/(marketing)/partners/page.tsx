@@ -45,7 +45,7 @@ export default async function PartnersPage() {
             <div className="text-center lg:text-start">
               <h1 className="text-[clamp(2rem,5vw,3.25rem)] font-bold leading-[1.15] text-[#16233F]">
                 {t("hero.titleLead")}{" "}
-                <span className="text-[#F82C1F]">{t("hero.titleHighlight")}</span>
+                <span className="text-[#1E6DEB]">{t("hero.titleHighlight")}</span>
               </h1>
               <p className="mx-auto mt-5 max-w-xl text-base leading-8 text-[#4A5568] md:text-lg lg:mx-0">
                 {t("hero.subtitle")}
@@ -53,7 +53,7 @@ export default async function PartnersPage() {
               <div className="mt-8 flex justify-center lg:justify-start">
                 <Link
                   href="/contact"
-                  className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-[#F82C1F] px-8 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(248,44,31,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#C81F15]"
+                  className="inline-flex h-14 items-center justify-center gap-2 rounded-full bg-[#1E6DEB] px-8 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1857C4]"
                 >
                   {t("hero.cta")}
                   <ArrowRight
@@ -75,7 +75,7 @@ export default async function PartnersPage() {
           partners are signed. */}
       <section className="bg-white py-8 md:py-10">
         <div className="flex items-center justify-center gap-2">
-          <span className="ul-blink-warm inline-flex size-2 rounded-full bg-[#F82C1F]" />
+          <span className="ul-blink-warm inline-flex size-2 rounded-full bg-[#1E6DEB]" />
           <h2 className="text-center text-[clamp(1.5rem,4vw,2.25rem)] font-bold leading-tight text-[#16233F]">
             {t("logosTitle")}
           </h2>
@@ -97,20 +97,20 @@ export default async function PartnersPage() {
               const Icon = cardIcons[i] ?? TrendingUp;
               // Alternates blue/red per card, matching the site's brand mix
               // rather than an all-blue grid.
-              const isRed = i % 2 === 1;
+              const isWarm = i % 2 === 1;
               return (
                 <div
                   key={card.title}
                   className={`hover-lift flex flex-col items-center rounded-2xl border bg-white p-6 text-center shadow-sm transition-all duration-300 hover:-translate-y-1 hover:shadow-lg ${
-                    isRed
-                      ? "border-[#E7EDF5] hover:border-[#F82C1F]/40"
+                    isWarm
+                      ? "border-[#E7EDF5] hover:border-[#F5A524]/50"
                       : "border-[#E7EDF5] hover:border-[#1E6DEB]/40"
                   }`}
                 >
                   <span
                     className={`flex size-14 items-center justify-center rounded-2xl ${
-                      isRed
-                        ? "bg-[#FFF0EE] text-[#F82C1F]"
+                      isWarm
+                        ? "bg-[#FFF6E5] text-[#B77714]"
                         : "bg-[#EEF3FF] text-[#1E6DEB]"
                     }`}
                   >
@@ -134,7 +134,7 @@ export default async function PartnersPage() {
           <div className="mt-6 flex justify-center">
             <Link
               href="/contact"
-              className="inline-flex h-14 items-center justify-center rounded-full bg-[#F82C1F] px-8 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(248,44,31,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#C81F15]"
+              className="inline-flex h-14 items-center justify-center rounded-full bg-[#1E6DEB] px-8 text-[17px] font-bold text-white shadow-[0_16px_36px_-12px_rgba(30,109,235,0.5)] transition-all duration-200 hover:-translate-y-0.5 hover:bg-[#1857C4]"
             >
               {t("whyChoose.cta")}
             </Link>
@@ -207,7 +207,7 @@ export default async function PartnersPage() {
                         alt ? "md:order-2" : "md:order-1"
                       } ${
                         alt
-                          ? "bg-gradient-to-br from-[#F82C1F] to-[#ff6b5b]"
+                          ? "bg-gradient-to-br from-[#F5A524] to-[#FF8A00]"
                           : "bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7]"
                       }`}
                     >
@@ -218,7 +218,7 @@ export default async function PartnersPage() {
                   <div className={alt ? "md:order-1" : "md:order-2"}>
                     <span
                       className={`text-[13px] font-bold uppercase tracking-widest ${
-                        alt ? "text-[#F82C1F]" : "text-[#1E6DEB]"
+                        alt ? "text-[#B77714]" : "text-[#1E6DEB]"
                       }`}
                     >
                       {step.tab}
@@ -295,7 +295,7 @@ export default async function PartnersPage() {
                 <div className="mt-6 flex justify-center sm:justify-start">
                   <Link
                     href="/contact"
-                    className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-6 text-base font-bold text-[#F82C1F] shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/90"
+                    className="inline-flex h-12 items-center justify-center rounded-lg bg-white px-6 text-base font-bold text-[#1E6DEB] shadow-lg transition-all duration-200 hover:-translate-y-0.5 hover:bg-white/90"
                   >
                     {t("band.cta")}
                   </Link>

@@ -34,7 +34,7 @@ export async function SearchPagination({
         <Link
           href={hrefFor(page - 1)}
           scroll={false}
-          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#F82C1F]/30 hover:bg-[#FFF0EE] hover:text-[#F82C1F]"
+          className="inline-flex min-h-11 items-center gap-1 rounded-lg border border-slate-200 bg-white px-4 text-sm font-semibold text-[#1F2A44] shadow-sm transition-colors hover:border-[#1E6DEB]/30 hover:bg-[#EEF3FF] hover:text-[#1E6DEB]"
         >
           <ChevronLeft className="size-4 rtl:rotate-180" aria-hidden />
           {t("previous")}
