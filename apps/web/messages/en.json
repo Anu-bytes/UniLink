@@ -487,7 +487,9 @@
         "titleLead": "Find Your",
         "titleHighlight": "University in Egypt",
         "subtitle": "Explore and compare private and national universities in three simple steps: sign up, search with AI-matched results personalized to your grades and budget, then track your applications.",
-        "cta": "Register as a Student"
+        "cta": "Register as a Student",
+        "secondaryCta": "Browse universities",
+        "photoAlt": "Students looking at a laptop together on a university campus"
       },
       "stepsTitle": "3 Steps to Find Your University",
       "stepLabel": "Step",
@@ -530,6 +532,29 @@
       "band": {
         "title": "Ready to Find Your University in Egypt?",
         "cta": "Create a Student Account"
+      },
+      "why": {
+        "eyebrow": "Why UniLink",
+        "title": "Everything you need to choose with confidence",
+        "subtitle": "Real information on private and national universities in Egypt, organized around you.",
+        "items": [
+          {
+            "title": "Fees and requirements in one place",
+            "body": "See tuition, minimum grades and admission requirements for every program, side by side."
+          },
+          {
+            "title": "Matched to your grades and budget",
+            "body": "Tell us your certificate, grade and budget, and we highlight the programs that fit you."
+          },
+          {
+            "title": "Find the nearest university",
+            "body": "Use the map to see the universities closest to you, filtered by field and budget."
+          },
+          {
+            "title": "Save and compare",
+            "body": "Keep a shortlist of universities and programs and compare them before you decide."
+          }
+        ]
       }
     }
   },
