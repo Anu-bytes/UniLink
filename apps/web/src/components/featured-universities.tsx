@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { ArrowRight, ChevronLeft, ChevronRight, Flame, Heart, Loader2, MapPin } from "lucide-react";
+import { ArrowRight, Check, ChevronDown, ChevronLeft, ChevronRight, Flame, Heart, Loader2, MapPin } from "lucide-react";
 import { useLinkStatus } from "next/link";
 import { useLocale, useTranslations } from "next-intl";
 
@@ -39,15 +39,21 @@ const RAIL_GAP_PX = 20;
 // unusable on mobile.
 const COMPACT_QUERY = "(max-width: 1023px), (pointer: coarse)";
 
+// Cities shown as tabs from md up; the rest sit under "More cities", so the
+// row stays on one line however many cities the featured list spans.
+const INLINE_CITIES = 5;
+
 export function FeaturedUniversities({
   universities,
   allLabel,
+  moreCitiesLabel,
   filterLabel,
   programsLabel,
   viewDetailsLabel,
 }: {
   universities: UniversityCardData[];
   allLabel: string;
+  moreCitiesLabel: string;
   filterLabel: string;
   programsLabel: string;
   viewDetailsLabel: string;
@@ -61,10 +67,14 @@ export function FeaturedUniversities({
   const isRtl = locale.startsWith("ar");
 
   const [activeCity, setActiveCity] = useState<string | null>(null);
-  const cities = useMemo(
-    () => Array.from(new Set(universities.map((item) => item.city))),
-    [universities],
-  );
+  // Busiest cities first, so the tabs that stay in view are the useful ones.
+  const cities = useMemo(() => {
+    const counts = new Map<string, number>();
+    for (const item of universities) counts.set(item.city, (counts.get(item.city) ?? 0) + 1);
+    return [...counts.keys()].sort((a, b) => (counts.get(b) ?? 0) - (counts.get(a) ?? 0));
+  }, [universities]);
+  const inlineCities = cities.slice(0, INLINE_CITIES);
+  const moreCities = cities.slice(INLINE_CITIES);
   const visible = activeCity
     ? universities.filter((item) => item.city === activeCity)
     : universities;
@@ -274,13 +284,13 @@ export function FeaturedUniversities({
 
   return (
     <>
-      {/* City filter. On a phone it is one row of chips that scrolls
-          sideways (edge to edge) instead of wrapping onto three lines; from
-          md up it is the centred underline tab row. */}
+      {/* City filter. On a phone one row of chips that scrolls sideways; from
+          md up a single line of underline tabs, with the quieter cities under
+          "More cities" so the row never wraps. */}
       <div
         role="group"
         aria-label={filterLabel}
-        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:mx-0 md:flex-wrap md:justify-center md:gap-x-8 md:gap-y-3 md:overflow-visible md:px-0 md:pb-0 [&::-webkit-scrollbar]:hidden"
+        className="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 [scrollbar-width:none] md:hidden [&::-webkit-scrollbar]:hidden"
       >
         {[null, ...cities].map((city) => {
           const selected = city === activeCity;
@@ -291,19 +301,40 @@ export function FeaturedUniversities({
               aria-pressed={selected}
               onClick={() => setActiveCity(city)}
               className={cn(
-                "relative inline-flex h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold outline-none transition-colors",
-                "md:h-auto md:min-h-11 md:rounded-none md:border-0 md:bg-transparent md:px-1 md:pb-1 md:text-[18px] md:shadow-none",
-                "md:after:absolute md:after:inset-x-0 md:after:-bottom-px md:after:h-0.5 md:after:origin-center md:after:rounded-full md:after:bg-[#1E6DEB] md:after:transition-transform md:after:duration-300 md:after:content-['']",
-                "focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+                "inline-flex h-10 shrink-0 items-center rounded-full border px-4 text-sm font-semibold outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
                 selected
-                  ? "border-[#1E6DEB] bg-[#1E6DEB] text-white shadow-[0_6px_16px_-8px_rgba(30,109,235,0.9)] md:text-[#1E6DEB] md:after:scale-x-100"
-                  : "border-slate-200 bg-white text-[#292E3E] hover:border-[#1E6DEB]/40 hover:text-[#1E6DEB] md:after:scale-x-0",
+                  ? "border-[#1E6DEB] bg-[#1E6DEB] text-white shadow-[0_6px_16px_-8px_rgba(30,109,235,0.9)]"
+                  : "border-slate-200 bg-white text-[#292E3E] hover:border-[#1E6DEB]/40 hover:text-[#1E6DEB]",
               )}
             >
               {city ?? allLabel}
             </button>
           );
         })}
+      </div>
+
+      <div
+        role="group"
+        aria-label={filterLabel}
+        className="hidden items-center justify-center gap-x-7 border-b border-slate-100 md:flex"
+      >
+        {[null, ...inlineCities].map((city) => (
+          <CityTab
+            key={city ?? "all"}
+            selected={city === activeCity}
+            onClick={() => setActiveCity(city)}
+          >
+            {city ?? allLabel}
+          </CityTab>
+        ))}
+        {moreCities.length > 0 ? (
+          <MoreCities
+            label={moreCitiesLabel}
+            cities={moreCities}
+            active={activeCity}
+            onPick={setActiveCity}
+          />
+        ) : null}
       </div>
 
       <div
@@ -660,4 +691,104 @@ function PendingSignal({ onChange }: { onChange: (pending: boolean) => void }) {
     onChange(pending);
   }, [pending, onChange]);
   return null;
+}
+
+/** One underline tab in the md+ city row. */
+function CityTab({
+  selected,
+  onClick,
+  children,
+}: {
+  selected: boolean;
+  onClick: () => void;
+  children: React.ReactNode;
+}) {
+  return (
+    <button
+      type="button"
+      aria-pressed={selected}
+      onClick={onClick}
+      className={cn(
+        "relative -mb-px inline-flex min-h-11 shrink-0 items-center gap-1 whitespace-nowrap border-b-2 px-0.5 text-[15px] font-semibold outline-none transition-colors focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB]",
+        selected
+          ? "border-[#1E6DEB] text-[#1E6DEB]"
+          : "border-transparent text-[#4A5568] hover:text-[#1E6DEB]",
+      )}
+    >
+      {children}
+    </button>
+  );
+}
+
+/**
+ * The last tab: opens a short list of the remaining cities. When one of them
+ * is picked, the tab shows its name, so the active filter is always visible.
+ */
+function MoreCities({
+  label,
+  cities,
+  active,
+  onPick,
+}: {
+  label: string;
+  cities: string[];
+  active: string | null;
+  onPick: (city: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef<HTMLDivElement>(null);
+  const picked = active && cities.includes(active) ? active : null;
+
+  useEffect(() => {
+    if (!open) return;
+    const close = (event: MouseEvent | KeyboardEvent) => {
+      if (event instanceof KeyboardEvent ? event.key === "Escape" : !ref.current?.contains(event.target as Node)) {
+        setOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", close);
+    document.addEventListener("keydown", close);
+    return () => {
+      document.removeEventListener("mousedown", close);
+      document.removeEventListener("keydown", close);
+    };
+  }, [open]);
+
+  return (
+    <div ref={ref} className="relative">
+      <CityTab selected={Boolean(picked)} onClick={() => setOpen((value) => !value)}>
+        <span aria-haspopup="listbox" aria-expanded={open}>
+          {picked ?? label}
+        </span>
+        <ChevronDown className={cn("size-4 transition-transform", open && "rotate-180")} aria-hidden />
+      </CityTab>
+      {open ? (
+        <ul
+          role="listbox"
+          className="absolute end-0 top-full z-30 mt-2 min-w-48 rounded-xl bg-white p-1.5 text-start shadow-[0_18px_40px_-16px_rgba(15,23,42,0.35)] ring-1 ring-slate-200/80"
+        >
+          {cities.map((city) => (
+            <li key={city}>
+              <button
+                type="button"
+                role="option"
+                aria-selected={city === active}
+                onClick={() => {
+                  onPick(city);
+                  setOpen(false);
+                }}
+                className={cn(
+                  "flex w-full items-center justify-between gap-3 rounded-lg px-3 py-2 text-start text-sm font-medium transition-colors hover:bg-[#F5F8FF] hover:text-[#1E6DEB]",
+                  city === active ? "text-[#1E6DEB]" : "text-[#292E3E]",
+                )}
+              >
+                {city}
+                {city === active ? <Check className="size-4 shrink-0" aria-hidden /> : null}
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
 }

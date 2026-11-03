@@ -207,6 +207,7 @@ export default async function HomePage() {
               <FeaturedUniversities
                 universities={catalog.universities}
                 allLabel={t("partners.allCities")}
+                moreCitiesLabel={t("partners.moreCities")}
                 filterLabel={t("partners.filterLabel")}
                 programsLabel={t("partners.programsLabel")}
                 viewDetailsLabel={t("partners.viewDetails")}
