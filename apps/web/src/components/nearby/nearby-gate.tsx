@@ -57,7 +57,7 @@ export async function NearbyGate({ catalog, callbackUrl }: { catalog: NearbyCata
             <NearbyPreview
               items={items}
               origin={origin}
-              className="pointer-events-none select-none opacity-60 blur-[2px]"
+              className="pointer-events-none select-none opacity-70 blur-[1px]"
               labels={{
                 from: t("preview.from"),
                 field: t("controls.anyField"),
