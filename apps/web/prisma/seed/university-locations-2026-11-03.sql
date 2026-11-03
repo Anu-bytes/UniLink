@@ -7,3 +7,7 @@ UPDATE "University" SET "latitude" = 30.100290, "longitude" = 31.288722
 WHERE "slug" = 'st-petersburg-university-cairo' AND "latitude" IS NULL;
 UPDATE "University" SET "latitude" = 30.810037, "longitude" = 30.872159
 WHERE "slug" = 'al-salam-university' AND "latitude" IS NULL;
+-- Kazan Federal University Cairo shares St Petersburg University's campus at
+-- the Wadi El Nil Medical Complex (confirmed by the UniLink team).
+UPDATE "University" SET "latitude" = 30.100290, "longitude" = 31.288722
+WHERE "slug" = 'kazan-federal-university-cairo' AND "latitude" IS NULL;
