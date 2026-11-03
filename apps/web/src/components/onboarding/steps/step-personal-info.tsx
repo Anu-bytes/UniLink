@@ -80,6 +80,7 @@ export function StepPersonalInfo() {
     firstName: data.firstName,
     lastName: data.lastName,
     nationality: data.nationality,
+    residenceCountry: data.residenceCountry,
     city: data.city,
   });
 
@@ -136,15 +137,32 @@ export function StepPersonalInfo() {
       </div>
 
       <Field
-        label={t("personalInfo.countryLabel")}
+        label={t("personalInfo.nationalityLabel")}
         error={form.errors.nationality}
       >
         <CountryCombobox
           value={form.values.nationality as string | undefined}
           onChange={(code) => {
             form.setValue("nationality", code);
+            // Most students live in the country of their nationality, so it
+            // fills in the residence until one is picked.
+            if (code && !form.values.residenceCountry) form.setValue("residenceCountry", code);
+          }}
+          placeholder={t("personalInfo.nationalityPlaceholder")}
+          clearLabel={t("common.clear")}
+        />
+      </Field>
+
+      <Field
+        label={t("personalInfo.countryLabel")}
+        error={form.errors.residenceCountry}
+      >
+        <CountryCombobox
+          value={form.values.residenceCountry as string | undefined}
+          onChange={(code) => {
+            form.setValue("residenceCountry", code);
             // A city only makes sense within its country.
-            if (code !== form.values.nationality) form.setValue("city", undefined);
+            if (code !== form.values.residenceCountry) form.setValue("city", undefined);
           }}
           placeholder={t("personalInfo.countryPlaceholder")}
           clearLabel={t("common.clear")}
@@ -153,7 +171,7 @@ export function StepPersonalInfo() {
 
       <Field label={t("personalInfo.cityLabel")} error={form.errors.city}>
         <CityField
-          country={form.values.nationality as string | undefined}
+          country={form.values.residenceCountry as string | undefined}
           value={form.values.city as string | undefined}
           onChange={(city) => form.setValue("city", city)}
           searchPlaceholder={t("personalInfo.cityPlaceholder")}

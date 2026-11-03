@@ -243,24 +243,28 @@ export function UniversityDirectoryFiltersBar({
       </form>
 
       {limitReached ? (
-        <div className="mt-4 flex flex-wrap items-center gap-3 rounded-xl border border-[#1E6DEB]/20 bg-[#EEF3FF] px-4 py-3.5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#1E6DEB]">
-            <Lock className="size-4" aria-hidden />
-          </span>
-          <p className="min-w-0 flex-1 text-sm font-semibold text-[#1F2A44]">
-            {t("searchLimitReached", { count: FREE_SEARCH_LIMIT })}
-          </p>
-          <div className="flex shrink-0 items-center gap-2">
+        // Stacks on phones: the message on its own line, the two buttons
+        // sharing the row below, so neither squeezes the other.
+        <div className="mt-4 flex flex-col gap-3 rounded-xl border border-[#1E6DEB]/20 bg-[#EEF3FF] px-4 py-3.5 sm:flex-row sm:items-center">
+          <div className="flex min-w-0 flex-1 items-center gap-3">
+            <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-white text-[#1E6DEB]">
+              <Lock className="size-4" aria-hidden />
+            </span>
+            <p className="min-w-0 flex-1 text-sm font-semibold leading-6 text-[#1F2A44]">
+              {t("searchLimitReached", { count: FREE_SEARCH_LIMIT })}
+            </p>
+          </div>
+          <div className="grid shrink-0 grid-cols-2 gap-2 sm:flex sm:items-center">
             <Link
               href="/onboarding"
-              className="inline-flex h-9 items-center justify-center gap-1.5 rounded-lg bg-[#1E6DEB] px-4 text-sm font-bold text-white transition-colors hover:bg-[#1859c4]"
+              className="inline-flex h-10 items-center justify-center gap-1.5 whitespace-nowrap rounded-lg bg-[#1E6DEB] px-3 text-sm font-bold text-white transition-colors hover:bg-[#1859c4] sm:h-9"
             >
               <Sparkles className="size-3.5" aria-hidden />
               {t("searchLimitRegister")}
             </Link>
             <Link
               href="/login"
-              className="inline-flex h-9 items-center justify-center rounded-lg border border-[#1E6DEB]/30 px-4 text-sm font-bold text-[#1E6DEB] transition-colors hover:bg-white"
+              className="inline-flex h-10 items-center justify-center whitespace-nowrap rounded-lg border border-[#1E6DEB]/30 bg-white/60 px-3 text-sm font-bold text-[#1E6DEB] transition-colors hover:bg-white sm:h-9"
             >
               {t("searchLimitLogin")}
             </Link>

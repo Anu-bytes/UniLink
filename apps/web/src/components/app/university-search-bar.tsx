@@ -81,7 +81,7 @@ export function UniversitySearchBar({
 
       <button
         type="submit"
-        className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0F766E] px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#115E59]"
+        className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#0F766E] w-12 sm:w-auto sm:px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#115E59]"
       >
         <Search className="size-5 sm:hidden" aria-hidden />
         <span className="hidden sm:inline">{t("searchLabel")}</span>

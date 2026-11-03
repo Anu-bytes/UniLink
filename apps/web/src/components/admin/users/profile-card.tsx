@@ -100,6 +100,17 @@ export async function ProfileCard({ profile }: { profile: UserProfile | null }) 
           </span>
         </FieldRow>
 
+        <FieldRow label={t("residenceCountry")}>
+          {profile.residenceCountry ? (
+            <span className="inline-flex items-center gap-1.5">
+              <Flag code={profile.residenceCountry} />
+              {countryName(profile.residenceCountry, locale)}
+            </span>
+          ) : (
+            <NotSet label={tCommon("notSet")} />
+          )}
+        </FieldRow>
+
         <FieldRow label={t("city")}>{cityLabel(profile.city, locale) ?? <NotSet label={tCommon("notSet")} />}</FieldRow>
 
         <FieldRow label={t("intake")}>

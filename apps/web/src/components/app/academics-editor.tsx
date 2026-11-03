@@ -42,6 +42,7 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
   const [error, setError] = useState<string | null>(null);
 
   const country = COUNTRIES.find((entry) => entry.code === saved.nationality);
+  const residence = COUNTRIES.find((entry) => entry.code === saved.residenceCountry);
   // In Egypt the city is a governorate from the list, unless "Other" was
   // chosen to type it.
   const [cityOther, setCityOther] = useState(
@@ -183,13 +184,9 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
               </span>
               <select
                 value={draft.nationality}
-                onChange={(event) => {
-                  const nationality = event.target.value;
-                  if (nationality === draft.nationality) return;
-                  // A city only makes sense within its country.
-                  setCityOther(false);
-                  setDraft((previous) => ({ ...previous, nationality, city: null }));
-                }}
+                onChange={(event) =>
+                  setDraft((previous) => ({ ...previous, nationality: event.target.value }))
+                }
                 className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#1E6DEB]"
               >
                 {COUNTRIES.map((entry) => (
@@ -202,9 +199,33 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
 
             <label className="block">
               <span className="mb-1 block text-sm font-semibold text-[#5a6072]">
+                {t("residenceCountry")}
+              </span>
+              <select
+                value={draft.residenceCountry ?? ""}
+                onChange={(event) => {
+                  const residenceCountry = event.target.value || null;
+                  if (residenceCountry === draft.residenceCountry) return;
+                  // A city only makes sense within its country.
+                  setCityOther(false);
+                  setDraft((previous) => ({ ...previous, residenceCountry, city: null }));
+                }}
+                className="h-11 w-full rounded-lg border border-slate-200 px-3 text-sm outline-none focus-visible:border-[#1E6DEB]"
+              >
+                <option value="">{t("notSet")}</option>
+                {COUNTRIES.map((entry) => (
+                  <option key={entry.code} value={entry.code}>
+                    {isArabic ? entry.nameAr : entry.name}
+                  </option>
+                ))}
+              </select>
+            </label>
+
+            <label className="block">
+              <span className="mb-1 block text-sm font-semibold text-[#5a6072]">
                 {t("city")}
               </span>
-              {draft.nationality === "EG" && !cityOther ? (
+              {draft.residenceCountry === "EG" && !cityOther ? (
                 <select
                   value={draft.city ?? ""}
                   onChange={(event) => {
@@ -349,6 +370,11 @@ export function AcademicsEditor({ initial }: { initial: AcademicsEditData }) {
           <ProfileField
             label={t("nationality")}
             value={country ? (isArabic ? country.nameAr : country.name) : null}
+            emptyLabel={t("notSet")}
+          />
+          <ProfileField
+            label={t("residenceCountry")}
+            value={residence ? (isArabic ? residence.nameAr : residence.name) : null}
             emptyLabel={t("notSet")}
           />
           <ProfileField

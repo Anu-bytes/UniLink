@@ -288,7 +288,7 @@ export async function UniversityHero({
             likeLabel={t("save")}
             likedLabel={t("saved")}
             callbackUrl={`/universities/${university.slug}`}
-            className="min-w-0 gap-1.5 px-2 text-sm sm:gap-2 sm:px-5 sm:text-base"
+            className="min-w-0 gap-1 whitespace-nowrap px-1.5 text-[13px] sm:gap-2 sm:px-5 sm:text-base [&_svg]:size-4 sm:[&_svg]:size-5"
           />
 
           <UniversityCompareButton

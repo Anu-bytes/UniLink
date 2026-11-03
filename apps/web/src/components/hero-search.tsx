@@ -132,7 +132,7 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
                 active >= 0 ? `hero-hit-${active}` : undefined
               }
               placeholder={typed ? "" : t("hero.searchPlaceholder")}
-              className="h-12 w-full min-w-0 appearance-none rounded-none border-0 bg-transparent p-0 text-base text-[#1F2A44] outline-none placeholder:truncate placeholder:text-[#98A0B4]"
+              className="h-12 w-full min-w-0 appearance-none rounded-none border-0 bg-transparent p-0 text-base text-[#1F2A44] outline-none placeholder:truncate placeholder:text-[#98A0B4] max-sm:placeholder:text-[14px]"
             />
             {/* Rotating example, drawn over the empty box like a placeholder. */}
             {typed ? (
@@ -152,7 +152,7 @@ export function HeroSearch({ isAuthenticated }: { isAuthenticated: boolean }) {
           </div>
           <button
             type="submit"
-            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E6DEB] to-[#2F7BF5] px-5 text-sm font-bold text-white shadow-[0_10px_24px_-12px_rgba(30,109,235,0.9)] transition-all hover:-translate-y-0.5 hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:translate-y-0 md:px-7 md:text-[15px]"
+            className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#1E6DEB] to-[#2F7BF5] px-4 text-sm sm:px-5 font-bold text-white shadow-[0_10px_24px_-12px_rgba(30,109,235,0.9)] transition-all hover:-translate-y-0.5 hover:bg-[#1859c4] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#1E6DEB] active:translate-y-0 md:px-7 md:text-[15px]"
           >
             <Search className="size-4 sm:hidden" aria-hidden />
             <span className="max-sm:sr-only">{t("hero.searchButton")}</span>

@@ -119,6 +119,7 @@ test("national programs: petroleum and science computing use the general rows; Z
 test("certificate groups pick the right table; unknown uses the stricter value", () => {
   assert.equal(certificateGroupFor("STEM"), "EGYPTIAN");
   assert.equal(certificateGroupFor("AL_AZHAR"), "EGYPTIAN");
+  assert.equal(certificateGroupFor("EGYPTIAN_BACCALAUREATE"), "EGYPTIAN");
   assert.equal(certificateGroupFor("IGCSE"), "EQUIVALENT");
   assert.equal(certificateGroupFor("ARAB_CERTIFICATE"), "EQUIVALENT");
   assert.equal(certificateGroupFor("OTHER"), null);
