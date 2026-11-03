@@ -60,6 +60,35 @@ const HEART_SVG =
   '<svg class="ul-place-heart" viewBox="0 0 24 24" aria-hidden="true"><path fill="#E11D48" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/></svg>';
 
 /**
+ * Clips a polygon to an axis-aligned box (Sutherland-Hodgman, one edge of the
+ * box at a time). The part of the polygon inside the box keeps its shape.
+ */
+function clipToBox(points: L.Point[], minX: number, minY: number, maxX: number, maxY: number): L.Point[] {
+  const edges: [(p: L.Point) => boolean, (a: L.Point, b: L.Point) => L.Point][] = [
+    [(p) => p.x >= minX, (a, b) => L.point(minX, a.y + ((b.y - a.y) * (minX - a.x)) / (b.x - a.x))],
+    [(p) => p.x <= maxX, (a, b) => L.point(maxX, a.y + ((b.y - a.y) * (maxX - a.x)) / (b.x - a.x))],
+    [(p) => p.y >= minY, (a, b) => L.point(a.x + ((b.x - a.x) * (minY - a.y)) / (b.y - a.y), minY)],
+    [(p) => p.y <= maxY, (a, b) => L.point(a.x + ((b.x - a.x) * (maxY - a.y)) / (b.y - a.y), maxY)],
+  ];
+  let output = points;
+  for (const [inside, cross] of edges) {
+    const input = output;
+    output = [];
+    input.forEach((current, i) => {
+      const previous = input[(i + input.length - 1) % input.length];
+      if (inside(current)) {
+        if (!inside(previous)) output.push(cross(previous, current));
+        output.push(current);
+      } else if (inside(previous)) {
+        output.push(cross(previous, current));
+      }
+    });
+    if (output.length === 0) break;
+  }
+  return output;
+}
+
+/**
  * A frosted, blurred sheet over everything outside Egypt. It is a Leaflet
  * layer in its own pane between the tiles and the pins, so pins, the route
  * and the search circle stay sharp even where they cross the border. The
@@ -86,17 +115,22 @@ const FrostLayer = L.Layer.extend({
     const topLeft = map.containerPointToLayerPoint([-size.x, -size.y]).round();
     const span = size.multiplyBy(3);
     this._bounds = L.latLngBounds(map.layerPointToLatLng(topLeft), map.layerPointToLatLng(topLeft.add(span)));
-    const holes = EGYPT_OUTLINE.map(
-      (ring) =>
-        "M" +
-        ring
-          .map(([lat, lng]) => {
-            const point = map.latLngToLayerPoint([lat, lng]).subtract(topLeft);
-            return `${point.x.toFixed(1)} ${point.y.toFixed(1)}`;
-          })
-          .join("L") +
-        "Z",
-    ).join("");
+    // Each ring is trimmed to the sheet (plus a small margin) first. Zoomed
+    // in, the outline runs tens of thousands of pixels off the sheet, and
+    // browsers drop a clip path that size, frosting Egypt too.
+    const margin = 8;
+    const holes = EGYPT_OUTLINE.map((ring) =>
+      clipToBox(
+        ring.map(([lat, lng]) => map.latLngToLayerPoint([lat, lng]).subtract(topLeft)),
+        -margin,
+        -margin,
+        span.x + margin,
+        span.y + margin,
+      ),
+    )
+      .filter((ring) => ring.length >= 3)
+      .map((ring) => "M" + ring.map((point) => `${point.x.toFixed(1)} ${point.y.toFixed(1)}`).join("L") + "Z")
+      .join("");
     L.DomUtil.setPosition(this._el, topLeft);
     this._el.style.width = `${span.x}px`;
     this._el.style.height = `${span.y}px`;
