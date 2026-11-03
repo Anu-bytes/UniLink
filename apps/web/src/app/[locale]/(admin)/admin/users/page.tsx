@@ -2,6 +2,7 @@ import { Prisma } from "@prisma/client";
 import { getTranslations } from "next-intl/server";
 
 import { PageHeader, Pagination, TableToolbar } from "@/components/admin";
+import { ExportStudentsButton } from "@/components/admin/users/export-students-button";
 import { PAGE_WRAPPER } from "@/components/admin/users/styles";
 import { USER_ROLES } from "@/components/admin/users/tones";
 import { lockFor, type UserRow } from "@/components/admin/users/types";
@@ -125,7 +126,7 @@ export default async function AdminUsersPage({
 
   return (
     <div className={PAGE_WRAPPER}>
-      <PageHeader title={t("title")} description={t("subtitle")} />
+      <PageHeader title={t("title")} description={t("subtitle")} actions={<ExportStudentsButton />} />
 
       <div className="mt-6 flex flex-col gap-4">
         <TableToolbar placeholder={t("searchPlaceholder")} total={total}>
