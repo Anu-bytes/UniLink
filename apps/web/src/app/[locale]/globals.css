@@ -1386,9 +1386,11 @@ html[lang="ar"] body {
   top: 0;
   left: 0;
   pointer-events: none;
-  background: rgb(241 245 249 / 0.45);
-  -webkit-backdrop-filter: blur(6px) saturate(0.6);
-  backdrop-filter: blur(6px) saturate(0.6);
+  /* A light blur under a pale wash: enough to set the neighbours back
+     without smearing the map into a smudge. */
+  background: rgb(241 245 249 / 0.5);
+  -webkit-backdrop-filter: blur(2px) saturate(0.7);
+  backdrop-filter: blur(2px) saturate(0.7);
 }
 /* Place labels drawn over the frost (Palestine). */
 .ul-place-icon {
