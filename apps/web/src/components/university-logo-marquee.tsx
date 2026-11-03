@@ -32,9 +32,9 @@ export function UniversityLogoMarquee({
   );
   if (withLogos.length < 6) return null;
   const track = [...withLogos, ...withLogos];
-  // A fixed pace per logo (about 20px a second on desktop), so the strip
-  // stays slow and readable however many universities are listed.
-  const duration = `${withLogos.length * 9}s`;
+  // A fixed pace per logo (about 45px a second on desktop), so the strip
+  // moves at a steady, readable speed however many universities are listed.
+  const duration = `${withLogos.length * 4}s`;
 
   return (
     // No visible heading: the strip speaks for itself. The title stays as the

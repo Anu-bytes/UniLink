@@ -161,6 +161,7 @@ async function registerWithProfile(body: unknown) {
           gradeValue: profile.gradeValue,
           fieldsOfStudy: profile.fieldsOfStudy,
           nationality: profile.nationality,
+          residenceCountry: profile.residenceCountry ?? null,
           city: profile.city ?? null,
           // Intake is no longer collected in onboarding; the columns are still
           // NOT NULL, so default new profiles to the upcoming fall intake.

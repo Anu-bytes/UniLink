@@ -296,7 +296,7 @@
     "personalInfo": {
       "name": "المعلومات الشخصية",
       "heading": "أخبرنا قليلاً عن نفسك",
-      "help": "سنستخدم اسمك ودولتك ومدينتك لتخصيص النتائج المناسبة لك واقتراح الجامعات القريبة منك.",
+      "help": "سنستخدم اسمك وجنسيتك وبلد إقامتك ومدينتك لتخصيص النتائج المناسبة لك واقتراح الجامعات القريبة منك.",
       "accountRoleLabel": "أنا أسجل بصفتي",
       "accountRole": {
         "STUDENT": "طالب",
@@ -306,8 +306,10 @@
       "firstNamePlaceholder": "الاسم الأول",
       "lastNameLabel": "اسم العائلة",
       "lastNamePlaceholder": "اسم العائلة",
-      "countryLabel": "الدولة",
-      "countryPlaceholder": "ابحث عن دولتك…",
+      "nationalityLabel": "الجنسية",
+      "nationalityPlaceholder": "ابحث عن جنسيتك…",
+      "countryLabel": "بلد الإقامة",
+      "countryPlaceholder": "ابحث عن البلد الذي تقيم فيه…",
       "cityLabel": "المدينة",
       "cityPlaceholder": "ابحث عن مدينتك أو محافظتك…",
       "cityTextPlaceholder": "مدينتك",
@@ -384,6 +386,7 @@
       },
       "highSchoolSystem": {
         "THANAWEYA_AMMA": "الثانوية العامة المصرية",
+        "EGYPTIAN_BACCALAUREATE": "البكالوريا المصرية",
         "IGCSE": "IGCSE",
         "AMERICAN_DIPLOMA": "الدبلومة الأمريكية",
         "STEM": "STEM",
@@ -458,7 +461,8 @@
       "accountRole": "اختر ما إذا كنت طالبًا أم ولي أمر.",
       "firstName": "أدخل اسمك الأول.",
       "lastName": "أدخل اسم العائلة.",
-      "country": "اختر دولتك.",
+      "nationality": "اختر جنسيتك.",
+      "residenceCountry": "اختر بلد الإقامة.",
       "city": "أدخل مدينتك.",
       "highSchoolSystem": "اختر نظام الشهادة الثانوية.",
       "highSchoolSystemOther": "يرجى تحديد نظام الشهادة الثانوية.",
@@ -1173,6 +1177,7 @@
     },
     "systems": {
       "THANAWEYA_AMMA": "الثانوية العامة",
+      "EGYPTIAN_BACCALAUREATE": "البكالوريا المصرية",
       "IGCSE": "الشهادة البريطانية IGCSE",
       "AMERICAN_DIPLOMA": "الدبلومة الأمريكية",
       "STEM": "مدارس المتفوقين STEM",
@@ -1289,7 +1294,8 @@
     "searchPrograms": "ابحث في كل البرامج",
     "tabsShort": {
       "scores": "الحد الأدنى",
-      "info": "معلومات"
+      "info": "معلومات",
+      "gallery": "الحرم"
     },
     "sectionKinds": {
       "ABOUT_EXTRA": "عن الجامعة",
@@ -1611,6 +1617,7 @@
     "english": "مستوى اللغة الإنجليزية",
     "englishNone": "لم أؤدِ اختباراً",
     "nationality": "الجنسية",
+    "residenceCountry": "بلد الإقامة",
     "noProfileTitle": "لا يوجد ملف دراسي بعد",
     "noProfileBody": "أكمل أسئلة التسجيل حتى نتمكن من ترشيح البرامج المناسبة لدرجاتك وميزانيتك ومجالاتك المفضلة.",
     "completeProfile": "أكمل الملف",
@@ -2395,6 +2402,7 @@
         "englishTest": "اختبار الإنجليزية",
         "englishScore": "درجة الاختبار",
         "nationality": "الجنسية",
+        "residenceCountry": "بلد الإقامة",
         "intake": "موعد الالتحاق",
         "intakeValue": "{season} {year}",
         "budget": "الميزانية",

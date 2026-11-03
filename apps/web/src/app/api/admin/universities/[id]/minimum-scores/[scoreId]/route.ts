@@ -19,6 +19,7 @@ export const dynamic = "force-dynamic";
 
 const HIGH_SCHOOL_SYSTEMS = [
   "THANAWEYA_AMMA",
+  "EGYPTIAN_BACCALAUREATE",
   "IGCSE",
   "AMERICAN_DIPLOMA",
   "STEM",

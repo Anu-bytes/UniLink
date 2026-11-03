@@ -183,6 +183,7 @@ model StudentProfile {
   englishTest           EnglishTest      @default(NONE)
   englishScore          Float? // null when englishTest = NONE
   nationality           String // ISO 3166-1 alpha-2 country code
+  residenceCountry      String? // ISO 3166-1 alpha-2 code: where the student lives
   // Where the student lives: in Egypt a governorate's English name (see
   // lib/egypt-governorates.ts), elsewhere free text. Null on profiles made
   // before it was asked.
@@ -213,6 +214,7 @@ enum StudyLevel {
 // "Minimum Scores" tab on a university page.
 enum HighSchoolSystem {
   THANAWEYA_AMMA
+  EGYPTIAN_BACCALAUREATE
   IGCSE
   AMERICAN_DIPLOMA
   STEM

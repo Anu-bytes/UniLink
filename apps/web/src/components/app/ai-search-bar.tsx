@@ -150,7 +150,7 @@ export function AiSearchBar({
         <button
           type="submit"
           disabled={busy}
-          className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1E6DEB] px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#1859c4] disabled:opacity-70"
+          className="inline-flex h-12 shrink-0 items-center justify-center gap-2 rounded-xl bg-[#1E6DEB] w-12 sm:w-auto sm:px-8 text-base font-bold text-white shadow-sm transition-colors hover:bg-[#1859c4] disabled:opacity-70"
         >
           {busy ? (
             <Loader2 className="size-5 animate-spin" aria-hidden />

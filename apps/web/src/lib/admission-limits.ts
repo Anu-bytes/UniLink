@@ -220,6 +220,7 @@ const FIELD_CATEGORY: Record<string, AdmissionCategory> = {
 export function certificateGroupFor(system: string | null | undefined): CertificateGroup | null {
   switch (system) {
     case "THANAWEYA_AMMA":
+    case "EGYPTIAN_BACCALAUREATE":
     case "AL_AZHAR":
     case "STEM":
       return "EGYPTIAN";

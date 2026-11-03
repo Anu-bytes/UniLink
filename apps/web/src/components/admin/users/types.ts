@@ -74,6 +74,7 @@ export type UserProfile = {
   englishTest: EnglishTest;
   englishScore: number | null;
   nationality: string;
+  residenceCountry: string | null;
   city: string | null;
   intakeSeason: IntakeSeason;
   intakeYear: number;

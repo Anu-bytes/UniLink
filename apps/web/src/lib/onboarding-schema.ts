@@ -26,6 +26,7 @@ export const ENGLISH_TESTS = [
 
 export const HIGH_SCHOOL_SYSTEMS = [
   "THANAWEYA_AMMA",
+  "EGYPTIAN_BACCALAUREATE",
   "IGCSE",
   "AMERICAN_DIPLOMA",
   "STEM",
@@ -57,10 +58,10 @@ export const INTAKE_YEARS: readonly number[] = Array.from(
   (_, i) => currentYear - 1 + i,
 );
 
-// Expected high-school graduation years: previous, current, and next year
-// (e.g. 2025, 2026, 2027).
+// Expected high-school graduation years: last year up to two years ahead
+// (e.g. 2025 to 2028).
 export const GRADUATION_YEARS: readonly number[] = Array.from(
-  { length: 3 },
+  { length: 4 },
   (_, i) => currentYear - 1 + i,
 );
 
@@ -74,13 +75,15 @@ export const studyLevelSchema = z.object({
   studyLevel: z.enum(STUDY_LEVELS),
 });
 
-// First step: name, country and city. firstName/lastName live on the User;
-// nationality (the country code) and city are StudentProfile fields.
+// First step: name, nationality, country of residence and city. firstName/
+// lastName live on the User; the rest are StudentProfile fields (country codes
+// for the first two). The city is within the country of residence.
 export const personalInfoSchema = z.object({
   accountRole: z.enum(ACCOUNT_ROLES, { message: "Select who is signing up" }),
   firstName: z.string().trim().min(1, "Enter your first name").max(50),
   lastName: z.string().trim().min(1, "Enter your last name").max(50),
-  nationality: z.string().length(2, "Select your country"),
+  nationality: z.string().length(2, "Select your nationality"),
+  residenceCountry: z.string().length(2, "Select your country of residence"),
   city: z.string().trim().min(1, "Enter your city").max(80),
 });
 
@@ -198,7 +201,8 @@ export const profileSchema = z.object({
   fieldsOfStudy: fieldSchema.shape.fieldsOfStudy,
   nationality: nationalitySchema.shape.nationality,
   // Required by the wizard's first step; optional here so a sign-up already
-  // in progress when the field was added can still finish.
+  // in progress when these fields were added can still finish.
+  residenceCountry: z.string().length(2).optional(),
   city: z.string().trim().max(80).optional(),
   budgetBand: financialsSchema.shape.budgetBand,
 });
@@ -337,6 +341,7 @@ export const academicsEditSchema = z
       .max(currentYear + 6),
     gradeValue: z.string().trim().min(1, "Enter your expected grade"),
     nationality: z.string().length(2, "Select your nationality"),
+    residenceCountry: z.string().length(2).nullable().optional(),
     city: z.string().trim().max(80).nullable().optional(),
     bio: z.string().trim().max(500).nullable().optional(),
   })
