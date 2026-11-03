@@ -2448,6 +2448,27 @@
       "noResults": {
         "title": "لا توجد نتائج مطابقة",
         "description": "لا يوجد حساب يطابق هذا البحث وعوامل التصفية الحالية."
+      },
+      "export": {
+        "button": "تحميل الطلاب",
+        "sheet": "الطلاب",
+        "title": "طلاب يونيلينك",
+        "generated": "أُنشئ في {date}. عدد الحسابات: {count}.",
+        "columns": {
+          "name": "الاسم",
+          "role": "نوع الحساب",
+          "email": "البريد الإلكتروني",
+          "phone": "الهاتف",
+          "nationality": "الجنسية",
+          "residenceCountry": "بلد الإقامة",
+          "city": "المدينة",
+          "certificate": "الشهادة",
+          "graduationYear": "سنة التخرج",
+          "grade": "المجموع",
+          "fields": "مجالات الدراسة",
+          "budget": "الميزانية",
+          "joined": "تاريخ التسجيل"
+        }
       }
     },
     "applications": {

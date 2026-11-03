@@ -2447,6 +2447,27 @@
       "noResults": {
         "title": "No matches",
         "description": "No account matches this search and these filters."
+      },
+      "export": {
+        "button": "Download students",
+        "sheet": "Students",
+        "title": "UniLink students",
+        "generated": "Generated {date}. {count} accounts.",
+        "columns": {
+          "name": "Name",
+          "role": "Account",
+          "email": "Email",
+          "phone": "Phone",
+          "nationality": "Nationality",
+          "residenceCountry": "Country of residence",
+          "city": "City",
+          "certificate": "Certificate",
+          "graduationYear": "Graduation year",
+          "grade": "Grade",
+          "fields": "Fields of study",
+          "budget": "Budget",
+          "joined": "Joined"
+        }
       }
     },
     "applications": {
