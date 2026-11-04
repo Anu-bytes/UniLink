@@ -36,6 +36,9 @@ export type FacultyResult = {
   /** Cheapest and dearest annual tuition among its programs. */
   tuitionFrom: number | null;
   tuitionTo: number | null;
+  /** The part in another currency, when every priced program shares it. */
+  extraFee: number | null;
+  extraFeeCurrency: string | null;
   currency: string;
   /** Lowest published entry requirement, the realistic bar to get in. */
   minGradePercent: number | null;
@@ -90,6 +93,8 @@ const facultyInclude = {
       name: true,
       tuitionFee: true,
       currency: true,
+      extraFee: true,
+      extraFeeCurrency: true,
       minGradePercent: true,
       fieldOfStudy: true,
       studyLevel: true,
@@ -295,6 +300,14 @@ function mapFaculty(
   const priced = row.programs
     .map((program) => (program.tuitionFee ? Number(program.tuitionFee) : null))
     .filter((value): value is number => value != null);
+  // Shown beside the range only when the priced programs all carry the same one.
+  const extras = new Set(
+    row.programs
+      .filter((program) => program.tuitionFee)
+      .map((program) => (program.extraFee == null ? "" : `${Number(program.extraFee)} ${program.extraFeeCurrency ?? ""}`)),
+  );
+  const [sharedExtra] = extras.size === 1 ? [...extras] : [""];
+  const [extraAmount, extraCurrency] = sharedExtra ? sharedExtra.split(" ") : ["", ""];
 
   // Each program's minimum for this student (published limit for their
   // certificate when the program has no value of its own).
@@ -351,6 +364,8 @@ function mapFaculty(
     tuitionFrom: priced.length ? Math.min(...priced) : null,
     tuitionTo: priced.length ? Math.max(...priced) : null,
     currency: row.programs[0]?.currency ?? "EGP",
+    extraFee: extraAmount ? Number(extraAmount) : null,
+    extraFeeCurrency: extraCurrency || null,
     minGradePercent: grades.length ? Math.min(...grades) : null,
     tags: [...new Set(row.programs.flatMap((p) => p.tags as string[]))],
     match: best,

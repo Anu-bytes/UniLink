@@ -604,7 +604,7 @@
           {
             "number": "01",
             "tab": "Get Started",
-            "heading": "Contact Us & Start Your 30-Day Free Trial",
+            "heading": "Contact Us & Start Your 30‑Day Free Trial",
             "description": "Contact the UniLink team to join the platform and enjoy a 30-day trial. Our team will guide you through onboarding and help you set up your university profile."
           },
           {
@@ -2246,6 +2246,8 @@
         "tuitionFee": "Tuition fee",
         "tuitionPeriod": "Charged per",
         "currency": "Currency",
+        "extraFee": "Extra fee in another currency",
+        "extraFeeCurrency": "Extra fee currency",
         "applicationFee": "Application fee",
         "applicationFeeWaived": "Application fee waived"
       },
@@ -2262,7 +2264,8 @@
         "published": "An unpublished program stays hidden from the public site and from search.",
         "currency": "Three-letter code, e.g. EGP or USD.",
         "applicationFee": "Paid once, when the student applies. Leave it empty if there is none.",
-        "applicationFeeWaived": "Shows “Waived” on the program page whatever the amount says."
+        "applicationFeeWaived": "Shows “Waived” on the program page whatever the amount says.",
+        "extraFee": "Charged on top of the tuition fee, e.g. 1800 USD. Shown as \"+ $1,800\" beside the fee. Leave empty if there is none."
       },
       "sections": {
         "placement": "Placement",

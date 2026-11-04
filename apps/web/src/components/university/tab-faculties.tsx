@@ -43,7 +43,7 @@ import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
 import { Reveal } from "@/components/reveal";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
-import { formatDate, formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { formatDate, formatExtraFee, formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 type T = Awaited<ReturnType<typeof getTranslations>>;
@@ -371,6 +371,7 @@ function ProgramDetail({
         ? tCatalog("durationMonths", { count: program.durationMonths })
         : null);
   const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+  const extraFee = formatExtraFee(locale, program.extraFee, program.extraFeeCurrency);
 
   const facts = [
     { icon: GraduationCap, label: t("level"), value: tCatalog(`levels.${program.studyLevel}`) },
@@ -380,7 +381,7 @@ function ProgramDetail({
       icon: Banknote,
       label: t("tuition"),
       value: tuition
-        ? `${tuition}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
+        ? `${tuition}${extraFee ? ` + ${extraFee}` : ""}​${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
         : t("notSpecified"),
     },
     {
@@ -561,6 +562,7 @@ function ProgramCardFace({
 }) {
   const years = yearsFromMonths(program.durationMonths);
   const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+  const extraFee = formatExtraFee(locale, program.extraFee, program.extraFeeCurrency);
   const field = FIELDS_OF_STUDY.find((entry) => entry.value === program.fieldOfStudy);
   const fieldLabel = field
     ? locale.startsWith("ar")
@@ -625,14 +627,19 @@ function ProgramCardFace({
           one number that gets real visual weight; minimum grade is useful
           context but secondary, so it's a small badge rather than an equal
           stat — clearer at a glance than a grid of same-size figures. */}
-      <div className="flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
-        <div>
+      <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-4">
+        <div className="shrink-0">
           <p className="text-xs font-semibold text-[#98A0B4]">
             {t("tuition.fee")}
           </p>
-          <p className="mt-0.5 text-lg font-bold leading-none text-[#1F2A44]">
+          <p className="mt-0.5 whitespace-nowrap text-lg font-bold leading-none text-[#1F2A44]">
             {tuition ?? "—"}
           </p>
+          {/* The part in another currency sits on its own line, so the
+              headline amount keeps its size on a narrow card. */}
+          {tuition && extraFee ? (
+            <p className="mt-1 whitespace-nowrap text-sm font-bold text-[#1F2A44]">+ {extraFee}</p>
+          ) : null}
           {tuition ? (
             <p className="mt-1 text-xs text-[#5a6072]">
               {tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}

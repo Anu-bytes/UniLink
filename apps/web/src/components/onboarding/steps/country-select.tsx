@@ -1,31 +1,11 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { useLocale } from "next-intl";
 import { Check, ChevronDown, X } from "lucide-react";
 
 import { cn } from "@/lib/utils";
-import { COUNTRIES, countryName, flagEmoji, flagSrc } from "@/lib/countries";
-
-/** Flag as an image when we ship one, otherwise the emoji (with letters on Windows). */
-function Flag({ code, className }: { code: string; className?: string }) {
-  const src = flagSrc(code);
-  if (src) {
-    // eslint-disable-next-line @next/next/no-img-element
-    return (
-      <img
-        src={src}
-        alt=""
-        className={cn("inline-block rounded-sm object-cover", className)}
-      />
-    );
-  }
-  return (
-    <span className={className} aria-hidden>
-      {flagEmoji(code)}
-    </span>
-  );
-}
+import { COUNTRIES, countryName, flagEmoji } from "@/lib/countries";
 
 function useFilteredCountries(query: string, exclude: Set<string> = new Set()) {
   return useMemo(() => {
@@ -56,6 +36,7 @@ export function CountryCombobox({
   const locale = useLocale();
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const listId = useId();
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const filtered = useFilteredCountries(open ? query : "");
 
@@ -79,6 +60,7 @@ export function CountryCombobox({
         <input
           role="combobox"
           aria-expanded={open}
+          aria-controls={listId}
           aria-autocomplete="list"
           value={open ? query : display}
           placeholder={placeholder}
@@ -113,6 +95,7 @@ export function CountryCombobox({
 
       {open ? (
         <ul
+          id={listId}
           role="listbox"
           onMouseEnter={cancelClose}
           className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-lg bg-popover p-1 shadow-md ring-1 ring-foreground/10 duration-150 animate-in fade-in-0 zoom-in-95"

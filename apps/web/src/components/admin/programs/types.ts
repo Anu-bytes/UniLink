@@ -103,6 +103,8 @@ export type ProgramFees = {
   tuitionFee: number | null;
   tuitionPeriod: TuitionPeriod;
   currency: string;
+  extraFee: number | null;
+  extraFeeCurrency: string | null;
   applicationFee: number | null;
   applicationFeeWaived: boolean;
 };

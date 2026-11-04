@@ -3,7 +3,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
 import { UniversityLogo } from "@/components/university-logo";
-import { formatMoney } from "@/lib/format";
+import { formatTuitionRange } from "@/lib/format";
 import { BAND_STYLES } from "@/lib/matching";
 import type { FacultyResult } from "@/lib/faculty-search";
 import { cn } from "@/lib/utils";
@@ -27,12 +27,9 @@ export async function RecommendedFacultyCard({
   const locale = await getLocale();
 
   const bandStyle = faculty.match ? BAND_STYLES[faculty.match.band] : null;
-  const from = formatMoney(locale, faculty.tuitionFrom, faculty.currency);
-  const to = formatMoney(locale, faculty.tuitionTo, faculty.currency);
   const tuitionLabel =
-    from && to && faculty.tuitionFrom !== faculty.tuitionTo
-      ? `${from}-${to}`
-      : (from ?? t("card.notSpecified"));
+    formatTuitionRange(locale, faculty.tuitionFrom, faculty.tuitionTo, faculty.currency, faculty.extraFee, faculty.extraFeeCurrency) ??
+    t("card.notSpecified");
 
   return (
     <Link

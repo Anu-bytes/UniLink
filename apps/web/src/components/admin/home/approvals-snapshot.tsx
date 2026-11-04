@@ -60,7 +60,7 @@ export async function ApprovalsSnapshot() {
               <span className="rounded-md bg-[#EEF3FF] px-1.5 py-0.5 text-[10.5px] font-bold uppercase tracking-wide text-[#1E6DEB]">
                 {tChanges(`actions.${change.action}`)}
               </span>
-              <span className="min-w-0 flex-1 truncate font-medium text-[#0F172A]">{change.entityLabel}</span>
+              <span className="min-w-0 flex-1 basis-40 truncate font-medium text-[#0F172A]">{change.entityLabel}</span>
               <span className="text-[#64748B]">
                 {locale === "ar" ? (change.university.nameAr ?? change.university.name) : change.university.name}
                 {" · "}

@@ -314,7 +314,7 @@ export function AppShell({
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header
-          className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-slate-100 bg-white px-4 md:px-6"
+          className="sticky top-0 z-40 flex h-16 items-center gap-2 border-b border-slate-100 bg-white px-3 min-[360px]:gap-3 min-[360px]:px-4 md:px-6"
         >
           <button
             type="button"
@@ -325,7 +325,7 @@ export function AppShell({
             <Menu className="size-5" aria-hidden />
           </button>
 
-          <div className="ms-auto flex items-center gap-2 sm:gap-3 [&>*]:shrink-0">
+          <div className="ms-auto flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-3 [&>*]:shrink-0">
             {/* Site-wide instant search (Ctrl/Cmd+K), same as the marketing header. */}
             <SearchPalette signedIn compactOnMobile />
 
@@ -344,7 +344,7 @@ export function AppShell({
               title={t("saved")}
               aria-current={isNavActive(pathname, "/app/saved") ? "page" : undefined}
               className={cn(
-                "relative flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors sm:px-3.5",
+                "relative flex h-10 items-center gap-1.5 rounded-full px-3 text-sm font-semibold transition-colors max-[359px]:hidden sm:px-3.5",
                 isNavActive(pathname, "/app/saved") && "ring-2 ring-[#F82C1F]/40",
                 savedCount > 0
                   ? "bg-[#FFF0EE] text-[#F82C1F] hover:bg-[#FFE3DF]"

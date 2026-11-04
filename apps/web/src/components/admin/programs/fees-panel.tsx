@@ -28,6 +28,8 @@ type FeesState = {
   tuitionFee: string;
   tuitionPeriod: string;
   currency: string;
+  extraFee: string;
+  extraFeeCurrency: string;
   applicationFee: string;
   applicationFeeWaived: boolean;
 };
@@ -39,6 +41,8 @@ function toState(fees: ProgramFees): FeesState {
     tuitionFee: fees.tuitionFee === null ? "" : String(fees.tuitionFee),
     tuitionPeriod: fees.tuitionPeriod,
     currency: fees.currency,
+    extraFee: fees.extraFee === null ? "" : String(fees.extraFee),
+    extraFeeCurrency: fees.extraFeeCurrency ?? "USD",
     applicationFee: fees.applicationFee === null ? "" : String(fees.applicationFee),
     applicationFeeWaived: fees.applicationFeeWaived,
   };
@@ -114,6 +118,9 @@ export function ProgramFeesPanel({
       tuitionFee: toNumber(form.tuitionFee),
       tuitionPeriod: form.tuitionPeriod,
       currency: form.currency,
+      extraFee: toNumber(form.extraFee),
+      // No amount, no currency: clearing the amount clears the pair.
+      extraFeeCurrency: toNumber(form.extraFee) === null ? "" : form.extraFeeCurrency,
       applicationFee: toNumber(form.applicationFee),
       applicationFeeWaived: form.applicationFeeWaived,
     });
@@ -184,6 +191,41 @@ export function ProgramFeesPanel({
               value={form.currency}
               onChange={(event) => set("currency", event.target.value.toUpperCase())}
               aria-invalid={errorFor("currency") ? true : undefined}
+              className="uppercase"
+            />
+          </Field>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label={t("programs.fields.extraFee")}
+            htmlFor={`${fieldId}-extraFee`}
+            error={errorFor("extraFee")}
+            hint={t("programs.hints.extraFee")}
+          >
+            <NumberInput
+              id={`${fieldId}-extraFee`}
+              dir="ltr"
+              min={0}
+              step="0.01"
+              value={form.extraFee}
+              onChange={(event) => set("extraFee", event.target.value)}
+              aria-invalid={errorFor("extraFee") ? true : undefined}
+            />
+          </Field>
+
+          <Field
+            label={t("programs.fields.extraFeeCurrency")}
+            htmlFor={`${fieldId}-extraFeeCurrency`}
+            error={errorFor("extraFeeCurrency")}
+          >
+            <TextInput
+              id={`${fieldId}-extraFeeCurrency`}
+              dir="ltr"
+              maxLength={3}
+              value={form.extraFeeCurrency}
+              onChange={(event) => set("extraFeeCurrency", event.target.value.toUpperCase())}
+              aria-invalid={errorFor("extraFeeCurrency") ? true : undefined}
               className="uppercase"
             />
           </Field>

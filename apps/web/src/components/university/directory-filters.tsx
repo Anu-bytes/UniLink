@@ -2,7 +2,7 @@
 
 import { Building2, Lock, MapPin, Search, SlidersHorizontal, Sparkles, X } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState, useTransition } from "react";
+import { useState, useSyncExternalStore, useTransition } from "react";
 
 import { Link, useRouter } from "@/i18n/navigation";
 import { UNIVERSITY_TYPES } from "@/lib/program-filters";
@@ -11,6 +11,7 @@ import { cn } from "@/lib/utils";
 type CityOption = { value: string; label: string };
 
 const FREE_SEARCH_LIMIT = 5;
+const subscribeNothing = () => () => {};
 const STORAGE_KEY = "unilink.anonUniversitySearchCount";
 
 /** Reads the signed-out visitor's used-up search count for this browser.
@@ -59,14 +60,11 @@ export function UniversityDirectoryFiltersBar({
   const [q, setQ] = useState(initial.q);
   const [type, setType] = useState(initial.type);
   const [city, setCity] = useState(initial.city);
-  const [limitReached, setLimitReached] = useState(false);
-
-  // Read the real count after mount so server and client agree on the first
-  // render (localStorage doesn't exist during SSR).
-  useEffect(() => {
-    if (isAuthenticated) return;
-    if (readSearchCount() >= FREE_SEARCH_LIMIT) setLimitReached(true);
-  }, [isAuthenticated]);
+  // The stored count, read in the browser only (localStorage doesn't exist
+  // during SSR), so server and client agree on the first render.
+  const storedCount = useSyncExternalStore(subscribeNothing, readSearchCount, () => 0);
+  const [limitHit, setLimitReached] = useState(false);
+  const limitReached = !isAuthenticated && (limitHit || storedCount >= FREE_SEARCH_LIMIT);
 
   function runSearch(next: { q?: string; type?: string; city?: string }) {
     const params = new URLSearchParams();

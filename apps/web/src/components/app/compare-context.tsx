@@ -4,9 +4,8 @@ import {
   createContext,
   useCallback,
   useContext,
-  useEffect,
   useMemo,
-  useState,
+  useSyncExternalStore,
 } from "react";
 
 export const MAX_COMPARE = 4;
@@ -40,9 +39,44 @@ type CompareContextValue = {
 
 const CompareContext = createContext<CompareContextValue | null>(null);
 
-function read(): CompareEntry[] {
+// The selection lives in localStorage and every component reads it from
+// there, so tabs and reloads agree. `memory` stands in when storage is
+// blocked (private browsing), so the tray still works for the visit.
+let memory = "";
+const listeners = new Set<() => void>();
+
+function readRaw(): string {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return window.localStorage.getItem(STORAGE_KEY) ?? "";
+  } catch {
+    return memory;
+  }
+}
+
+function writeEntries(entries: CompareEntry[]) {
+  memory = JSON.stringify(entries);
+  try {
+    window.localStorage.setItem(STORAGE_KEY, memory);
+  } catch {
+    // Blocked storage: `memory` keeps the selection for this visit.
+  }
+  listeners.forEach((listener) => listener());
+}
+
+function subscribe(listener: () => void) {
+  listeners.add(listener);
+  // Another tab changing the selection.
+  window.addEventListener("storage", listener);
+  return () => {
+    listeners.delete(listener);
+    window.removeEventListener("storage", listener);
+  };
+}
+
+const subscribeNothing = () => () => {};
+
+function parse(raw: string): CompareEntry[] {
+  try {
     if (!raw) return [];
     const parsed: unknown = JSON.parse(raw);
     if (!Array.isArray(parsed)) return [];
@@ -73,42 +107,36 @@ function read(): CompareEntry[] {
  * the URL so a comparison can be shared.
  */
 export function CompareProvider({ children }: { children: React.ReactNode }) {
-  const [entries, setEntries] = useState<CompareEntry[]>([]);
-  const [ready, setReady] = useState(false);
-
-  useEffect(() => {
-    setEntries(read());
-    setReady(true);
-  }, []);
-
-  useEffect(() => {
-    if (!ready) return;
-    window.localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
-  }, [entries, ready]);
+  // Empty on the server and on the first client render, then the stored
+  // selection: the same first render on both sides.
+  const raw = useSyncExternalStore(subscribe, readRaw, () => "");
+  const entries = useMemo(() => parse(raw), [raw]);
+  const ready = useSyncExternalStore(subscribeNothing, () => true, () => false);
 
   const toggle = useCallback((entry: CompareEntry) => {
-    setEntries((previous) => {
-      if (previous.some((item) => item.id === entry.id)) {
-        return previous.filter((item) => item.id !== entry.id);
-      }
+    const previous = parse(readRaw());
+    if (previous.some((item) => item.id === entry.id)) {
+      writeEntries(previous.filter((item) => item.id !== entry.id));
+      return;
+    }
 
-      // Programs, faculties and universities are compared on different
-      // attributes, so picking one kind while another is selected starts a
-      // fresh tray rather than producing a table of mismatched rows.
-      if (previous.length > 0 && previous[0].kind !== entry.kind) {
-        return [entry];
-      }
+    // Programs, faculties and universities are compared on different
+    // attributes, so picking one kind while another is selected starts a
+    // fresh tray rather than producing a table of mismatched rows.
+    if (previous.length > 0 && previous[0].kind !== entry.kind) {
+      writeEntries([entry]);
+      return;
+    }
 
-      if (previous.length >= MAX_COMPARE) return previous;
-      return [...previous, entry];
-    });
+    if (previous.length >= MAX_COMPARE) return;
+    writeEntries([...previous, entry]);
   }, []);
 
   const remove = useCallback((id: string) => {
-    setEntries((previous) => previous.filter((item) => item.id !== id));
+    writeEntries(parse(readRaw()).filter((item) => item.id !== id));
   }, []);
 
-  const clear = useCallback(() => setEntries([]), []);
+  const clear = useCallback(() => writeEntries([]), []);
 
   const value = useMemo<CompareContextValue>(
     () => ({

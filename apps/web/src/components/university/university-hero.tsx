@@ -108,8 +108,8 @@ export async function UniversityHero({
       <div className="mx-auto max-w-7xl px-4 pt-5 md:px-6">
           <div className="relative isolate h-56 overflow-hidden rounded-3xl shadow-sm sm:h-64 md:h-72">
             {university.coverImageUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element -- cover
-              // photos come from arbitrary partner hosts, same as the gallery.
+              // Cover photos come from arbitrary partner hosts, same as the gallery.
+              // eslint-disable-next-line @next/next/no-img-element
               <img
                 src={university.coverImageUrl}
                 alt=""

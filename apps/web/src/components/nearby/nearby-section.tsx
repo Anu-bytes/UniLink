@@ -20,7 +20,7 @@ export async function NearbySection({ catalog, access }: { catalog: NearbyCatalo
 
   return (
     <section id="find-nearest" className="border-y border-slate-100 bg-[#F8FAFC] py-16 md:py-24">
-      <div className="mx-auto grid max-w-7xl items-center gap-12 px-4 md:px-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
+      <div className="mx-auto grid grid-cols-[minmax(0,1fr)] max-w-7xl items-center gap-12 px-4 md:px-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:gap-16">
         <Reveal>
           <p className="text-sm font-semibold text-[#1E6DEB]">{t("section.eyebrow")}</p>
           <h2 className="mt-3 text-[clamp(1.75rem,3.4vw,2.5rem)] font-semibold leading-[1.15] tracking-tight text-slate-900">

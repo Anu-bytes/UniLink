@@ -392,7 +392,7 @@ export function AdminShell({
       ) : null}
 
       <div inert={drawerOpen} className="flex min-w-0 flex-1 flex-col">
-        <header className="sticky top-0 z-40 flex h-16 items-center gap-3 border-b border-[#E2E8F0] bg-white px-4 md:px-6">
+        <header className="sticky top-0 z-40 flex h-16 items-center gap-2 border-b border-[#E2E8F0] bg-white px-3 min-[360px]:gap-3 min-[360px]:px-4 md:px-6">
           <button
             type="button"
             onClick={() => setDrawerOpen(true)}
@@ -402,7 +402,7 @@ export function AdminShell({
             <Menu className="size-5" aria-hidden />
           </button>
 
-          <div className="ms-auto flex items-center gap-2 sm:gap-3">
+          <div className="ms-auto flex items-center gap-1.5 min-[360px]:gap-2 sm:gap-3 [&>*]:shrink-0">
             <QuickActionsMenu level={level} />
             {level >= 2 ? (
               <NotificationBell

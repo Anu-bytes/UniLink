@@ -160,7 +160,7 @@ export async function UniversityAdminHome({ actor }: { actor: AdminActor }) {
                 <Badge tone={STATUS_TONE[change.status]} dot>
                   {tChanges(`status.${change.status}`)}
                 </Badge>
-                <span className="min-w-0 flex-1 truncate text-[#0F172A]">
+                <span className="min-w-0 flex-1 basis-40 truncate text-[#0F172A]">
                   <span className="font-semibold">{tChanges(`actions.${change.action}`)}</span> · {change.entityLabel}
                   {change.status === "REJECTED" && change.reviewNote ? (
                     <span className="block truncate text-[12px] text-[#C81F15]">{change.reviewNote}</span>

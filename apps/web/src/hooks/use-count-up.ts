@@ -11,16 +11,13 @@ export function useCountUp(target: number, started: boolean, duration = 1400) {
     const prefersReduced =
       typeof window !== "undefined" &&
       window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    if (prefersReduced) {
-      setValue(target);
-      return;
-    }
+    const ms = prefersReduced ? 0 : duration;
     let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
       // rAF timestamps are the frame start, which can be a hair before `start`;
       // clamp so the first frame never eases to a negative count ("+-17").
-      const p = Math.min(Math.max((now - start) / duration, 0), 1);
+      const p = ms > 0 ? Math.min(Math.max((now - start) / ms, 0), 1) : 1;
       const eased = 1 - Math.pow(1 - p, 3);
       setValue(target * eased);
       if (p < 1) raf = requestAnimationFrame(tick);

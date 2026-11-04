@@ -34,7 +34,7 @@ export function QuickActionsMenu({ level }: { level: AdminLevel }) {
   }, [open]);
 
   return (
-    <div ref={ref} className="relative">
+    <div ref={ref} className="relative max-[359px]:hidden">
       <button
         type="button"
         onClick={() => setOpenAt(open ? null : pathname)}

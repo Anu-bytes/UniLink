@@ -1,9 +1,7 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
+import { useId, useMemo, useRef, useState } from "react";
 import { ChevronDown, Search, X } from "lucide-react";
-
-import { cn } from "@/lib/utils";
 
 export type MultiOption = { value: string; label: string };
 
@@ -32,6 +30,7 @@ export function SearchMultiSelect({
 }) {
   const [query, setQuery] = useState("");
   const [open, setOpen] = useState(false);
+  const listId = useId();
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const selected = useMemo(() => new Set(value), [value]);
   const atMax = value.length >= max;
@@ -71,6 +70,7 @@ export function SearchMultiSelect({
           <input
             role="combobox"
             aria-expanded={open}
+            aria-controls={listId}
             aria-autocomplete="list"
             value={query}
             disabled={atMax}
@@ -95,6 +95,7 @@ export function SearchMultiSelect({
 
         {open && !atMax ? (
           <ul
+            id={listId}
             role="listbox"
             onMouseEnter={cancelClose}
             className="absolute z-50 mt-1 max-h-64 w-full overflow-y-auto rounded-lg bg-popover p-1 shadow-md ring-1 ring-foreground/10 duration-150 animate-in fade-in-0 zoom-in-95"

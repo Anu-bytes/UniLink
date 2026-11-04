@@ -6,7 +6,7 @@ import { auth } from "@/auth";
 import { Link } from "@/i18n/navigation";
 import { ApplicationStatusActions } from "@/components/app/application-actions";
 import { UniversityLogo } from "@/components/university-logo";
-import { formatDate, formatMoney } from "@/lib/format";
+import { formatDate, formatTuition } from "@/lib/format";
 import { getApplications } from "@/lib/program-search";
 import { cn } from "@/lib/utils";
 
@@ -63,10 +63,12 @@ export default async function ApplicationsPage() {
         <ul className="mt-6 space-y-4">
           {applications.map((application) => {
             const program = application.program;
-            const tuition = formatMoney(
+            const tuition = formatTuition(
               locale,
               program.tuitionFee,
               program.currency,
+              program.extraFee,
+              program.extraFeeCurrency,
             );
 
             return (

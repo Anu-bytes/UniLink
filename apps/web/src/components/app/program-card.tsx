@@ -7,7 +7,7 @@ import { Link } from "@/i18n/navigation";
 import { useCompare } from "@/components/app/compare-context";
 import { ProgramSaveButton } from "@/components/app/program-save-button";
 import { UniversityLogo } from "@/components/university-logo";
-import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { formatMoney, formatNumber, formatTuition, yearsFromMonths } from "@/lib/format";
 import { BAND_STYLES } from "@/lib/matching";
 import type { ProgramResult } from "@/lib/program-search";
 import { cn } from "@/lib/utils";
@@ -35,7 +35,13 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
       })
     : tCatalog(`levels.${program.studyLevel}`);
 
-  const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+  const tuition = formatTuition(
+    locale,
+    program.tuitionFee,
+    program.currency,
+    program.extraFee,
+    program.extraFeeCurrency,
+  );
   const applicationFee = program.applicationFeeWaived
     ? t("card.waived")
     : formatMoney(locale, program.applicationFee, program.currency);

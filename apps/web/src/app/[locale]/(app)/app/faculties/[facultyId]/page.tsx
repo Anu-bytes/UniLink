@@ -9,7 +9,7 @@ import { ProgramCard } from "@/components/app/program-card";
 import { UniversityLogo } from "@/components/university-logo";
 import { getFacultyDetail } from "@/lib/faculty-search";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
-import { formatMoney, formatNumber } from "@/lib/format";
+import { formatNumber, formatTuitionRange } from "@/lib/format";
 import {
   getMatchProfile,
   getProgramsForCompare,
@@ -60,8 +60,7 @@ export default async function FacultyProfilePage({ params }: PageProps) {
     return isArabic ? field.ar : field.en;
   });
 
-  const from = formatMoney(locale, faculty.tuitionFrom, faculty.currency);
-  const to = formatMoney(locale, faculty.tuitionTo, faculty.currency);
+  const tuitionRange = formatTuitionRange(locale, faculty.tuitionFrom, faculty.tuitionTo, faculty.currency, faculty.extraFee, faculty.extraFeeCurrency, " - ");
 
   return (
     <div className="mx-auto max-w-[86rem] px-4 py-6 pb-32 md:px-6 md:py-8">
@@ -121,9 +120,7 @@ export default async function FacultyProfilePage({ params }: PageProps) {
               {t("tuitionRange")}
             </dt>
             <dd className="mt-1 text-lg font-bold text-[#1F2A44]">
-              {from && to && faculty.tuitionFrom !== faculty.tuitionTo
-                ? `${from} - ${to}`
-                : (from ?? tSearch("card.notSpecified"))}
+              {tuitionRange ?? tSearch("card.notSpecified")}
             </dd>
           </div>
           <div>
