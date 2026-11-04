@@ -29,6 +29,9 @@ export type ProgramResult = {
   tuitionFee: number | null;
   tuitionPeriod: string;
   currency: string;
+  /** Part of the fee in another currency, shown beside tuitionFee. */
+  extraFee: number | null;
+  extraFeeCurrency: string | null;
   applicationFee: number | null;
   applicationFeeWaived: boolean;
   /** The minimum for this viewer (their certificate group when known). */
@@ -115,6 +118,8 @@ function mapProgram(
     tuitionFee,
     tuitionPeriod: row.tuitionPeriod,
     currency: row.currency,
+    extraFee: row.extraFee == null ? null : Number(row.extraFee),
+    extraFeeCurrency: row.extraFeeCurrency,
     applicationFee: row.applicationFee ? Number(row.applicationFee) : null,
     applicationFeeWaived: row.applicationFeeWaived,
     minGradePercent,

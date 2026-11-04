@@ -16,7 +16,7 @@ export async function NearbyGate({ catalog, callbackUrl }: { catalog: NearbyCata
 
   return (
     <section className="bg-[#F8FAFC]">
-      <div className="mx-auto grid max-w-6xl items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-2 lg:gap-16">
+      <div className="mx-auto grid grid-cols-[minmax(0,1fr)] max-w-6xl items-center gap-12 px-4 py-14 md:px-6 md:py-20 lg:grid-cols-2 lg:gap-16">
         <div>
           <span className="inline-flex size-10 items-center justify-center rounded-xl bg-white text-slate-600 shadow-[0_1px_2px_rgba(15,23,42,0.08),0_0_0_1px_rgba(15,23,42,0.06)]">
             <Lock className="size-[18px]" aria-hidden />

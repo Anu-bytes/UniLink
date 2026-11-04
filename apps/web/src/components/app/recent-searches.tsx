@@ -2,7 +2,7 @@
 
 import { Clock } from "lucide-react";
 import { useTranslations } from "next-intl";
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useSyncExternalStore } from "react";
 
 import { Link } from "@/i18n/navigation";
 
@@ -11,14 +11,27 @@ export type RecentSearchEntry = { label: string; href: string };
 const STORAGE_KEY = "unilink.recentFacultySearches";
 const MAX_ENTRIES = 2;
 
-function readEntries(): RecentSearchEntry[] {
+function readRaw(): string {
   try {
-    const raw = window.localStorage.getItem(STORAGE_KEY);
+    return window.localStorage.getItem(STORAGE_KEY) ?? "";
+  } catch {
+    return "";
+  }
+}
+
+function parseEntries(raw: string): RecentSearchEntry[] {
+  try {
     return raw ? (JSON.parse(raw) as RecentSearchEntry[]) : [];
   } catch {
     return [];
   }
 }
+
+function readEntries(): RecentSearchEntry[] {
+  return parseEntries(readRaw());
+}
+
+const subscribeNothing = () => () => {};
 
 function writeEntries(entries: RecentSearchEntry[]) {
   try {
@@ -50,11 +63,9 @@ export function RecentSearchRecorder({ query, href }: { query: string; href: str
  * nothing at all if there's no history yet or storage is blocked. */
 export function RecentSearches() {
   const t = useTranslations("Search");
-  const [entries, setEntries] = useState<RecentSearchEntry[] | null>(null);
-
-  useEffect(() => {
-    setEntries(readEntries());
-  }, []);
+  // null on the server and the first client render, then what is stored.
+  const raw = useSyncExternalStore(subscribeNothing, readRaw, () => null);
+  const entries = useMemo(() => (raw === null ? null : parseEntries(raw)), [raw]);
 
   if (!entries || entries.length === 0) return null;
 

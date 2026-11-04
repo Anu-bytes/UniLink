@@ -38,8 +38,8 @@ export function Avatar({
 
   if (user.image) {
     return (
-      // eslint-disable-next-line @next/next/no-img-element -- avatars come from
-      // arbitrary OAuth hosts, which next/image would need whitelisted.
+      // Avatars come from arbitrary OAuth hosts, which next/image would need whitelisted.
+      // eslint-disable-next-line @next/next/no-img-element
       <img
         src={user.image}
         alt=""

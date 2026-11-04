@@ -107,9 +107,12 @@ export function NearbyPreview({
         <Pill>{labels.distance}</Pill>
       </div>
 
-      <div className="grid grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
+      {/* Side by side from sm up. On a phone the half-width list left the
+          names a few letters wide, so the map sits on top and the list runs
+          full width below it. */}
+      <div className="grid sm:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)]">
         {/* List */}
-        <div className="border-e border-slate-200">
+        <div className="border-slate-200 sm:border-e">
           <div className="border-b border-slate-100 px-4 py-3">
             <p className="text-[13px] font-semibold text-slate-900">{labels.count}</p>
             <p className="mt-0.5 truncate text-[11px] text-slate-500">{labels.context}</p>
@@ -133,7 +136,7 @@ export function NearbyPreview({
         </div>
 
         {/* Map */}
-        <div className="relative min-h-[300px] overflow-hidden bg-[#ECEFF3] sm:min-h-[340px]">
+        <div className="relative order-first min-h-[220px] overflow-hidden bg-[#ECEFF3] sm:order-none sm:min-h-[340px]">
           <svg viewBox="0 0 100 100" preserveAspectRatio="none" className="absolute inset-0 size-full">
             <g fill="#E3E7EC">
               <rect x="4" y="6" width="22" height="14" rx="1.5" />

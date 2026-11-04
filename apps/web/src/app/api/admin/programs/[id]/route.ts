@@ -105,6 +105,14 @@ const updateSchema = z
     tuitionFee: moneyField,
     tuitionPeriod: z.enum(TUITION_PERIODS),
     currency: currencyField,
+    // The part of the fee in another currency; "" or null clears it.
+    extraFee: moneyField,
+    extraFeeCurrency: z
+      .string()
+      .trim()
+      .toUpperCase()
+      .refine((value) => value === "" || /^[A-Z]{3}$/.test(value), "Currency must be a 3-letter code")
+      .nullish(),
     applicationFee: moneyField,
     applicationFeeWaived: z.boolean(),
     minGradePercent: z
@@ -122,12 +130,14 @@ const updateSchema = z
 function serializeProgram<
   T extends {
     tuitionFee: Prisma.Decimal | null;
+    extraFee: Prisma.Decimal | null;
     applicationFee: Prisma.Decimal | null;
   },
 >(program: T) {
   return {
     ...program,
     tuitionFee: decimalToNumber(program.tuitionFee),
+    extraFee: decimalToNumber(program.extraFee),
     applicationFee: decimalToNumber(program.applicationFee),
   };
 }
@@ -230,6 +240,10 @@ async function patchHandler(
     data.tuitionPeriod = input.tuitionPeriod;
   }
   if (input.currency !== undefined) data.currency = input.currency;
+  if (input.extraFee !== undefined) data.extraFee = input.extraFee ?? null;
+  if (input.extraFeeCurrency !== undefined) {
+    data.extraFeeCurrency = emptyToNull(input.extraFeeCurrency);
+  }
   if (input.applicationFee !== undefined) {
     data.applicationFee = input.applicationFee ?? null;
   }

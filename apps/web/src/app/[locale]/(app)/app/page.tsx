@@ -90,20 +90,22 @@ export default async function AppHomePage() {
       </div>
 
       {!profile ? (
-        <section className="mt-6 flex flex-wrap items-center gap-4 rounded-xl border-2 border-[#1E6DEB]/25 bg-[#F7F9FE] p-5">
-          <span
-            aria-hidden
-            className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white"
-          >
-            <UserRoundPen className="size-5" />
-          </span>
-          <div className="min-w-0 flex-1">
-            <h2 className="font-bold text-[#1F2A44]">{t("profileCardTitle")}</h2>
-            <p className="mt-1 text-sm text-[#5a6072]">{t("profileCardBody")}</p>
+        <section className="mt-6 flex flex-col gap-4 rounded-xl border-2 border-[#1E6DEB]/25 bg-[#F7F9FE] p-4 sm:flex-row sm:items-center sm:p-5">
+          <div className="flex min-w-0 flex-1 items-start gap-3 sm:items-center sm:gap-4">
+            <span
+              aria-hidden
+              className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-[#1E6DEB] to-[#3B86F7] text-white"
+            >
+              <UserRoundPen className="size-5" />
+            </span>
+            <div className="min-w-0 flex-1">
+              <h2 className="font-bold text-[#1F2A44]">{t("profileCardTitle")}</h2>
+              <p className="mt-1 text-sm leading-6 text-[#5a6072]">{t("profileCardBody")}</p>
+            </div>
           </div>
           <Link
             href="/onboarding"
-            className="inline-flex min-h-11 items-center rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white hover:bg-[#1859c4]"
+            className="inline-flex min-h-11 shrink-0 items-center justify-center rounded-lg bg-[#1E6DEB] px-5 text-sm font-bold text-white hover:bg-[#1859c4]"
           >
             {t("profileCardCta")}
           </Link>
@@ -146,7 +148,7 @@ export default async function AppHomePage() {
                   className="size-9"
                   textClassName="text-xs"
                 />
-                <div className="min-w-0 flex-1">
+                <div className="min-w-0 flex-1 basis-40">
                   <p className="truncate text-sm font-semibold text-[#1F2A44]">
                     {application.program.name}
                   </p>

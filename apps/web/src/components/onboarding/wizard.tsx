@@ -48,11 +48,12 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
   });
 
   // Track direction of travel so the step transition slides the right way.
-  const prevStep = useRef(step);
-  const forward = step >= prevStep.current;
-  useEffect(() => {
-    prevStep.current = step;
-  }, [step]);
+  const [lastStep, setLastStep] = useState(step);
+  const [forward, setForward] = useState(true);
+  if (lastStep !== step) {
+    setLastStep(step);
+    setForward(step > lastStep);
+  }
 
   // Avoid rendering step content until sessionStorage has been read, so a
   // mid-wizard refresh doesn't flash step 1.
@@ -201,6 +202,7 @@ export function Wizard({ signedInEmail }: { signedInEmail: string | null }) {
     }
     const query = initialQuery.current;
     const suffix = query ? `?q=${encodeURIComponent(query)}` : "";
+    // eslint-disable-next-line @next/next/no-location-assign-relative-destination -- a full load on purpose, see above
     window.location.assign(`/${locale}/app/search${suffix}`);
   }
 

@@ -15,7 +15,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 import { UniversityLogo } from "@/components/university-logo";
 import { Link } from "@/i18n/navigation";
-import { formatMoney, yearsFromMonths } from "@/lib/format";
+import { formatTuition, yearsFromMonths } from "@/lib/format";
 import type { NearbyProgram, NearbyUniversity } from "@/lib/nearby";
 import { cn } from "@/lib/utils";
 
@@ -485,7 +485,7 @@ function FacultyGroup({
               t(`levels.${program.level}`),
               program.durationLabel ?? (years ? t("detail.years", { count: years }) : null),
               program.fee !== null
-                ? `${formatMoney(locale, program.fee, program.currency)}${t(`detail.per.${program.feePeriod}`)}`
+                ? `${formatTuition(locale, program.fee, program.currency, program.extraFee, program.extraFeeCurrency)}${t(`detail.per.${program.feePeriod}`)}`
                 : null,
             ].filter(Boolean);
             return (

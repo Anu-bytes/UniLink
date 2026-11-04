@@ -34,12 +34,9 @@ export function TestimonialsCarousel({
 }) {
   const perPage = usePerPage(maxPerPage);
   const pages = Math.max(1, Math.ceil(testimonials.length / perPage));
-  const [page, setPage] = useState(0);
-
-  // Keep the active page in range when the viewport (perPage) changes.
-  useEffect(() => {
-    setPage((p) => Math.min(p, pages - 1));
-  }, [pages]);
+  const [chosenPage, setPage] = useState(0);
+  // Kept in range when the viewport (perPage) changes the page count.
+  const page = Math.min(chosenPage, pages - 1);
 
   const go = (next: number) => setPage((next + pages) % pages);
   const visible = testimonials.slice(page * perPage, page * perPage + perPage);

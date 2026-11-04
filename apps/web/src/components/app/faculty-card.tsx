@@ -6,7 +6,7 @@ import { FacultyDialog } from "@/components/app/faculty-dialog";
 import { FacultySaveButton } from "@/components/app/faculty-save-button";
 import { UniversityLogo } from "@/components/university-logo";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
-import { formatMoney, formatNumber } from "@/lib/format";
+import { formatNumber, formatTuitionRange } from "@/lib/format";
 import { BAND_STYLES } from "@/lib/matching";
 import type { FacultyResult } from "@/lib/faculty-search";
 import { cn } from "@/lib/utils";
@@ -31,12 +31,9 @@ export async function FacultyCard({ faculty }: { faculty: FacultyResult }) {
     return isArabic ? field.ar : field.en;
   });
 
-  const from = formatMoney(locale, faculty.tuitionFrom, faculty.currency);
-  const to = formatMoney(locale, faculty.tuitionTo, faculty.currency);
   const tuitionLabel =
-    from && to && faculty.tuitionFrom !== faculty.tuitionTo
-      ? `${from}-${to}`
-      : (from ?? t("card.notSpecified"));
+    formatTuitionRange(locale, faculty.tuitionFrom, faculty.tuitionTo, faculty.currency, faculty.extraFee, faculty.extraFeeCurrency) ??
+    t("card.notSpecified");
 
   return (
     <article className="hover-lift flex h-full flex-col rounded-xl border border-slate-200 bg-white shadow-sm transition-shadow hover:shadow-md">

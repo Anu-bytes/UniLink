@@ -18,6 +18,9 @@ export type NearbyProgram = {
   /** Tuition as stored (EGP unless `currency` says otherwise); null when unknown. */
   fee: number | null;
   currency: string;
+  /** Part of the fee in another currency, shown beside `fee`. */
+  extraFee: number | null;
+  extraFeeCurrency: string | null;
   feePeriod: "YEAR" | "TERM" | "TOTAL";
   durationMonths: number | null;
   durationLabel: string | null;
@@ -90,6 +93,8 @@ export const getNearbyCatalog = unstable_cache(
             studyLevel: true,
             tuitionFee: true,
             currency: true,
+            extraFee: true,
+            extraFeeCurrency: true,
             tuitionPeriod: true,
             durationMonths: true,
             durationLabel: true,
@@ -116,6 +121,8 @@ export const getNearbyCatalog = unstable_cache(
           faculty: program.faculty ? localized(locale, program.faculty.name, program.faculty.nameAr) : null,
           fee: program.tuitionFee === null ? null : Number(program.tuitionFee),
           currency: program.currency,
+          extraFee: program.extraFee == null ? null : Number(program.extraFee),
+          extraFeeCurrency: program.extraFeeCurrency,
           feePeriod: program.tuitionPeriod,
           durationMonths: program.durationMonths,
           durationLabel: program.durationLabel ? localized(locale, program.durationLabel, program.durationLabelAr) : null,

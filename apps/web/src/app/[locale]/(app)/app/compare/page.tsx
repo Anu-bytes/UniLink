@@ -17,7 +17,7 @@ import { UniversityLogo } from "@/components/university-logo";
 import { getUniversitiesForCompare } from "@/lib/catalog";
 import { getFacultiesForCompare } from "@/lib/faculty-search";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
-import { formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { formatMoney, formatNumber, formatTuition, yearsFromMonths } from "@/lib/format";
 import { BAND_STYLES, type MatchBand } from "@/lib/matching";
 import { getProgramsForCompare } from "@/lib/program-search";
 import { cn } from "@/lib/utils";
@@ -260,8 +260,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
                   .join("\n")
               : notSet,
           faculty: program.facultyName ?? notSet,
-          tuition: formatMoney(locale, program.tuitionFee, program.currency)
-            ? `${formatMoney(locale, program.tuitionFee, program.currency)}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
+          tuition: formatTuition(locale, program.tuitionFee, program.currency, program.extraFee, program.extraFeeCurrency)
+            ? `${formatTuition(locale, program.tuitionFee, program.currency, program.extraFee, program.extraFeeCurrency)}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
             : notSet,
           applicationFee: program.applicationFeeWaived
             ? t("waived")

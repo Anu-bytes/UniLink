@@ -9,7 +9,7 @@ import { FacultySaveButton } from "@/components/app/faculty-save-button";
 import { ProgramCard } from "@/components/app/program-card";
 import { UniversityLogo } from "@/components/university-logo";
 import type { FacultyResult } from "@/lib/faculty-search";
-import { formatMoney, formatNumber } from "@/lib/format";
+import { formatNumber, formatTuitionRange } from "@/lib/format";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
 import type { ProgramResult } from "@/lib/program-search";
 
@@ -155,8 +155,7 @@ function FacultyDialogContent({
     return isArabic ? field.ar : field.en;
   });
 
-  const from = formatMoney(locale, faculty.tuitionFrom, faculty.currency);
-  const to = formatMoney(locale, faculty.tuitionTo, faculty.currency);
+  const tuitionRange = formatTuitionRange(locale, faculty.tuitionFrom, faculty.tuitionTo, faculty.currency, faculty.extraFee, faculty.extraFeeCurrency, " - ");
 
   return (
     <div>
@@ -207,9 +206,7 @@ function FacultyDialogContent({
             {t("tuitionRange")}
           </dt>
           <dd className="mt-1 text-lg font-bold text-[#1F2A44]">
-            {from && to && faculty.tuitionFrom !== faculty.tuitionTo
-              ? `${from} - ${to}`
-              : (from ?? tSearch("card.notSpecified"))}
+            {tuitionRange ?? tSearch("card.notSpecified")}
           </dd>
         </div>
         <div>

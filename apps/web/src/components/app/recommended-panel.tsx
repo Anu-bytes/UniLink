@@ -44,8 +44,8 @@ export async function RecommendedPanel({
         className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-[#F5A623] to-[#E5A23C]"
       />
 
-      <summary className="flex cursor-pointer list-none flex-wrap items-center justify-between gap-x-4 gap-y-2 p-4 md:p-5">
-        <div className="flex items-center gap-2.5">
+      <summary className="flex cursor-pointer list-none items-start justify-between gap-3 p-4 sm:items-center md:p-5">
+        <div className="flex min-w-0 flex-1 flex-wrap items-center gap-x-2.5 gap-y-2">
           <span
             aria-hidden
             className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-gradient-to-br from-[#F5A623] to-[#E5A23C] text-white"
@@ -57,17 +57,17 @@ export async function RecommendedPanel({
           </h2>
           {/* Stays visible while collapsed, so there's still a reason to
               open a section that starts closed. */}
-          <span className="text-sm font-semibold text-[#B77714]">
+          <span className="whitespace-nowrap text-sm font-semibold text-[#B77714]">
             {t("recommendedCount", { count: faculties.length })}
           </span>
-          <span className="inline-flex items-center gap-1.5 rounded-md bg-[#FFF6E2] px-2 py-1 text-xs font-bold text-[#B77714]">
+          <span className="inline-flex items-center gap-1.5 whitespace-nowrap rounded-md bg-[#FFF6E2] px-2 py-1 text-xs font-bold text-[#B77714]">
             <span className="ul-blink-warm inline-flex size-1.5 rounded-full bg-[#E5A23C]" />
             {t("recommendedBadge")}
           </span>
         </div>
 
         <ChevronDown
-          className="size-5 shrink-0 text-[#B77714] transition-transform duration-300 group-open:rotate-180"
+          className="mt-1.5 size-5 shrink-0 text-[#B77714] transition-transform duration-300 group-open:rotate-180 sm:mt-0"
           aria-hidden
         />
       </summary>

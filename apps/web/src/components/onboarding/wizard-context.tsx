@@ -61,6 +61,9 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
     initialised.current = true;
     const persisted = readPersisted();
     if (persisted) {
+      // A one-off restore after mount: reading sessionStorage while rendering
+      // would make the first client render differ from the server HTML.
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setStep(persisted.step);
       setDataState(persisted.data);
     }
@@ -84,7 +87,9 @@ export function WizardProvider({ children }: { children: React.ReactNode }) {
 
   // Keep a ref in sync so next/back don't need `step` in their deps.
   const stepRef = useRef(step);
-  stepRef.current = step;
+  useEffect(() => {
+    stepRef.current = step;
+  }, [step]);
 
   const goTo = useCallback((target: number) => {
     setStep(Math.min(Math.max(target, 0), TOTAL_STEPS - 1));

@@ -217,7 +217,7 @@ function ChangeCard({
             className="mt-1 size-4 accent-[#1E6DEB]"
           />
         ) : null}
-        <div className="min-w-0 flex-1">
+        <div className="min-w-0 flex-1 basis-48">
           <div className="flex flex-wrap items-center gap-2">
             <span className={cn("rounded-md px-2 py-0.5 text-[11px] font-bold uppercase tracking-wide", ACTION_TONE[item.action])}>
               {t(`actions.${item.action}`)}

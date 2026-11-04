@@ -242,7 +242,7 @@ async function FacultiesSearchView({
                 className="mt-5 mb-1"
               />
 
-              <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {page.results.map((faculty) => (
                   <FacultyCard key={faculty.id} faculty={faculty} />
                 ))}
@@ -395,7 +395,7 @@ async function UniversitiesSearchView({
                 className="mt-5 mb-1"
               />
 
-              <div className="mt-4 grid gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+              <div className="mt-4 grid grid-cols-[minmax(0,1fr)] gap-3.5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
                 {page.results.map((university) => (
                   <UniversityResultCard key={university.id} university={university} />
                 ))}

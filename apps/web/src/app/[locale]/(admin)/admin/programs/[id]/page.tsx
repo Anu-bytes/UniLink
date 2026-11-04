@@ -62,6 +62,8 @@ export default async function EditProgramPage({
       tuitionFee: true,
       tuitionPeriod: true,
       currency: true,
+      extraFee: true,
+      extraFeeCurrency: true,
       applicationFee: true,
       applicationFeeWaived: true,
       minGradePercent: true,
@@ -195,6 +197,8 @@ export default async function EditProgramPage({
                 program.tuitionFee === null ? null : Number(program.tuitionFee),
               tuitionPeriod: program.tuitionPeriod,
               currency: program.currency,
+              extraFee: program.extraFee === null ? null : Number(program.extraFee),
+              extraFeeCurrency: program.extraFeeCurrency,
               applicationFee:
                 program.applicationFee === null ? null : Number(program.applicationFee),
               applicationFeeWaived: program.applicationFeeWaived,

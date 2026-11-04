@@ -39,9 +39,11 @@ export function UniversityFilterBar({
   // updates immediately in toggleCity, then re-syncs from the prop so
   // back/forward navigation and "Clear all" still land on the real value.
   const [activeCities, setActiveCities] = useState(cities);
-  useEffect(() => {
+  const [seenCities, setSeenCities] = useState(cities);
+  if (seenCities !== cities) {
+    setSeenCities(cities);
     setActiveCities(cities);
-  }, [cities]);
+  }
 
   function push(next: { type?: string; cities?: string[] }) {
     const params = new URLSearchParams();

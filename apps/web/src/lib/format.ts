@@ -24,6 +24,64 @@ export function formatMoney(
   }).format(amount);
 }
 
+/**
+ * The part of a fee charged in another currency. Arabic spells the currency
+ * out ("1,800 دولار أمريكي"): a Latin symbol such as "US$" inside
+ * right-to-left text reorders into "$US 1,800 +".
+ */
+export function formatExtraFee(
+  locale: string,
+  amount: number | null | undefined,
+  currency: string | null | undefined,
+) {
+  if (amount == null || !currency) return null;
+  return new Intl.NumberFormat(locale, {
+    style: "currency",
+    currency,
+    currencyDisplay: locale.startsWith("ar") ? "name" : "symbol",
+    maximumFractionDigits: 0,
+    numberingSystem: NUMBERING_SYSTEM,
+  }).format(amount);
+}
+
+/**
+ * A program's fee as shown to students: the tuition amount, plus the part
+ * charged in another currency when there is one ("EGP 230,000 + $1,800").
+ */
+export function formatTuition(
+  locale: string,
+  fee: number | null | undefined,
+  currency: string,
+  extraFee?: number | null,
+  extraFeeCurrency?: string | null,
+) {
+  const base = formatMoney(locale, fee, currency);
+  if (!base) return null;
+  const extra = formatExtraFee(locale, extraFee, extraFeeCurrency);
+  return extra ? `${base} + ${extra}` : base;
+}
+
+/**
+ * A faculty's tuition range ("EGP 100,000-115,000"), with the part in another
+ * currency appended when every program in it shares one ("+ $1,800").
+ */
+export function formatTuitionRange(
+  locale: string,
+  from: number | null,
+  to: number | null,
+  currency: string,
+  extraFee?: number | null,
+  extraFeeCurrency?: string | null,
+  separator = "-",
+) {
+  const low = formatMoney(locale, from, currency);
+  const high = formatMoney(locale, to, currency);
+  if (!low) return null;
+  const range = high && from !== to ? `${low}${separator}${high}` : low;
+  const extra = formatExtraFee(locale, extraFee, extraFeeCurrency);
+  return extra ? `${range} + ${extra}` : range;
+}
+
 export function formatNumber(locale: string, value: number) {
   return new Intl.NumberFormat(locale, {
     numberingSystem: NUMBERING_SYSTEM,

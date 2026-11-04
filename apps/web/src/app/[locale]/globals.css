@@ -170,6 +170,14 @@ html[lang="ar"] body {
   * {
     @apply border-border outline-ring/50;
   }
+  /* A grid that only sets columns from sm/md/lg up gets one implicit column
+     on phones, and an implicit column is as wide as its widest content: a
+     long name or a nowrap row then pushed the whole page past a narrow
+     screen. One shrinkable column instead; any grid-cols-* utility (a later
+     layer) still wins. */
+  .grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
   img,
   video {
     max-inline-size: 100%;

@@ -22,7 +22,7 @@ import {
   localized,
   localizedOrNull,
 } from "@/lib/catalog";
-import { formatDate, formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { formatDate, formatMoney, formatNumber, formatTuition, yearsFromMonths } from "@/lib/format";
 import { prisma } from "@/lib/prisma";
 import { certificateGroupFor, headlineMinGrade } from "@/lib/admission-limits";
 import { auth } from "@/auth";
@@ -74,6 +74,8 @@ const loadProgram = cache(async function loadProgram(
     tuitionFee: program.tuitionFee ? Number(program.tuitionFee) : null,
     tuitionPeriod: program.tuitionPeriod,
     currency: program.currency,
+    extraFee: program.extraFee == null ? null : Number(program.extraFee),
+    extraFeeCurrency: program.extraFeeCurrency,
     applicationFee: program.applicationFee ? Number(program.applicationFee) : null,
     applicationFeeWaived: program.applicationFeeWaived,
     ...headlineMinGrade(program, program.university),
@@ -150,6 +152,14 @@ export default async function ProgramDetailPage({ params }: PageProps) {
         ? tCatalog("durationMonths", { count: program.durationMonths })
         : null);
 
+  const tuition = formatTuition(
+    locale,
+    program.tuitionFee,
+    program.currency,
+    program.extraFee,
+    program.extraFeeCurrency,
+  );
+
   const facts = [
     { icon: GraduationCap, label: t("level"), value: tCatalog(`levels.${program.studyLevel}`) },
     program.facultyName
@@ -159,8 +169,8 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     {
       icon: Banknote,
       label: t("tuition"),
-      value: formatMoney(locale, program.tuitionFee, program.currency)
-        ? `${formatMoney(locale, program.tuitionFee, program.currency)}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
+      value: tuition
+        ? `${tuition}​${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
         : t("notSpecified"),
     },
     {
@@ -235,7 +245,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
               <fact.icon className="size-4 shrink-0 text-[#1E6DEB]" aria-hidden />
               {fact.label}
             </dt>
-            <dd className="mt-2 text-[15px] font-bold [overflow-wrap:anywhere] text-[#1F2A44] sm:text-base">
+            <dd className="mt-2 text-[15px] font-bold break-words text-[#1F2A44] sm:text-base">
               {fact.value}
             </dd>
           </div>

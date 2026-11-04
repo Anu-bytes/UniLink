@@ -83,9 +83,11 @@ export function FilterBar({
   // immediately in toggleCity, then re-syncs from the prop so back/forward
   // navigation and "Clear all" still land on the real value.
   const [activeCities, setActiveCities] = useState(filters.cities ?? []);
-  useEffect(() => {
+  const [seenCities, setSeenCities] = useState(filters.cities);
+  if (seenCities !== filters.cities) {
+    setSeenCities(filters.cities);
     setActiveCities(filters.cities ?? []);
-  }, [filters.cities]);
+  }
 
   function push(next: SearchFilters) {
     const query = filtersToSearchParams({ ...next, page: 1 }).toString();

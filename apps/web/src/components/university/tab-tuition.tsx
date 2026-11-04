@@ -2,7 +2,7 @@ import { getLocale, getTranslations } from "next-intl/server";
 
 import { EmptySection, Paragraphs, SectionHeading } from "@/components/university/prose";
 import type { UniversityDetailData } from "@/lib/catalog";
-import { formatMoney } from "@/lib/format";
+import { formatMoney, formatTuition } from "@/lib/format";
 
 export async function TabTuition({
   university,
@@ -49,10 +49,12 @@ export async function TabTuition({
             </thead>
             <tbody className="divide-y divide-slate-100">
               {rows.map(({ faculty, program }) => {
-                const tuition = formatMoney(
+                const tuition = formatTuition(
                   locale,
                   program.tuitionFee,
                   program.currency,
+                  program.extraFee,
+                  program.extraFeeCurrency,
                 );
                 const applicationFee = program.applicationFeeWaived
                   ? t("tuition.waived")

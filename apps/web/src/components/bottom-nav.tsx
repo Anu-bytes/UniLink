@@ -53,12 +53,14 @@ export function BottomNav({ items, label }: { items: BottomNavItem[]; label: str
             const raised = item.key === "search";
 
             return (
-              <li key={item.key} className="flex">
+              // min-w-0: a tab may narrow below its label (which truncates),
+              // so five tabs fit a 320px screen.
+              <li key={item.key} className="flex min-w-0">
                 <Link
                   href={item.href}
                   aria-current={active ? "page" : undefined}
                   className={cn(
-                    "relative flex flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition-colors focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-[#1E6DEB]",
+                    "relative flex min-w-0 flex-1 flex-col items-center justify-center gap-1 text-[11px] font-semibold transition-colors focus-visible:outline-2 focus-visible:-outline-offset-4 focus-visible:outline-[#1E6DEB]",
                     active ? "text-[#1E6DEB]" : "text-[#6B7385] active:text-[#1E6DEB]",
                   )}
                 >
