@@ -33,7 +33,11 @@ export function NearbySheet({
 }) {
   const rootRef = useRef<HTMLDivElement>(null);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const headRef = useRef<HTMLDivElement>(null);
   const [height, setHeight] = useState(0);
+  // Collapsed, the sheet shows exactly its header (count and sort), so no
+  // half-cut list row peeks out under it.
+  const [peek, setPeek] = useState(PEEK);
   const [drag, setDrag] = useState<number | null>(null);
   const gesture = useRef<{ y: number; base: number; time: number; lastY: number; lastTime: number } | null>(null);
 
@@ -47,10 +51,20 @@ export function NearbySheet({
     return () => observer.disconnect();
   }, []);
 
+  useLayoutEffect(() => {
+    const head = headRef.current;
+    if (!head) return;
+    const measure = () => setPeek(Math.ceil(head.offsetHeight));
+    const observer = new ResizeObserver(measure);
+    observer.observe(head);
+    measure();
+    return () => observer.disconnect();
+  }, []);
+
   const heights: Record<SheetSnap, number> = {
-    peek: PEEK,
+    peek,
     half: Math.round(height * 0.52),
-    full: Math.max(PEEK, height - TOP_GAP),
+    full: Math.max(peek, height - TOP_GAP),
   };
   const visible = drag ?? heights[snap];
 
@@ -58,7 +72,7 @@ export function NearbySheet({
     if (height) onCover(Math.min(heights[snap], heights.half));
     // heights derive from height and snap.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [snap, height]);
+  }, [snap, height, peek]);
 
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
@@ -121,6 +135,7 @@ export function NearbySheet({
       style={{ height: Math.max(0, visible) }}
     >
       <div
+        ref={headRef}
         className="shrink-0 cursor-grab touch-none select-none px-5 pb-3 pt-2.5 active:cursor-grabbing"
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}

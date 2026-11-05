@@ -89,6 +89,32 @@ export function NearbyExplorer({
   const [snap, setSnap] = useState<SheetSnap>("peek");
   const [sheetCover, setSheetCover] = useState(112);
   const seq = useRef(0);
+  // Where the map starts on the page. The header is not the only thing above
+  // it (signed-in admins also get the admin bar), so it is measured rather
+  // than assumed, keeping the sheet clear of the bottom nav.
+  const rootRef = useRef<HTMLDivElement>(null);
+  const [top, setTop] = useState<number | null>(null);
+  useEffect(() => {
+    const el = rootRef.current;
+    if (!el) return;
+    // Layout offsets, not getBoundingClientRect: the page entrance animation
+    // moves the page with a transform while it plays.
+    const measure = () => {
+      let y = 0;
+      for (let node: HTMLElement | null = el; node; node = node.offsetParent as HTMLElement | null) y += node.offsetTop;
+      setTop(y);
+    };
+    measure();
+    const observer = new ResizeObserver(measure);
+    if (el.parentElement) observer.observe(el.parentElement);
+    const header = document.querySelector("header");
+    if (header) observer.observe(header);
+    window.addEventListener("resize", measure);
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("resize", measure);
+    };
+  }, []);
   const nextId = () => ++seq.current;
 
   const filtersRef = useRef(filters);
@@ -378,7 +404,11 @@ export function NearbyExplorer({
   const insets: MapInsets = isDesktop ? { top: 0, bottom: 0, start: 0 } : { top: 60, bottom: sheetCover, start: 0 };
 
   return (
-    <div className="relative flex h-[calc(100dvh-4rem-4.25rem-env(safe-area-inset-bottom))] flex-col overflow-hidden bg-white md:h-[calc(100dvh-5rem-4.25rem-env(safe-area-inset-bottom))] lg:h-[calc(100dvh-5rem)] lg:min-h-[600px]">
+    <div
+      ref={rootRef}
+      style={top === null ? undefined : ({ "--nearby-top": `${top}px` } as React.CSSProperties)}
+      className="relative flex h-[calc(100dvh-var(--nearby-top,4rem)-4.25rem-env(safe-area-inset-bottom))] flex-col overflow-hidden bg-white md:h-[calc(100dvh-var(--nearby-top,5rem)-4.25rem-env(safe-area-inset-bottom))] lg:h-[calc(100dvh-var(--nearby-top,5rem))] lg:min-h-[600px]"
+    >
       {isDesktop ? <div className="relative z-[1000] shrink-0 border-b border-slate-200 bg-white px-4 py-2.5">{toolbar(false)}</div> : null}
 
       <div className="relative flex min-h-0 flex-1">

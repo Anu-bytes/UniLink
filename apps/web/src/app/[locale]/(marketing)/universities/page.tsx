@@ -116,7 +116,7 @@ export default async function UniversitiesPage({ searchParams }: PageProps) {
             </span>
             <span className="flex items-center gap-1.5">
               <MapPin className="size-4" aria-hidden />
-              {tDirectory("cityCount", { count: cities.length })}
+              {tDirectory("cityCount", { count: cities.filter((option) => !option.group).length })}
             </span>
           </div>
           <div className="mt-4 flex justify-center">
