@@ -95,6 +95,7 @@ const facultyInclude = {
       currency: true,
       extraFee: true,
       extraFeeCurrency: true,
+      tuitionFeeMax: true,
       minGradePercent: true,
       fieldOfStudy: true,
       studyLevel: true,
@@ -362,7 +363,13 @@ function mapFaculty(
     disciplines: [...new Set(row.programs.map((p) => p.fieldOfStudy))],
     studyLevels: [...new Set(row.programs.map((p) => p.studyLevel as string))],
     tuitionFrom: priced.length ? Math.min(...priced) : null,
-    tuitionTo: priced.length ? Math.max(...priced) : null,
+    // A program priced by category counts with its top fee.
+    tuitionTo: priced.length
+      ? Math.max(
+          ...priced,
+          ...row.programs.map((program) => (program.tuitionFeeMax ? Number(program.tuitionFeeMax) : 0)),
+        )
+      : null,
     currency: row.programs[0]?.currency ?? "EGP",
     extraFee: extraAmount ? Number(extraAmount) : null,
     extraFeeCurrency: extraCurrency || null,

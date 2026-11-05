@@ -2246,6 +2246,7 @@
         "tuitionFee": "Tuition fee",
         "tuitionPeriod": "Charged per",
         "currency": "Currency",
+        "tuitionFeeMax": "Maximum tuition fee",
         "extraFee": "Extra fee in another currency",
         "extraFeeCurrency": "Extra fee currency",
         "applicationFee": "Application fee",
@@ -2265,6 +2266,7 @@
         "currency": "Three-letter code, e.g. EGP or USD.",
         "applicationFee": "Paid once, when the student applies. Leave it empty if there is none.",
         "applicationFeeWaived": "Shows “Waived” on the program page whatever the amount says.",
+        "tuitionFeeMax": "Only when the fee depends on the student's category (e.g. A, B, C). Enter the lowest fee above and the highest here; shown as a range. Leave empty otherwise.",
         "extraFee": "Charged on top of the tuition fee, e.g. 1800 USD. Shown as \"+ $1,800\" beside the fee. Leave empty if there is none."
       },
       "sections": {

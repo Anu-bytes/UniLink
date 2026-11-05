@@ -41,6 +41,7 @@ export function ProgramCard({ program }: { program: ProgramResult }) {
     program.currency,
     program.extraFee,
     program.extraFeeCurrency,
+    program.tuitionFeeMax,
   );
   const applicationFee = program.applicationFeeWaived
     ? t("card.waived")

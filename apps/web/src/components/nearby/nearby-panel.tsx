@@ -485,7 +485,7 @@ function FacultyGroup({
               t(`levels.${program.level}`),
               program.durationLabel ?? (years ? t("detail.years", { count: years }) : null),
               program.fee !== null
-                ? `${formatTuition(locale, program.fee, program.currency, program.extraFee, program.extraFeeCurrency)}${t(`detail.per.${program.feePeriod}`)}`
+                ? `${formatTuition(locale, program.fee, program.currency, program.extraFee, program.extraFeeCurrency, program.tuitionFeeMax)}${t(`detail.per.${program.feePeriod}`)}`
                 : null,
             ].filter(Boolean);
             return (

@@ -21,6 +21,8 @@ export type NearbyProgram = {
   /** Part of the fee in another currency, shown beside `fee`. */
   extraFee: number | null;
   extraFeeCurrency: string | null;
+  /** Top of the fee when it varies by category ("fee - max"). */
+  tuitionFeeMax: number | null;
   feePeriod: "YEAR" | "TERM" | "TOTAL";
   durationMonths: number | null;
   durationLabel: string | null;
@@ -95,6 +97,7 @@ export const getNearbyCatalog = unstable_cache(
             currency: true,
             extraFee: true,
             extraFeeCurrency: true,
+            tuitionFeeMax: true,
             tuitionPeriod: true,
             durationMonths: true,
             durationLabel: true,
@@ -123,6 +126,7 @@ export const getNearbyCatalog = unstable_cache(
           currency: program.currency,
           extraFee: program.extraFee == null ? null : Number(program.extraFee),
           extraFeeCurrency: program.extraFeeCurrency,
+          tuitionFeeMax: program.tuitionFeeMax == null ? null : Number(program.tuitionFeeMax),
           feePeriod: program.tuitionPeriod,
           durationMonths: program.durationMonths,
           durationLabel: program.durationLabel ? localized(locale, program.durationLabel, program.durationLabelAr) : null,

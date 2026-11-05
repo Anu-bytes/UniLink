@@ -69,6 +69,7 @@ export default async function ApplicationsPage() {
               program.currency,
               program.extraFee,
               program.extraFeeCurrency,
+              program.tuitionFeeMax,
             );
 
             return (
