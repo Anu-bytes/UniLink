@@ -1375,6 +1375,9 @@ html[lang="ar"] body {
 .ul-map .leaflet-bottom {
   bottom: var(--map-inset-bottom, 0px);
   transition: bottom 0.42s cubic-bezier(0.32, 0.72, 0, 1);
+  /* Under the phone bottom sheet (z 900): pulled up past half height, the
+     sheet covers this spot, and the credit must not float over the list. */
+  z-index: 800;
 }
 .ul-map .leaflet-control-attribution {
   margin: 0 0 6px 6px;
