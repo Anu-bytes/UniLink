@@ -103,6 +103,8 @@ const updateSchema = z
     durationLabel: z.string().trim().max(200).nullish(),
     durationLabelAr: z.string().trim().max(200).nullish(),
     tuitionFee: moneyField,
+    // Top of the fee when it varies by student category; "" or null clears it.
+    tuitionFeeMax: moneyField,
     tuitionPeriod: z.enum(TUITION_PERIODS),
     currency: currencyField,
     // The part of the fee in another currency; "" or null clears it.
@@ -130,6 +132,7 @@ const updateSchema = z
 function serializeProgram<
   T extends {
     tuitionFee: Prisma.Decimal | null;
+    tuitionFeeMax: Prisma.Decimal | null;
     extraFee: Prisma.Decimal | null;
     applicationFee: Prisma.Decimal | null;
   },
@@ -137,6 +140,7 @@ function serializeProgram<
   return {
     ...program,
     tuitionFee: decimalToNumber(program.tuitionFee),
+    tuitionFeeMax: decimalToNumber(program.tuitionFeeMax),
     extraFee: decimalToNumber(program.extraFee),
     applicationFee: decimalToNumber(program.applicationFee),
   };
@@ -235,6 +239,9 @@ async function patchHandler(
   }
   if (input.tuitionFee !== undefined) {
     data.tuitionFee = input.tuitionFee ?? null;
+  }
+  if (input.tuitionFeeMax !== undefined) {
+    data.tuitionFeeMax = input.tuitionFeeMax ?? null;
   }
   if (input.tuitionPeriod !== undefined) {
     data.tuitionPeriod = input.tuitionPeriod;

@@ -760,6 +760,8 @@ export type UniversityDetailProgram = {
   /** Part of the fee in another currency, shown beside tuitionFee. */
   extraFee: number | null;
   extraFeeCurrency: string | null;
+  /** Top of the fee when it varies by category ("fee - max"). */
+  tuitionFeeMax: number | null;
   applicationFee: number | null;
   applicationFeeWaived: boolean;
   /** Headline minimum: the program's own value, else the published limit for
@@ -997,6 +999,7 @@ async function getUniversityDetailUncached(
         currency: program.currency,
         extraFee: program.extraFee == null ? null : Number(program.extraFee),
         extraFeeCurrency: program.extraFeeCurrency,
+        tuitionFeeMax: program.tuitionFeeMax == null ? null : Number(program.tuitionFeeMax),
         applicationFee: program.applicationFee
           ? Number(program.applicationFee)
           : null,

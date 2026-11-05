@@ -260,8 +260,8 @@ export default async function ComparePage({ searchParams }: PageProps) {
                   .join("\n")
               : notSet,
           faculty: program.facultyName ?? notSet,
-          tuition: formatTuition(locale, program.tuitionFee, program.currency, program.extraFee, program.extraFeeCurrency)
-            ? `${formatTuition(locale, program.tuitionFee, program.currency, program.extraFee, program.extraFeeCurrency)}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
+          tuition: formatTuition(locale, program.tuitionFee, program.currency, program.extraFee, program.extraFeeCurrency, program.tuitionFeeMax)
+            ? `${formatTuition(locale, program.tuitionFee, program.currency, program.extraFee, program.extraFeeCurrency, program.tuitionFeeMax)}${tCatalog(`tuitionPeriods.${program.tuitionPeriod}`)}`
             : notSet,
           applicationFee: program.applicationFeeWaived
             ? t("waived")

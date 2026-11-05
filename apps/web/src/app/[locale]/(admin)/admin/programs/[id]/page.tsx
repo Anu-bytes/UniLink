@@ -60,6 +60,7 @@ export default async function EditProgramPage({
       durationLabel: true,
       durationLabelAr: true,
       tuitionFee: true,
+      tuitionFeeMax: true,
       tuitionPeriod: true,
       currency: true,
       extraFee: true,
@@ -195,6 +196,8 @@ export default async function EditProgramPage({
               // Decimal cannot cross into a client component.
               tuitionFee:
                 program.tuitionFee === null ? null : Number(program.tuitionFee),
+              tuitionFeeMax:
+                program.tuitionFeeMax === null ? null : Number(program.tuitionFeeMax),
               tuitionPeriod: program.tuitionPeriod,
               currency: program.currency,
               extraFee: program.extraFee === null ? null : Number(program.extraFee),

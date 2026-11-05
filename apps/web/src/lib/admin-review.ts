@@ -63,6 +63,7 @@ const IDENTITY_KEYS = [
   "year",
   "test",
   "tuitionFee",
+  "tuitionFeeMax",
   "extraFee",
 ];
 

@@ -55,6 +55,7 @@ export async function TabTuition({
                   program.currency,
                   program.extraFee,
                   program.extraFeeCurrency,
+                  program.tuitionFeeMax,
                 );
                 const applicationFee = program.applicationFeeWaived
                   ? t("tuition.waived")

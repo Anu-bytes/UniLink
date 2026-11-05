@@ -76,6 +76,7 @@ const loadProgram = cache(async function loadProgram(
     currency: program.currency,
     extraFee: program.extraFee == null ? null : Number(program.extraFee),
     extraFeeCurrency: program.extraFeeCurrency,
+    tuitionFeeMax: program.tuitionFeeMax == null ? null : Number(program.tuitionFeeMax),
     applicationFee: program.applicationFee ? Number(program.applicationFee) : null,
     applicationFeeWaived: program.applicationFeeWaived,
     ...headlineMinGrade(program, program.university),
@@ -158,6 +159,7 @@ export default async function ProgramDetailPage({ params }: PageProps) {
     program.currency,
     program.extraFee,
     program.extraFeeCurrency,
+    program.tuitionFeeMax,
   );
 
   const facts = [

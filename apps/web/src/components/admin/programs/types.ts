@@ -101,6 +101,7 @@ export type ProgramDetail = {
 /** Everything the Fees tab writes back; the money columns already converted. */
 export type ProgramFees = {
   tuitionFee: number | null;
+  tuitionFeeMax: number | null;
   tuitionPeriod: TuitionPeriod;
   currency: string;
   extraFee: number | null;

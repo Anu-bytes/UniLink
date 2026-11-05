@@ -26,6 +26,7 @@ import type { ProgramFees } from "./types";
 
 type FeesState = {
   tuitionFee: string;
+  tuitionFeeMax: string;
   tuitionPeriod: string;
   currency: string;
   extraFee: string;
@@ -39,6 +40,7 @@ type FeesState = {
 function toState(fees: ProgramFees): FeesState {
   return {
     tuitionFee: fees.tuitionFee === null ? "" : String(fees.tuitionFee),
+    tuitionFeeMax: fees.tuitionFeeMax === null ? "" : String(fees.tuitionFeeMax),
     tuitionPeriod: fees.tuitionPeriod,
     currency: fees.currency,
     extraFee: fees.extraFee === null ? "" : String(fees.extraFee),
@@ -116,6 +118,7 @@ export function ProgramFeesPanel({
     setFailure(null);
     const result = await adminWrite(`/api/admin/programs/${programId}`, "PATCH", {
       tuitionFee: toNumber(form.tuitionFee),
+      tuitionFeeMax: toNumber(form.tuitionFeeMax),
       tuitionPeriod: form.tuitionPeriod,
       currency: form.currency,
       extraFee: toNumber(form.extraFee),
@@ -192,6 +195,25 @@ export function ProgramFeesPanel({
               onChange={(event) => set("currency", event.target.value.toUpperCase())}
               aria-invalid={errorFor("currency") ? true : undefined}
               className="uppercase"
+            />
+          </Field>
+        </div>
+
+        <div className="grid gap-4 sm:grid-cols-2">
+          <Field
+            label={t("programs.fields.tuitionFeeMax")}
+            htmlFor={`${fieldId}-tuitionFeeMax`}
+            error={errorFor("tuitionFeeMax")}
+            hint={t("programs.hints.tuitionFeeMax")}
+          >
+            <NumberInput
+              id={`${fieldId}-tuitionFeeMax`}
+              dir="ltr"
+              min={0}
+              step="0.01"
+              value={form.tuitionFeeMax}
+              onChange={(event) => set("tuitionFeeMax", event.target.value)}
+              aria-invalid={errorFor("tuitionFeeMax") ? true : undefined}
             />
           </Field>
         </div>

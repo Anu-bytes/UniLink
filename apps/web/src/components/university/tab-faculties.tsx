@@ -43,7 +43,7 @@ import { ProgramGridReveal } from "@/components/university/program-grid-reveal";
 import { Reveal } from "@/components/reveal";
 import type { UniversityDetailData } from "@/lib/catalog";
 import { FIELDS_OF_STUDY } from "@/lib/fields";
-import { formatDate, formatExtraFee, formatMoney, formatNumber, yearsFromMonths } from "@/lib/format";
+import { formatDate, formatExtraFee, formatMoney, formatNumber, formatTuition, yearsFromMonths } from "@/lib/format";
 import { cn } from "@/lib/utils";
 
 type T = Awaited<ReturnType<typeof getTranslations>>;
@@ -370,7 +370,7 @@ function ProgramDetail({
       : program.durationMonths
         ? tCatalog("durationMonths", { count: program.durationMonths })
         : null);
-  const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+  const tuition = formatTuition(locale, program.tuitionFee, program.currency, null, null, program.tuitionFeeMax);
   const extraFee = formatExtraFee(locale, program.extraFee, program.extraFeeCurrency);
 
   const facts = [
@@ -562,6 +562,11 @@ function ProgramCardFace({
 }) {
   const years = yearsFromMonths(program.durationMonths);
   const tuition = formatMoney(locale, program.tuitionFee, program.currency);
+  // Priced by category (e.g. GUC's A/B/C): the top of the range.
+  const tuitionMax =
+    program.tuitionFee != null && program.tuitionFeeMax != null && program.tuitionFeeMax > program.tuitionFee
+      ? formatMoney(locale, program.tuitionFeeMax, program.currency)
+      : null;
   const extraFee = formatExtraFee(locale, program.extraFee, program.extraFeeCurrency);
   const field = FIELDS_OF_STUDY.find((entry) => entry.value === program.fieldOfStudy);
   const fieldLabel = field
@@ -628,12 +633,18 @@ function ProgramCardFace({
           context but secondary, so it's a small badge rather than an equal
           stat — clearer at a glance than a grid of same-size figures. */}
       <div className="flex flex-wrap items-end justify-between gap-3 border-t border-slate-100 pt-4">
-        <div className="shrink-0">
+        <div className={tuitionMax ? "min-w-0" : "shrink-0"}>
           <p className="text-xs font-semibold text-[#98A0B4]">
             {t("tuition.fee")}
           </p>
-          <p className="mt-0.5 whitespace-nowrap text-lg font-bold leading-none text-[#1F2A44]">
-            {tuition ?? "—"}
+          <p className="mt-0.5 text-lg font-bold leading-tight text-[#1F2A44]">
+            <span className="whitespace-nowrap">{tuition ?? "-"}</span>
+            {tuitionMax ? (
+              <>
+                {" - "}
+                <span className="whitespace-nowrap">{tuitionMax}</span>
+              </>
+            ) : null}
           </p>
           {/* The part in another currency sits on its own line, so the
               headline amount keeps its size on a narrow card. */}

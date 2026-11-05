@@ -54,9 +54,13 @@ export function formatTuition(
   currency: string,
   extraFee?: number | null,
   extraFeeCurrency?: string | null,
+  /** Top of the fee when it varies by student category: "low - high". */
+  feeMax?: number | null,
 ) {
-  const base = formatMoney(locale, fee, currency);
-  if (!base) return null;
+  const low = formatMoney(locale, fee, currency);
+  if (!low) return null;
+  const high = fee != null && feeMax != null && feeMax > fee ? formatMoney(locale, feeMax, currency) : null;
+  const base = high ? `${low} - ${high}` : low;
   const extra = formatExtraFee(locale, extraFee, extraFeeCurrency);
   return extra ? `${base} + ${extra}` : base;
 }
