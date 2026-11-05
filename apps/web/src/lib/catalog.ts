@@ -622,12 +622,17 @@ export const getUniversityCities = unstable_cache(
       select: { city: true, cityAr: true },
     });
 
+    // The governorate entries (Giza, ...) are only filter shortcuts that group
+    // several cities; `group` marks them so a city count leaves them out and
+    // matches the homepage's.
+    const real = new Set(rows.map((row) => row.city));
     return withGovernorateCityOptions(rows).map((row) => ({
       value: row.city,
       label: localized(locale, row.city, row.cityAr),
+      ...(real.has(row.city) ? {} : { group: true as const }),
     }));
   },
-  ["university-cities"],
+  ["university-cities-v2"],
   { revalidate: 300, tags: [CATALOGUE_LISTS_TAG] },
 );
 
