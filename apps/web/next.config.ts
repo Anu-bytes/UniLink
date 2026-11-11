@@ -53,6 +53,12 @@ const securityHeaders = [
     key: "Strict-Transport-Security",
     value: "max-age=63072000; includeSubDomains; preload",
   },
+  // Opt out of AI training: "noai"/"noimageai" is read by several AI
+  // crawlers, and tdm-reservation is the W3C TDMRep signal that text and data
+  // mining rights are reserved (recognised under the EU copyright directive).
+  // Neither affects normal search indexing.
+  { key: "X-Robots-Tag", value: "noai, noimageai" },
+  { key: "tdm-reservation", value: "1" },
 ];
 
 const nextConfig: NextConfig = {

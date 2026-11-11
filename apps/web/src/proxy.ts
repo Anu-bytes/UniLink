@@ -2,6 +2,7 @@ import createMiddleware from "next-intl/middleware";
 import { NextResponse, type NextRequest } from "next/server";
 
 import { routing } from "./i18n/routing";
+import { isBlockedCrawler } from "./lib/ai-bots";
 
 const intlMiddleware = createMiddleware(routing);
 
@@ -23,6 +24,22 @@ const ADMIN_PATH = /^\/(?:ar|en)\/admin(?:\/|$)/;
  * layout.tsx and, independently, in every /api/admin route via requireAdmin().
  */
 export default function proxy(request: NextRequest) {
+  // AI crawlers and scraping libraries get nothing: not the pages, not the
+  // API (the catalogue behind the map and search). robots.txt already asks
+  // them to stay out; this enforces it for the ones that ignore it.
+  if (isBlockedCrawler(request.headers.get("user-agent"))) {
+    return new NextResponse("Automated access for AI training or scraping is not permitted.", {
+      status: 403,
+      headers: { "content-type": "text/plain; charset=utf-8" },
+    });
+  }
+
+  // The API only needed the crawler check above; locale handling and the
+  // page gate below are for pages.
+  if (request.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   const response = intlMiddleware(request);
 
   // A locale redirect has to land first; the gate runs on the next request,
@@ -57,5 +74,7 @@ export default function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ["/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
+  // Pages and the API (the API only for the crawler check). Static files,
+  // including robots.txt, are left alone so crawlers can still read the rules.
+  matcher: ["/api/:path*", "/((?!api|trpc|_next|_vercel|.*\\..*).*)"],
 };

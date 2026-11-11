@@ -11,7 +11,7 @@ import {
   Percent,
 } from "lucide-react";
 import { cache } from "react";
-import { notFound } from "next/navigation";
+import { notFound, redirect } from "next/navigation";
 import { getLocale, getTranslations } from "next-intl/server";
 
 import { Link } from "@/i18n/navigation";
@@ -128,8 +128,16 @@ export default async function ProgramDetailPage({ params }: PageProps) {
 
   if (!university || !program) notFound();
 
-  // Highlight the signed-in student's certificate column.
+  // Programs and fees are for signed-in students and parents (the university
+  // page hides them from guests too), so a guest or a crawler holding a direct
+  // link is sent to log in first and lands back here afterwards.
   const session = await auth();
+  if (!session?.user?.id) {
+    const here = `/${locale}/universities/${slug}/programs/${programSlug}`;
+    redirect(`/${locale}/login?callbackUrl=${encodeURIComponent(here)}`);
+  }
+
+  // Highlight the signed-in student's certificate column.
   const certificateGroup = session?.user?.id
     ? certificateGroupFor(
         (
