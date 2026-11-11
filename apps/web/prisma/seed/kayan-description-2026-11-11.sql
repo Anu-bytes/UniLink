@@ -1,0 +1,5 @@
+-- Kayan University: details from the user-supplied 2026/2027 announcement.
+UPDATE "University" SET
+"description" = "description" || $en$ Students can study on a civilian or a military track, men and women alike, following the ratification of Law No. 161 of 2026. The full campus opens officially in February 2027, with room for up to 25,000 students and medical, engineering, sports and residential facilities. The top ten Thanaweya Amma students may transfer into its faculties, and the university plans international twinning with major foreign universities.$en$,
+"descriptionAr" = "descriptionAr" || $ar$ وتتيح الدراسة بالصفة المدنية أو العسكرية للطلاب والطالبات، عقب التصديق على القانون رقم 161 لسنة 2026. ويُدشَّن الحرم الجامعي المتكامل رسميًا في فبراير 2027 بطاقة استيعابية تصل إلى 25 ألف طالب، مع منشآت طبية وهندسية ورياضية وسكنية متكاملة. ويُتاح للعشرة الأوائل في الثانوية العامة التحويل إلى كلياتها، كما تخطط الجامعة لتوأمة دولية مع كبرى الجامعات الأجنبية.$ar$
+WHERE "slug" = 'kayan-university';
